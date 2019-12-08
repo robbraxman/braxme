@@ -1,0 +1,745 @@
+/* 
+    Document   : local
+    Created on : Feb 25, 2013, 8:44:32 PM
+    Author     : rob
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+    display: block;
+}
+@media handheld {
+    body {
+        font-family: sans-serif;
+        overflow:hidden;
+        background: #d7d7d7;
+        margin:0;
+        padding:0;
+    }
+}
+@media screen {
+    body {
+        font-family: sans-serif;
+        overflow:hidden;
+        background: #d7d7d7;
+        margin:0;
+        padding:0;
+    }
+    .newmsgbody {
+        background-color: #ececec;
+        font-size: 15px;
+
+        font-family: sans-serif;
+    }
+    .webbody {
+        background-color: #ececec;
+        font-size: 14px;
+
+        font-family: sans-serif;
+    }
+    .appbody {
+        background-color: #ececec;
+        font-size: 15px;
+
+        font-family: sans-serif;
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+    .messagesbody {
+        background-color: #ececec;
+        font-size: 15px;
+
+        font-family: sans-serif;
+    }
+}
+.demobody {
+    background-color:#E8EEF7;
+ }
+
+.democolumns {
+    border-style: solid;
+    border: 2px;
+    border-color: #999999;
+    background-color:#FFFFFF;
+    
+}
+
+
+/* 
+General Web
+*/
+
+.col1 {
+    width: 500px;
+}
+.col2 {
+    width: 100px;
+}
+.col3 {
+    width: 300px;
+}
+.col3a {
+    width: 150px;
+}
+
+.intro {
+    font-family: sans-serif;
+    font-weight: 600;
+    color: #a00;
+    
+}
+.smsemailicon {
+    width: 300px;
+    height: 250px;    
+    /*
+    width: 100px;
+    height: 100px;
+    */
+    
+}
+
+.subscribelogo {
+    width: 65px;
+    height: 75px;
+}
+.loginlogo {
+    width: 140px;
+    height: 100px;
+    
+}
+.viewlogo{
+    width: 460px;
+    height: 120px;
+}
+.viewlogomsg {
+    width: 330px;
+    height: 100px;
+}
+.viewlinemsg {
+    width: 330px;
+    height: 5px;
+}
+
+/*
+
+READ MESSAGE - SMARTPHONE
+ 
+*/
+.viewmsgbody {
+    font-size: 15px;
+    font-family: sans-serif;
+}
+.shadowbox {
+    /*
+    background-color: white;
+    width: 98%;
+    box-shadow: 2px 2px 2px #888888;
+    */
+}
+
+
+.smalltext1{
+    font-size: 13px;
+}
+.smalltext{
+    font-size: 16px;
+}
+
+.viewbarmsg {
+    width: 300px;
+    height: 20px;
+}
+
+.viewmsgfrom {
+    width: 300px;
+    height: 35px;
+}
+.viewmsgreply {
+    width: 300px;
+    height: 35px;
+}
+.viewlogomobile {
+    width: auto;
+    height: 80px;
+}
+/*
+
+READ MESSAGE - SMARTPHONE
+ 
+*/
+
+.viewimage{
+    width: 321px;
+    height: 245px;
+}
+.viewlogofullsize{
+    width: 488px;
+    height: 150px;
+}
+.viewlogosmall{
+    width: 488px;
+    height: 50px;
+}
+
+.footer {
+    font-size: 10px;
+    font-family: sans-serif;
+}
+
+.adminbody {
+    background-color: #ececec;
+    
+    
+    font-family: sans-serif;
+    background-repeat: repeat-x;
+}
+
+
+
+/*
+
+Address Book
+
+*/
+div.addressbookcontent {
+    /* background-color: ivory; */
+    cursor: pointer;
+}
+
+table.addressbooktable {
+    border-collapse: collapse;
+    width: 99%;
+    box-shadow: 2px 2px 2px #888888;
+    background-color: white;
+    
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px; /* future proofing */
+    -khtml-border-radius: 10px; /* for old Konqueror browsers */
+    border-top-right-radius: 7px;
+    border-top-left-radius: 7px;
+    border-bottom-right-radius: 7px;
+    border-bottom-left-radius: 7px;
+    border-collapse:collapse;
+}
+
+.addressbook {
+    border-collapse: separate;
+    width: 100%;
+    /*padding: 10px;*/
+    border: 0px;
+}
+
+.addressname {
+
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.addresstype {
+    display: none;
+}
+.addressid {
+    display: none;
+}
+
+.addressbooktitle {
+    background-color: lightseagreen; /*burnt red */
+    color: white;
+    text-align: center;
+    }
+
+.addressbookrow {
+    padding: 5px;
+        
+}
+
+a.nodecoration:hover, a:nodecoration:selected, a:nodecoration:active, a:nodecoration:link {
+    text-decoration: none;
+}
+
+.addressselected {
+    border-collapse: separate;
+    display: block;
+    background-color: whitesmoke;
+    border: 1px;
+    box-shadow: 2px 2px 2px #888888;
+    padding: 10px;
+    margin: 5px;
+    width:90%;
+    border: none;
+    color: black;
+    
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px; /* future proofing */
+    -khtml-border-radius: 10px; /* for old Konqueror browsers */
+    border-top-right-radius: 7px;
+    border-top-left-radius: 7px;
+    border-bottom-right-radius: 7px;
+    border-bottom-left-radius: 7px;
+    border-collapse:collapse;
+    
+}
+
+.addressentry {
+    border-collapse: separate;
+    display: block;
+    background-color: whitesmoke;
+    box-shadow: 2px 2px 2px #888888;
+    color: black;
+
+    padding: 5px;
+    /* margin: 5px; */
+    border: 0px;
+    
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px; /* future proofing */
+    -khtml-border-radius: 10px; /* for old Konqueror browsers */
+    border-top-right-radius: 7px;
+    border-top-left-radius: 7px;
+    border-bottom-right-radius: 7px;
+    border-bottom-left-radius: 7px;
+    border-collapse:collapse;
+    
+}
+
+
+.addressbookrow {
+    
+    width: 100%;
+    border-collapse: collapse;
+    }
+
+.addressbookrow1 {
+    width: 100%;
+    /*padding: 5px;*/
+    /*margin: 5px;*/
+    }
+
+    
+    
+
+/*
+
+SendMessage
+
+*/
+.appstore {
+    height: 40px;
+    width: auto;
+}
+
+.avatar {
+    height: 100px;
+    width: auto;
+}
+
+div.messagescontent {
+    /* background-color: ivory; */
+    cursor: pointer;
+}
+
+.altmessage {
+    background-color: ivory; 
+    border: 1px;
+    border-style: solid;
+    border-color:#999999;
+    width: 250px;
+}
+
+.thismessage {
+    background-color: ivory; 
+    border-color:#999999;
+    padding: 10px;
+    margin: 0px;
+    box-shadow: 2px 2px 2px #888888;
+   }
+
+table.smsg {
+    width: 100%;
+    
+}
+
+.accountinfo {
+    width: 100%;
+    border-style: solid;
+    border: 1px;
+    border-color: #999999;
+    
+}
+.accountinforow {
+    border-style: solid;
+    border: 1px;
+    border-color: #999999;
+    
+}
+
+.msgthread {
+    background-color: ivory; 
+    border-color:#999999;
+    font-family: sans-serif;
+    box-shadow: 2px 2px 2px #888888;
+    padding: 10px;
+    
+}
+
+div.advertising {
+    font-family: sans-serif;
+}
+
+span.thismessage {
+    
+    font-family: sans-serif;
+}
+
+tr.msgsource {
+    font-family: sans-serif;
+   
+} 
+tr.content {
+    font-family: sans-serif;
+    /* background-color: #FFFFCC; */
+   
+} 
+
+.labelimportant{
+    color: #CC0033;
+}
+
+td.labelrequired{
+    text-align: right;
+    /* background-color: #ececec; */
+    color: #CC0033;
+}
+td.label{
+    text-align: right;
+}
+
+div.labelrequired{
+    text-align: left;
+    /* background-color: #ececec; */
+    color: #CC0033;
+}
+div.label{
+    text-align: left;
+}
+
+
+td.dataarea{
+    text-align: left;
+    
+}
+/*
+
+Message List
+
+*/
+
+
+table.messages {
+    /*
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px; *//* future proofing */
+    /*-khtml-border-radius: 10px; *//* for old Konqueror browsers */
+    /*
+    box-shadow: 2px 2px 2px #888888;
+    border-top-right-radius: 7px;
+    border-top-left-radius: 7px;
+    border-bottom-right-radius: 7px;
+    border-bottom-left-radius: 7px;
+    */
+    border-collapse:collapse;
+    width: 100%;
+    background-color: whitesmoke;
+}
+
+.titletext {
+    font-size: 30px;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 5px;
+    padding: 5px;
+}
+.titlesubtext {
+    font-size: 13px;
+    margin-bottom: 20px;
+    padding: 5px;
+}
+
+.innermsgdiv {
+    background-color: gray;
+    padding: 2px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-right: 2px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px; /* future proofing */
+    -khtml-border-radius: 10px; /* for old Konqueror browsers */
+    border-top-right-radius: 7px;
+    border-top-left-radius: 7px;
+    border-bottom-right-radius: 7px;
+    border-bottom-left-radius: 7px;
+    border-collapse:collapse;
+}
+
+.innermsg {
+    padding: 3px;
+}
+
+.innermsg1 {
+    padding: 3px;
+    /* background-color: lightsteelblue;*/
+    color: white;
+    
+    
+}
+.innermsg2 {
+    padding: 3px;
+    background-color: whitesmoke;
+    color: black;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px; /* future proofing */
+    -khtml-border-radius: 10px; /* for old Konqueror browsers */
+    border-top-right-radius: 7px;
+    border-top-left-radius: 7px;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-collapse:collapse;
+}
+.innermsg3 {
+    padding: 3px;
+    background-color: white;
+    color: black;
+
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px; /* future proofing */
+    -khtml-border-radius: 10px; /* for old Konqueror browsers */
+    border-top-right-radius: 0px;
+    border-top-left-radius: 0px;
+    border-bottom-right-radius: 7px;
+    border-bottom-left-radius: 7px;
+    border-collapse:collapse;
+}
+
+.messagesMsg {
+}
+
+tr.messages {
+    border-color: white;
+    background-color: white;
+    /*
+    border-color:#999999;
+    background-color: #999999;
+    */
+    color: white;
+    border: 1px;
+    border-style: solid;
+}
+    
+
+tr.messagesreply {
+    border: 1px;
+    border-style: solid;
+    border-color:#999999;
+    }
+tr.messagestitle {
+    border: 1px;
+    border-style: solid;
+    border-color:#999999;
+    background-color: ivory;
+    color: black;
+    text-align: center;
+    }
+
+.messageinfo {
+    border: 1px;
+    border-collapse: separate;
+    display: block;
+    background-color: #EE5757; /*burnt red */
+    color: white;
+    box-shadow: 2px 2px 2px #888888;
+    padding: 10px;
+    margin: 5px;
+    /*width:100%;*/
+    
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px; /* future proofing */
+    -khtml-border-radius: 10px; /* for old Konqueror browsers */
+    border-top-right-radius: 7px;
+    border-top-left-radius: 7px;
+    border-bottom-right-radius: 7px;
+    border-bottom-left-radius: 7px;
+    border-collapse:collapse;
+    
+}
+    
+.alert {
+    background-color:#FDC6AA;
+                
+}
+.alertfired {
+    background-color:lightgreen;
+}
+.noalert {
+    background-color:lightgreen;
+}
+
+
+table.monitor {
+    border-collapse:collapse;
+}
+
+tr.monitortitle {
+    background-color: #FECA40;
+    border: 1px;
+    border-style: solid;
+    border-color:#999999;
+    }
+tr.monitorrow {
+    background-color: ivory;
+    border: 1px;
+    border-style: solid;
+    border-color:#999999;
+    }
+
+td.monitor1 {
+
+    border: 1px;
+    border-style: solid;
+    border-color:#999999;
+}
+td.monitor2 {
+
+    border: 1px;
+    border-style: solid;
+    border-color:#999999;
+}
+td.monitor3 {
+
+    border: 1px;
+    border-style: solid;
+    border-color:#999999;
+}
+.statusmessage {
+    background-color:#EE5757;                
+                
+}
+
+.expand {
+    color: red;
+}
+
+.banner {
+    display: block;
+    background-color: #1abc9c;
+    color: white;
+    box-shadow: 2px 2px 2px #888888;
+    padding: 5px;
+    text-align: center;
+    
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px; /* future proofing */
+    -khtml-border-radius: 10px; /* for old Konqueror browsers */
+    border-top-right-radius: 7px;
+    border-top-left-radius: 7px;
+    border-bottom-right-radius: 7px;
+    border-bottom-left-radius: 7px;
+    border-collapse:collapse;
+    width: 100%;
+    
+    
+}
+
+.swipe {
+    display: block;
+    background-color: darkgrey;
+    color: white;
+    text-align: center;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 15px;
+    font-weight: bold;
+    box-shadow: 2px 2px 2px #888888;
+    
+}
+
+
+
+div.staffcontent {
+    /* background-color: ivory; */
+    cursor: pointer;
+}
+
+
+table.stdlist {
+    border-collapse:collapse;
+}
+
+tr.stdlistrow {
+    background-color: ivory; 
+    border: 1px;
+    border-style: solid;
+    border-color:#999999;
+    }
+
+tr.stdlisttitle {
+    background-color: #FECA40;
+    border: 1px;
+    border-style: solid;
+    border-color:#999999;
+    }
+    
+    
+td.stdlist1 {
+
+    border: 1px;
+    border-style: solid;
+    border-color:#999999;
+}
+
+td.stdlist2 {
+
+    border: 1px;
+    border-style: solid;
+    border-color:#999999;
+}
+
+td.stdlist3 {
+
+    border: 1px;
+    border-style: solid;
+    border-color:#999999;
+}
+
+td.stdlist4 {
+
+    border: 1px;
+    border-style: solid;
+    border-color:#999999;
+}
+
+td.stdlist5 {
+
+    border: 1px;
+    border-style: solid;
+    border-color:#999999;
+}
+
+td.stdlist6 {
+
+    border: 1px;
+    border-style: solid;
+    border-color:#999999;
+}
+

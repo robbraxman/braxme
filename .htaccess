@@ -1,0 +1,41 @@
+RewriteEngine On
+ServerSignature Off
+
+Options -Indexes
+ErrorDocument 404  /error404.php
+
+
+
+
+RewriteRule ^c/([^/]+)  /prod/login.php?init=$1 [NC,L]
+
+
+RewriteRule ^j/([^/]+)/([^/]+) /prod/roominvite.php?r=$1$2 [NC,L]
+RewriteRule ^j/([^/]+) /prod/roominvite.php?k=$1 [NC,L]
+
+RewriteRule ^r/([^/]+)/([^/]+) /prod/roominvite.php?r=$1$2 [NC,L]
+RewriteRule ^r/([^/]+) /prod/roominvite.php?r=$1 [NC,L]
+
+RewriteRule ^room/([^/]+)/([^/]+) /prod/roominvite.php?r=$1$2 [NC,L]
+RewriteRule ^room/([^/]+) /prod/roominvite.php?r=$1 [NC,L]
+
+RewriteRule ^portal/([^/]+) /prod/roominvite.php?portal=Y&r=$1 [NC,L]
+
+RewriteRule ^signup/([^/]+)/([^/]+) /prod/roominvite.php?portal=Y&r=$1$2 [NC,L]
+RewriteRule ^signup/([^/]+) /prod/roominvite.php?portal=Y&r=$1 [NC,L]
+
+RewriteRule ^s/([^/]+)/([^/]+) /prod/roominvite.php?portal=Y&r=$1$2 [NC,L]
+RewriteRule ^s/([^/]+) /prod/roominvite.php?portal=Y&r=$1 [NC,L]
+
+
+
+RewriteRule ^invite/([^/]+) /prod/invite.php?i=$1 [NC,L]
+
+RewriteRule ^url/([^/]+) /prod/wrap.php?u=$1 [NC,L]
+
+
+#<IfModule php5_module>
+#    php_flag session.cookie_httponly on
+#    php_value session.cookie_secure 1
+#    Header always edit Set-Cookie (.*) "$1; HTTPOnly; Secure"
+#</IfModule>

@@ -1,0 +1,52 @@
+<?php
+require_once("prod/config.php");
+$file = mysql_safe_string(@$_GET['f']);
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8'>
+
+
+<meta name='description' content='Building Private Communities'>
+<meta property='og:title' content='Brax.Me - Building Private Communities' />
+<meta property='og:url' content='<?=$rootserver?>/index.php' />
+<meta property='og:image' content='<?=$rootserver?>/img/bigstock-friendship-leisure-summer.jpg' />
+<meta name='viewport' content='width=device-width, height=device-height, initial-scale=1, user-scalable=0, maximum-scale=1'>
+<meta name='apple-mobile-web-app-capable' content='yes'>
+<meta name='mobile-web-app-capable' content='yes'>
+<link rel='apple-touch-startup-image' href='../img/logo-b1a.png'>
+    
+
+
+
+
+
+<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet"> 
+
+<link rel='stylesheet' href='../libs/alertify.js-0.3.10/themes/alertify.core.css' />
+<link rel='stylesheet' href='../libs/alertify.js-0.3.10/themes/alertify.default.css' />
+<script src='<?=$rootserver?>/libs/alertify.js-0.3.10/src/alertify.js'></script>
+
+<link rel='stylesheet' href='https://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css'>
+<script src='https://code.jquery.com/jquery-1.11.1.min.js'  ></script>
+<script src='https://code.jquery.com/ui/1.11.1/jquery-ui.js' ></script>
+
+<link rel='icon' href='img/logo-b1a.png'>
+<link id=favicon rel='shortcut icon' href='../img/logo-b1a.ico'>
+
+<link rel='apple-touch-icon' href='img/logo-b1a.png'>
+<link rel='apple-touch-icon-precomposed' href='../img/logo-b1a.png'>
+<link rel='apple-touch-startup-image' href='img/logo-b1a.png' />
+
+<link rel='styleSheet' href='<?=$rootserver?>/webv2.css?<?=$randomid?>' type='text/css'/>
+
+</head>
+<body style='background-color:#35485e;color:white;font-family:helvetica, arial;font-size:normal'>
+    <div>Session Timeout.<?=$file?></div>
+    <br><br>
+    <a href='<?=$rootserver?>/<?=$startupphp?>' style='text-decoration:none'>
+    <div class='divbuttontext'> Restart-1 </div>
+    </a>
+</body>
+</html>

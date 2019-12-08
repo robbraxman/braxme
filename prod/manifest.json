@@ -1,0 +1,14 @@
+{
+  "name": "Brax.Me",
+  "short_name": "Braxme",
+  "icons": [{
+        "src": "https://brax.me/img/logo-b1a.png",
+        "sizes": "192x192"
+      }],
+  "start_url": "https://brax.me/prod/login.php?s=nonmobile",
+  "display": "standalone",
+  "gcm_sender_id": "",
+  
+  "//": "gcm_user_visible_only is only needed until Chrome 44 is in stable ",
+  "gcm_user_visible_only": true
+}

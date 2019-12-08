@@ -1,0 +1,20 @@
+<?php
+require_once("prod/config.php");
+$file = mysql_safe_string(@$_GET['f']);
+?>
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Error 404</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style='background-color:#35485e;color:white;font-family:helvetica, arial;font-size:normal'>
+        <div>Invalid Request or Timeout. Please Restart.) <?=$file?></div>
+    </body>
+</html>

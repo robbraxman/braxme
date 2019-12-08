@@ -1,0 +1,100 @@
+div.hearts {
+}
+div.heart {
+    width: 30px;
+    height: 30px;
+    opacity: 1;
+    position: absolute;
+    bottom: 0;
+    display: none;
+}
+div.heart i {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 1;
+}
+.colOne {
+    color: #fce473;
+}
+.colTwo {
+    color: #f68b39;
+}
+.colThree {
+    color: #ed6c63;
+}
+.colFour {
+    color: #847bb9;
+}
+.colFive {
+    color: #97cd76;
+}
+.colSix {
+    color: #35b1d1;
+}
+@keyframes flowOne {
+    0% {
+    opacity: 0;
+    bottom: 0;
+    left: 30%}
+40% {
+    opacity: .8;
+}
+50% {
+    opacity: 1;
+    left: 42%;
+}
+60% {
+    opacity: .5;
+}
+80% {
+    bottom: 35%}
+100% {
+    opacity: .2;
+    bottom: 100%;
+    left: 47%}
+}@keyframes flowTwo {
+    0% {
+    opacity: 0;
+    bottom: 0;
+    left: 50%;
+}
+40% {
+    opacity: .8;
+}
+50% {
+    opacity: 1;
+    left: 38%}
+60% {
+    opacity: .5;
+}
+80% {
+    bottom: 60%}
+100% {
+    opacity: .2;
+    bottom: 80%;
+    left: 55%;
+}
+}@keyframes flowThree {
+    0% {
+    opacity: 0;
+    bottom: 0;
+    left: 36%;
+}
+40% {
+    opacity: .8;
+}
+50% {
+    opacity: 1;
+    left: 52%}
+60% {
+    opacity: .5;
+}
+80% {
+    bottom: 70%}
+100% {
+    opacity: .2;
+    bottom: 90%;
+    left: 33%;
+}
+}
