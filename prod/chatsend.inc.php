@@ -470,31 +470,8 @@ function CreateChatMessage( $providerid, $chatid, $passkey, $message, $messagesh
         
         if($notify){
             
-            if($radiostation == 'Y'){
-                $subtype = 'LV';
-            }
             ChatNotificationRequest($providerid, $chatid, $encodeshort, $_SESSION['responseencoding'],$subtype);
         } 
-        /*
-         * This is the original and it is wrong because it's updating V even if not current broadcast
-        if( $streaming ){
-            do_mysqli_query("1"," 
-               update broadcastlog set chatcount=chatcount+1 
-               where chatid=$chatid and providerid =$providerid
-               and mode ='V'
-            ");
-        }
-         * 
-         */
-        if( $streaming ){
-            do_mysqli_query("1"," 
-               update broadcastlog set chatcount=chatcount+1 
-               where chatid=$chatid and providerid =$providerid
-               and mode ='V' and 
-               broadcastid = (select max(broadcastid) from broadcastlog 
-               where mode='V' and providerid = $providerid and chatid=$chatid)
-            ");
-        }
     
     
 }    

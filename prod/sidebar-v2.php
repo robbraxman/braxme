@@ -39,6 +39,11 @@ require("nohost.php");
         $sponsorformat = "";
         $sizing = "";
         $lasttip = "";
+        $promo = "";
+        $logo = "";
+        $inforequest = "";
+        $enterprisetitle = "";
+        $notifypretext = "";
         $imap_item = 0;//intval(mysql_safe_string($_POST['imap_item']))-1;
 
         $flag = $global_icon_check;//"<img class='chatalert icon15' title='Checked' src='../img/check-yellow-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
