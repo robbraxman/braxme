@@ -11,4 +11,5 @@ and is using the same live database as the standard Brax.Me.
 This open source version of Brax.Me is a derivative work of Brax.Me - Enterprise.
 The enterprise version has extra features that are not included
 here.
- 
+
+Check the Wiki for more information. https://github.com/robbraxman/braxme/wiki
