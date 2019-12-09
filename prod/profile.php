@@ -437,15 +437,6 @@ $(document).ready( function()
     
     //Compute Level
     $planlevel = '';
-    if($row['roomcreator']=='Y' ){
-        $planlevel = "You're on $enterpriseapp Level 1";
-    }
-    if($row['roomcreator']=='Y' && $row['web']=='Y' && $row['store']=='Y'){
-        $planlevel = "You're on $enterpriseapp Level 3";
-    }
-    if($row['roomcreator']=='Y' && $row['web']=='Y' && $row['store']=='N'){
-        $planlevel = "You're on $enterpriseapp Level 2";
-    }
     
     
     $row['welcome'] = str_replace("<br>","",$row['welcome']);
@@ -528,25 +519,6 @@ $(document).ready( function()
             <br><br>
             </div>
              ";
-    }
-    if(intval($expiredays)>0){
-        $subscriptiontext = "
-            <br>
-            <div class='pagetitle3' style='color:black;max-width:500px'>
-            $global_icon_check
-            <b>$planlevel</b>
-            </div>
-            <br>
-            <div class='pagetitle3' style='color:black;max-width:500px'>
-            $global_icon_check
-            <b>Your subscription is active for $expiredays days (expires $expiredate) $bandwidthplan</b>.
-            </div>
-            <br>
-            $global_icon_check
-            <b>Your current storage used is $filesize GB, Bandwidth used this period is $bandwidth GB
-            <br>
-             ";
-        
     }
     $tokenbalance = intval($row['tokensbought'])-intval($row['tokenspaid']);
     

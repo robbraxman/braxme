@@ -4,7 +4,6 @@ require_once("room.inc.php");
 require_once("crypt.inc.php");
 require_once("notify.inc.php");
 require_once("roommanage.inc.php");
-require_once("advertising.inc.php");
 
     $_SESSION['validsession']=uniqid();
     
@@ -303,11 +302,11 @@ require_once("advertising.inc.php");
         if($_SESSION['roomcreator']=='Y' ){
             $settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxsettings2 $menu_managerooms", "friends mainbutton", "","data-mode='' ","text-align:left;" , "#3b3b3b", $buttoncolor2);
             $settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxsettings2 $menu_communitylist", "groupmanage mainbutton", "","data-mode='' ","text-align:left;" , "#3b3b3b", $buttoncolor2);
-            $settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxsettings2 Brax.Live Restream", "restreambutton mainbutton", "","data-mode='' ","text-align:left;" , "#3b3b3b", $buttoncolor2);
+            //$settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxsettings2 Brax.Live Restream", "restreambutton mainbutton", "","data-mode='' ","text-align:left;" , "#3b3b3b", $buttoncolor2);
         }
 
         if($_SESSION['superadmin']=='Y'){
-            $settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxsettings2 $menu_managesocialvision", "sponsormanage mainbutton", "","data-mode='' ","text-align:left;" , "#3b3b3b", $buttoncolor2);
+            //$settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxsettings2 $menu_managesocialvision", "sponsormanage mainbutton", "","data-mode='' ","text-align:left;" , "#3b3b3b", $buttoncolor2);
         } else
         if( $_SESSION['web']=='Y'){
             $settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxsettings2 My $enterpriseapp Domain", "sponsormanage mainbutton", "","data-mode='E' data-sponsor='$_SESSION[sponsor]' ","text-align:left;" , "#3b3b3b", $buttoncolor2);

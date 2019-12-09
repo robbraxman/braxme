@@ -5,4 +5,6 @@ Licensed as GPLv3 - Free Software
 These are the source files for the PHP server running Brax.Me.
 A separate SQL server is required.
 
+This software is currently running on https://opensource.brax.me
+
 A VPC based Auth server is required to create security keys.

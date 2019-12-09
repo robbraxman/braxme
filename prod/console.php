@@ -9,7 +9,6 @@ require_once("password.inc.php");
 
 require_once("internationalization.php");
 require('colorscheme.php');
-require_once("accountcheck.inc.php");
 require_once("startup.inc.php");
 
 $connecterror = "<div class='tilebutton' style='padding:20px'>Internet Connectivity Issue. Please retry.</div>";
