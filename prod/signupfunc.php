@@ -359,7 +359,7 @@ class SignUp
             $this->language = 'english';
         }
         
-        $this->roomcreator = 'N';
+        $this->roomcreator = 'Y';
         $this->broadcaster = 'N';
         $this->storeowner = 'N';
         /*
