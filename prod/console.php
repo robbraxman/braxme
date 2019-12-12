@@ -16,15 +16,6 @@ $connecterror = "<div class='tilebutton' style='padding:20px'>Internet Connectiv
 $uniqid = uniqid();
 
 
-$tester = 'N';
-//if($_SESSION['pid'] == 690001027 || $_SESSION['pid'] == 690034545 )
-if(
-    $_SESSION['pid'] == 690001027 ) 
-        //|| $_SESSION['pid'] == 690032821)
-{
-    $tester ='Y';
-}
-
 //Auto Launch Chat
 $initmodule = "";
 if($_SESSION['init']!=''){
@@ -687,25 +678,8 @@ try {
         }
 } catch(err) {}
 </script>
-<?php
-
-
-
-if( $tester == 'Y'){
-?>
 <script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console0.js?i=<?=$uniqid?>'></script>
 <script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console.js?i=<?=$uniqid?>'></script>
 <script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/notifywebtest.js?<?=$uniqid?>'></script>
 
-<?php
-
-} else {
-?>
-<script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console0-obf.js?i=<?=$uniqid?>'></script>
-<script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console-obf.js?i=<?=$uniqid?>'></script>
-<script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/notifywebtest.js'></script>
-
-<?php
-} 
-?>
 </html>

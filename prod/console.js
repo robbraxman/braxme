@@ -3522,14 +3522,14 @@ $(document).ready( function() {
         });
         $('body').on('keyup','.feedenter',function(e) {
             
-            if ((e.keyCode === 10 || e.keyCode === 13) && e.ctrlKey){
+            if ((e.keyCode === 10 || e.keyCode === 13) && !e.shiftKey){
                 $('#roompostenter').click();
                 return;
             }
         });
         $('body').on('keyup','.feedreplyenter',function(e) {
             
-            if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey){
+            if ((e.keyCode == 10 || e.keyCode == 13) && !e.shiftKey){
                 var shareid = $(this).data('shareid');
                 var reference = $(this).data('reference');
                 lastcommentid = $(this).closest('.roomcommentsarea').find('.roomcomment');
@@ -8652,7 +8652,7 @@ $(document).ready( function() {
             
             var fieldlen = $(this).val().length;
             
-            if ((e.keyCode === 10 || e.keyCode === 13) && e.ctrlKey){
+            if ((e.keyCode === 10 || e.keyCode === 13) && !e.shiftKey){
                 var streaming = $(this).data('streaming');
                 ToggleChatShow = false;
                 ToggleMembersShow=false;
