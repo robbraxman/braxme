@@ -13,3 +13,6 @@ The enterprise version has extra features that are not included
 here.
 
 Check the Wiki for more information. https://github.com/robbraxman/braxme/wiki
+
+To run this on Android or an Android Custom ROM, the you can download the APK directly here.
+https://opensource.brax.me/braxme.apk
