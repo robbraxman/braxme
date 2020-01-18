@@ -49,9 +49,45 @@ if(isset($_SESSION['superadmin']) && $_SESSION['superadmin']=='Y'){
  * cannot be accessed externally
  * 
  */
+
+    $_SESSION['database'] = "braxproduction";
+    $session_sqlurl = 'localhost';
+    $session_sqlusr = 'user';
+    $session_sqlpwd = 'password';
+    $_SESSION['sqlurl'] = 'localhost';
+    $_SESSION['sqlusr'] = 'user';
+    $_SESSION['sqlpwd'] = 'password';
+
+    $_SESSION['database4'] = "braxcrypt";
+    $session_sqlurl4 = 'localhost';
+    $session_sqlusr4 = 'user';
+    $session_sqlpwd4 = 'password';
+    $_SESSION['sqlurl4'] = 'localhost';
+    $_SESSION['sqlusr4'] = 'user';
+    $_SESSION['sqlpwd4'] = 'password';
+
+    $_SESSION['databaser'] = "braxproduction";
+    $session_sqlurlr = 'localhost';
+    $session_sqlusrr = 'user';
+    $session_sqlpwdr = 'password';
+    $_SESSION['sqlurlr'] = 'localhost';
+    $_SESSION['sqlusrr'] = 'user';
+    $_SESSION['sqlpwdr'] = 'password';
+
+
+
+    /* This section is what's used in a Live
+     * brax.me site. The login information
+     * is on a separate encrypted server
+     * 
+     * This is commented out so the credentials
+     * are noted above
+     
+    
     $credentials = RetrieveDatabaseKeysAll();
     //Do only once if not in SESSION VARS
     if($credentials!== false){
+        
         
 
         $_SESSION['database'] = "braxproduction";
@@ -79,18 +115,8 @@ if(isset($_SESSION['superadmin']) && $_SESSION['superadmin']=='Y'){
         $_SESSION['sqlpwdr'] = base64_decode($credentials->dbr['password']);
 
 
-        /* RSS not included in Open Source since it is a separate product */
-        /*
-        $_SESSION['database_news'] = "rss";
-        $session_sqlurl_news = $credentials->dbn['database'];
-        $session_sqlusr_news = $credentials->dbn['user'];
-        $session_sqlpwd_news = $credentials->dbn['password'];
-        $_SESSION['sqlurl_news'] = $credentials->dbn['database'];
-        $_SESSION['sqlusr_news'] = $credentials->dbn['user'];
-        $_SESSION['sqlpwd_news'] = base64_decode($credentials->dbn['password']);
-         * 
-         */
     }
+    */
 
     $_SESSION['servertimezone'] = "0"; //Pacific - GMT Offset
 
