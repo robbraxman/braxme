@@ -779,9 +779,35 @@ if($row['enterprise']=='Y' || $row['sponsor']!=='' ){
                 <input id=gift name=gift  type=checkbox value='Y'  style='position:relative;top:5px' /> Accept
 <?php
              }
+             
+if($row['member']!='Y'){
 ?>
-             
-             
+        
+        
+        <br><br>
+        <hr style="border-color:<?=$global_separator_color?>">
+        <div class=label></div>
+
+
+        <input id=terminateaccount name=terminateaccount title='Close Account' data-theme='c' type=checkbox value='Y'  style='position:relative;top:5px' /> 
+        <label for='terminateaccount'>Close Account?</label>
+        <br><span class="smalltext">Warning: You will lose your stored data!</span>
+        <br><br><br><br>
+        <br><br><br><br>
+        
+        
+        <p class='divbuttontext saveprofile pagetitle2a' style='background-color:<?=$global_titlebar_color?>;color:white;cursor:pointer' id='saveprofilebutton'><?=$menu_save?></p>
+        <br><br><br><br>
+        <div class=label><b>Account Number</b></div>
+        <span class='smalltext'><?=$providerid?></span>
+
+        <br><br><b>Current usage:</b> <br>Storage = <?=$filesize?> GB
+        <br>Bandwidth = <?=$bandwidth?> GB
+
+        
+<?php
+}
+?>             
              
 
 

@@ -645,6 +645,27 @@ function SetSaveStreamFilter( $fp ){
             return $site_key1;
         }
         
+        /* The actual live version of Brax.Me has a separate Key Server 
+         * operating like a Black Box which will supply a key for 
+         * encoding value. For testing just use a fixed key here so
+         * you don't need a Key Server
+         */
+        
+        $site_key1 = "A-Fake-Key-For-Testing";
+        $keyCache[$encoding]="$site_key1";
+        $keyQueryCount++;
+        //error_log("$encoding [$site_key1) $keyQueryCount");
+        return $site_key1;
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         //See if already in Cache
          
         
