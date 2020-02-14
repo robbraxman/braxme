@@ -27,6 +27,9 @@ function createSnsPlatformEndpoint( $iostoken, $androidtoken, $app )
             if($app == 'Brax.Me'){
                 $application = "arn:aws:sns:us-west-2:688683380103:app/GCM/BraxMe-Anroid-1.0";
             }
+            if($app == 'Powa'){
+                $application = "arn:aws:sns:us-west-2:688683380103:app/GCM/Powa-Android";
+            }
 //                'CustomUserData' => "$_SESSION[replyemail]",
             $result = $snsClient->createPlatformEndpoint(array(
                 'PlatformApplicationArn' => $application,
@@ -40,6 +43,9 @@ function createSnsPlatformEndpoint( $iostoken, $androidtoken, $app )
         {
             if($app == 'Brax.Me'){
                 $application = "arn:aws:sns:us-west-2:688683380103:app/APNS/Brax.Me-IOS";
+            }
+            if($app == 'Powa'){
+                $application = "arn:aws:sns:us-west-2:688683380103:app/APNS/Powa-IOS";
             }
             
             
@@ -349,6 +355,37 @@ function saveAWSObjectStreamEncrypted( $filename, $encoding, $chunksize, $target
 }
 
 
+function saveAWSObjectStream( $filename, $chunksize, $targetfilename )
+{
+    global $s3bucket;
+    global $s3Client;
+    
+    /*****
+     * 
+     *  NOT TESTED - Affects B/W Conversion in DocLIB. Will have to address later
+     * 
+     */
+    
+    try {
+        if ($stream = fopen("s3://$s3bucket/$filename", 'r')) {
+            $fp2 = fopen( $targetfilename, 'w' );
+            // While the stream is still open
+            $content = "";
+            while (!feof($stream)) {
+                // Read 1024 bytes from the stream
+                $content = fread($stream, $chunksize);
+                fwrite($fp2, $content, $chunksize);
+            }
+            // Be sure to close the stream resource when you're done with it
+            fclose($stream);
+            fclose($fp2);
+        }    
+    
+    } catch(Exception $e){
+        return  false;
+    }
+    return false;
+}
 
 
 function getAWSObjectUrl( $filename )

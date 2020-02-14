@@ -3522,13 +3522,14 @@ $(document).ready( function() {
         });
         $('body').on('keyup','.feedenter',function(e) {
             
-            if ((e.keyCode === 10 || e.keyCode === 13) && !e.shiftKey){
-                $('#roompostenter').click();
-                return;
-            }
+            //if ((e.keyCode === 10 || e.keyCode === 13) && !e.shiftKey){
+            //    $('#roompostenter').click();
+            //    return;
+            //}
         });
         $('body').on('keyup','.feedreplyenter',function(e) {
             
+            /*
             if ((e.keyCode == 10 || e.keyCode == 13) && !e.shiftKey){
                 var shareid = $(this).data('shareid');
                 var reference = $(this).data('reference');
@@ -3542,6 +3543,7 @@ $(document).ready( function() {
                 $('#roompostreplyenter').click();
                 return;
             }
+            */
         });
         
         $('body').on('click','.feedphotoshare', function()
@@ -9154,6 +9156,33 @@ $(document).ready( function() {
            $('.meetupenterpriselistarea').show();
            //$('.meetupconnectshow').hide();
         });
+        $('body').on('keyup','#meetuppublicfind',function(e) {
+            
+            if ((e.keyCode === 10 || e.keyCode === 13) && !e.shiftKey){
+                $("#meetuplistbutton1").click();
+            }
+        });        
+        $('body').on('keyup','#findchat',function(e) {
+            
+            if ((e.keyCode === 10 || e.keyCode === 13) && !e.shiftKey){
+                $("#selectchatlistbutton").click();
+            }
+        });        
+        $('body').on('click','#findchatbyname',function(e) {
+            $('#findchat').focus();
+            
+        });        
+        $('body').on('click','#findpeoplebyname',function(e) {
+            $('#meetuppublicfind').focus();
+            
+        });        
+        $('body').on('keyup','#filefiltername',function(e) {
+            if ((e.keyCode === 10 || e.keyCode === 13) && !e.shiftKey){
+                $("#refreshalbum").click();
+            }
+            
+        });        
+        
         $('body').on('click','.meetuplist', function()
         {
             

@@ -2176,7 +2176,7 @@ function RefreshButton( $filtername, $selectedfolder, $selectedfolderid, $roomfo
                         title='Find a File'
                     >
                 <span class='doclibsearcharea' style='display:none'>
-                    <input type='text' name='filefiltername' placeholder='Search All Folders' class='inputline mainfont dataentry filefiltername' size='20' style='color:$global_textcolor;max-width:200px' value='$filtername' />
+                    <input id='filefiltername' type='text' name='filefiltername' placeholder='Search All Folders' class='inputline mainfont dataentry filefiltername' size='20' style='color:$global_textcolor;max-width:200px' value='$filtername' />
 
                 </span>
              ";

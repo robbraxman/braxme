@@ -17,12 +17,11 @@ require_once("internationalization.php");
 
     $result = do_mysqli_query("1","select enterpriselist, partitioned from sponsor where sponsor='$_SESSION[sponsor]' ");
     $enterprise = $_SESSION['enterprise'];
-    $partitioned = "N";
-    $enterprise = "N";
-    //if($row = do_mysqli_fetch("1",$result)){
+    $partitioned = "";
+    if($row = do_mysqli_fetch("1",$result)){
         //$enterprise = $row['roomdiscovery'];
-    //    $partitioned = $row['partitioned'];
-    //}
+        $partitioned = $row['partitioned'];
+    }
 
     /*****************************
      * 
@@ -32,11 +31,11 @@ require_once("internationalization.php");
      */
     if($_SESSION['sponsor'] != '' && $partitioned=='Y'
         && $mode == ''){
-        //$mode = 'P6';
+        $mode = 'P6';
     }
     if($_SESSION['sponsor'] != '' && $enterprise=='N' && $mode == '' && $partitioned == 'Y'
         ){
-        //$mode = 'P5';
+        $mode = 'P5';
     }
     if($mode == '' ){
         $mode = 'P1';
@@ -432,12 +431,12 @@ require_once("internationalization.php");
                 <div class='pagetitle2' style='padding-left:10px;padding-right:10px;padding-top:0px;padding-bottom:5px;color:$global_textcolor'>
                     $menu_public
                     <br>
-                    <img class='icon30 showhidden' src='$iconsource_braxfind_common' title='Find Room' />
+                    <img id='findpeoplebyname' class='icon30 showhidden' src='$iconsource_braxfind_common' title='Find Room' />
                                 
                     <input class='showhiddenarea inputline dataentry mainfont meetuppublicfind' id='meetuppublicfind' name='meetuppublicfind' type='text' size=20 value=''              
                         placeholder='$menu_handle'
                         style='display:none;max-width:200px;background-color:transparent;padding-left:5px;;color:$global_textcolor'/>
-                        <img class='showhiddenarea icon25 meetuplist' data-mode='P1' src='$iconsource_braxarrowright_common' title='Start Search'
+                        <img id='meetuplistbutton1' class='showhiddenarea icon25 meetuplist' data-mode='P1' src='$iconsource_braxarrowright_common' title='Start Search'
                         style='display:none;top:8px' >
                 </div>
                 <br>
@@ -494,6 +493,17 @@ require_once("internationalization.php");
         
             
         $count = 0;
+        if($_SESSION['roomdiscovery']=='N' && $find == ''  ){
+            $list .= "<div class='meetupcontactlistarea pagetitle2a' style='color:$global_textcolor;padding:20px;max-width:200px'>
+                        <div class='circular3 gridnoborder' style=';overflow:hidden;margin:auto'>
+                            <img class='' src='../img/agent.jpg' style='width:100%;height:auto' />
+                        </div>
+                        <div class='tipbubble' style='color:black;background-color:white;padding:30px'>
+                            You are in a private space. The public list is not displayed.                        
+                        </div>
+                    </div>";
+            return $list;
+        } 
         $joined = "";
         while($row = do_mysqli_fetch("1",$result)){
             

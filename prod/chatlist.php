@@ -91,7 +91,7 @@ $time1 = microtime(true);
     
     $limit = "";
     if($_SESSION['superadmin']=='Y'){
-        $limit = "limit 100";
+        $limit = "limit 50";
     }
     
    $result = do_mysqli_query("1",
@@ -227,11 +227,11 @@ $time2 = microtime(true);
                     <span class='showhiddenarea' style='display:none'>
                         <br><br>
                     </span>
-                    <img class='icon30 showhidden' src='$iconsource_braxfind_common' title='Find Existing Chat' style='' />
+                    <img id='findchatbyname' class='icon30 showhidden' src='$iconsource_braxfind_common' title='Find Existing Chat' style='' />
                     <span class='showhiddenarea' style='display:none'>
                         <input class='inputline dataentry mainfont' id='findchat' placeholder='$menu_name' name='findchat' type='text' size=20 value=''              
                             style='width:220px;padding-left:10px;;margin-bottom:10px;color:$global_textcolor'/>
-                        <div class='mainfont selectchatlist' style='white-space:nowrap;display:inline;cursor:pointer;color:black' data-mode='F'>
+                        <div id='selectchatlistbutton' class='mainfont selectchatlist' style='white-space:nowrap;display:inline;cursor:pointer;color:black' data-mode='F'>
                             <img class='icon25'   src='$iconsource_braxarrowright_common' 
                             style='top:3px' >
                         </div>
