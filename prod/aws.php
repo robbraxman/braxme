@@ -27,9 +27,6 @@ function createSnsPlatformEndpoint( $iostoken, $androidtoken, $app )
             if($app == 'Brax.Me'){
                 $application = "arn:aws:sns:us-west-2:688683380103:app/GCM/BraxMe-Anroid-1.0";
             }
-            if($app == 'Powa'){
-                $application = "arn:aws:sns:us-west-2:688683380103:app/GCM/Powa-Android";
-            }
 //                'CustomUserData' => "$_SESSION[replyemail]",
             $result = $snsClient->createPlatformEndpoint(array(
                 'PlatformApplicationArn' => $application,
@@ -43,9 +40,6 @@ function createSnsPlatformEndpoint( $iostoken, $androidtoken, $app )
         {
             if($app == 'Brax.Me'){
                 $application = "arn:aws:sns:us-west-2:688683380103:app/APNS/Brax.Me-IOS";
-            }
-            if($app == 'Powa'){
-                $application = "arn:aws:sns:us-west-2:688683380103:app/APNS/Powa-IOS";
             }
             
             

@@ -139,60 +139,6 @@ require_once("config.php");
         
         
     }
-    function PowaUpgradeAd()
-    {
-        global $appname;
-        global $customsite;
-        global $menu_upgrade;
-        global $enterpriseapp;
-        global $backgroundcolor;
-        global $global_textcolor;
-        global $global_separator_color;
-        global $global_titlebar_color;
-        global $rootserver;
-        global $installfolder;
-        
-        if($_SESSION['handle']=='@appdemo'){
-            return "";
-        }
-        
-        if( $_SESSION['enterprise']=='Y' ){
-            return "";
-        }
-
-        
-        $ad = "
-                    <div class='pagetitle3' 
-                        style='padding:20px;text-align:center;margin:auto;max-width:260px;width:80%;color:$global_textcolor;background-color:transparent'>
-                        <div class='circular3' style=';overflow:hidden;margin:auto'>
-                            <img class='' src='../img/agent.jpg' style='width:100%;height:auto' />
-                        </div>
-                        <div class='tipbubble pagetitle2a' style='padding:30px;color:black;background-color:whitesmoke'>
-                            <b>$menu_upgrade</b>!
-                            <br><br>
-                            Apply a Premium Coupon.
-                            <br><br>
-                            <div class='userstore pagetitle3 tapped2 divbuttontilebar2 ' id=''  data-roomid='' data-owner='0'
-                                style='background-color:$global_titlebar_color;color:white'>
-                                                        Website Bar
-                            </div>
-                            <!--
-                            <a href='$rootserver/$installfolder/host.php?f=_store&h=app&p=$_SESSION[pid]&version=$_SESSION[version]' target=_blank >
-                            <div class='pagetitle3 divbuttontilebar2 tapped2' id='' 
-                                style='background-color:$global_titlebar_color;color:white'>
-                                                        Website Store
-                            </div>
-                            </a>
-                            -->
-                        </div>
-                        <br>
-                    </div>
-                    <hr style='border:1px solid  $global_separator_color'>
-                    ";
-        return $ad;
-        
-        
-    }
     function BytzVPNAd()
     {
         global $customsite;

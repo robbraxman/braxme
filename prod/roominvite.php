@@ -280,9 +280,6 @@ $titletextcolor = $global_textcolor;
 $bottomcolor = $global_bottombar_color;
 $deviceid = uniqid();
 $ico = "https://brax.me/img/logo-b2a.ico";
-if($customsite){
-    $ico = "https://powa.bytz.io/img/logo-powa.ico";
-}
 ?>
 <!DOCTYPE html>
 <html>

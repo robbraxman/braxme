@@ -324,9 +324,6 @@ if( $_SESSION['superadmin']!='Y' && $_SESSION['superadmin']!='A')
         $enterpriseflag = "";
     }
     $app = '';
-    if($row['appname']=='Powa'){
-        $app = 'Powa';
-    }
         
         $rownum=$rownum+1;
         $noroom = '';
