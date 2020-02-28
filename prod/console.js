@@ -3857,6 +3857,7 @@ $(document).ready( function() {
                 var owner = $(this).data('owner');
                 var mode = $(this).data('mode');
                 var page = $(this).data('page');
+                var category = $(this).data('category');
                 
                 var roomfind = '';
                 if(mode === 'F'){
@@ -3878,6 +3879,7 @@ $(document).ready( function() {
                         'owner' :owner,
                         'mode': mode,
                         'page' : page,
+                        'category' : category,
                         'find' : roomfind
                      }
 
@@ -5207,6 +5209,7 @@ $(document).ready( function() {
                 
                 var productname = $('#productname').val();
                 var productdesc = $('#productdesc').val();
+                var productcategory = $('#productcategory').val();
                 var productphoto = $('#productphoto').val();
                 var productprice = $('#productprice').val();
                 var productshipping = $('#productshipping').val();
@@ -5246,6 +5249,7 @@ $(document).ready( function() {
                                 'productweight' : productweight,
                                 'productsubscription' : productsubscription,
                                 'productsubscriptionperiod' : productsubscriptionperiod,
+                                'productcategory' : productcategory,
                                 'filter' : filter
 
                             }, function(html, status){
@@ -5280,6 +5284,7 @@ $(document).ready( function() {
                         'productoption1' : productoption1,
                         'productoption2' : productoption2,
                         'productstatus' : productstatus,
+                        'productcategory' : productcategory,
                         'filter' : filter
                 
                 }, function(html, status){

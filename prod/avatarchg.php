@@ -120,7 +120,7 @@ if($_SESSION['language']=='english'){
         
             <input class='publish' name='publish' value='Y' <?=$publishchecked?> type='checkbox' style=';position:relative;top:5px' /> <?=$menu_public?>
             <br><br>
-            <textarea  class='mainfont publicbio' id=publicbio name='publicbio' placeholder="<?=$menu_biography?>" style='max-width:500px;width:90%;height:200px'><?=$bio?></textarea>
+            <textarea  class='mainfont publicbio' id=publicbio name='publicbio' placeholder="<?=$menu_biographyprompt?>" style='max-width:500px;width:90%;height:200px'><?=$bio?></textarea>
             <br><br>
 
             <div class="divbutton3 divbutton3_unsel savebio" id="upload"><?=$menu_save?></div>

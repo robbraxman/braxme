@@ -238,7 +238,7 @@ function ShowMyPhotos($providerid, $watcherid, $caller)
     $result = do_mysqli_query("1","select * from photolibshare where providerid = $providerid  limit 1");
     if($row = do_mysqli_fetch("1",$result)){
         return "
-                            <div class='photolibshare' data-userid='$providerid' style='width:250px;cursor:pointer;padding-left:10px;background-color:$global_titlebar_color;color:white'>
+                            <div class='photolibshare rounded' data-userid='$providerid' style='width:250px;cursor:pointer;padding-left:10px;background-color:$global_titlebar_color;color:white'>
                                 <img class='icon30' src='../img/braxphoto-white.png'>
                                 $menu_mysharedphotos
                             </div>  
@@ -944,7 +944,7 @@ function ShowMyStore($owner)
     
     //if($owner == $_SESSION['pid'] || $_SESSION['superadmin']=='Y'){
         return "
-                    <div class='userstore' data-roomid='$roomid' data-owner='$owner' style='width:250px;cursor:pointer;padding-left:10px;background-color:$global_store_color;color:white'>
+                    <div class='userstore rounded' data-roomid='$roomid' data-owner='$owner' style='width:250px;cursor:pointer;padding-left:10px;background-color:$global_store_color;color:white'>
                         <img class='icon30' src='../img/store-128.png'>
                         Visit My Online Store 
                     </div>  
@@ -955,7 +955,7 @@ function ShowMyStore($owner)
     
     return "
             <a href='$rootserver/$installfolder/host.php?f=_store&h=$handle&p=$owner&version=$_SESSION[version]' target=_blank >
-                <div class='' data-roomid='$roomid' data-owner='$owner' style='width:250px;cursor:pointer;padding-left:10px;background-color:$global_store_color;color:white'>
+                <div class='rounded' data-roomid='$roomid' data-owner='$owner' style='width:250px;cursor:pointer;padding-left:10px;background-color:$global_store_color;color:white'>
                     <img class='icon30' src='../img/store-128.png'>
                     Visit My Online Store 
                 </div>  

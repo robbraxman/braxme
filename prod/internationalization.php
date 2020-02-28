@@ -86,9 +86,10 @@ if($_SESSION['language']==''){
     $menu_aboutme = "About Me";
     $menu_managesocialvision = "Manage $enterpriseapp";
     $menu_upgrade = "Upgrade to $enterpriseapp";
-    $menu_manageupgrade = "$appname Store";
+    $menu_manageupgrade = "$appname Services Store";
     $menu_setprofilephoto = "Set a Profile Photo";    
     $menu_biography = "Profile";
+    $menu_biographyprompt = "Brief Biography";
     $menu_refresh = "Refresh";
     $menu_title = 'Title';
     $menu_newtopic = "New Topic, comment, link, photos, video";
@@ -233,6 +234,7 @@ if($_SESSION['language']=='spanish'){
     $menu_upgrade = "Actualice Mi Cuenta";
     $menu_setprofilephoto = "Establecer una Foto de Perfil";    
     $menu_biography = "Biografia";
+    $menu_biographyprompt = "Biografia";
     $menu_refresh = "Refresca";
     $menu_title = 'Titulo';
     $menu_newtopic = "Nuevo Tema - commentario, enlace, foto, video";
@@ -361,6 +363,7 @@ if($_SESSION['language']=='danish'){
     $menu_upgrade = "Opgrader Min Konto";
     $menu_setprofilephoto = "Indstil et Profilbillede";    
     $menu_biography = "Biografi";
+    $menu_biographyprompt = "Biografi";
     $menu_refresh = "Opdater";
     $menu_title = 'Titel';
     $menu_newtopic = "Nyt emne - kommentar, link, video, billede";
@@ -488,6 +491,7 @@ if($_SESSION['language']=='russian'){
     $menu_upgrade = "обновить аккаунт";
     $menu_setprofilephoto = "установить фотографию профиля";    
     $menu_biography = "биография";
+    $menu_biographyprompt = "биография";
     $menu_refresh = "обновление";
     $menu_title = 'название';
     $menu_newtopic = "Новая тема, комментарий, ссылка, фотографии, видео";
@@ -609,6 +613,7 @@ if($_SESSION['language']=='dutch'){
     $menu_upgrade = "Upgrade Account to $enterpriseapp";
     $menu_setprofilephoto = "Set a Profile Photo";    
     $menu_biography = "Biografie";
+    $menu_biographyprompt = "Biografie";
     $menu_refresh = "Verversen";
     $menu_title = 'Titel';
     $menu_newtopic = "Nieuw onderwerp, commentaar, link, fotos, video";
@@ -735,6 +740,7 @@ if($_SESSION['language']=='french'){
     $menu_upgrade = "Améliorer le Compte";
     $menu_setprofilephoto = "Définir une Photo de Profil";    
     $menu_biography = "Biographie";
+    $menu_biographyprompt = "Biographie";
     $menu_refresh = "Rafraîchir";
     $menu_title = 'Titre';
     $menu_newtopic = "Nouveau sujet - commentaire, lien, photos, vidéo";
@@ -854,6 +860,7 @@ if($_SESSION['language']=='korean'){
     $menu_upgrade = "업그레이드 계정"; 
     $menu_setprofilephoto = "프로필 사진 설정"; 
     $menu_biography = "전기문학";
+    $menu_biographyprompt = "전기문학";
     $menu_refresh = "새롭게 하다";
     $menu_title = '표제';
     $menu_newtopic = "새로운 화제, 연결, 사진, 영상";
@@ -979,6 +986,7 @@ if($_SESSION['language']=='german'){
     $menu_upgrade = "Konto Aktualisieren";
     $menu_setprofilephoto = "Legen Sie ein Profilfoto Fest";    
     $menu_biography = "Biografie";
+    $menu_biographyprompt = "Biografie";
     $menu_refresh = "Aktualisieren";
     $menu_title = 'Titel';
     $menu_newtopic = "Neues Thema, Kommentar, Link, Fotos, Video";
@@ -1105,6 +1113,7 @@ if($_SESSION['language']=='portuguese'){
     $menu_upgrade = "Atualizar conta";
     $menu_setprofilephoto = "Definir foto do perfil";    
     $menu_biography = "Biografia";
+    $menu_biographyprompt = "Biografia";
     $menu_refresh = "Refresca";
     $menu_title = 'Título';
     $menu_newtopic = "Novo tópico, comentários, fotos, links, arquivos";

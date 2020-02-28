@@ -685,9 +685,12 @@ function TopBarButtons($readonly, $memberinfo, $providerid, $roomid, $showmember
     
     return $topbar;
 }
-function BackAction($caller, $readonly )
+function BackAction($caller, $readonly, $profileflag )
 {
     $backto = "roomselect";
+    if($profileflag=='Y'){
+        $backto = "tilebutton";
+    }
     
     if($readonly == 'Y'){
         $backto = "tilebutton";
@@ -750,7 +753,7 @@ function TopBar( $readonly, $caller, $owner, $profileflag, $gotohome )
     if($gotohome=='Y'){
         $readonly = "Y";
     }
-    $backto = BackAction($caller, $readonly );
+    $backto = BackAction($caller, $readonly, $profileflag );
     $mode = 'LIVE';
     if($backto == 'roomselect'){
         $mode = '';
@@ -758,10 +761,12 @@ function TopBar( $readonly, $caller, $owner, $profileflag, $gotohome )
     
     $topbar = "
         <span class='roomcontent'>
-            <div class='gridnoborder' 
-                style='background-color:$global_titlebar_color;color:white;padding-left:20px;padding-right:20px;padding-bottom:3px;margin:0;' >
-                <img class='icon20 $backto' Title='Back to Home' src='../img/Arrow-Left-in-Circle-White_120px.png' 
-                    style='' data-providerid='$owner' data-caller='$caller' data-roomid='$caller' data-mode='$mode' />
+            <div class='gridnoborder $backto' 
+                data-providerid='$owner' data-caller='$caller' data-roomid='$caller' data-mode='$mode'
+                style='background-color:$global_titlebar_color;color:white;padding-left:20px;padding-right:20px;padding-bottom:3px;margin:0;cursor:pointer' >
+                <img class='icon20' Title='Back to Home' src='../img/Arrow-Left-in-Circle-White_120px.png' 
+                    style='' 
+                    />
                 &nbsp;
                 <span style='opacity:.5'>
                 $icon_braxroom2
