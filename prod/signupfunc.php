@@ -96,6 +96,7 @@ class SignUp
     var $broadcaster;
     var $store;
     var $web;
+    var $hardenter;
     
     
     function IPHashCheck($timezone, $deviceid, $lastuser,$signupcookie, $innerwidth, $innerheight)
@@ -390,6 +391,7 @@ class SignUp
         //Hardcode for now
         $this->loginid = 'admin';
         $this->roomdiscovery = 'Y';
+        $this->hardenter = '';
 
         //allow & in names after purify
         $this->providername = str_replace("&amp;","&",$this->providername);
@@ -501,6 +503,12 @@ class SignUp
             $this->web = 'Y';
         }
         
+        //Errorcleanup
+        if($this->roomhandle == '#000000000' ||
+           $this->roomhandle == '#undefined' ){
+            $this->roomhandle = '';
+        }
+        
         $result = do_mysqli_query("1", 
             "insert into provider 
             ( newbie, providerid, createdate, providername, name2, 
@@ -513,7 +521,7 @@ class SignUp
              allowrandomkey, cookies_recipient, cookies_sender, allowkeydownload, 
              serverhost, allowtexting, msglifespan, sponsor, roomdiscovery, member, eowner, sponsorlist,
              colorscheme, language, joinedvia, appname, iphash, iphash2, timezone, ipsource, trackerid,
-             roomcreator, broadcaster, web, store
+             roomcreator, broadcaster, web, store, hardenter
              ) values (
               'Y',
               $this->providerid, now(), '$this->providername', '$this->name2', 
@@ -527,7 +535,7 @@ class SignUp
               '$this->serverhost',  '$this->allowtexting', $this->msglifespan,
               '$this->sponsor', '$this->roomdiscovery', '$this->onetimeflag', $this->eowner, '$this->sponsorlist',
               'std', '$this->language', '$this->roomhandle','$appname','$this->iphash', '$this->iphash2', '$this->timezone', '$this->ipsource',
-              '$this->trackerid','$this->roomcreator','$this->broadcaster', '$this->web', '$this->store'
+              '$this->trackerid','$this->roomcreator','$this->broadcaster', '$this->web', '$this->store', $this->hardenter
             )"
         );
         if(!$result){
@@ -658,7 +666,7 @@ class SignUp
             $enterprise, $industry, $companyname, $enable_email, 
             $notifications, $notificationflags,
             $publish, $publishprofile, $roomdiscovery, $streamingaccount, $welcome, $sponsorlist,
-            $inactivitytimeout, $pin, $colorscheme, $gift, $wallpaper )
+            $inactivitytimeout, $pin, $colorscheme, $gift, $wallpaper, $hardenter )
     {
         $result = do_mysqli_query("1","
             select handle, replyemail, verified from provider where providerid = $providerid
@@ -783,6 +791,10 @@ class SignUp
         }
         $this->gift = $gift;
         $this->wallpaper = $wallpaper;
+        if($hardenter=='Y'){
+            $hardenter = '';
+        }
+        $this->hardenter = $hardenter;
         $this->IsSponsoredEdit();
         
         if( !$this->ErrorCheck()){
@@ -811,7 +823,7 @@ class SignUp
           " inactivitytimeout=$this->inactivitytimeout, ".
           " sponsor='$this->sponsor', gift='$this->gift',  ".
           " publish='$this->publish', publishprofile='$this->publishprofile', roomdiscovery='$this->roomdiscovery',  ".      
-          " streamingaccount='$this->streamingaccount', sponsorlist='$this->sponsorlist' ".
+          " streamingaccount='$this->streamingaccount', sponsorlist='$this->sponsorlist', hardenter='$this->hardenter' ".
           " where providerid=$this->providerid "
           );
         

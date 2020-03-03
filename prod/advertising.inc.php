@@ -34,7 +34,7 @@ require_once("config.php");
                         <div class='tipbubble pagetitle2a' style='padding:30px;color:black;background-color:whitesmoke'>
                             <b>Upgrade your Socialvision</b>!
                             <br><br>
-                            Create your own communities, broadcast, multicast, create rooms, websites and your own store in minutes!
+                            Create your own communities, broadcast, multicast, create blogs, websites and your own store in minutes!
                             <br><br>
                             FREE trial.
                             <br><br>

@@ -9,12 +9,22 @@ require_once("password.inc.php");
 
 require_once("internationalization.php");
 require('colorscheme.php');
+require_once("accountcheck.inc.php");
 require_once("startup.inc.php");
 
-$connecterror = "<div class='tilebutton' style='padding:20px'>Internet Connectivity Issue. Please retry.</div>";
+$connecterror = "<div class='tilebutton restart' style='cursor:pointer;padding:20px;color:black;background:white'><b>Internet Connectivity Issue. Please click here to reload.</b></div>";
 
 $uniqid = uniqid();
 
+
+$tester = 'N';
+//if($_SESSION['pid'] == 690001027 || $_SESSION['pid'] == 690034545 )
+if(
+    $_SESSION['pid'] == 690001027 ) 
+        //|| $_SESSION['pid'] == 690032821)
+{
+    $tester ='Y';
+}
 
 //Auto Launch Chat
 $initmodule = "";
@@ -133,15 +143,15 @@ if($_SESSION['enterprise']=='Y'){
                              style=";top:6px;;cursor:pointer;opacity:0.0"  title="Main Menu" />
                     </div>
                     <div class='opensidemenu menubutton formobile' 
-                        style='display:inline;float:right;cursor:pointer;padding-right:20px;padding-left:5px;padding-bottom:0px;'>
+                        style='display:inline;float:right;cursor:pointer;padding-right:20px;padding-left:20px;padding-bottom:0px;'>
                         <?=$beacon?>
                         <img class='tip1 icon15' src='../img/brax-menu-128.png' 
-                             style=";top:10px;;cursor:pointer;"  title="Main Menu" />
+                             style=";top:10px;cursor:pointer;"  title="Main Menu" />
                     </div>
                     <div class='camera formobile tapped menubutton' 
-                         style='display:inline;float:right;cursor:pointer;padding-right:8px;padding-left:5px;padding-bottom:0px;margin-right:20px' data-chatid=''>
+                         style='display:inline;float:right;cursor:pointer;padding-right:8px;padding-left:5px;padding-bottom:0px;margin-right:10px' data-chatid=''>
                         <img class='icon20' src='../img/camera-white-128.png' 
-                             style=";top:8px;;cursor:pointer;" title="Camera" />
+                             style=";top:11px;;cursor:pointer;" title="Camera" />
                     </div>
                 </div>
                 <div class='tileview gridnoborder' style='display:none;background-color:transparent;overflow-x:hidden;width:100%'>
@@ -315,6 +325,7 @@ if($_SESSION['enterprise']=='Y'){
     <div id=trigger_members class='mainbutton togglememberson' data-userid=''  style='display:none'></div>
     <div id=trigger_uploadavatar class='mainbutton uploadavatar'   style='display:none'></div>
     <div id=trigger_iotview class='mainbutton homeiot'   style='display:none'></div>
+    <div id=trigger_restart class='mainbutton restart'   style='display:none'></div>
     
     
     <div class='roommanagediv' style='display:none'><?=$roommanagemenu?></div>
@@ -663,6 +674,7 @@ var pin = "<?=$_SESSION['pin'];?>";
 var pinlock = "<?=$_SESSION['pinlock'];?>";
 var livesupport = "<?=$_SESSION['livesupport']?>";
 var mobileversion = "<?=$_SESSION['version']?>";
+var hardenter = "<?=$_SESSION['hardenter']?>";
 var startupphp = "<?=$startupphp?>";
 var ConnectError = "<?=$connecterror?>";
 try {
@@ -678,8 +690,30 @@ try {
         }
 } catch(err) {}
 </script>
+<?php
+
+
+
+if( $tester == 'Y'){
+?>
 <script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console0.js?i=<?=$uniqid?>'></script>
 <script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console.js?i=<?=$uniqid?>'></script>
 <script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/notifywebtest.js?<?=$uniqid?>'></script>
 
+<?php
+
+} else {
+?>
+<script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console0.js?i=<?=$uniqid?>'></script>
+<script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console.js?i=<?=$uniqid?>'></script>
+<script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/notifywebtest.js?<?=$uniqid?>'></script>
+
+<?php
+/*
+<script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console0-obf.js?i=<?=$uniqid?>'></script>
+<script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console-obf.js?i=<?=$uniqid?>'></script>
+<script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/notifywebtest.js'></script>
+*/
+} 
+?>
 </html>

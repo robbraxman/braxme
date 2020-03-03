@@ -236,6 +236,24 @@ require_once 'authenticator/GoogleAuthenticator.php';
             }
             InitializeAccountSessionVars($providerid, $loginid);
 
+            //Cross Site Detection
+            /*
+            if( $_SESSION['remote_addr'] != $_SERVER['REMOTE_ADDR']){
+                echo "";
+                echo "<div class='pagetitle2a' style='padding:20px;max-width:500px'>
+                        <div class='pagetitle'><b>Possible Cross Site Request Forgery</b></div><br>                 
+                        We detected a change in your IP Address. This may be due to something
+                        as simple as switching your VPN on and off. But to prevent Cross Site 
+                        Request Forgery (CSRF), we request that you click on restart.
+                        <br><br><br>
+                        <a href='$rootserver/l.php' style='text-decoration:none'><div class='divbuttontext'>Restart</div></a> 
+                      </div>
+                     ";
+
+                exit();
+
+            }
+            */
 
         }
 
@@ -665,7 +683,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
                  where imap.providerid = provider.providerid ) as emailcount,
                ( select count(*) from sponsor 
                  where sponsor.creator = provider.providerid ) as sponsorcount,
-               newbie, joinedvia, provider.allowiot
+               newbie, joinedvia, provider.allowiot, provider.hardenter
                from provider 
                left join timeout on provider.providerid = timeout.providerid
                where provider.providerid = $providerid and provider.active='Y' "
@@ -713,6 +731,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
             $_SESSION['daysactive'] = $row['daysactive'];
             $_SESSION['sponsorcount'] = intval($row['sponsorcount']);
             $_SESSION['allowiot'] = $row['allowiot'];
+            $_SESSION['hardenter'] = $row['hardenter'];
             if($row['age']=='') {
                 $row['age']='0';
             }

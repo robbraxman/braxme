@@ -394,6 +394,35 @@ $(document).ready( function()
         $bandwidth = $row3['bandwidth'];
     }
 
+    $bytzvpn = '';
+    //BYTZ VPN Subscription info
+    $result3 = do_mysqli_query("1"," 
+        select username, password, datediff( date_add(startdate, interval 1 year), now() ) as expiredays, ip 
+        from bytzvpn where providerid = $providerid and status='Y' 
+        order by startdate desc limit 1
+        ");
+    if($row3 = do_mysqli_fetch("3",$result3)){
+        $bytzvpnusername= $row3['username'];
+        $bytzvpnpassword = $row3['password'];
+        $bytzvpnexpiredays = $row3['expiredays'];
+        $tmp = explode('/',$row3['ip']);
+        $bytzvpnip = $tmp[0];   
+        if($bytzvpnip!==''){
+            $bytzbraxwifi = "BraxWifi Local IP Address: $bytzvpnip";
+        }
+
+        $bytzvpn = "$global_icon_check BytzVPN expires in $bytzvpnexpiredays days. 
+            <span class='showhidden' style='cursor:pointer;color:$global_activetextcolor'>Show VPN Credentials</span>  
+            <div class='pagetitle2a showhiddenarea' style='display:none'>
+                <br>
+                Username: $bytzvpnusername<br>
+                Password: $bytzvpnpassword<br>
+                Private Key Password: whatthezuck<br>
+                $bytzbraxwifi
+            </div>
+            <br><br>";
+    }
+
     
     $result = do_mysqli_query("1","
             select auth_hash from staff where loginid = '$_SESSION[loginid]' and providerid = $providerid 
@@ -425,7 +454,7 @@ $(document).ready( function()
             "defaultsmtp, provider.publish, provider.publishprofile, provider.gift, ".
             "(select sum(tokens) from tokens where tokens.providerid = provider.providerid and dc='C') as tokenspaid, " .
             "(select sum(tokens) from tokens where tokens.providerid = provider.providerid and dc='D' and tokens.method!='TEST') as tokensbought, " .
-            "store, web, roomcreator, broadcaster, allowiot ".
+            "store, web, roomcreator, broadcaster, allowiot, hardenter ".
             "from provider where providerid=$providerid order by providerid desc ");
 
   
@@ -437,6 +466,15 @@ $(document).ready( function()
     
     //Compute Level
     $planlevel = '';
+    if($row['roomcreator']=='Y' ){
+        $planlevel = "You're on $enterpriseapp Level 1";
+    }
+    if($row['roomcreator']=='Y' && $row['web']=='Y' && $row['store']=='Y'){
+        $planlevel = "You're on $enterpriseapp Level 3";
+    }
+    if($row['roomcreator']=='Y' && $row['web']=='Y' && $row['store']=='N'){
+        $planlevel = "You're on $enterpriseapp Level 2";
+    }
     
     
     $row['welcome'] = str_replace("<br>","",$row['welcome']);
@@ -461,6 +499,24 @@ $(document).ready( function()
         $eowner_readonly = "readonly=readonly";
     }
     
+    $temp = explode("/",$row['streamingaccount']);
+    $streamchannel = "";
+    $streamplatform = $temp[0];
+    if(isset($temp[1])){
+        $streamchannel = $temp[1];
+    }
+    
+    $streamplatformoptions = "
+        Live Platform<br>
+        <select name='streamplatform' class='streamplatform dataentry' placeholder='Platform' style='width:100px;'>
+            <option value='$streamplatform' selected='selected'>$streamplatform</option>
+            <option value='twitch'>Twitch</option>
+            <option value='youtube'>Youtube</option>
+            <option value='youtubevideo'>Youtubevideo</option>
+            <option value='braxlive'>BraxLive</option>
+            <option value=''>None</option>
+        </select>
+        ";
     
     $verifiedtext = "";
     if( $auth_hash=='' && (strstr($row['replyemail'],".account@brax.me")!==false ||
@@ -520,6 +576,25 @@ $(document).ready( function()
             </div>
              ";
     }
+    if(intval($expiredays)>0){
+        $subscriptiontext = "
+            <br>
+            <div class='pagetitle3' style='color:black;max-width:500px'>
+            $global_icon_check
+            <b>$planlevel</b>
+            </div>
+            <br>
+            <div class='pagetitle3' style='color:black;max-width:500px'>
+            $global_icon_check
+            <b>Your subscription is active for $expiredays days (expires $expiredate) $bandwidthplan</b>.
+            </div>
+            <br>
+            $global_icon_check
+            <b>Your current storage used is $filesize GB, Bandwidth used this period is $bandwidth GB
+            <br>
+             ";
+        
+    }
     $tokenbalance = intval($row['tokensbought'])-intval($row['tokenspaid']);
     
     $tokenstext = "";
@@ -548,6 +623,10 @@ $(document).ready( function()
     
     
     
+    $sponsorheading = "Your Sponsor";
+    if($_SESSION['enterprise']=='Y'){
+        $sponsorheading = "My Sponsor Code";
+    }
     
     if($row['wallpaper']==''){
         $row['wallpaper']='default';
@@ -570,6 +649,7 @@ $(document).ready( function()
           style='width:auto;max-width:100px;padding:0;margin:0' src='<?=$_SESSION['avatarurl']?>' />
         <br>
         <br>
+        <?=$bytzvpn?>
         <?=$verifiedtext?>
         <?=$subscriptiontext?>
         <?=$tokenstext?>
@@ -629,10 +709,20 @@ if($_SESSION['enterprise']=='Y' || $_SESSION['superadmin']=='Y' ){
         <input id=replysms name=replysms class='replysms dataentry inputfocus' type=text placeholder='Texting Phone Number' value='<?php echo "$sms"; ?>'  size=30 />
         <br>
         <span class='smalltext'>+Country Code required if Non-US</span>
-        <br>
+        <br><br><br>
+<?php 
 
+            echo "<label for='hardenter'>ENTER will SEND in Chat</label><br>";
+            if( $row['hardenter'] == '' || $row['hardenter'] == 'Y' ) {       
+                
+                echo "<input id=hardentergroup name=hardenter  title='ENTER will SEND in Chat' checked='checked'  type=radio value='Y' style='position:relative;top:7px'/> Enable&nbsp;&nbsp;&nbsp;";
+                echo "<input id=hardentergroup name=hardenter  title='ENTER will SEND in Chat' type=radio value='N' style='position:relative;top:7px'/> Disable";
+            } else {
+                echo "<input id=hardentergroup name=hardenter  title='ENTER will SEND in Chat' type=radio value='Y' style='position:relative;top:7px'/> Enable&nbsp;&nbsp;&nbsp;";
+                echo "<input id=hardentergroup name=hardenter  title='ENTER will SEND in Chat' checked='checked' type=radio value='N' style='position:relative;top:7px'/> Disable";
+            }
+?>        
 
-        <br>
         <br><br><br>
         <hr style='border-color:<?=$global_separator_color?>'>
         <div class='pagetitle2' style='font-weight:bold'><?=$menu_mynotifications?></div>
@@ -764,6 +854,56 @@ if($row['enterprise']=='Y' || $row['sponsor']!=='' ){
         
 <?php
 }
+if($row['enterprise']=='Y' ){
+    
+?>
+            
+        <div class=label></div>
+
+        <label>Display my name in Enterprise List?</label>&nbsp
+<?php 
+
+            if( $row['sponsorlist']=='Y'){        
+                echo "<input id=sponsorlist name=sponsorlist data-theme='c' type=checkbox value='Y' checked=checked style='position:relative;top:5px' /> Listed";
+            } else {
+                echo "<input id=sponsorlist name=sponsorlist data-theme='c' type=checkbox value='Y'  style='position:relative;top:5px'/> Listed";
+            }
+?>
+        <br><br>
+<?php
+} 
+
+
+if($row['sponsor']!='' || $row['enterprise']=='Y'){ //&& $row['enterprisesponsor']=='Yx' ){
+?>
+        
+        <div class=label></div>
+        <br>
+
+
+        <label for='publish'>View Public Social Media Space in <?=$appname?>?</label>
+        <br>
+<?php
+            if( $row['roomdiscovery']=='Y' || $row['roomdiscovery']=='' ){        
+?>        
+                <input id=roomdiscovery name=roomdiscovery  type=checkbox value='Y' checked='checked' style='position:relative;top:5px' /> Enable Social Media
+<?php
+            } else {
+?>        
+                <input id=roomdiscovery name=roomdiscovery  type=checkbox value='Y'  style='position:relative;top:5px' />  Enable Social Media
+<?php
+             }
+?>
+        <div class='smalltext' style='width:300px'>
+            <?=$enterpriseapp?> accounts and their members are in a partitioned space.
+            You can opt to open yourself to all of <?=$appname?> by enabling Social Media.
+        </div>
+<?php
+} else {
+?>
+        <input id=roomdiscovery name=roomdiscovery  type=hidden value='<?=$row['roomdiscovery']?>' />  
+<?php    
+}
 ?>
                 
                 <br><br>
@@ -779,7 +919,27 @@ if($row['enterprise']=='Y' || $row['sponsor']!=='' ){
                 <input id=gift name=gift  type=checkbox value='Y'  style='position:relative;top:5px' /> Accept
 <?php
              }
-             
+
+
+
+if( $_SESSION['superadmin']=='Y'){
+
+?>
+
+        <br><br><hr style='border-color:<?=$global_separator_color?>'>
+        <br><br>
+        <div class=label>Admin Only - Industry Feature</div>
+        <input id=industry class='industry dataentry inputfocus' name=industry type=text placeholder='Industry Code' value='<?php echo "$row[industry]"; ?>' size=30 />
+        
+        
+<?php
+} else {
+?>
+        <input id=industry class='industry dataentry inputfocus' name=industry type=hidden value='<?php echo "$row[industry]"; ?>' size=30 />
+        
+<?php
+}
+
 if($row['member']!='Y'){
 ?>
         
@@ -807,10 +967,7 @@ if($row['member']!='Y'){
         
 <?php
 }
-?>             
-             
-
-
+?>
         
     <br><br>
     <br><br>

@@ -1206,6 +1206,7 @@ $(document).ready( function() {
                      NativeCall("restart");
                      return;
                  }
+                $('.consolebody').html(LoadingGIF).fadeOut(5000);
                 window.location = rootserver1+startupphp+"?s="+source+"&e="+enterprise+"&apn="+apn+"&gcm="+gcm+"&v="+mobileversion;
             });
         });
@@ -1257,7 +1258,6 @@ $(document).ready( function() {
                 mobileversion1 = '';
             }
             */
-            var test = 'test';
             if(mobileversion!=='000' && mobileversion!==''  ){
                 NativeCall("restart");
                 return;
@@ -8659,7 +8659,7 @@ $(document).ready( function() {
             
             var fieldlen = $(this).val().length;
             
-            if ((e.keyCode === 10 || e.keyCode === 13) && !e.shiftKey){
+            if (hardenter === '' && (e.keyCode === 10 || e.keyCode === 13) && !e.shiftKey){
                 var streaming = $(this).data('streaming');
                 ToggleChatShow = false;
                 ToggleMembersShow=false;
@@ -9253,6 +9253,9 @@ $(document).ready( function() {
                         $('.meetuppublicshow').show();
                         //$('body .meetupenterpriselist').trigger('click');
                     }
+                }).fail(function(){
+                    $('#socialwindow').html(ConnectError);
+                    
                 });
                 
             
