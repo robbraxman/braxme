@@ -294,7 +294,7 @@ require_once("advertising.inc.php");
         //$settingsmenu .= "<hr style='border:1px solid  $global_separator_color'>";
         
         $settingsmenu .= "<br>";
-        $settingsmenu .= "<div class='mainfont restart' data-caller='none' style='cursor:pointer;color:$global_activetextcolor;padding-left:20px;float:left'><img class='icon30' src='$iconsource_braxrestart_common' style='position:relative' /><br><br>$menu_restart</div>";
+        $settingsmenu .= "<div class='mainfont restarthome' data-caller='none' style='cursor:pointer;color:$global_activetextcolor;padding-left:20px;float:left'><img class='icon30' src='$iconsource_braxrestart_common' style='position:relative' /><br><br>$menu_restart</div>";
         $settingsmenu .= "<div class='mainfont logoutbutton' style='margin-left:20px;cursor:pointer;color:$global_activetextcolor;padding-left:20px;float:left'><img class='icon30' src='$iconsource_braxlogout_common' style='position:relative'  /><br><br>$menu_logout</div>";
         if(isset($_SESSION['pin']) && $_SESSION['pin']!=''){
         $settingsmenu .= "<div class='mainfont pinlock closesidemenu' style='margin-left:20px;cursor:pointer;color:$global_activetextcolor;padding-left:20px;float:left'><img class='icon30' src='$iconsource_braxlock_common' style='position:relative'  /><br><br>Lock</div>";
@@ -322,7 +322,9 @@ require_once("advertising.inc.php");
         if($_SESSION['roomcreator']=='Y' ){
             $settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxsettings2 $menu_managerooms", "friends mainbutton", "","data-mode='' ","text-align:left;" , "#3b3b3b", $buttoncolor2);
             $settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxsettings2 $menu_communitylist", "groupmanage mainbutton", "","data-mode='' ","text-align:left;" , "#3b3b3b", $buttoncolor2);
-            $settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxsettings2 Brax.Live Restream", "restreambutton mainbutton", "","data-mode='' ","text-align:left;" , "#3b3b3b", $buttoncolor2);
+            if($_SESSION['superadmin']=='Y'){
+                $settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxsettings2 Brax.Live Restream", "restreambutton mainbutton", "","data-mode='' ","text-align:left;" , "#3b3b3b", $buttoncolor2);
+            }
         }
 
         if($_SESSION['superadmin']=='Y'){
@@ -357,8 +359,6 @@ require_once("advertising.inc.php");
         $settingsmenu .= SettingsMenuButton("$menu_techsupportfaq", "roomjoin mainbutton", "","data-mode='J' data-handle='#techsupport' ","" , $buttonbackgroundcolor, $buttoncolor);
         $settingsmenu .= "<hr style='border:1px solid  $global_separator_color'>";
 
-        //ADVERTISING
-        $settingsmenu .= SocialVisionUpgradeAd();
         
         if(!$appstore){
             
@@ -368,6 +368,11 @@ require_once("advertising.inc.php");
 
                     $settingsmenu .= SettingsMenuButton("Rob Braxman Store", "userstore mainbutton", "","data-roomid='' data-owner='690001027'  ","" , $buttonbackgroundcolor2, $buttoncolor2);
                     $settingsmenu .= SettingsMenuButton("$menu_manageupgrade", "userstore mainbutton", "","data-roomid='' data-owner='0'  ","" , $buttonbackgroundcolor2, $buttoncolor2);
+                    $settingsmenu .= "<hr style='border:1px solid  $global_separator_color'>";
+                    
+                    
+                    //ADVERTISING
+                    $settingsmenu .= SocialVisionUpgradeAd();
                     
                     /*
                     return "
@@ -388,7 +393,7 @@ require_once("advertising.inc.php");
                 }
                 //if($_SESSION['industry']==''){
                 
-                    $settingsmenu .= "<br>";                
+                    //$settingsmenu .= "<br>";                
                     //$settingsmenu .= "<hr style='border:1px solid  $global_separator_color'>";
                     $settingsmenu .= SettingsMenuButton("$menu_tokenactivity", "tokenreport mainbutton", "","","" , $buttonbackgroundcolor3, $buttoncolor3);
                     $settingsmenu .= SettingsMenuButton("$menu_tokenstore", "tokenstore mainbutton", "","","" , $buttonbackgroundcolor3, $buttoncolor3);
@@ -474,9 +479,12 @@ require_once("advertising.inc.php");
         }
         $settingsmenu .= "<br></div>";
 
-        if($_SESSION['superadmin']=='Y' && !$customsite){
+        if($_SESSION['superadmin']=='Y' ){
             $settingsmenu .=
-                    "<br><br><br><a href='https://brax.me/error.php'>Error Test</a><br><br><br>";
+                    "<br><br><br><a href='https://brax.me/error.php'>Error Test</a><br><br>".
+                    "<br><div class='admintrace'>Admin Trace</div>".
+                    "<br><div class='admintrace2'>Admin Trace2</div>".
+                    "<br><div class='admintrace3'>Admin Trace3</div>";
         }
 
         

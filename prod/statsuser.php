@@ -53,6 +53,7 @@ $bandwidth = round($row['bandwidth']/1000000000,1);
     }
     echo "Plan Sizing: $_SESSION[sizing] Plan Inner Width: $_SESSION[innerwidth] Plan MobileSize: $_SESSION[mobilesize]<br>";
     echo "Device Code: $_SESSION[devicecode] $_SESSION[banid]<br>";
+    echo "Mobile App: $_SESSION[mobilecapable]<br>";
     echo "Pixel Ratio: <span class='statspixelratio'></span><br>";
     echo "Stat InnerWidth: <span class='statsinnerwidth'></span><br>";
     echo "Stat InnerHeight: <span class='statsinnerheight'></span><br>";

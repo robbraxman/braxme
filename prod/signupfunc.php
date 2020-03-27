@@ -535,7 +535,7 @@ class SignUp
               '$this->serverhost',  '$this->allowtexting', $this->msglifespan,
               '$this->sponsor', '$this->roomdiscovery', '$this->onetimeflag', $this->eowner, '$this->sponsorlist',
               'std', '$this->language', '$this->roomhandle','$appname','$this->iphash', '$this->iphash2', '$this->timezone', '$this->ipsource',
-              '$this->trackerid','$this->roomcreator','$this->broadcaster', '$this->web', '$this->store', $this->hardenter
+              '$this->trackerid','$this->roomcreator','$this->broadcaster', '$this->web', '$this->store', '$this->hardenter'
             )"
         );
         if(!$result){
@@ -1451,9 +1451,6 @@ class SignUp
                 "If you did not do this, your account has been breached and you need to <br>".
                 "contact us at<br>".
                 "techsupport@brax.me.<br><br>".
-                "<a href='$rootserver/$installfolder/verify.php?i=$signupverificationkey'>".
-                "$rootserver/$installfolder/verify.php?i=$signupverificationkey</a> <br><br>".
-                "(Cut and paste link to browser if you cannot click it)<br><br>".
                 "<a href='$prodserver'>".
                 "<img src='$rootserver/img/logo-b1.png' style='height:30px; width: auto' height='30' width=auto >".
                 "</a><br><br><br>".

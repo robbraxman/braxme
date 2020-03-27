@@ -302,6 +302,10 @@ $(document).ready( function()
                 notificationflags += 'S';
             }
             
+            if($('#notificationflags8').is(':checked')){
+                notificationflags += 'E';
+            } else {
+            }
             
             $('#notificationflags').val(notificationflags);
             
@@ -794,7 +798,7 @@ if($_SESSION['enterprise']=='Y' || $_SESSION['superadmin']=='Y' ){
             
             if($row['allowiot']=='Y'){
                 
-                if( strstr($row['notificationflags'],"S") !== false) {       
+                if( strstr($row['notificationflags'],"B") !== false) {       
 
                     echo "<input id=notificationflags7 name=notificationflags7  title='Enable SecureNet Notifications'  type=checkbox value='C' style='position:relative;top:7px'/>";
                 } else {
@@ -815,6 +819,14 @@ if($_SESSION['enterprise']=='Y' || $_SESSION['superadmin']=='Y' ){
             echo "<label for='notificationflags6'>$menu_postsfollowing</label>";
             echo "<br><br>";
 
+            if( strstr($row['notificationflags'],"E") !== false) {       
+
+                echo "<input id=notificationflags8 name=notificationflags8  title='Enable Notifications via Email'  checked='checked' type=checkbox value='C' style='position:relative;top:7px'/>";
+            } else {
+                echo "<input id=notificationflags8 name=notificationflags8  title='Enable Notifications via Email'  type=checkbox value='C' style='position:relative;top:7px'/>";
+            }
+            echo "<label for='notificationflags8'>Enable Notifications via Email</label>";
+            echo "<br><br>";
             
         
         

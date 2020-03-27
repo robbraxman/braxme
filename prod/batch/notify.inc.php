@@ -137,6 +137,15 @@ function ChatNotificationRequest($providerid, $chatid, $encodeshort, $encoding, 
         }
         $subtype='';
     }
+
+    //Community Check - if this a room spawned chat - limit notifications
+    if($subtype == ''){
+        $result = do_mysqli_query("1",
+                "select roomid from chatmaster where chatid=$chatid "
+                . "and roomid is not null and roomid > 0  ");
+        if( $row = do_mysqli_fetch("1",$result)){
+            $subtype='CY';
+        }
     
     
     do_mysqli_query("1","
@@ -173,6 +182,7 @@ function ChatNotification($providerid, $chatid, $encodeshort, $encoding, $subtyp
     }
     
     //Check for First Response so Send Notification to Original Party
+    /*
     $result = do_mysqli_query("1",
         "
         select provider.providerid, provider.replyemail, 
@@ -187,7 +197,7 @@ function ChatNotification($providerid, $chatid, $encodeshort, $encoding, $subtyp
         order by chatid desc           
         ");
     if(!$result){
-        return;
+        //return;
     }
     if($row = do_mysqli_fetch("1",$result)){
         
@@ -205,6 +215,8 @@ function ChatNotification($providerid, $chatid, $encodeshort, $encoding, $subtyp
             $encoding,'','' );
         
     }    
+     * 
+     */
     
     
     $result = do_mysqli_query("1",
@@ -214,14 +226,17 @@ function ChatNotification($providerid, $chatid, $encodeshort, $encoding, $subtyp
         provider.notificationflags,
         (select 'Y' from notifymute where providerid = chatmembers.providerid and id = chatmembers.chatid and idtype='C' ) as mute,
         (select techsupport from chatmembers cm2 where providerid = $providerid
-            and chatmembers.chatid = cm2.chatid ) as techsupport
+            and chatmembers.chatid = cm2.chatid ) as techsupport,
+        (select 'Y' from ban where ban.chatid = chatmaster.chatid and ban.banid in (select banid from provider where providerid = $providerid) ) as banned
         from chatmembers
         left join chatmaster on chatmaster.chatid = chatmembers.chatid
         left join provider on provider.providerid = chatmembers.providerid
         left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = $providerid
         left join blocked blocked2 on blocked2.blocker = provider.providerid and blocked2.blockee = $providerid
-        where chatmembers.providerid!=$providerid
-        and chatmembers.chatid=$chatid and (provider.notifications = 'Y' or provider.notifications is null )
+        where 
+        chatmembers.providerid != $providerid and
+        
+        chatmembers.chatid=$chatid and (provider.notifications = 'Y' or provider.notifications is null )
         and blocked1.blockee is null and blocked2.blocker is null
         order by chatmembers.chatid desc           
         
@@ -262,6 +277,9 @@ function ChatNotification($providerid, $chatid, $encodeshort, $encoding, $subtyp
             $encoding = "PLAINTEXT";
             
         }
+        if($row['banned']=='Y'){
+            $loop = false;
+        }
         if($loop){
             GenerateNotification( 
                 $providerid, 
@@ -286,6 +304,15 @@ function RoomNotificationRequest($providerid, $roomid, $subtype, $shareid, $post
     $chatid = 0;
     $encodeshort = '';
     $encoding = '';
+
+    //No notifications for website posts
+    $result = do_mysqli_query("1","
+        select external from roominfo where roomid=$roomid and external='Y'
+        ");
+    if($row = do_mysqli_fetch("1",$result)){
+        return;
+    }
+
     
     do_mysqli_query("1","
         insert into notifyrequest 
@@ -689,7 +716,7 @@ function GenerateNotificationV2(
                 recipientid, mobile, roomid, chatid, payload, payloadsms, 
                 encoding, displayed,soundalert, reference ) values (
                 $senderid, now(), 'N', '$notifytype',$subtype_quoted,
-                '','$email','',
+                '','$email','$sms',
                 $row[providerid], '$row[mobile]', $roomid, $chatid, 
                 $payload_quoted, $payloadsms_quoted, 
                 $encoding_quoted, '$status','$soundalert','$reference'

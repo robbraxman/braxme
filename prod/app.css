@@ -1,7 +1,7 @@
 /* 
     Document   : local
     Created on : Feb 25, 2013, 8:44:32 PM
-    Author     : rob
+    Author     : roberto
     Description:
         Purpose of the stylesheet follows.
 */
@@ -1277,7 +1277,7 @@ only screen and ( min-resolution: 1.25dppx)
     }
     .chatwidth2 {
         width: 100%;
-        max-width:350px;
+        max-width:330px;
     }
     .chatwidth2e {
         width: 100%;
@@ -1869,14 +1869,14 @@ only screen and ( min-resolution: 1.25dppx)
     }
     
     .chatwidth {
-        width: 80%;
+        width: 70%;
     }
     .chatwidth2 {
-        width: 80%;
-        max-width:900px;
+        width: 70%;
+        max-width:800px;
     }
     .chatwidth2e {
-        width: 100%;
+        width: 90%;
         max-width:1000px;
     }
     .commentwidth
@@ -3667,10 +3667,13 @@ iframe {
 }
 
 .noselect {
-  -webkit-user-select: none;  /* Chrome all / Safari all */
-  -moz-user-select: none;     /* Firefox all */
-  -ms-user-select: none;      /* IE 10+ */
-  user-select: none;          /* Likely future */      
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Opera and Firefox */    
 }
 
 .select {
@@ -4230,8 +4233,8 @@ General Window
     margin-top: 5px;
     margin-left: 0px;
     margin-right: 0px;
-    padding-top: 7px;
-    padding-bottom: 5px;
+    padding-top: 13px;
+    padding-bottom: 8px;
     padding-left: 5px;
     padding-right: 5px;
     text-align: center;

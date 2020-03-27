@@ -37,9 +37,6 @@ if($color_scheme=='std' || $color_scheme == ''){
     $color_scheme = 'metal night';
     $wallpaper_scheme = 'default';
 }
-if($customsite && $color_scheme = 'std'){
-    $color_scheme = 'bluesmoke';
-}
  
 $global_textcolor = 'black';
 $global_textcolor2 = 'gray';
@@ -81,11 +78,12 @@ if($color_scheme == 'moonlit night' || $color_scheme=='metal night'  || $color_s
     $global_profile_color = '#1b1b1b';//
     $global_profiletext_color = 'white';//
     $global_titlebar_alt_color = '#4D5B60';//
+    //$global_titlebar_color = 'black';//gray
     $global_titlebar_color = '#6C7a89';//lynch gray
     $global_bottombar_color = '#1b1b1b';//dark gray
     $global_separator_color = "#6C7a89"; // lynch gray
     //$global_activetextcolor = '#89c4f4'; 
-    $global_activetextcolor = '#7092be'; 
+    $global_activetextcolor = '#a1caf1';//7092be'; 
     $global_activetextcolor_reverse = '#89c4f4'; //facebook 
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-lightblue-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-lightblue-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
@@ -288,7 +286,7 @@ if($color_scheme == 'lavender'){
     $global_separator_color = "purple"; //
     $global_activetextcolor = 'purple'; 
     $global_activetextcolor_reverse = 'pink'; 
-    $global_store_color = '#ffcc00';
+    $global_store_color = 'red';
     
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-purple-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-purple-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
@@ -420,6 +418,7 @@ if($color_scheme == 'bluegray' ){
     
 }
 if($color_scheme == 'bluesmoke' ){
+    
     $global_banner_color = 'black';//gray
     $global_menu_color = 'whitesmoke';//gray
     $global_menu2_color = '#3e4749';//gray
@@ -713,6 +712,9 @@ if($icon_scheme == 'black'){
 }
 
 if($icon_darkmode == false){
+    $iconsource_braxmenu = "../img/brax-menu-round-black-128.png";
+    $iconsource_braxcamera = "../img/brax-camera-round-black-128.png";
+    
     $iconsource_braxpeople_common = "../img/people-circle-128.png";
     $iconsource_braxfind_common = "../img/find-circle-01-128.png";
     $iconsource_braxarrowright_common = "../img/Arrow-Right-in-Circle_120px.png";
@@ -761,6 +763,7 @@ if($icon_darkmode == false){
     $iconsource_braxlogout_common = "../img/logout-black-128.png";
     $iconsource_braxlock_common = "../img/lock-circle-128.png";
     $iconsource_braxrestart_common = "../img/Restart-128.png";
+    $iconsource_braxedit_common = "../img/pencil-white-48.png";
     
 
     //desk
@@ -830,6 +833,9 @@ if($icon_darkmode == false){
     
     
 } else {
+    $iconsource_braxmenu = "../img/brax-menu-round-white-128.png";
+    $iconsource_braxcamera = "../img/brax-camera-round-white-128.png";
+    
     $iconsource_braxpeople_common = "../img/people-circle-white-128.png";
     $iconsource_braxfind_common = "../img/find-circle-white-128.png";
     $iconsource_braxarrowright_common = "../img/Arrow-Right-in-Circle-White_120px.png";
@@ -877,6 +883,7 @@ if($icon_darkmode == false){
     $iconsource_braxshare_common = "../img/share-circle-white-128.png";
     $iconsource_braxlogout_common = "../img/logout-circle-128.png";
     $iconsource_braxlock_common = "../img/brax-lock-128.png";
+    $iconsource_braxedit_common = "../img/pencil-black-48.png";
 
 
     
@@ -901,9 +908,9 @@ if($icon_darkmode == false){
     
     if($color_scheme == 'crimson night'){
         $fixed_background_image = '../img/background-leather.jpg';
-        $fixed_background_image_style = 'width:100%;filter:brightness(50%);';
+        $fixed_background_image_style = 'width:100%;filter:brightness(30%);';
         $fixed_background_image_mobile = '../img/background-leather.jpg';
-        $fixed_background_image_mobile_style = 'height:100%';
+        $fixed_background_image_mobile_style = 'height:100%;filter:brightness(30%)';
         
         
     }

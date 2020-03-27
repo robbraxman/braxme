@@ -137,7 +137,16 @@ function ChatNotificationRequest($providerid, $chatid, $encodeshort, $encoding, 
         }
         $subtype='';
     }
-    
+
+    //Community Check - if this a room spawned chat - limit notifications
+    if($subtype == ''){
+        $result = do_mysqli_query("1",
+                "select roomid from chatmaster where chatid=$chatid "
+                . "and roomid is not null and roomid > 0  ");
+        if( $row = do_mysqli_fetch("1",$result)){
+            $subtype='CY';
+        }
+    }
     
     do_mysqli_query("1","
         insert into notifyrequest 
@@ -172,47 +181,11 @@ function ChatNotification($providerid, $chatid, $encodeshort, $encoding, $subtyp
         
     }
     
-    //Check for First Response so Send Notification to Original Party
-    /*
-    $result = do_mysqli_query("1",
-        "
-        select provider.providerid, provider.replyemail, 
-        provider.providername, provider.mobile, provider.notificationflags
-        from chatmaster
-        left join provider on provider.providerid = chatmaster.owner
-        where owner!=$providerid
-        and chatid=$chatid
-        and (select count(*) from chatmessage where 
-        chatmessage.chatid = chatmaster.chatid and providerid=$providerid) = 0
-        and chatmaster.status = 'Y'
-        order by chatid desc           
-        ");
-    if(!$result){
-        //return;
-    }
-    if($row = do_mysqli_fetch("1",$result)){
-        
-        if(strstr("$row[notificationflags]","M")!==false){
-            //$payload_quoted = "null";
-        }
-        
-        
-        GenerateNotification( 
-            $providerid, 
-            $row['providerid'], 
-            'CN', '', 
-            null, $chatid, 
-            $encodeshort, '',
-            $encoding,'','' );
-        
-    }    
-     * 
-     */
     
     
     $result = do_mysqli_query("1",
         "
-        select provider.providerid, provider.replyemail, 
+        select provider.providerid, provider.replyemail, verified,
         provider.providername, provider.mobile, chatmaster.keyhash,
         provider.notificationflags,
         (select 'Y' from notifymute where providerid = chatmembers.providerid and id = chatmembers.chatid and idtype='C' ) as mute,
@@ -229,6 +202,7 @@ function ChatNotification($providerid, $chatid, $encodeshort, $encoding, $subtyp
         
         chatmembers.chatid=$chatid and (provider.notifications = 'Y' or provider.notifications is null )
         and blocked1.blockee is null and blocked2.blocker is null
+        and datediff(curdate(), provider.lastaccess) < 90
         order by chatmembers.chatid desc           
         
         ");
@@ -349,7 +323,7 @@ function RoomNotification($providerid, $roomid, $subtype, $shareid, $postid, $an
     if($subtype=='L'){
         $result = do_mysqli_query("1",
         "
-            select provider.providerid,provider.replyemail, provider.providername,
+            select provider.providerid,provider.replyemail, provider.verified, provider.providername,
             (select anonymousflag from roominfo where roominfo.roomid = statusroom.roomid ) as anonymousflag
             from statusroom 
             left join provider on statusroom.providerid = provider.providerid
@@ -361,6 +335,8 @@ function RoomNotification($providerid, $roomid, $subtype, $shareid, $postid, $an
                 (select providerid from statuspost where postid = '$postid')
             )
             and blocked1.blockee is null and blocked2.blocker is null
+            and datediff(curdate(), provider.lastaccess) < 90
+            
         ");
         $notifytype = 'RL';
     } else {
@@ -376,6 +352,7 @@ function RoomNotification($providerid, $roomid, $subtype, $shareid, $postid, $an
             and statusroom.providerid != $providerid
             and provider.active = 'Y' and  (provider.notifications = 'Y' or provider.notifications is null )
             and blocked1.blockee is null and blocked2.blocker is null
+            and datediff(curdate(), provider.lastaccess) < 90
         ");
         $notifytype = 'RP';
         
@@ -412,6 +389,7 @@ function RoomNotification($providerid, $roomid, $subtype, $shareid, $postid, $an
         
     }
 }
+
 function NotificationRequestLoop()
 {
 
@@ -560,8 +538,7 @@ function GenerateNotification(
     
     
     $result = do_mysqli_query("1"," 
-        select providerid, mobile, replyemail, 
-        datediff(curdate(), lastaccess) as lastheredays,
+        select providerid, mobile, replyemail, verified,
         (select count(*) from notifytokens 
           where provider.providerid = notifytokens.providerid) 
           as tokens 
@@ -570,11 +547,7 @@ function GenerateNotification(
             ");
         if( $row = do_mysqli_fetch("1",$result)){
         //Existing Member
-        //
-            //Don't send a CHAT notification to a user that hasn't been back in 365 days
-            if(intval($row['lastheredays'])>365 || $row['lastheredays']==''){
-                return;
-            }
+        
 
             $status = 'N';
             $email = $row['replyemail'];
@@ -586,6 +559,9 @@ function GenerateNotification(
 
             }
             if(intval($row['tokens'])>0){
+                //$email = "";
+            }
+            if($row['verified']=='N'){
                 $email = "";
             }
 

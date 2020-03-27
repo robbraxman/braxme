@@ -386,7 +386,7 @@ function ShareOptions($readonly, $profileflag )
 
 
         $shareoptions =  " 
-                <div class='smalltext2 roomshareoptions tapped roombutton'  title='Share Room and Invite to Room'
+                <div class='smalltext2 roomshareoptions tapped roombutton'  title='Share Room and Invite'
                     style='vertical-align:top;color:$global_textcolor;'>
                     <img  class='icon25' src='$iconsource_braxinvite_common' 
                         style='margin-bottom:7px' />
@@ -446,9 +446,6 @@ function PrivateHeader($readonly, $providerid, $roomid, $anonymousflag, $private
     }
     if($radiostation=='Y' ){
         $privatetext = "<span style='color:gray'>Broadcast Channel</span>";
-    } else
-    if($radiostation=='Q' ){
-        $privatetext = "<span style='color:gray'>Quiz Room</span>";
     } else
     if( $groupname !='' && $private!=='Y'){
         $privatetext = "<span style='color:gray'>$groupname Only</span>";
@@ -524,7 +521,7 @@ function LeaveRoomButton($readonly, $providerid, $roomid, $profileflag, $memberi
         return $button;
 }
 
-function GetChildLinks($readonly, $roominfo )
+function GetChildLinks($readonly, $roominfo, $caller )
 {
     global $rootserver;
     global $global_activetextcolor;
@@ -552,7 +549,7 @@ function GetChildLinks($readonly, $roominfo )
     $childlinks = "";
     $childlinks = "<div class='gridstdborder tabs tabs-style-tzoid' style='background-color:lightgray;'><nav><ul style='text-align:left'>";
     if($parentroomid!=''){
-        $child = "<li class='feed smalltext' data-roomid='$parentroomid' style='background-color:transparent;
+        $child = "<li class='feed smalltext' data-roomid='$parentroomid' data-caller='$caller' style='background-color:transparent;
                 text-align:left;min-width:100%;color:white;cursor:pointer;float:left;padding-left:20px;
                 padding-right:10px;padding-top:10px;padding-bottom:10px;margin-top:1px;margin-bottom:1px;margin-left:1px'>
                     <img class='icon15' src='../img/Arrow-Left-in-Circle-White_120px.png'' />
@@ -584,7 +581,7 @@ function GetChildLinks($readonly, $roominfo )
         $roomid = $row['roomid'];
         $id = substr($roomhandle,1);
         if($roomhandle!=''){
-            $child = "<li class='feed smalltext' data-roomid='$roomid' 
+            $child = "<li class='feed smalltext' data-roomid='$roomid' data-caller='$caller'
                         style='text-align:left;color:white;background-color:transparent;cursor:pointer;
                         min-width:150px;max-width:250px;float:left;
                         padding-left:20px;padding-top:10px;padding-bottom:10px;padding-right:10px;
@@ -733,7 +730,9 @@ function TopBar( $readonly, $caller, $owner, $profileflag, $gotohome )
     global $menu_myprofile;
     global $menu_room;
     global $menu_userprofile;
-    
+    global $global_menu_text_color;
+    global $global_textcolor;
+    global $iconsource_braxarrowleft_common;
     
     if($readonly=='Y'){
         return "";
@@ -763,15 +762,15 @@ function TopBar( $readonly, $caller, $owner, $profileflag, $gotohome )
         <span class='roomcontent'>
             <div class='gridnoborder $backto' 
                 data-providerid='$owner' data-caller='$caller' data-roomid='$caller' data-mode='$mode'
-                style='background-color:$global_titlebar_color;color:white;padding-left:20px;padding-right:20px;padding-bottom:3px;margin:0;cursor:pointer' >
-                <img class='icon20' Title='Back to Home' src='../img/Arrow-Left-in-Circle-White_120px.png' 
+                style='background-color:transparent;color:white;padding-left:20px;padding-right:20px;padding-bottom:3px;margin:0;cursor:pointer' >
+                <img class='icon20' Title='Back to Home' src='$iconsource_braxarrowleft_common' 
                     style='' 
                     />
                 &nbsp;
                 <span style='opacity:.5'>
                 $icon_braxroom2
                 </span>
-                <span class='pagetitle2a' style='color:white'>$topbartitle</span> 
+                <span class='pagetitle2a' style='color:$global_textcolor'>$topbartitle</span> 
             </div>
         </span>
         ";
@@ -861,25 +860,25 @@ function OwnerButtons( $readonly, $providerid, $roomid, $roominfo, $memberinfo, 
         <tr class='gridnoborder pagetitle3' style='margin:0;border:0;padding:0'>
             <td class='gridnoborder' style='cursor:pointer;background-color:transparent;color:black;padding:0 0 0 0;text-align:left'>
                     <div class='feed tapped' style='$memberinfoonly3'  data-roomid='' title='Refresh Data'>
-                        <img class='icon30' src='$icon_refresh' style='top:10px;padding-left:10px' />
+                        <img class='icon25' src='$icon_refresh' style='top:10px;padding-left:10px' />
                     </div>
                     <span style='$forumonly'>
                     &nbsp;&nbsp;&nbsp;
                     <div class='showhidden tapped' style='display:inline'  data-mode='' data-roomid='$roomid' 
                         data-roomid='$roomid' data-radiostation='$roominfo->radiostation' title='Search Room'>
-                        <img class='icon30' title='Search Room' src='$iconsource_braxfind_common' style='top:10px;' />
+                        <img class='icon25' title='Search Room' src='$iconsource_braxfind_common' style='top:10px;' />
                     </div>
                     </span>
                     
                     <span style='$memberinfoonly'>
                     &nbsp;&nbsp;&nbsp;
                     </span>
-                    <div class='friends tapped' style='$memberinfoonly'  data-mode='E' data-caller='friendlist' data-roomid='$roomid' title='Room Settings'>
-                        <img class='icon30' src='$iconsource_braxgear_common' style='top:10px;$memberinfoonly' />
+                    <div class='friends tapped' style='$memberinfoonly'  data-mode='E' data-caller='friendlist' data-roomid='$roomid' title='Settings'>
+                        <img class='icon25' src='$iconsource_braxgear_common' style='top:10px;$memberinfoonly' />
                     </div>
                     &nbsp;&nbsp;&nbsp;
-                    <div class='chatinvite tapped' style='$memberinfoonly2'  data-mode='S' data-caller='friendlist' data-roomid='$roomid' title='Chat for Room'>
-                        <img class='icon30' title='Spawn a Chat for Room' src='$iconsource_braxchatbubble_common' style='top:10px;$memberinfoonly2' />
+                    <div class='chatinvite tapped' style='$memberinfoonly2'  data-mode='S' data-caller='friendlist' data-roomid='$roomid' title='Swawn Chat'>
+                        <img class='icon25' title='Spawn a Chat' src='$iconsource_braxchatbubble_common' style='top:10px;$memberinfoonly2' />
                     </div>
                     ";
         
@@ -894,8 +893,8 @@ function OwnerButtons( $readonly, $providerid, $roomid, $roominfo, $memberinfo, 
             "
                     &nbsp;&nbsp;&nbsp;
                     <div class='chatinvite tapped' style='$memberinfoonly2'  data-mode='S' data-caller='friendlist' 
-                        data-roomid='$roomid' data-radiostation='$roominfo->radiostation' title='Channel for Room'>
-                        <img class='icon30' title='Spawn a Broadcast Station' src='$iconsource_braxradiotower_common' style='top:10px;$memberinfoonly2' />
+                        data-roomid='$roomid' data-radiostation='$roominfo->radiostation' title='Spawn Channel'>
+                        <img class='icon25' title='Spawn a Broadcast Station' src='$iconsource_braxradiotower_common' style='top:10px;$memberinfoonly2' />
                     </div>
             ";
         }

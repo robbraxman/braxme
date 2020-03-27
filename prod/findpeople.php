@@ -1,9 +1,18 @@
 <?php
 session_start();
-require("validsession.inc.php");
 require("nohost.php");
 require_once("config.php");
 require_once("internationalization.php");
+
+if(ServerTimeOutCheck()){
+    
+    $arr = array('list'=> "T", 'mode'=> "");
+    echo json_encode($arr);
+    exit();
+    
+}
+require("validsession.inc.php");
+
 
     $providerid = @mysql_safe_string($_POST['providerid']);
     $mode = @mysql_safe_string($_POST['mode']);
@@ -100,6 +109,7 @@ require_once("internationalization.php");
                     <span class='pagetitle2a' style='color:white'><b>$menu_people</b></span> 
                 </div>
             ";
+        $list = "";
         return $list;
         
     }
@@ -151,47 +161,47 @@ require_once("internationalization.php");
         */
         
         $button_public = "
-                    <div class='meetuplist pagetitle2a' data-mode='P1' style='display:inline-block;width:150px;cursor:pointer;padding:5px;padding-bottom:10px;color:$global_textcolor'>
+                    <div class='meetuplist pagetitle2a' data-mode='P1' style='display:inline-block;width:150px;cursor:pointer;padding-left:20px;padding-top:10px;padding-bottom:10px;color:$global_textcolor'>
                         $menu_public
                     </div>
                     ";
         $button_community = "
-                    <div class='meetuplist pagetitle2a' data-mode='P5' style='display:inline-block;width:150px;cursor:pointer;padding:5px;padding-bottom:10px;color:$global_textcolor'>
+                    <div class='meetuplist pagetitle2a' data-mode='P5' style='display:inline-block;width:150px;cursor:pointer;padding-left:20px;padding-top:10px;padding-bottom:10px;color:$global_textcolor'>
                         $menu_community 
                     </div>
                     ";
         $button_sponsor = "
-                    <div class='meetuplist pagetitle2a' data-mode='P6'  style='display:inline-block;width:150px;cursor:pointer;padding:5px;padding-bottom:10px;color:$global_textcolor'>
+                    <div class='meetuplist pagetitle2a' data-mode='P6'  style='display:inline-block;width:150px;cursor:pointer;padding-left:20px;padding-top:10px;padding-bottom:10px;color:$global_textcolor'>
                         $sponsor 
                     </div>
                     ";
         $button_activity = "
-                    <div class='meetuplist pagetitle2a' data-mode='P2'  style='display:inline-block;width:150px;cursor:pointer;padding:5px;padding-bottom:10px;color:$global_textcolor'>
+                    <div class='meetuplist pagetitle2a' data-mode='P2'  style='display:inline-block;width:150px;cursor:pointer;padding-left:20px;padding-top:10px;padding-bottom:10px;color:$global_textcolor'>
                         $menu_top
                     </div>
                     ";
         $button_friends = "
-                    <div class='meetuplist pagetitle2a' data-mode='P7'  style='display:inline-block;width:150px;cursor:pointer;padding:5px;padding-bottom:10px;color:$global_textcolor'>
+                    <div class='meetuplist pagetitle2a' data-mode='P7'  style='display:inline-block;width:150px;cursor:pointer;padding-left:20px;padding-top:10px;padding-bottom:10px;color:$global_textcolor'>
                         $menu_friends
                     </div>
                     ";
         $button_following = "
-                    <div class='meetuplist pagetitle2a' data-mode='P8'  style='display:inline-block;width:150px;cursor:pointer;padding:5px;padding-bottom:10px;color:$global_textcolor'>
+                    <div class='meetuplist pagetitle2a' data-mode='P8'  style='display:inline-block;width:150px;cursor:pointer;padding-left:20px;padding-top:10px;padding-bottom:10px;color:$global_textcolor'>
                         $menu_following
                     </div>
                     ";
         $button_new = "
-                    <div class='meetuplist pagetitle2a' data-mode='P10'  style='display:inline-block;width:150px;cursor:pointer;padding:5px;padding-bottom:10px;color:$global_textcolor'>
+                    <div class='meetuplist pagetitle2a' data-mode='P10'  style='display:inline-block;width:150px;cursor:pointer;padding-left:20px;padding-top:10px;padding-bottom:10px;color:$global_textcolor'>
                         New
                     </div>
                     ";
         $button_banned = "
-                    <div class='meetuplist pagetitle2a' data-mode='P9'  style='display:inline-block;width:150px;cursor:pointer;padding:5px;padding-bottom:10px;color:$global_textcolor'>
+                    <div class='meetuplist pagetitle2a' data-mode='P9'  style='display:inline-block;width:150px;cursor:pointer;padding-left:20px;padding-top:10px;padding-bottom:10px;color:$global_textcolor'>
                         Trolls
-                    </div
+                    </div>
                     ";
         $button_blocked = "
-                    <div class='meetuplist pagetitle2a' data-mode='P11'  style='display:inline-block;width:150px;cursor:pointer;padding:5px;padding-bottom:10px;color:$global_textcolor'>
+                    <div class='meetuplist pagetitle2a' data-mode='P11'  style='display:inline-block;width:150px;cursor:pointer;padding-left:20px;padding-top:10px;padding-bottom:10px;color:$global_textcolor'>
                         Blocked
                     </div>
                     ";
@@ -199,7 +209,7 @@ require_once("internationalization.php");
         
         /****************/
         $button_chat2 = "
-                    <div class='selectchatlist pagetitle3' data-mode='CHAT' style='float:left;margin-right:20px;margin-left:10px;cursor:pointer;padding:3px;color:$global_textcolor' title='Back to Chats List'>
+                    <div class='selectchatlist pagetitle3' data-mode='CHAT' style='float:left;margin-right:20px;margin-left:20px;cursor:pointer;padding:3px;color:$global_textcolor' title='Back to Chats List'>
                         <img class='icon15' src='$iconsource_braxchat_common' style='top:3px' />
                         $menu_chats
                     </div>
@@ -207,7 +217,7 @@ require_once("internationalization.php");
         
         
         $button_public2 = "
-                    <div class='meetuplist pagetitle3' data-mode='P1' style='cursor:pointer;padding:10px;color:$global_activetextcolor;float:left;;margin-right:20px' title='List people from the public list'>
+                    <div class='meetuplist pagetitle3' data-mode='P1' style='cursor:pointer;padding:10px;color:$global_activetextcolor;float:left;margin-left:30px;margin-right:20px' title='List people from the public list'>
                         $menu_public
                     </div>
                     ";
@@ -273,7 +283,7 @@ require_once("internationalization.php");
         $list = "
             <div class='pagetitle2a formobile'
                 style='padding-left:10px;width:100%;
-                padding-right:10px;padding-top:15px;padding-bottom:0px;background-color:transparent'>
+                padding-right:10px;padding-top:25px;padding-bottom:0px;background-color:transparent'>
                 ";
         
         if( $roomdiscovery == 'N'){
@@ -472,20 +482,26 @@ require_once("internationalization.php");
             (select 'Y' from followers where followers.providerid = provider.providerid and followers.followerid = $providerid ) as followed
             from provider
             where  active='Y' and termsofuse is not null and 
-            (providername like '%$find%' or handle like '%$find%' or publishprofile like '%$find%')
-            and 
-            (   
-                provider.publish='Y' 
-                or 
-                provider.providerid  in (select targetproviderid from contacts where providerid = $providerid )
-                or
-                provider.providerid in (select friendid from friends where providerid = $providerid )
-                or
-                provider.providerid in (select followerid from followers where providerid = $providerid )
-                or
-                provider.providerid in (select providerid from followers where followerid = $providerid )
-                or 
-                ( provider.sponsor = '$_SESSION[sponsor]' and '$_SESSION[sponsor]'!='' )               
+            (
+                (
+                    (providername like '%$find%' or handle like '%$find%' or publishprofile like '%$find%')
+                    and 
+                    (   
+                        provider.publish='Y' 
+                        or 
+                        provider.providerid  in (select targetproviderid from contacts where providerid = $providerid )
+                        or
+                        provider.providerid in (select friendid from friends where providerid = $providerid )
+                        or
+                        provider.providerid in (select followerid from followers where providerid = $providerid )
+                        or
+                        provider.providerid in (select providerid from followers where followerid = $providerid )
+                        or 
+                        ( provider.sponsor = '$_SESSION[sponsor]' and '$_SESSION[sponsor]'!='' )               
+                    )
+                ) or (
+                    handle = '$find' or handle = '@$find'
+                )
             )
             $activequery
             
@@ -554,21 +570,23 @@ require_once("internationalization.php");
                 <div class='meetuppublicshow rounded stdlistbox $shadow' 
                     style=';display:inline-block;vertical-align:top;$extrastyle;
                     text-align:left;background-color:$global_background;color:$global_textcolor;
-                    margin-bottom:10px;margin-right:10px;
+                    margin-bottom:10px;margin-right:5px;
                     word-wrap:break-word;overflow:hidden;'>
-                            <div class='$profileaction' style='cursor:pointer;color:$global_textcolor;padding:15px;height:80%;overflow:hidden'
+                            <div class='$profileaction' style='cursor:pointer;color:$global_textcolor;width:100%;height:60%;overflow:hidden'
                              data-providerid='$row[providerid]' data-name='$row[providername]'    
                              data-roomid='$row[profileroomid]'
                              data-profile='Y'
                              data-caller='find'
                              data-mode ='S' data-title='' data-passkey64='' 
                              >
-                                <div class='circular2 gridnoborder' style='overflow:hidden;background-color:$global_bottombar_color;max-height:90%'  title='User Photo'>
+                                <div class='gridnoborder' style='overflow:hidden;background-color:$global_bottombar_color;height:90%'  title='User Photo'>
                                     <img class='' src='$avatar' style='height:auto;width:100%;'/>
                                 </div>
+                            </div>
+                                <div style='padding-left:10px;padding-right:10px'>
                                $row[providername]<br><span class='smalltext' style='color:$global_textcolor'>$id $joined
                                 <br> $following </span>
-                            </div>
+                                </div>
                 </div>
                 ";
         }    
@@ -1013,7 +1031,7 @@ require_once("internationalization.php");
             $list .= "
                 <div class='meetupcontactlistarea rounded stdlistbox $shadow' 
                     style='display:inline-block;vertical-align:top;$extrastyle;
-                    text-align:left;background-color:$global_background;margin-bottom:10px;margin-right:10px;
+                    text-align:left;background-color:$global_background;margin-bottom:10px;margin-right:5px;
                     text-align:left;word-wrap:break-word;
                     overflow:hidden;'>
                     
@@ -1146,7 +1164,7 @@ require_once("internationalization.php");
             $list .= "
                 <div class='meetupcontactlistarea rounded stdlistbox $shadow' 
                     style='display:inline-block;vertical-align:top;$extrastyle;
-                    text-align:left;background-color:$global_background;margin-bottom:10px;margin-right:10px;
+                    text-align:left;background-color:$global_background;margin-bottom:10px;margin-right:5px;
                     text-align:left;word-wrap:break-word;
                     overflow:hidden;'>
                     
@@ -1283,7 +1301,7 @@ require_once("internationalization.php");
             $list .= "
                 <div class='meetupcontactlistarea rounded stdlistbox $shadow' 
                     style='display:inline-block;vertical-align:top;$extrastyle;
-                    text-align:left;background-color:$global_background;margin-bottom:10px;margin-right:10px;
+                    text-align:left;background-color:$global_background;margin-bottom:10px;margin-right:5px;
                     text-align:left;word-wrap:break-word;
                     overflow:hidden;'>
                     

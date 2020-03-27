@@ -10,8 +10,8 @@ if($_SESSION['language']==''){
 
     $menu_handle = 'Username';
     $menu_home = 'Home';
-    $menu_rooms = 'Rooms';
-    $menu_room = 'Room';
+    $menu_rooms = 'Blogs';
+    $menu_room = 'Blog Room';
     $menu_live = 'Live';
     $menu_chats = 'Chats';
     $menu_chat = 'Chat';
@@ -25,8 +25,8 @@ if($_SESSION['language']==''){
     $menu_userprofile = "User Profile";
     $menu_myphotos = 'My Photos';
     $menu_myfiles = 'My Files';
-    $menu_myrooms = 'My Rooms';
-    $menu_whatsnew = "What's New";
+    $menu_myrooms = 'My Blog Rooms';
+    $menu_whatsnew = "Blogs - What's New";
     $menu_password ='Password';
     $menu_confirmpassword ='Confirm Password';
     $menu_changepassword ='Change Password';
@@ -38,8 +38,8 @@ if($_SESSION['language']==''){
     $menu_public = 'Public';
     $menu_community = 'Contacts';
     $menu_top = 'Top';
-    $menu_roomselect = 'Select Room';
-    $menu_discoverrooms = 'Discover Rooms';
+    $menu_roomselect = 'Select Blog Room';
+    $menu_discoverrooms = 'Discover Blog Rooms';
     $menu_trending = 'Trending';
     $menu_communitylist = 'Group Lists';
     
@@ -47,8 +47,8 @@ if($_SESSION['language']==''){
     $menu_mynotifications = 'My Notifications';
     $menu_advancedsettings = 'Advanced Settings';
     $menu_save = "Save Changes";
-    $menu_managerooms = "Manage Rooms";
-    $menu_manageroom = "Manage Room and Members";
+    $menu_managerooms = "Manage Blog Rooms";
+    $menu_manageroom = "Manage Blogs and Members";
     $menu_websites = "Websites";
     $menu_all = "All";
     $menu_activetoday = "Active Today";
@@ -65,7 +65,7 @@ if($_SESSION['language']==''){
     $menu_leave = "Leave";
     $menu_back = "Back";
     $menu_hide = "Hide";
-    $menu_gotoroom = "Go to room to post";
+    $menu_gotoroom = "Go to blog room to post";
     $menu_name = 'Name';
     $menu_email = 'Email';
     $menu_alias = 'External Alias';
@@ -82,7 +82,7 @@ if($_SESSION['language']==''){
     $menu_thanks = 'Thanks!';
     
     $menu_whoshere = "Who's Here";
-    $menu_roommembers = "Room Members";
+    $menu_roommembers = "Blog Room Members";
     $menu_aboutme = "About Me";
     $menu_managesocialvision = "Manage $enterpriseapp";
     $menu_upgrade = "Upgrade to $enterpriseapp";
@@ -95,9 +95,9 @@ if($_SESSION['language']==''){
     $menu_newtopic = "New Topic, comment, link, photos, video";
     $menu_reply = "Topic Reply";
     $menu_replies = "Comments";
-    $menu_roomfiles = "Room Files";
+    $menu_roomfiles = "Blog Room Files";
     $menu_roominvite = "Invite";
-    $menu_roomunsubscribe = "Unsubscribe from Room";
+    $menu_roomunsubscribe = "Unsubscribe from Blog";
     $menu_mutenotifications = "Mute Notifications";
     $menu_unmutenotifications = "Enable Notifications";
     $menu_showoldermessages = "Show Older Messages";
@@ -131,7 +131,7 @@ if($_SESSION['language']==''){
     $menu_frienddelete = "Remove Friend";
     $menu_roomfavorite = "Add to Favorites";
     $menu_roomfavoritedelete = "Remove from Favorites";
-    $menu_roomfavorites = "Favorite Rooms";
+    $menu_roomfavorites = "Favorite Blog Rooms";
     $menu_new = "New";
     $menu_newfolder = "New Folder";
     $menu_sortbydate = "By Date";
@@ -151,6 +151,9 @@ if($_SESSION['language']==''){
     $menu_signupsuccess2 = "Download the $appname mobile app from your app store for a better experience.";
     $menu_techsupportfaq = "FAQ Tech Support";
     $menu_sms = "Mobile Phone";
+    $menu_manageroomscreate = "Create New Blog Room";
+    $menu_manageroomsview = "View Blog Room";
+    $menu_manageroomsedit = "Edit Blog Room Properties";
     
 if($_SESSION['language']=='spanish'){
 

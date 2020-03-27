@@ -4,6 +4,7 @@ require_once("config.php");
 require_once("crypt.inc.php");
 require_once ("notify.inc.php");
 require_once("chatsend.inc.php");
+require_once("broadcast.inc.php");
 include("lib_autolink.php");
 
     //$replyflag = mysql_safe_string($_POST[replyflag]);
@@ -23,6 +24,9 @@ include("lib_autolink.php");
     $title = base64_encode(@mysql_safe_string(StripEmojis($_POST['title'])));
     
     $broadcastmode = '';
+    if($action =='VIDEO'){
+        $broadcastmode = 'V';
+    }
     if( $chatid == ""){
     
         echo "Fail2";
@@ -31,7 +35,8 @@ include("lib_autolink.php");
     
     if( $mode == 'F'){
         FlagChatMessage($action, $msgid, $chatid);
-        
+        TouchMembers($chatid);
+        echo "success";
         exit();
     }    
     
@@ -41,11 +46,30 @@ include("lib_autolink.php");
         exit();
     }
     
+    if( $mode == 'T'){
+    
+        $title = stripslashes(@mysql_safe_string(StripEmojis($_POST['title'])));
+        
+        if($title == ''){
+            $encoding = '';
+            $titleencrypted = '';
+        } else {
+            $titleencrypted =  EncryptText( $title, "$chatid" );
+            $encoding = $_SESSION['responseencoding'];
+        }
+        $result = do_mysqli_query("1",
+            "
+            update chatmaster set title='$titleencrypted', encoding='$encoding', radiostation='$radio' where chatid=$chatid 
+            ");
+        echo "success";
+        exit();
+    }
     
     if( $mode == 'D'){
         DeleteChatMessage($msgid, $chatid);
         TouchMembers($chatid);
         
+        echo "success";
         exit();
     }
     
@@ -76,7 +100,7 @@ include("lib_autolink.php");
             }
         }
         
-        
+        echo "success";
         exit();
     }
     
@@ -98,7 +122,14 @@ include("lib_autolink.php");
 
     
     $keyhash = $row['keyhash'];
+    $quizroom = "";
+    if($row['roomradiostation']=='Q'){
+        $quizroom = 'Y';
+    }
     $hidemode = $row['hidemode'];
+    $broadcasterid = $row['broadcaster'];
+    $radiostation = $row['radiostation'];
+    $radiotitle = stripslashes(base64_decode($row['radiotitle']));
     
     $compiled = FormatImage($img);
     $compiled .= FormatMessageNew($message);
@@ -124,6 +155,167 @@ include("lib_autolink.php");
     
     $subtype = '';
     
+    //Ring Bell
+    if($mode == "STREAM"){
+        
+        $msg = BroadcastModeMessage($providerid, $chatid, $mode, $action, "" );
+        $message = $msg->message;
+        $messageshort = $msg->messageshort;
+        
+        $msgid = "";
+        $streaming = false;
+        $subtype = "LV";
+        $providerid = $broadcasterid;
+        
+    }
+    if($mode == "BROADCASTER"){
+        //$providerid = $broadcasterid;
+        if($action == 'TITLE' && $title ==''){
+            exit();
+        }
+
+        SetChatPopUpVideoViewer($providerid, $broadcastmode, $chatid);
+        
+        $streaming = true;
+
+        //Audio Broadcast
+        if($action == ''){
+            //Auto End Audio Broadcasts if Not Streaming
+            /* Recheck Streaming Status before Action */
+            $streamhash = substr(hash("sha1", $chatid),0,8);
+            $streamid = "chat$streamhash";
+            
+            $streaming = CheckLiveStream($streamid);
+            if(!$streaming){
+                $result = do_mysqli_query("1",
+                    "
+                    update chatmembers set broadcaster = null where chatid=$chatid 
+                    ");
+
+
+                $result = do_mysqli_query("1",
+                    "
+                    update chatmaster set broadcaster = null, broadcastmode='', 
+                    live='N', radiotitle='', reservestation=null 
+                    where chatid=$chatid and radiostation in ('Q','Y')
+                    ");
+                //Delete original Streamid.mp3
+                DeleteIcecastRecording($providerid, $chatid );
+                RenameIcecastRecording($providerid, $chatid, $broadcastername, $title );
+
+                echo "success";
+                exit();
+            }
+            
+        }
+        
+        if($action!='TITLE'){
+            
+            GoLive($providerid, $chatid, $title, $broadcastmode );
+            CreateNewBroadcastLog($providerid, $chatid);
+            
+        } else {
+            
+            ChangeLiveTitle($chatid, $title);
+            
+        }
+        
+        
+        $title_decoded = substr(stripslashes(base64_decode($title)),0,40);
+        
+        $msgid = "";
+        $streaming = false;
+        $subtype = "LV";
+        
+        $msg = BroadcastModeMessage($providerid, $chatid, $mode, $action, $title_decoded );
+        $message = $msg->message;
+        $messageshort = $msg->messageshort;
+        
+        
+    }
+    if($mode == "ENDBROADCAST"){
+        
+        $msgid = "";
+
+        $msg = BroadcastModeMessage($providerid, $chatid, $mode, "", "" );
+        $message = $msg->message;
+        $messageshort = $msg->messageshort;
+        
+        $streaming = true;
+        $subtype = "LV";
+        $result = do_mysqli_query("1",
+            "
+            update chatmaster set broadcaster = null,  
+            live='N', broadcastmode=null, radiotitle='' 
+            where chatid=$chatid and radiostation in ('Y','Q')
+            ");
+        
+        $result = do_mysqli_query("1",
+            "
+            update chatmembers set broadcaster = null where chatid=$chatid 
+            ");
+        
+        $result = do_mysqli_query("1",
+            "
+            delete from notification where chatid=$chatid and notifytype='CP' and notifysubtype='LV'
+            and notifyid > 0
+            ");
+        
+        $result = do_mysqli_query("1",
+            "select broadcastid from broadcastlog  
+             where providerid = $providerid and 
+             chatid = $chatid order by broadcastid desc limit 1
+            "
+            );
+        if($row = do_mysqli_fetch("1",$result)){
+        
+            do_mysqli_query("1",
+                "
+                update broadcastlog
+                set broadcastdate2 = now(),
+                elapsed = time_to_sec(timediff( now(), broadcastdate ))
+                where broadcastid = $row[broadcastid]
+                and mode = 'B'
+                ");
+        }
+        
+    }
+    
+    if($mode == "LIKE"){
+        $message = "👍";
+        $messageshort = $message;
+        $msgid = "";
+        $streaming = true;
+    }
+    if($mode == "UNLIKE"){
+        $message = "👎";
+        $messageshort = $message;
+        $msgid = "";
+        $streaming = true;
+    }
+    
+    if($mode == "REPLAYDELETE"){
+        
+        /* Recheck Streaming Status before Action */
+        $streamhash = substr(hash("sha1", $chatid),0,8);
+        $streamid = "chat$streamhash";
+        $streaming = CheckLiveStream($streamid);
+        if(streaming){
+           //exit(); 
+        }
+        
+        DeleteIcecastRecordingFilename($providerid, $chatid, $action );
+        $result = do_mysqli_query("1",
+            "
+            delete from recordings where recid=$action
+            ");
+        echo "success";
+        exit();
+    }
+    
+    
+    
+
     //*********************************************************************************************
     //*********************************************************************************************
     // Create Chat Message
@@ -134,7 +326,10 @@ include("lib_autolink.php");
     
     if($msgid == ''){
         
-        $notify = true;
+        $notify = false;
+        if(!$streaming && $quizroom==''){
+            $notify = true;
+        }
         CreateChatMessage( $providerid, $chatid, $passkey, $message, $messageshort, $streaming, $notify, $radiostation);
         
         
@@ -156,12 +351,15 @@ include("lib_autolink.php");
         ");
     $result = do_mysqli_query("1",
         "
-        update chatmaster set lastmessage=now() where  chatid=$chatid and status='Y'
+        update chatmaster set lastmessage=now(),
+        chatcount = (select count(*) from chatmessage where chatmessage.chatid = chatmaster.chatid and chatmessage.status = 'Y'),
+        chatmembers = (select count(*) from chatmembers where chatmembers.chatid = chatmaster.chatid )
+        where  chatid=$chatid and chatmaster.status='Y'
         ");
     
     
+    TouchMembers($chatid);
     
     
-    echo "Success";
+    echo "success";
     exit();
-    

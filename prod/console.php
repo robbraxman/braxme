@@ -12,7 +12,8 @@ require('colorscheme.php');
 require_once("accountcheck.inc.php");
 require_once("startup.inc.php");
 
-$connecterror = "<div class='tilebutton restart' style='cursor:pointer;padding:20px;color:black;background:white'><b>Internet Connectivity Issue. Please click here to reload.</b></div>";
+$connecterror = "<div class='tilebutton restarthome' style='cursor:pointer;padding:20px;color:black;background:white'><b>Internet Connectivity Issue. Please try again.</b></div>";
+$timeouterror = "<div class='tilebutton restarthome' style='cursor:pointer;padding:20px;color:black;background:white'><b>Session Timeout. Please tap to restart.</b></div>";
 
 $uniqid = uniqid();
 
@@ -121,7 +122,7 @@ if($_SESSION['enterprise']=='Y'){
             <td class='gridnoborder'  style='width:100%;vertical-align:top;overflow-x:hidden;overflow-y:hidden'>
                 <div id="banner" class="bannerflush bannerheight" 
                    style="position:relative;top:0;left:0;padding:0;overflow:hidden;
-                   width:100%;margin:0;text-align:left;background-color:<?=$global_banner_color?>">
+                   width:100%;margin:0;text-align:left;background-color:transparent">
                     <span class='formobile'>
                          <?=$blink?>
                         <img class='<?=$_SESSION['profileaction']?>  mainbutton tooltip bannerheight' alt='Change your profile and data' 
@@ -143,14 +144,14 @@ if($_SESSION['enterprise']=='Y'){
                              style=";top:6px;;cursor:pointer;opacity:0.0"  title="Main Menu" />
                     </div>
                     <div class='opensidemenu menubutton formobile' 
-                        style='display:inline;float:right;cursor:pointer;padding-right:20px;padding-left:20px;padding-bottom:0px;'>
+                        style='display:inline;float:right;cursor:pointer;padding-right:20px;padding-left:5px;padding-bottom:0px;'>
                         <?=$beacon?>
-                        <img class='tip1 icon15' src='../img/brax-menu-128.png' 
+                        <img class='tip1 icon20' src='<?=$iconsource_braxmenu?>' 
                              style=";top:10px;cursor:pointer;"  title="Main Menu" />
                     </div>
                     <div class='camera formobile tapped menubutton' 
-                         style='display:inline;float:right;cursor:pointer;padding-right:8px;padding-left:5px;padding-bottom:0px;margin-right:10px' data-chatid=''>
-                        <img class='icon20' src='../img/camera-white-128.png' 
+                         style='display:inline;float:right;cursor:pointer;padding-right:5px;padding-left:5px;padding-bottom:0px;margin-right:10px' data-chatid=''>
+                        <img class='icon20' src='<?=$iconsource_braxcamera?>' 
                              style=";top:11px;;cursor:pointer;" title="Camera" />
                     </div>
                 </div>
@@ -211,17 +212,19 @@ if($_SESSION['enterprise']=='Y'){
                                     <div class='settingsview' data-colorscheme='<?=$_SESSION['colorscheme']?>' data-sponsorcolorscheme='<?=$_SESSION['sponsorcolorscheme']?>'
 
                                          style="display:none;overflow:visible;background-color:transparent;text-align:left;color:<?=$global_textcolor?>;max-width:100%;">
+                                        <!--
                                         <div class='pagetitle2a' style='background-color:<?=$global_titlebar_color?>;color:white;padding-left:20px;padding-right:20px;padding-top:0px;padding-bottom:3px'>
-                                            <!--
+                                            !--
                                             <img class='icon20 tilebutton' Title='Back to Home' src='../img/Arrow-Left-in-Circle-White_120px.png' 
                                                 style='' />
                                             &nbsp;
-                                            -->
+                                            --
                                             <span style='opacity:.5'>
                                             <?=$icon_braxsettings2?>
                                             </span>
                                             <?=ucfirst(strtolower($menu_settings));?>
                                         </div>
+                                        -->
                                         <div 
                                          style="background-color:transparent;margin:auto;text-align:center;width:90%;min-width:70%;vertical-align:top">
                                                     <?=$settingsmenu?>
@@ -677,6 +680,7 @@ var mobileversion = "<?=$_SESSION['version']?>";
 var hardenter = "<?=$_SESSION['hardenter']?>";
 var startupphp = "<?=$startupphp?>";
 var ConnectError = "<?=$connecterror?>";
+var TimeoutError = "<?=$timeoutrror?>";
 try {
         localStorage.mobilecommand = ''; 
         localStorage.mobilenotification = ''; 
@@ -706,7 +710,7 @@ if( $tester == 'Y'){
 ?>
 <script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console0.js?i=<?=$uniqid?>'></script>
 <script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console.js?i=<?=$uniqid?>'></script>
-<script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/notifywebtest.js?<?=$uniqid?>'></script>
+<script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/notifyweb.js?<?=$uniqid?>'></script>
 
 <?php
 /*

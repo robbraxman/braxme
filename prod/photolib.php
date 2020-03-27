@@ -130,6 +130,45 @@ require_once("internationalization.php");
         $save = "";
         //exit();
     }
+    if( $save=='HA'){ //hide album
+
+        /*Can't Delete Public Pics */
+        
+        $selectedalbum = mysql_safe_string(stripslashes($_POST['album']));        
+        $result = do_mysqli_query("1",
+            "
+                update photolib set hide='Y' 
+                where owner= $providerid and public='N'
+                and ( 
+                (album='$selectedalbum' and album!='zuck' and hide is null)
+                    or hide = 'N'
+                )
+                
+            ");
+        $selectedalbum = "";
+        $selectedalbumHtml = "";
+        $selectedalbumSql = "";
+        $save = "";
+        //exit();
+    }
+    if( $save=='UHA'){ //delete album
+
+        /*Can't Delete Public Pics */
+        
+        $selectedalbum = mysql_safe_string(stripslashes($_POST['album']));        
+        $result = do_mysqli_query("1",
+            "
+                update photolib set hide='N' 
+                where owner= $providerid  
+                and public='N' and (hide='Y')
+                
+            ");
+        $selectedalbum = "";
+        $selectedalbumHtml = "";
+        $selectedalbumSql = "";
+        $save = "";
+        //exit();
+    }
     if( $save=='FAMILYSHARE' || $save=='FRIENDSHARE' || $save =='ALLSHARE'){ //Change Photo
     
         $comment = @mysql_safe_string($_POST['comment']);
@@ -477,27 +516,27 @@ require_once("internationalization.php");
         background-color:$global_background;
         color:$global_textcolor;
         '>
+            ";
+
+/*    
             <div class='gridnoborder' style='background-color:$global_titlebar_color;color:white;padding-left:10px;padding-right:20px;padding-bottom:3px;margin:0;' >
-                <!--
-                <img class='icon20 $action mainbutton' Title='Back to Home' src='../img/Arrow-Left-in-Circle-White_120px.png' 
-                    style='' data-providerid='$providerid'  data-roomid='$_SESSION[profileroomid]' data-caller='none' />
-                &nbsp;
-                -->
                 <span style='opacity:.5'>
                 $icon_braxphoto2
                 </span>    
                 <span class='pagetitle2a' style='color:white'>$menu_myphotos</span> 
             </div>
-            ";
+ * 
+ */
+    
     if($selectedalbum == ''){
         echo "
             <span class=formobile>
                <div class='uploadphoto2 tapped' data-chatid='' style='display:inline-block;background-color:transparent;'>
-                    <img class='icon35' title='Upload Photo' src='$iconsource_braxupload_common' style='margin-left:20px;margin-bottom:20px;margin-right:20px' />
+                    <img class='icon30' title='Upload Photo' src='$iconsource_braxupload_common' style='margin-left:20px;margin-bottom:20px;margin-right:20px' />
                 </div>
                 &nbsp;
                 <div class='textphoto tapped' style='display:inline-block;background-color:transparent;'>
-                    <img class='icon35' title='Text to Pic Converter' src='$iconsource_braxtextphoto_common' style='margin-left:0px;margin-bottom:20px;margin-right:0px' />
+                    <img class='icon30' title='Text to Pic Converter' src='$iconsource_braxtextphoto_common' style='margin-left:0px;margin-bottom:20px;margin-right:0px' />
                 </div>
                 <br>
             </span>
@@ -614,7 +653,20 @@ require_once("internationalization.php");
                                 
                                 &nbsp;
                                 &nbsp;
+                            ";
+            if($_SESSION['mobilecapable']=='N'){
+                echo "
+                            <a href='$rootserver/$installfolder/sharedownload.php?p=$row[filename]' style='text-decoration:none'>
+                                <img class='icon30' title='Download Photo' src='$iconsource_braxdownload_common'  />
+                            </a>
+                            ";
+            } else {
+                echo "
+                                
                             <img class='downloadimg icon30' data-imgid='download_img1' src='$iconsource_braxdownload_common' style=''  style='margin-left:10px'/>
+                                ";
+            }
+            echo "
                                 &nbsp;
                                  &nbsp;
                                  &nbsp;
@@ -1757,7 +1809,7 @@ function AlbumMenu($providerid, $selectedalbum, $page)
     } else {
             
         $result2 = do_mysqli_query("1","
-            select distinct album from photolib where  public='Y'
+            select distinct album from photolib where  public='Y' and album not like '* %'
                 and album!='' and album!='All' and album!='$selectedalbumSql' and album!='* Artist Submission' order by album asc
             ");
     }

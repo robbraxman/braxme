@@ -73,9 +73,9 @@ require_once("roomselect.inc.php");
     
     if( $caller == 'select'){
         echo "
-                <div class='gridnoborder' style='background-color:$global_titlebar_color;color:white;padding-left:20px;padding-right:20px;padding-bottom:3px;margin:0;' >
-                    <img class='icon20 feed'
-                        id='feed' data-roomid='$roomid' data-caller='room'
+                <div class='feed gridnoborder' style='cursor:pointer;background-color:$global_titlebar_color;color:white;padding-left:20px;padding-right:20px;padding-bottom:3px;margin:0;
+                        id='feed' data-roomid='$roomid' data-caller='room';>
+                    <img class='icon20'
                         Title='Back to Home' src='../img/Arrow-Left-in-Circle-White_120px.png' 
                         style='' />
                     &nbsp;
@@ -90,16 +90,16 @@ require_once("roomselect.inc.php");
             ";
     } else {
         echo "
-            <div class='gridnoborder' style='background-color:$global_titlebar_color;color:white;padding-left:20px;padding-right:20px;padding-bottom:3px;margin:0;' >
+            <div class='feed gridnoborder' style='cursor:pointer;background-color:transparent;color:$global_textcolor;padding-left:20px;padding-right:20px;padding-bottom:3px;margin:0;
+                id='feed' data-roomid='0' data-caller='room' >
                 <img class='icon20 feed'
-                    id='feed' data-roomid='0' data-caller='room'
-                    Title='Back to Home' src='../img/Arrow-Left-in-Circle-White_120px.png' 
+                    Title='Back to Home' src='$iconsource_braxarrowleft_common' 
                     style='' />
                 &nbsp;
                 <span style='opacity:.5'>
                 $icon_braxroom2
                 </span>
-                <span class='pagetitle2a' style='color:white'>$menu_discoverrooms</span> 
+                <span class='pagetitle2a' style='color:$global_textcolor'>$menu_discoverrooms</span> 
             </div>
             
             <div class=appbody style='background-color:transparent;color:$global_textcolor;vertical-align:top'>
@@ -108,8 +108,8 @@ require_once("roomselect.inc.php");
     }
 
     echo "
-            <div class='pagetitle3' style='color:$global_textcolor;display:inline;white-space:nowrap;margin-top:20px;margin-left:10px'>
-                <img class='icon30 showhidden' src='$iconsource_braxfind_common'  title='Find Room' />
+            <div class='feed pagetitle3' style='color:$global_textcolor;display:inline;white-space:nowrap;margin-top:20px;margin-left:10px;'>
+                <img class='icon25 showhidden' src='$iconsource_braxfind_common'  title='Find Room' />
                 <span class='showhiddenarea' style='display:none'>
                     <input class='inputline dataentry mainfont' id='findroom' placeholder='$menu_find $menu_room' name='findroom' type='text' size=20 value='$find'              
                         style='max-width:120px;padding-left:10px;;margin-bottom:10px;color:$global_textcolor'/>
@@ -122,7 +122,7 @@ require_once("roomselect.inc.php");
             &nbsp;
             <div class='pagetitle3' style='color:$global_textcolor;display:inline;white-space:nowrap;margin-top:20px;margin-left:10px'>
                 <span class='showhidden' style='cursor:pointer' title='Join a room using a hashtag'>
-                    <img class='icon30 showhidden' src='$iconsource_braxjoin_common' title='Join Room by Hashtag' />
+                    <img class='icon25 showhidden' src='$iconsource_braxjoin_common' title='Join Room by Hashtag' />
                 </span>
                 <span class='showhiddenarea' style='display:none'>
                     <input class='inputline dataentry mainfont' id='roomhandle' placeholder='Hashtag' name='roomhandle' type='text' size=20 value=''              

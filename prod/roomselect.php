@@ -1,11 +1,17 @@
 <?php
 session_start();
-require("validsession.inc.php");
 require("nohost.php");
 require_once("config.php");
 require_once("internationalization.php");
 require_once("roomselect.inc.php");
 
+    if(ServerTimeOutCheck()){
+        
+        return "T";
+
+    }
+    
+require("validsession.inc.php");
 
 
     $time1 = microtime(true);
@@ -47,13 +53,14 @@ require_once("roomselect.inc.php");
     
     if($mode!='S'){
     echo "
+        <!--
         <div class='gridnoborder' style='background-color:$global_titlebar_color;color:white;padding-left:20px;padding-right:20px;padding-bottom:3px;margin:0;' >
             <span style='opacity:.5'>
             $icon_braxroom2
             </span>
             <span class='pagetitle2a' style='color:white'><b>$menu_roomselect</b></span> 
         </div>
-        
+        -->
         ";
     } else {
     echo "
@@ -85,7 +92,7 @@ require_once("roomselect.inc.php");
         if($roomdiscovery !== 'Y'){
         echo "
                 <div class='pagetitle3' style='display:inline;white-space:nowrap;margin-top:20px;margin-left:0px;;color:$global_textcolor'>
-                    <img class='icon30 showhidden' src='$iconsource_braxfind_common' title='Find Room' />
+                    <img class='icon25 showhidden' src='$iconsource_braxfind_common' title='Find Room' />
                     <span class='showhiddenarea' style='display:none'>
                         <input class='showhidden2 inputline dataentry mainfont' id='findroom' placeholder='$menu_find $menu_room' name='findroom' type='text' size=20 value=''              
                             style='max-width:120px;padding-left:10px;;margin-bottom:10px;color:$global_textcolor'/>
@@ -98,7 +105,7 @@ require_once("roomselect.inc.php");
                 &nbsp;
                 <div class='pagetitle3' style='display:inline;white-space:nowrap;margin-top:20px;margin-left:0px;color:$global_textcolor'>
                     <span class='showhidden' style='cursor:pointer' title='Join a room using a hashtag'>
-                        <img class='icon30 showhidden' src='$iconsource_braxjoin_common' title='Join Room by Hashtag' />
+                        <img class='icon25 showhidden' src='$iconsource_braxjoin_common' title='Join Room by Hashtag' />
                     </span>
                     <span class='showhiddenarea' style='display:none'>
                         <input class='inputline dataentry mainfont' id='roomhandle' placeholder='Hashtag' name='roomhandle' type='text' size=20 value=''              
@@ -117,13 +124,13 @@ require_once("roomselect.inc.php");
         echo "
                 <div class='pagetitle3' style='display:inline;white-space:nowrap;margin-top:20px;margin-left:0px;color:$global_textcolor'>
                     <span class='roomdiscover' style='cursor:pointer' title='Discover Rooms'>
-                        <img class='icon30 showhidden' src='$iconsource_braxglobe_common' title='Discover Rooms' />
+                        <img class='icon25 showhidden' src='$iconsource_braxglobe_common' title='Discover Rooms' />
                     </span>
                 </div>
                 &nbsp;
                 <div class='pagetitle3' style='display:inline;white-space:nowrap;margin-top:20px;margin-left:0px;;color:$global_textcolor'>
                     <span class='showhiddenarea' style='display:none'><br><br></span>
-                    <img class='icon30 showhidden' src='$iconsource_braxfind_common' title='Find Room' />
+                    <img class='icon25 showhidden' src='$iconsource_braxfind_common' title='Find Room' />
                     <span class='showhiddenarea' style='display:none'>
                         <input class='showhidden2 inputline dataentry mainfont' id='findroom' placeholder='$menu_find $menu_room' name='findroom' type='text' size=20 value=''              
                             style='width:250px;padding-left:10px;;margin-bottom:10px;color:$global_textcolor'/>
@@ -137,7 +144,7 @@ require_once("roomselect.inc.php");
                 <div class='pagetitle3' style='display:inline;white-space:nowrap;margin-top:20px;margin-left:0px;color:$global_textcolor'>
                     <span class='showhiddenarea' style='display:none'><br><br></span>
                     <span class='showhidden' style='cursor:pointer' title='Join a room using a hashtag'>
-                        <img class='icon30 showhidden' src='$iconsource_braxjoin_common' title='Join Room by Hashtag' />
+                        <img class='icon25 showhidden' src='$iconsource_braxjoin_common' title='Join Room by Hashtag' />
                     </span>
                     <span class='showhiddenarea' style='display:none'>
                         <input class='inputline dataentry mainfont' id='roomhandle' placeholder='Hashtag' name='roomhandle' type='text' size=20 value=''              
@@ -195,7 +202,7 @@ require_once("roomselect.inc.php");
     if($mode=='TRENDING' && $find == '' && $roomdiscovery == 'Y' ){
         echo "
                 <div style='padding-bottom:20px;display:inline-block;width:90%'>
-                    <div class='mainfont roomselect' data-mode='MYROOMS' style='float:right;cursor:pointer;margin-right:20px;color:$global_activetextcolor;'>$menu_myrooms</div>
+                    <div class='mainfont roomselect' data-mode='MYROOMS' style='float:right;cursor:pointer;margin-right:20px;color:$global_activetextcolor;'>$menu_rooms</div>
                 </div>
                     ";
         
@@ -249,8 +256,8 @@ require_once("roomselect.inc.php");
     }
 
     if(($mode == 'MYROOMS' || $mode =='') && $sponsor=='' && $roomdiscovery == 'N' && $_SESSION['enterprise']=='Y'){
-        echo "<br><br>Automatically create your first room and website using the Create $enterpriseapp Space on your home page.<br><br><br>
-             Enable SOCIAL MEDIA in My Account Info to see the public rooms.<br><br>";
+        echo "<br><br>Automatically create your first $menu_room and website using the Create $enterpriseapp Space on your home page.<br><br><br>
+             Enable SOCIAL MEDIA in My Account Info to see the public $menu_room<br><br>";
     }
     if($count > 0){
         echo "<br><br><br>
@@ -280,7 +287,7 @@ require_once("roomselect.inc.php");
                         <img class='' src='../img/agent.jpg' style='width:100%;height:auto' />
                     </div>
                     <div class='tipbubble pagetitle2' style='padding:30px;color:black;background-color:whitesmoke'>
-                        You create Blog content  in Rooms.<br><br>
+                        You create Blog content in Blog Rooms.<br><br>
                         Use the $enterpriseapp Wizard to automatically create them for you.
                     </div>
                     <br>

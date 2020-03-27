@@ -5,6 +5,8 @@ function RoomListFooter()
     global $global_bottombar_color;
     global $global_activetextcolor_reverse;
     global $menu_managerooms;
+    global $menu_rooms;
+    global $menu_discoverrooms;
     
     if($_SESSION['roomcreator']!='Y' ){
         return;
@@ -28,6 +30,8 @@ function NoRooms()
 {
     global $global_textcolor;
     global $global_activetextcolor;
+    global $menu_rooms;
+    global $menu_discoverrooms;
     
         echo "
                 <div class='pagetitle3' 
@@ -36,13 +40,13 @@ function NoRooms()
                         <img class='' src='../img/agent.jpg' style='width:100%;height:auto' />
                     </div>
                     <div class='tipbubble pagetitle2a' style='padding:30px;color:black;background-color:whitesmoke'>
-                        Blog content can be found in Rooms.<br><br>
+                        Published content can be found in $menu_rooms.<br><br>
                         Tap on 
                         <div class='roomselect' data-mode='TRENDING' style='cursor:pointer;color:$global_activetextcolor'>Trending</div> 
-                            to see what rooms are popular.<br> 
+                            to see what $menu_rooms are popular.<br> 
                         Or 
                         <div class='roomdiscover' data-mode='TRENDING' style='cursor:pointer;color:$global_activetextcolor'>
-                            <img class='icon20' src='../img/Globe_120px.png' /> Discover new rooms.
+                            <img class='icon20' src='../img/Globe_120px.png' /> $menu_discoverrooms.
                         </div>
                     </div>
                     <br>
@@ -2647,6 +2651,7 @@ function JoinCommunity($providerid, $roomdiscovery, $preformat, $postformat)
                 text-align:center;vertical-align:top;
                 background-color:$global_background;
                 min-width:15%;max-width:300px;padding-left:10px;padding:10px;margin:5px'>
+                    $photourl
                     <div class='mainfont' style='color:$global_textcolor;max-width:90%;width:200px;word-break:break-word'>
                         <b>$row[room]</b>
                     </div>

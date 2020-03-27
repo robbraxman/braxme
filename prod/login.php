@@ -40,7 +40,6 @@ $language = @mysql_safe_string($_GET['lang']);
 $roomhandle = @mysql_safe_string($_GET['h']);
 $roomstorehandle = @mysql_safe_string($_GET['store']);
 
-LogDebug($providerid,"Login($source,$version,$mobile,?)");
 
 
 if($language!=''){

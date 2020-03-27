@@ -1190,7 +1190,11 @@ $(document).ready( function() {
             NativeCall("certcheckbrax.me");
             //window.location = 'http://brax.me/command/certcheck/brax.me';
         });
-        
+        $('body').on('click','.restarthome', function() 
+        {
+            $('#trigger_restart').click();
+            
+        });
         $('body').on('click','.restart', function() 
         {
             $.ajax({
@@ -3333,6 +3337,7 @@ $(document).ready( function() {
                     $.ajax({
                         url: rootserver+'roomselect.php',
                         context: document.body,
+                        timeout: 10000,
                         type: 'POST',
                         data: 
                          { 'providerid': $('#pid').val(), 
@@ -3341,6 +3346,7 @@ $(document).ready( function() {
                          }
 
                     }).done(function( data, status ) {
+                        
 
                         $('#roominnerwindow').hide().html(data).fadeIn(800);
                         $("#mainview").scrollTop(0);
@@ -3382,6 +3388,7 @@ $(document).ready( function() {
                      }
 
                 }).done(function( data, status ) {
+                    
                     if(status!=='success'){
                         alertify.alert('Room connection failed. Check your network connection and retry.');
                         //$('.mainview').scrollTop(0);
@@ -3717,7 +3724,7 @@ $(document).ready( function() {
                 LastFunc = '';
                 
                 $('#roominnerwindow').html(LoadingGIF);
-                $.ajax({
+                xhrapp = $.ajax({
                     url: rootserver+'roomselect.php',
                     context: document.body,
                     type: 'POST',
@@ -3729,6 +3736,12 @@ $(document).ready( function() {
                      }
 
                 }).done(function( data, status ) {
+                    
+                    if( data ==='T'){
+                        
+                        $('#roominnerwindow').html(TimeoutError);
+                        return;
+                    }
 
                     $('#roominnerwindow').hide().html(data).fadeIn(800);
                     $("#mainview").scrollTop(0);
@@ -3787,7 +3800,7 @@ $(document).ready( function() {
                 defaultRoomid = 0;
                 
                 $('#roominnerwindow').html(LoadingGIF);
-                $.ajax({
+                xhrapp = $.ajax({
                     url: rootserver+'roomselect.php',
                     context: document.body,
                     type: 'POST',
@@ -3801,6 +3814,12 @@ $(document).ready( function() {
                      }
 
                 }).done(function( data, status ) {
+
+                    if( data ==='T'){
+                        
+                        $('#roominnerwindow').html(TimeoutError);
+                        return;
+                    }
 
                     $('#roominnerwindow').hide().html(data).fadeIn(800);
                     $("#mainview").scrollTop(0);
@@ -8108,11 +8127,12 @@ $(document).ready( function() {
                 ChatId = 0;
                 ChannelId = 0;
                 $('#chatid').val("");
-                $('#socialwindow').html(LoadingGIF);
+                $('#socialwindow').html(LoadingGIF+"<br><div class='admintrace3'></div>");
                 
-                $.ajax({
+                xhrapp = $.ajax({
                     url: rootserver+'chatlist.php',
                     context: document.body,
+                    timeout: 10000,
                     type: 'POST',
                     data: 
                     { 'providerid': $('#pid').val(),
@@ -8123,8 +8143,20 @@ $(document).ready( function() {
                  
                 }).done(function( data, status ) {
                     //PanelShow(8);
+                    
                     var msg = jQuery.parseJSON(data);
                     //$('#chatwindow').scrollTop(0);
+                    if(msg.noitems === 'T'){
+                        
+                        $('#socialwindow').html(TimeoutError);
+                        return;
+                        
+                    }
+                    if(tester==='Y'){
+                        lastCheckIn3 = new Date();
+                        $('.admintrace3').html(lastCheckIn3+' '+status);
+                    }
+                    
                     if( msg.noitems === 'Y'){
                         /* Invite - No Contacts */
                         chatSelect('N','','','','',0);
@@ -8139,6 +8171,12 @@ $(document).ready( function() {
                     $('#socialwindow').show();
                     
                 }).fail(function( data, status ) {
+                    
+                    if(tester==='Y'){
+                        lastCheckIn3 = new Date();
+                        $('.admintrace3').html(lastCheckIn3+' '+status);
+                    }
+                    
                     $('#socialwindow').html(ConnectError);
                 });
                 
@@ -9217,7 +9255,7 @@ $(document).ready( function() {
 
                 $('#socialwindow').html(LoadingGIF);
                 //PanelShow(31);
-                $.ajax({
+                xhrapp = $.ajax({
                     url: rootserver+'findpeople.php',
                     context: document.body,
                     type: 'POST',
@@ -9228,8 +9266,15 @@ $(document).ready( function() {
                     }
                  
                 }).done(function( data, status ) {
+                    
                     PanelShow(31);
                     var msg = jQuery.parseJSON(data);
+                    if(msg.list ==='T'){
+                        
+                        $('#socialwindow').html(TimeoutError);
+                        return;
+                    }
+                    
                     $('#socialwindow').html(msg.list);//.fadeIn("800");
                     if( mode === ''){
                         //mode = msg.mode;
