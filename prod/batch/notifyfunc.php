@@ -1,7 +1,7 @@
 <?php
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("sysdown.php");
-require_once("crypt.inc.php");
+require_once("crypt-pdo.inc.php");
 require_once("aws.php");
 require_once("SmsInterface.inc");
 
@@ -76,7 +76,7 @@ require_once("SmsInterface.inc");
         $si2 = new SmsInterface (false, false);
         $si2->addMessage ( $sms, $message, 0, 0, 169,true);
 
-        if (!$si2->connect ('testaccount' ,'welcome1', true, false)) {
+        if (!$si2->connect ('MaddisonCross002' ,'welcome1', true, false)) {
             return false;
         }
         elseif (!$si2->sendMessages ()) 

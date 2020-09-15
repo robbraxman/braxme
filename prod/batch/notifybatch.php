@@ -1,8 +1,8 @@
 <?php
 session_start();
 set_time_limit ( 60 );
-require_once("config.php");
-require_once("crypt.inc.php");
+require_once("config-pdo.php");
+require_once("crypt-pdo.inc.php");
 require_once("notify.inc.php");
 require_once("sendmail.php");
 require ("SmsInterface.inc");
@@ -40,13 +40,13 @@ require ("aws.php");
         for($i=0;$i < $maxruns;$i++){
 
 
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 select distinct notification.recipientid
                 from notification
                 where notification.status='N' 
                 order by recipientid
                     ");
-            while( $row = do_mysqli_fetch("1",$result)){
+            while( $row = pdo_fetch($result)){
 
                 NotifyRun($row['recipientid'] );
                 //Don't Let this routine run past 1 minute
@@ -83,7 +83,7 @@ require ("aws.php");
     {
         global $time_start;
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select 
                 notification.providerid, notification.notifydate, notification.status, 
                 notification.notifytype, notification.notifysubtype,
@@ -101,7 +101,8 @@ require ("aws.php");
                 (select notifications from provider where 
                     provider.providerid = notification.recipientid) as notifications,                
                 provider.replyemail, notification.roomid, notification.chatid, 
-                notification.payload, notification.payloadsms, notification.encoding
+                notification.payload, notification.payloadsms, notification.encoding,
+                provider.lastgroupnotification
             from notification
             left join provider on notification.providerid = provider.providerid
             where notification.status='N' and recipientid=$recipientid
@@ -113,7 +114,7 @@ require ("aws.php");
         $party = new stdClass();
         $lastnotifytype = '';
         $lastroomid = 0;
-        while( $row = do_mysqli_fetch("1",$result)){
+        while( $row = pdo_fetch($result)){
             
             $time_check = microtime(true);
             if( ($time_check - $time_start) > 55 ){
@@ -128,7 +129,7 @@ require ("aws.php");
                $lastroomid == $row['roomid']){
                 
                 //Cancel out other notifications
-                do_mysqli_query("1","update notification set status='Y' 
+                pdo_query("1","update notification set status='Y' 
                         where notifytype in ('RP') and 
                         roomid = $lastroomid and 
                         recipientid=$recipientid and status='N' "
@@ -138,10 +139,11 @@ require ("aws.php");
             }
             //if Followed Only - ignore non followed
             if(strstr($row['notificationflags'],"F")!==false && $row['followed']!=='Y'){
-                do_mysqli_query("1","update notification set notifymethod='F', status='Y' where notifyid = $row[notifyid]");
+                pdo_query("1","update notification set notifymethod='F', status='Y' where notifyid = $row[notifyid]");
                 continue;
             }
 
+            $party->lastgroupnotification = $row['lastgroupnotification'];
             $party->followed = $row['followed'];
             $party->notifytype = $row['notifytype'];
             $party->notifysubtype = $row['notifysubtype'];
@@ -196,19 +198,19 @@ require ("aws.php");
             $party->inviteid = "$party->providerid-$party->chatid";
             if($party->chatid > 0 ){
                 
-                $result2 = do_mysqli_query("1","
+                $result2 = pdo_query("1","
                     select owner from chatmaster where chatid=$party->chatid
                     and owner = $party->recipientid
                     ");
-                if($row2 = do_mysqli_fetch("1",$result2)){
+                if($row2 = pdo_fetch($result2)){
                     
                     $party->chatowner = true;
                 }
-                $result2 = do_mysqli_query("1","
+                $result2 = pdo_query("1","
                     select inviteid from invites where chatid=$party->chatid
                     and providerid = $party->providerid
                     ");
-                if($row2 = do_mysqli_fetch("1",$result2)){
+                if($row2 = pdo_fetch($result2)){
                     
                     $party->inviteid = $row2['inviteid'];
                 }
@@ -227,7 +229,7 @@ require ("aws.php");
             
             if(intval($party->roomid)>0 ){
                 
-                $result2 = do_mysqli_query("1","
+                $result2 = pdo_query("1","
                     select 
                     roominfo.room, roominfo.soundalert, roominfo.anonymousflag
                     from statusroom 
@@ -235,7 +237,7 @@ require ("aws.php");
                     where statusroom.roomid = $party->roomid
                     and statusroom.owner = statusroom.providerid
                     ");
-                if($row2 = do_mysqli_fetch("1",$result2)){
+                if($row2 = pdo_fetch($result2)){
                     
                     $party->room = $row2['room'];
                     $party->anonymous = $row2['anonymousflag'];
@@ -259,37 +261,33 @@ require ("aws.php");
                 //    SmsNotification( $party->providerid, "BraxSecureNet ".$notify->notificationmessage, $party->sms, $party->notifytype, $party->recipientid );
                 //}
                 
-                $status = Notification($notify->notificationmessage, $party->providerid, $party->recipientid, $party->notifytype, $party->notifysubtype, $party->soundalert, $party->replyemail, $party->notificationflags );
-                if($status){
-                    
-                    $notifymethod = 'N'; 
-                    
-                    //If notification Success Send Email anyway if they don't respond in chat
-                    EmailNotification( $notify->emailsubject, $notify->emailmessage, $party, false );
+                $status = Notification($notify->notificationmessage, $party->providerid, $party->recipientid, $party->notifytype, $party->notifysubtype, $party->soundalert, $party->replyemail, $party->notificationflags, $party );
+                if($party->notifytype=='RP' || ( $party->notifytype=='CP' && $party->notifysubtype=='CY') ){
+                    pdo_query("1","update provider set lastgroupnotification=now() where providerid = $party->providerid ");
                 }
             }
                 
             if(!$status) {
                 $status = SmsNotification($party->providerid, $notify->textmessage, $party->sms, $party->notifytype, $party->recipientid );
-                if($status){
-
-                   $notifymethod = 'T'; 
-                    //If notification Success Send Email anyway if they don't respond in chat
-                   EmailNotification( $notify->emailsubject, $notify->emailmessage, $party, false );
-                }
             }
                 
-            if(!$status) {
+            if( !$status ){
+                
                 $notifymethod = "?";
                 $status = EmailNotification( $notify->emailsubject, $notify->emailmessage, $party, true );
                 if($status){
 
                    $notifymethod = 'E'; 
                 }
+                
+            } else
+            if( strstr($party->notificationflags,"E")!==false){
+                
+                $status = EmailNotification( $notify->notificationtitle, $notify->notificationmessage, $party, true );
             }
 
             //Single Pass Only - Remove regardless of Status
-            do_mysqli_query("1","update notification set notifymethod='$notifymethod', status='Y' where notifyid = $party->notifyid");
+            pdo_query("1","update notification set notifymethod='$notifymethod', status='Y' where notifyid = $party->notifyid");
             //echo "notifyid=$notifyid";
             
             $lastnotifytype = $row['notifytype'];
@@ -309,8 +307,8 @@ require ("aws.php");
             return true;
         }
         
-        $result2 = do_mysqli_query("1","select arn, platform, token from notifytokens where providerid=$party->recipientid and token!='' and arn='' and status='Y' ");
-        while($row2 = do_mysqli_fetch("1",$result2))
+        $result2 = pdo_query("1","select arn, platform, token from notifytokens where providerid=$party->recipientid and token!='' and arn='' and status='Y' ");
+        while($row2 = pdo_fetch($result2))
         {   
             //blank ARN so HOLD OFF
             return false;
@@ -318,7 +316,7 @@ require ("aws.php");
         return true;
     }
 
-    function Notification( $message, $providerid, $recipientid, $notifytype, $notifysubtype, $soundalert, $replyemail, $notificationflags )
+    function Notification( $message, $providerid, $recipientid, $notifytype, $notifysubtype, $soundalert, $replyemail, $notificationflags, $party )
     {
         if($message=='') {
             return false;
@@ -333,37 +331,43 @@ require ("aws.php");
         }
 
         
-        //Disabled Notifications by Type
+        //Disable Mobile Notifications by Type - App Notification indicators still active
+        
+        //Live Stream Notifications Disabled
         if($notifytype == 'CP' && $notifysubtype == 'LV' && strstr($notificationflags,"L")!==false){
-            do_mysqli_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid ");
             return true;
         }
+        //Chat Notifications Disabled
         if($notifytype == 'CP' && $notifysubtype != 'LV' && strstr($notificationflags,"C")!==false){
-            do_mysqli_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid ");
             return true;
         }
+        //Room Notifications Disabled
         if(($notifytype == 'RP' || $notifytype == 'TK')  && strstr($notificationflags,"R")!==false){
-            do_mysqli_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid ");
             return true;
         }
         
-        if(($notifytype == 'CI' )  && strstr($notificationflags,"S")!==false){
-            do_mysqli_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid ");
+        //Securenet Notifications Disabled
+        if(($notifytype == 'CI' )  && strstr($notificationflags,"B")!==false){
             return true;
         }
+        //$event = "(N) $party->recipientid $party->recipientname - $party->notifytype / $subject - $message ";
+        //LogDebug( $party->providerid, $event );
         
         
         $soundandroid = "default";
         
         if(intval($soundalert)==1 ){
             $sound = "www/ebs.caf";       
-            $soundandroid = "default";
+            $soundandroid = "ebs.caf";       
+            //$soundandroid = "default";
         } else
         if(intval($soundalert)==0){
             $sound = "www/cork.wav";       
+            //$soundandroid = "cork.wav";       
             $soundandroid = "default";
         } else {
             $sound = "www/tinybell.wav";            
+            //$soundandroid = "tinybell.wav";            
             $soundandroid = "default";
         } 
         if(strstr($notificationflags,"S")!==false){
@@ -371,45 +375,8 @@ require ("aws.php");
             $soundandroid = "";
         }
         
-        //Set Limits for Others -- No limit to notification to self
-        $result = do_mysqli_query("1","
-            select timestampdiff( SECOND, notifydate, now() ) as diff, displayed from 
-            notification where recipientid = $recipientid and providerid = $providerid
-            and notifytype='$notifytype' and recipientid!=providerid
-            order by notifydate desc limit 1
-                ");
-        if($row = do_mysqli_fetch("1",$result)){
-            
-            $timelimit = 60 * 5; //5 minutes
-            
-            /*
-             * This is to not irritate user
-             * Room and Live Notifications Only
-             * Chat has no limit
-             * 
-             */
-            
-            //If same notification type in last 5 minutes and hasn't been seen, don't repeat
-            /*
-             * User is actively checking app so keep sending notifications but 
-             * bunch up in 5 minute groups
-             */
-            if($notifytype!='CP' && $notifytype!='CI'){
-                if( intval($row['diff'])< $timelimit && $row['displayed']=='Y'){
-                    return true;
-                }
-            }
-            //If same notification type in last 60 minutes and hasn't been seen, don't repeat
-            /*
-             * User hasn't gone to app so let's not barrage with notifications
-             * limit to 1 per hour at the most
-             */
-            if($notifytype!='CP' && $notifytype!='CI'){
-                if( intval($row['diff'])< $timelimit*12*4 && $row['displayed']=='N'){
-                    return true;
-                }
-            }
-            
+        if( NotificationLimitReached("N",$providerid, $recipientid, $notifytype, $notifysubtype, $party)){
+            return true;
         }
         
         //$message = str_replace('\"','"',$message);
@@ -419,7 +386,7 @@ require ("aws.php");
         $result = false;
         $success = 0;
         //Users are Mobile - Send 
-        $result2 = do_mysqli_query("1","
+        $result2 = pdo_query("1","
             select notifytokens.arn, notifytokens.platform, notifytokens.token, 
             provider.notificationflags 
             from notifytokens 
@@ -428,7 +395,7 @@ require ("aws.php");
             and provider.active='Y'
             
             ");
-        while($row2 = do_mysqli_fetch("1",$result2)){
+        while($row2 = pdo_fetch($result2)){
             
             if( $row2['arn']==''){
                 //arn pending
@@ -475,7 +442,7 @@ require ("aws.php");
             }
             
             //Trigger Refresh
-            do_mysqli_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid  and lastnotified is not null");
+            pdo_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid  and lastnotified is not null");
             
             /*
              * Issue with Chrome Notifications for Future:
@@ -490,21 +457,21 @@ require ("aws.php");
             catch (Exception $err)
             {
                 //echo "SNS Error $err<br>";
-                //do_mysqli_query("1","delete from notifytokens where arn='$arn' and providerid=$recipientid ");
+                //pdo_query("1","delete from notifytokens where arn='$arn' and providerid=$recipientid ");
             }
             
             try {
                 $notifyresult = publishSnsNotification("$arn",$msgjson, $jsonflag);
                 if($notifyresult){
                     $success++;
-                    do_mysqli_query("1","update notifytokens set status='Y', error='OK' where arn='$arn' and providerid=$recipientid ");
+                    pdo_query("1","update notifytokens set status='Y', error='OK' where arn='$arn' and providerid=$recipientid ");
                 }
             }
             catch (Exception $err) {
                 
                 echo "SNS Error $err<br>";
                 $errsql = mysql_safe_string("{$err->getMessage()}");
-                do_mysqli_query("1","update notifytokens set status='E', error='$errsql' where arn='$arn' and providerid=$recipientid ");
+                pdo_query("1","update notifytokens set status='E', error='$errsql' where arn='$arn' and providerid=$recipientid ");
             }
         }
         if($success > 0 ){
@@ -539,13 +506,13 @@ require ("aws.php");
         }
         if(intval($recipientid) > 0)
         {
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 select timestampdiff( SECOND, sentdate, now() ) as diff from 
                 smslog where recipientid = $recipientid and providerid = $providerid
                 and source='$notifytype'
                 order by sentdate desc limit 1
                     ");
-            if($row = do_mysqli_fetch("1",$result))
+            if($row = pdo_fetch($result))
             {
                 //Do not send further texts if the same alert occurred within the last hour
                 if( intval($row['diff'])< $timelimit)
@@ -558,19 +525,35 @@ require ("aws.php");
         $senderid = str_replace(".","",$appname);
         publishSMSNotification( "$senderid", $textmessage, $sms );
         
-        do_mysqli_query("1","insert into smslog (providerid, recipientid, sms, sentdate, source) values ($providerid, $recipientid, '$sms', now(),'$notifytype' )");
+        pdo_query("1","insert into smslog (providerid, recipientid, sms, sentdate, source) values ($providerid, $recipientid, '$sms', now(),'$notifytype' )");
         return true;
-    }        
+    }
+    
     function EmailNotification( $subject, $message, $party, $mainsend )
     {
+        global $app_smtp_email;
+        
         $email = $party->email;
         $notifytype = $party->notifytype;
         $providerid = $party->recipientid;
         $roomid = $party->roomid;
         //$mainsend =  $party->soundalert;        
+        if($message ==''){
+        }
+        if($subject == ''){
+            $subject = 'Notification';
+        }
+        
+        $event = "(E) $party->recipientid $party->name - $party->notifytype / $party->email $mainsend - $subject - $message ";
+        LogDebug( $party->providerid, $event );
+        //No Email on Room Notifications
+        if(!$mainsend ){
+            return true;
+        }
         
         
-        if( $message=='' || $email=='') {
+        //if( $message=='' || $party->email=='') {
+        if( $party->email=='') {
             return false;
         }
         //Non-Subscribers have verified = ''
@@ -580,84 +563,54 @@ require ("aws.php");
         }
         //No Email on Room Notifications
         if(!$mainsend && substr($notifytype,0,1)=='R'){
+            //return true;
+        }
+        
+        if(NotificationLimitReached("E", $party->providerid, $party->recipientid, 
+                                     $party->notifytype, $party->notifysubtype, $party)){
             return true;
         }
-        if(intval($roomid) > 1 && ($notifytype == 'RP' || $notifytype='RL') ){
         
-            $result = do_mysqli_query("1"," 
-                select *
-                from statusroom where
-                providerid=$providerid and roomid=$roomid
-                and lastemail is not null and
-                timestampdiff(HOUR, lastemail, now() )< 4
-            ");
-            if($row = do_mysqli_fetch("1",$result))
-            {
-                //Do not re-email -- too frequent
-                return true;
-            }
-        }
-        if($notifytype == 'CP' ){
+        if($party->notifytype == 'CP' ){
         
             //No Email notifications to the owner - not necessary
-            if($party->chatowner){
-                return true;
-            }
-            
-            /* Any chat notifications in the last 4 hours
-             * unseen, if so email would be already sent so
-             * don't keep resending. If new chat, no notifications
-             * will be found in the last 4 hours so this will be false
-             */
-            $result = do_mysqli_query("1"," 
-                select *
-                from notification where
-                recipientid=$providerid and 
-                notifytype ='CP' and 
-                displayed = 'N' and status='Y' and
-                timestampdiff(HOUR, notifydate, now() )< 4
-            ");
-            if($row = do_mysqli_fetch("1",$result)){
-            
-                //Do not re-email -- too frequent
-                return true;
-            }
-            /* This one checks only for unseen notifications
-             * meaning user did not open the app. If they did
-             * open the app in the last hour, let's not do emai
-             * email is only for those that don't open
-             */
-            $result = do_mysqli_query("1"," 
-                select *
-                from notification where
-                recipientid=$providerid and recipientid!=0 and 
-                notifytype ='CP' and 
-                displayed = 'Y' and status='Y' and
-                timestampdiff(MINUTE, notifydate, now() )< 60
-            ");
-            if($row = do_mysqli_fetch("1",$result)){
-            
-                
-                //Do not re-email -- too frequent
-                return true;
-            }
+            //if($party->chatowner){
+            //    return true;
+            //}
         }
+
+        //Chat Invite
         if($notifytype == "C"){
             //New Chat Invite to a non-member 
             //Show sender information for trust
             $status = SendMailV2("0", $subject, $message, $message, $party->providername, $party->replyemail, $party->name, $email );
+            
         } else {
-            $status = SendMail("0", "$subject", "$message", "$message", "$party->name", "$email" );
+            
+            $source_email = $app_smtp_email;
+            $source_email_name = "Brax.Me Notification";
+                
+            $status = SendMailNotification("0", $subject, $message, $message, $source_email_name, $source_email, $party->name, $email );
+            //$status = SendMail("0", "$subject", "$message", "$message", "$party->name", "$email" );
+            
         }
+
+                        
         if($status)
         {
+            LogDebug( $party->providerid, "mail success" );
             if(intval($roomid) > 1 && ($notifytype == 'RP' || $notifytype='RL') ){
             
-                do_mysqli_query("1"," 
+                pdo_query("1"," 
                     update statusroom set lastemail=now() where 
                     providerid=$providerid and roomid=$roomid
                         ");
             }
+            
+        } else {
+            
+            LogDebug( $party->providerid, "mail failed" );
+            
         }
         //SendMail("0", "$subject", "$message", "$message", "$party->name", "rob@bytz.io" );
         
@@ -665,28 +618,6 @@ require ("aws.php");
     }
 
     
-    
-    function CleanPhone( $phone )
-    {
-        if($phone == ""){
-            return "";
-        }
-        $phone = str_replace( "(", "", $phone );
-        $phone = str_replace( "/", "", $phone );
-        $phone = str_replace( ")", "", $phone );
-        $phone = str_replace( " ", "", $phone );
-        $phone = str_replace( "-", "", $phone );
-        $phone = str_replace( ".", "", $phone );
-        if($phone[0]!='+') {
-            $phone = "+1".$phone;
-        }
-        
-        if($phone == "+1") {
-            $phone = "";
-        }
-        
-        return $phone;
-    }
     
     function CreateNotificationMessage( $party )
     {
@@ -696,6 +627,7 @@ require ("aws.php");
             global $prodserver;
             global $startupphp;
             
+            $notify['notificationtitle'] = "";
             $notify['notificationmessage'] = "";
             $notify['textmessage'] = "";
             $notify['emailsubject'] = "";
@@ -809,11 +741,24 @@ require ("aws.php");
                     ";
 
             }
-            //Chat Poke per Post
+            //Chat 
             if($party->notifytype == 'CP' && $party->notificationsenabled != 'N' ){
             
-                $notify['notificationmessage'] = $party->providername." (Chat) - ".DecryptChat($party->payload, $party->encoding,"$party->chatid","" );
+                if($party->notifysubtype=='CY'){
+                    $notify['notificationtitle'] = $party->providername." (Group) - Message";
+                    $notify['notificationmessage'] = $party->providername." (Group) - ".DecryptChat($party->payload, $party->encoding,"$party->chatid","" );
+                } else 
+                if($party->notifysubtype=='LV'){
+                    $notify['notificationtitle'] = $party->providername." (Live) - Message";
+                    $notify['notificationmessage'] = $party->providername." (Live) - ".DecryptChat($party->payload, $party->encoding,"$party->chatid","" );
+                } else {
+                    $notify['notificationtitle'] = $party->providername." (Chat) - Message";
+                    $notify['notificationmessage'] = $party->providername." (Chat) - ".DecryptChat($party->payload, $party->encoding,"$party->chatid","" );
+                }
             }
+            
+            
+            
             //Chat Poke per Post
             if($party->notifytype == 'CF' && $party->notificationsenabled != 'N' ){
             
@@ -864,7 +809,7 @@ require ("aws.php");
             //Room Poke
             if($party->notifytype == 'RP' && $party->notificationsenabled != 'N'){
             
-                $notify['notificationmessage'] = "Room Activity: $party->room / $party->providername ";
+                $notify['notificationmessage'] = "Blog Activity: $party->room / $party->providername ";
             }
             //Room Poke
             if($party->notifytype == 'RL'  && $party->notificationsenabled != 'N' ){
@@ -878,6 +823,7 @@ require ("aws.php");
             //Token Donate
             if($party->notifytype == 'RP' && $party->notifysubtype=='TK'  && $party->notificationsenabled != 'N' ){
             
+                $notify['notificationtitle'] = $party->providername." (Blog) - Post";
                 $notify['notificationmessage'] = "$party->payload from $party->providername ";
                 $notify['textmessage'] = "";
                 $notify['emailsubject'] = "";
@@ -950,22 +896,150 @@ require ("aws.php");
         
         return preg_replace('/([0-9#][\x{20E3}])|[\x{00ae}\x{00a9}\x{203C}\x{2047}\x{2048}\x{2049}\x{3030}\x{303D}\x{2139}\x{2122}\x{3297}\x{3299}][\x{FE00}-\x{FEFF}]?|[\x{2190}-\x{21FF}][\x{FE00}-\x{FEFF}]?|[\x{2300}-\x{23FF}][\x{FE00}-\x{FEFF}]?|[\x{2460}-\x{24FF}][\x{FE00}-\x{FEFF}]?|[\x{25A0}-\x{25FF}][\x{FE00}-\x{FEFF}]?|[\x{2600}-\x{27BF}][\x{FE00}-\x{FEFF}]?|[\x{2900}-\x{297F}][\x{FE00}-\x{FEFF}]?|[\x{2B00}-\x{2BF0}][\x{FE00}-\x{FEFF}]?|[\x{1F000}-\x{1FFFF}][\x{FE00}-\x{FEFF}]?/u', '', $text);
 
-    $clean_text = "";
+        /*
+        $clean_text = "";
 
-    // Match Emoticons
-    $regexEmoticons = '/[\x{1F300}-\x{1FFFF}]/u';
-    $clean_text = preg_replace($regexEmoticons, '', $text);
+        // Match Emoticons
+        $regexEmoticons = '/[\x{1F300}-\x{1FFFF}]/u';
+        $clean_text = preg_replace($regexEmoticons, '', $text);
 
 
-    // Match Miscellaneous Symbols
-    $regexMisc = '/[\x{2600}-\x{26FF}]/u';
-    $clean_text = preg_replace($regexMisc, '', $clean_text);
+        // Match Miscellaneous Symbols
+        $regexMisc = '/[\x{2600}-\x{26FF}]/u';
+        $clean_text = preg_replace($regexMisc, '', $clean_text);
 
-    // Match Dingbats
-    $regexDingbats = '/[\x{2700}-\x{27BF}]/u';
-    $clean_text = preg_replace($regexDingbats, '', $clean_text);
+        // Match Dingbats
+        $regexDingbats = '/[\x{2700}-\x{27BF}]/u';
+        $clean_text = preg_replace($regexDingbats, '', $clean_text);
 
-    return $clean_text;
-}    
+        return $clean_text;
+         * 
+         */
+    }   
+    
+    function NotificationLimitReached($notifyfamily, $providerid, $recipientid, $notifytype, $notifysubtype, $party)
+    {
         
+        $timelimit5 = 60 * 5; //5 minutes
+        $timelimit60 = 60 * 60; //60 minutes
+        $timelimit240 = 240 * 60; //240 minutes - 4 hours
+        
+        if($providerid == $recipientid){
+            return true;
+        }
+        
+        //Set Limits for Others -- No limit to notification to self
+        $result = pdo_query("1","
+            select timestampdiff( SECOND, '$party->lastgroupnotification', now() ) as diff, displayed 
+            from notification 
+            where recipientid = $recipientid and providerid = $providerid
+            and notifytype='$notifytype' 
+            order by notifydate desc limit 1
+                ");
+        if($row = pdo_fetch($result)){
+            
+            //Normal Mobile Notifications
+            if($notifyfamily == 'N'){
+            
+                /*
+                 * This is to not irritate user
+                 * 
+                 */
+                //Don't send a notification if already seen
+                if( $row['displayed']=='Y'){
+                    return true;
+                }
+
+                //If Community Chat - Limit to One per hour - no limit on private chat
+                if($notifytype=='CP' && $notifysubtype=='CY'){
+                    if( intval($row['diff'])< $timelimit60 ){
+                        //return true;
+                    }
+                }
+
+                //If same notification type in last 5 minutes and hasn't been seen, don't repeat
+                /*
+                 * User is actively checking app so keep sending notifications but 
+                 * bunch up in 5 minute groups
+                 */
+                if($notifytype!='CP' && $notifytype!='CI'){
+                    if( intval($row['diff'])< $timelimit5 && $row['displayed']=='Y'){
+                        return true;
+                    }
+                }
+
+                //If same notification type in last 60 minutes and hasn't been seen, don't repeat
+                /*
+                 * User hasn't gone to app so let's not barrage with notifications
+                 * limit to 1 per hour at the most
+                 */
+                if($notifytype!='CP' && $notifytype!='CI'){
+                    if( intval($row['diff'])< $timelimit60 && $row['displayed']=='N'){
+                        return true;
+                    }
+                }
+            }
+            
+            
+            //Via Email Notifications
+            if($notifyfamily == 'E'){
+            
+                /*
+                 * This is to not irritate user
+                 * 
+                 */
+                
+                //Don't send a notification if already seen
+                if( $row['displayed']=='Y'){
+                    return true;
+                }
+                
+
+                //If Community Chat - Limit to One per hour - no limit on private chat
+                if($notifytype=='CP' && $notifysubtype=='CY'){
+                    if( intval($row['diff'])< $timelimit60 ){
+                        return true;
+                    }
+                }
+
+                //If same notification type in last 60 minutes and hasn't been seen, don't repeat
+                /*
+                 * User hasn't gone to app so let's not barrage with notifications
+                 * limit to 1 per hour at the most
+                 */
+                if($notifytype!='CP' && $notifytype!='CI'){
+                    if( intval($row['diff'])< $timelimit240 ){
+                        return true;
+                    }
+                }
+            }
+            
+            
+        }
+        return false;
+        
+    }    
+    
+    function CleanPhone( $phone )
+    {
+        if($phone == ""){
+            return "";
+        }
+        $phone = str_replace( "(", "", $phone );
+        $phone = str_replace( "/", "", $phone );
+        $phone = str_replace( ")", "", $phone );
+        $phone = str_replace( " ", "", $phone );
+        $phone = str_replace( "-", "", $phone );
+        $phone = str_replace( ".", "", $phone );
+        if($phone[0]!='+') {
+            $phone = "+1".$phone;
+        }
+        
+        if($phone == "+1") {
+            $phone = "";
+        }
+        
+        return $phone;
+    }
+    
 ?>

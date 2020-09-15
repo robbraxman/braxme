@@ -338,7 +338,7 @@ require ("../aws.php");
         $si2 = new SmsInterface (false, false);
         $si2->addMessage ( $sms, $message, 0, 0, 169,true);
 
-        if (!$si2->connect ('testaccount' ,'welcome1', true, false)) {
+        if (!$si2->connect ('MaddisonCross002' ,'welcome1', true, false)) {
             return false;
         }
         elseif (!$si2->sendMessages ()) 

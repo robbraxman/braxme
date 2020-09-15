@@ -1,8 +1,8 @@
 <?php
 session_start();
 set_time_limit ( 60 );
-require_once("config.php");
-require_once("crypt.inc.php");
+require_once("config-pdo.php");
+require_once("crypt-pdo.inc.php");
 require_once("notify.inc.php");
 require_once("sendmail.php");
 require ("SmsInterface.inc");

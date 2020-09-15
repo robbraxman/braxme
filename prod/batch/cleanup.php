@@ -1,12 +1,12 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 
 
 $timestamp = time();
 
 
-$result = do_mysqli_query("1",
+$result = pdo_query("1",
 
     "insert ignore into leads (name, email, phone, created ) ".
     "select providername, replyemail, replysms, now() from provider where ".
@@ -14,14 +14,14 @@ $result = do_mysqli_query("1",
 );
 
 
-$result = do_mysqli_query("1",
+$result = pdo_query("1",
 
     "delete from shares where shareexpire < now() "
 );
 
 
 
-$result = do_mysqli_query("1",
+$result = pdo_query("1",
     "delete from shares where views = 0 and datediff(now(), sharedate ) > 1 "
 );
 

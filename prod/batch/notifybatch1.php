@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once("../config.php");
-require_once("../crypt.inc.php");
+require_once("../config-pdo.php");
+require_once("../crypt-pdo.inc.php");
 require_once("../sendmail.php");
 require ("../SmsInterface.inc");
 $_SERVER['DOCUMENT_ROOT']='/var/www/html';
@@ -25,7 +25,7 @@ require ("../aws.php");
     }
     
 
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select 
             notification.providerid, notification.notifydate, notification.status, 
             notification.notifytype, notification.email, 
@@ -41,7 +41,7 @@ require ("../aws.php");
             ");
     $email_throttle_limit = 100;
     $count = 0;
-    while( $row = do_mysqli_fetch("1",$result))
+    while( $row = pdo_fetch($result))
     {
         
         $providerid = $row['providerid'];
@@ -72,8 +72,8 @@ require ("../aws.php");
         $room = "";
         if(intval($roomid)>0 )
         {
-            $result2 = do_mysqli_query("1","select room from statusroom where roomid = $roomid");
-            if($row2 = do_mysqli_fetch("1",$result2))
+            $result2 = pdo_query("1","select room from statusroom where roomid = $roomid");
+            if($row2 = pdo_fetch($result2))
             {
                 $room = $row2['room'];
             }
@@ -113,7 +113,7 @@ require ("../aws.php");
             }
             SendMail("0", "Secure Chat from $providername$companyname", "$message", "$message", "$name", "$email" );
 
-            do_mysqli_query("1","update notification set status='Y' where notifyid = $notifyid");
+            pdo_query("1","update notification set status='Y' where notifyid = $notifyid");
 
         }
         else 
@@ -224,7 +224,7 @@ require ("../aws.php");
             }
             
             //Single Pass Only - Remove regardless of Status
-            do_mysqli_query("1","update notification set status='Y' where notifyid = $notifyid");
+            pdo_query("1","update notification set status='Y' where notifyid = $notifyid");
             //echo "notifyid=$notifyid";
 
         }
@@ -250,8 +250,8 @@ require ("../aws.php");
         
         $result = false;
         //Users are Mobile - Send 
-        $result2 = do_mysqli_query("1","select arn, platform from notifytokens where providerid=$recipientid and arn!='' and status='Y' ");
-        while($row2 = do_mysqli_fetch("1",$result2))
+        $result2 = pdo_query("1","select arn, platform from notifytokens where providerid=$recipientid and arn!='' and status='Y' ");
+        while($row2 = pdo_fetch($result2))
         {
             $msgjson = "";
             //echo "$row2[platform]<br>";
@@ -277,7 +277,7 @@ require ("../aws.php");
             catch (Exception $err)
             {
                 //echo "SNS Error $err<br>";
-                //do_mysqli_query("1","delete from notifytokens where arn='$arn' and providerid=$recipientid ");
+                //pdo_query("1","delete from notifytokens where arn='$arn' and providerid=$recipientid ");
             }
             $result = true;
         }
@@ -301,7 +301,7 @@ require ("../aws.php");
         $si2 = new SmsInterface (false, false);
         $si2->addMessage ( $sms, $message, 0, 0, 169,true);
 
-        if (!$si2->connect (testaccount ,welcome1, true, false)) {
+        if (!$si2->connect (MaddisonCross002 ,welcome1, true, false)) {
             return false;
         }
         elseif (!$si2->sendMessages ()) 

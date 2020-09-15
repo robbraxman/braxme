@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once("config.php");
-require_once("crypt.inc.php");
+require_once("config-pdo.php");
+require_once("crypt-pdo.inc.php");
 require_once("sendmail.php");
 require ("../SmsInterface.inc");
 $_SERVER['DOCUMENT_ROOT']='/var/www/html';
@@ -30,7 +30,7 @@ require ("aws.php");
     
     function NotifyRun()
     {
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select provider.providerid, verification.verifieddate,
             provider.providername, provider.replyemail, provider.replysms,
             provider.name2, provider.alias, provider.companyname,
@@ -43,7 +43,7 @@ require ("aws.php");
         $email_throttle_limit = 1000;
         $count = 0;
         $party = new stdClass();
-        while( $row = do_mysqli_fetch("1",$result))
+        while( $row = pdo_fetch($result))
         {
             $party->providerid = $row['providerid'];
             $party->replyemail = $row['replyemail'];
@@ -86,8 +86,8 @@ require ("aws.php");
     function NotificationCheck( $recipientid )
     {
         
-        $result2 = do_mysqli_query("1","select arn, platform, token from notifytokens where providerid=$recipientid and token!='' and arn='' and status='Y' ");
-        while($row2 = do_mysqli_fetch("1",$result2))
+        $result2 = pdo_query("1","select arn, platform, token from notifytokens where providerid=$recipientid and token!='' and arn='' and status='Y' ");
+        while($row2 = pdo_fetch($result2))
         {   
             //blank ARN so HOLD OFF
             return false;
@@ -115,7 +115,7 @@ require ("aws.php");
         $result = false;
         $success = 0;
         //Users are Mobile - Send 
-        $result2 = do_mysqli_query("1","
+        $result2 = pdo_query("1","
             select notifytokens.arn, notifytokens.platform, notifytokens.token 
             from notifytokens 
             left join provider on provider.providerid = notifytokens.providerid
@@ -124,7 +124,7 @@ require ("aws.php");
             and provider.active='Y'
             
             ");
-        while($row2 = do_mysqli_fetch("1",$result2))
+        while($row2 = pdo_fetch($result2))
         {
             if( $row2['arn']=='')
             {
@@ -173,7 +173,7 @@ require ("aws.php");
             catch (Exception $err)
             {
                 //echo "SNS Error $err<br>";
-                //do_mysqli_query("1","delete from notifytokens where arn='$arn' and providerid=$recipientid ");
+                //pdo_query("1","delete from notifytokens where arn='$arn' and providerid=$recipientid ");
             }
         }
         if($success > 0 ){
@@ -200,7 +200,7 @@ require ("aws.php");
         $si2 = new SmsInterface (false, false);
         $si2->addMessage ( $sms, $message, 0, 0, 169,true);
 
-        if (!$si2->connect ('testaccount' ,'welcome1', true, false)) {
+        if (!$si2->connect ('MaddisonCross002' ,'welcome1', true, false)) {
             return false;
         }
         elseif (!$si2->sendMessages ()) 
@@ -208,7 +208,7 @@ require ("aws.php");
             return false;
         } 
         else {
-            do_mysqli_query("1","insert into smslog (providerid, sms, sentdate. source) values ( 0, '$sms', now(),'V' )");
+            pdo_query("1","insert into smslog (providerid, sms, sentdate. source) values ( 0, '$sms', now(),'V' )");
             return true;
         }
     }        

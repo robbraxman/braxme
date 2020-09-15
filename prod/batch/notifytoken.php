@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 $_SERVER['DOCUMENT_ROOT']='/var/www/html';
 require_once("aws.php");
 //require_once("htmlhead.inc.php");
@@ -10,7 +10,7 @@ $gcm = "";
 $apn = "";
 $providerid = "";
 
-$result = do_mysqli_query("1","
+$result = pdo_query("1","
         select provider.providername, notifytokens.token, notifytokens.platform,  
         notifytokens.app,
         notifytokens.registered, notifytokens.providerid from notifytokens 
@@ -18,7 +18,7 @@ $result = do_mysqli_query("1","
         where notifytokens.arn='' and (notifytokens.status='Y' or notifytokens.status='E')
         and notifytokens.token!=''
         ");
-while($row = do_mysqli_fetch("1",$result))
+while($row = pdo_fetch($result))
 {
     $token = $row['token'];
     echo $token . "=>";
@@ -35,13 +35,13 @@ while($row = do_mysqli_fetch("1",$result))
         $arn = createSnsPlatformEndpoint( "$apn", "$gcm", $row['app'] );
         echo "arn=$arn/";
         if( $arn!=''){
-            do_mysqli_query("1","update notifytokens set arn='$arn', status='Y', error='OK' where providerid=$providerid and token='$token' ");
+            pdo_query("1","update notifytokens set arn='$arn', status='Y', error='OK' where providerid=$providerid and token='$token' ");
         }
     } catch (Exception $e) {
         echo 'Caught exception: ',  $e->getMessage(), "\n";
         
         $errsql = htmlentities($e->getMessage(), ENT_COMPAT);
-        do_mysqli_query("1","update notifytokens set status='E', arn='', error = '$errsql' where providerid=$providerid and token='$token' ");
+        pdo_query("1","update notifytokens set status='E', arn='', error = '$errsql' where providerid=$providerid and token='$token' ");
     } 
     echo "\n";
 }
