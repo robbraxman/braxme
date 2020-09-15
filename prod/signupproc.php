@@ -346,24 +346,6 @@ require_once("internationalization.php");
 
             }
         }
-        if($appname == 'Powa'){
-            if($mobiletype == 'I'){
-                $storelink = "
-                            <a href='https://itunes.apple.com/us/app/powa-me/id1434774297?mt=8'  target='_blank' 
-                            style='display:inline-block;overflow:hidden;background:url(https://linkmaker.itunes.apple.com/assets/shared/badges/en-us/appstore-lrg.svg) no-repeat;width:135px;height:40px;'>
-                            </a>            
-                            ";
-
-            }
-            if($mobiletype == 'A'){
-                $storelink = "
-                            <a href='https://play.google.com/store/apps/details?id=me.powa.app1&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1' target='_blank'>
-                                <img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' style='width:135px'/>
-                            </a>
-                            ";
-
-            }
-        }
                     
 
         $jspassword = EncryptJs($password,"");

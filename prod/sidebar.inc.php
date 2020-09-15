@@ -46,7 +46,7 @@ require_once("internationalization.php");
         
             "
             select * from notification where recipientid = $providerid and displayed = 'N' and 
-                notifytype = 'CP' and notifysubtype is null 
+                notifytype = 'CP' and (notifysubtype is null or notifysubtype = 'CY') 
                 and chatid not in (select chatid from chatmaster where radiostation='Y')
                 
                 limit 1
@@ -304,7 +304,81 @@ require_once("internationalization.php");
     }
     
     
+    function GetBytzVPNNotifications($providerid)
+    {
+        global $global_icon_check;
+        global $global_titlebar_color;
+        global $global_textcolor;
+        global $global_textcolor2;
+        global $global_activetextcolor;
+        global $global_background;
+        global $menu_live;
+        global $customsite;
+        global $iconsource_braxcheck_common;
+        
+        if($customsite){
+            return "";
+        }
+        $count=0;
+        $notifytext = "";
+        $timezone = $_SESSION['timezoneoffset'];
+        $flag = "<img class='icon15 chatalert' title='Checked' src='../img/check-yellow-128.png' style='position:relative;top:3px' />";
+        $flag = $global_icon_check;
+        
+        $result = do_mysqli_query("1",
+         
+             "
+            SELECT providerid, username, startdate 
+            FROM braxproduction.bytzvpn where (status='Y' and datediff( date_add( startdate, interval  365 day), curdate() ) < 30
+            and providerid = $providerid ) "
+             //   . "or $providerid = 690001027
+             //"
 
+         );
+        if($row = do_mysqli_fetch("1",$result)){
+            $count++;
+        
+        
+            $title = "Your BytzVPN Subscription is Expiring";
+            $notifytext .=
+            "
+            <div class='setchatsession mainbutton mainfont' 
+                    data-chatid='' data-keyhash='' 
+                    style='float:left;display:block;cursor:pointer; 
+                    background-color:$global_background;color:$global_textcolor;
+                    padding-top:0px;
+                    padding-bottom:0px;
+                    padding-left:0px;
+                    padding-right:0px;
+                    width:90%;;
+                    margin:0px; 
+                    text-align:left;'
+                >
+                    <table class='gridnorder'>
+                        <tr style='vertical-align:top;text-align:left'>
+                            <td>
+                                <div class='circular gridnoborder icon30' style='margin-right:10px;overflow:hidden;vertical-align:top;position:relative;top:0px;'>
+                                <img class='' src='$iconsource_braxcheck_common' style='max-height:100%;;overflow:hidden;margin:0' />
+                                </div>
+                            </td>
+                            <td style='word-break:break-all;word-wrap:break-word;'>
+                                <span class='mainfont' style='color:$global_activetextcolor'>
+                                    <b>$title</b><br>
+                                    <span class='mainfont' style='color:$global_textcolor2'>Please renew soon to avoid service interruption.</span>
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+            </div>
+            ";
+        }
+        if($count > 0){
+            $notifytext .= "<div style='float:left;width:100%;min-width:320px;padding-bottom:40px'>";
+            $notifytext .= "</div>";
+            $notifytext .="<br><br>";
+        }
+        return $notifytext;
+    }    
     
     function GetKudosNotifications($providerid)
     {
@@ -457,6 +531,7 @@ require_once("internationalization.php");
         
         $notifytext =  GetKudosNotifications($providerid);
         $notifytext .=  GetLiveNotifications($providerid);
+        $notifytext .=  GetBytzVPNNotifications($providerid);
         
         
         $result = do_mysqli_query("1","
@@ -513,7 +588,7 @@ require_once("internationalization.php");
                 $blink = $beacon;
             }
             if($row['notifytype']=='RP' && $row['notifysubtype']!='TK'){
-                $notifytype = $menu_room;
+                $notifytype = "Room";
                 
                 
                 $result2 = do_mysqli_query("1","select comment, encoding, providerid, owner, shareid from statuspost where postid = '$row[reference]' ");
@@ -681,6 +756,63 @@ require_once("internationalization.php");
         return "";
     }
     
+    function GetEformNotifications($providerid)
+    {
+        global $global_icon_check;
+        global $global_titlebar_color;
+        global $global_textcolor;
+        global $global_textcolor2;
+        global $iconsource_braxform_common;
+
+        return "";
+        //if($_SESSION['inforequest']!='Y'){
+        //    return "";
+        //}
+        $result = do_mysqli_query("1","select * from credentialformtrigger where providerid = $providerid ");
+        if(!$row = do_mysqli_fetch("1",$result)){
+            return "";
+        }
+        
+        $flag = $global_icon_check;
+        
+
+            
+            $notifytext =
+            "
+            <div class='credentialformlist mainbutton mainfont' 
+                    data-datanew='Y'
+                    style='display:block;cursor:pointer; 
+                    background-color:transparent;color:$global_textcolor;
+                    padding-top:0px;
+                    padding-bottom:0px;
+                    padding-left:0px;
+                    padding-right:0px;
+                    width:90%;max-width:600px;
+                    margin:0px; 
+                    text-align:left;'
+                >
+                    <table class='gridnorder'>
+                        <tr style='vertical-align:top;text-align:left'>
+                            <td>
+                                <div class='circular gridnoborder icon30' style='margin-right:10px;overflow:hidden;vertical-align:top;position:relative;top:0px;'>
+                                <img class='' src='$iconsource_braxform_common' style='max-height:100%;;overflow:hidden;margin:0' />
+                                </div>
+                            </td>
+                            <td style='word-break:break-all;word-wrap:break-word;'>
+                                <span class='mainfont' style='color:$global_textcolor'>
+                                    Forms Requested<br>
+                                    <b>Important - Please fill out the requested forms</b>
+                                    <span class='mainfont' style='color:$global_textcolor2'>$flag</span>
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+            </div>
+            <br><br>
+            ";
+        return $notifytext;
+    }
+        
     
     
     function removeEmoji($text)

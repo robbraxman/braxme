@@ -2,6 +2,67 @@
 require_once("config.php");
 require_once("phpmailer/PHPMailerAutoload.php");
     
+    function SendMailNotification($defaultsmtp, $msgtitle, $message, $messagealt, $sendername, $senderemail, $recipientname, $recipientemail )
+    {
+        global $app_smtp_host;
+        global $app_smtp_port;
+        global $app_smtp_username;
+        global $app_smtp_secure;
+        global $app_smtp_password;
+        global $app_smtp_email;
+        global $app_smtp_mailname;
+        global $appname;
+        
+        if(strstr($recipientemail, ".account@brax.me")!==false){
+            return true;
+        }
+        
+        $mail  = new PHPMailer();
+    
+        $mail->IsSMTP(); // telling the class to use SMTP
+        
+        $mail->Host       = "$app_smtp_host";
+        $mail->Port       = $app_smtp_port;
+        $mail->SMTPAuth   = true;                  // enable SMTP authentication
+        $mail->Username   = $app_smtp_username;
+        $mail->Password   = $app_smtp_password;
+        $mail->SMTPSecure = $app_smtp_secure;
+        $mail->SetFrom("$app_smtp_email","$appname Notification");        
+        
+        
+        $mail->CharSet = 'UTF-8';        
+        $mail->AddReplyTo("$senderemail","$sendername");
+
+
+        $mail->SMTPDebug  = 0;                     // enables SMTP debug information (for testing)
+                                                   // 1 = errors and messages
+                                                   // 2 = messages only
+        $mail->Subject    = "$msgtitle";
+        $mail->AltBody    = strip_tags($messagealt) ;
+        $mail->Body = $message;
+        //$mail->MsgHTML    = $message;
+        $mail->isHTML( true );
+        
+        //echo "<br>$message<br>";
+        //echo "<br>ALT<br>$messagealt<br>";
+        
+        //echo "$recipientemail***$recipientname";
+
+        $mail->AddAddress("$recipientemail", "$recipientname" );
+        $mail->AddCC("$senderemail", "$sendername" );
+
+
+
+
+        if(!$mail->Send()) {
+          echo "<br>Mailer Error: " . $mail->ErrorInfo;
+          return false;
+        } else {
+          //echo "<br>Message sent successfully<br>";
+          return true;
+        }
+    
+    }    
     
     function SendMailV2($defaultsmtp, $msgtitle, $message, $messagealt, $sendername, $senderemail, $recipientname, $recipientemail )
     {

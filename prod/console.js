@@ -1190,7 +1190,11 @@ $(document).ready( function() {
             NativeCall("certcheckbrax.me");
             //window.location = 'http://brax.me/command/certcheck/brax.me';
         });
-        
+        $('body').on('click','.restarthome', function() 
+        {
+            $('#trigger_restart').click();
+            
+        });
         $('body').on('click','.restart', function() 
         {
             $.ajax({
@@ -1206,6 +1210,7 @@ $(document).ready( function() {
                      NativeCall("restart");
                      return;
                  }
+                $('.consolebody').html(LoadingGIF).fadeOut(5000);
                 window.location = rootserver1+startupphp+"?s="+source+"&e="+enterprise+"&apn="+apn+"&gcm="+gcm+"&v="+mobileversion;
             });
         });
@@ -1257,7 +1262,6 @@ $(document).ready( function() {
                 mobileversion1 = '';
             }
             */
-            var test = 'test';
             if(mobileversion!=='000' && mobileversion!==''  ){
                 NativeCall("restart");
                 return;
@@ -3333,6 +3337,7 @@ $(document).ready( function() {
                     $.ajax({
                         url: rootserver+'roomselect.php',
                         context: document.body,
+                        timeout: 10000,
                         type: 'POST',
                         data: 
                          { 'providerid': $('#pid').val(), 
@@ -3341,6 +3346,7 @@ $(document).ready( function() {
                          }
 
                     }).done(function( data, status ) {
+                        
 
                         $('#roominnerwindow').hide().html(data).fadeIn(800);
                         $("#mainview").scrollTop(0);
@@ -3382,6 +3388,7 @@ $(document).ready( function() {
                      }
 
                 }).done(function( data, status ) {
+                    
                     if(status!=='success'){
                         alertify.alert('Room connection failed. Check your network connection and retry.');
                         //$('.mainview').scrollTop(0);
@@ -3522,13 +3529,14 @@ $(document).ready( function() {
         });
         $('body').on('keyup','.feedenter',function(e) {
             
-            if ((e.keyCode === 10 || e.keyCode === 13) && !e.shiftKey){
-                $('#roompostenter').click();
-                return;
-            }
+            //if ((e.keyCode === 10 || e.keyCode === 13) && !e.shiftKey){
+            //    $('#roompostenter').click();
+            //    return;
+            //}
         });
         $('body').on('keyup','.feedreplyenter',function(e) {
             
+            /*
             if ((e.keyCode == 10 || e.keyCode == 13) && !e.shiftKey){
                 var shareid = $(this).data('shareid');
                 var reference = $(this).data('reference');
@@ -3542,6 +3550,7 @@ $(document).ready( function() {
                 $('#roompostreplyenter').click();
                 return;
             }
+            */
         });
         
         $('body').on('click','.feedphotoshare', function()
@@ -3715,7 +3724,7 @@ $(document).ready( function() {
                 LastFunc = '';
                 
                 $('#roominnerwindow').html(LoadingGIF);
-                $.ajax({
+                xhrapp = $.ajax({
                     url: rootserver+'roomselect.php',
                     context: document.body,
                     type: 'POST',
@@ -3727,6 +3736,12 @@ $(document).ready( function() {
                      }
 
                 }).done(function( data, status ) {
+                    
+                    if( data ==='T'){
+                        
+                        $('#roominnerwindow').html(TimeoutError);
+                        return;
+                    }
 
                     $('#roominnerwindow').hide().html(data).fadeIn(800);
                     $("#mainview").scrollTop(0);
@@ -3785,7 +3800,7 @@ $(document).ready( function() {
                 defaultRoomid = 0;
                 
                 $('#roominnerwindow').html(LoadingGIF);
-                $.ajax({
+                xhrapp = $.ajax({
                     url: rootserver+'roomselect.php',
                     context: document.body,
                     type: 'POST',
@@ -3799,6 +3814,12 @@ $(document).ready( function() {
                      }
 
                 }).done(function( data, status ) {
+
+                    if( data ==='T'){
+                        
+                        $('#roominnerwindow').html(TimeoutError);
+                        return;
+                    }
 
                     $('#roominnerwindow').hide().html(data).fadeIn(800);
                     $("#mainview").scrollTop(0);
@@ -3855,6 +3876,7 @@ $(document).ready( function() {
                 var owner = $(this).data('owner');
                 var mode = $(this).data('mode');
                 var page = $(this).data('page');
+                var category = $(this).data('category');
                 
                 var roomfind = '';
                 if(mode === 'F'){
@@ -3876,6 +3898,7 @@ $(document).ready( function() {
                         'owner' :owner,
                         'mode': mode,
                         'page' : page,
+                        'category' : category,
                         'find' : roomfind
                      }
 
@@ -5205,6 +5228,7 @@ $(document).ready( function() {
                 
                 var productname = $('#productname').val();
                 var productdesc = $('#productdesc').val();
+                var productcategory = $('#productcategory').val();
                 var productphoto = $('#productphoto').val();
                 var productprice = $('#productprice').val();
                 var productshipping = $('#productshipping').val();
@@ -5244,6 +5268,7 @@ $(document).ready( function() {
                                 'productweight' : productweight,
                                 'productsubscription' : productsubscription,
                                 'productsubscriptionperiod' : productsubscriptionperiod,
+                                'productcategory' : productcategory,
                                 'filter' : filter
 
                             }, function(html, status){
@@ -5278,6 +5303,7 @@ $(document).ready( function() {
                         'productoption1' : productoption1,
                         'productoption2' : productoption2,
                         'productstatus' : productstatus,
+                        'productcategory' : productcategory,
                         'filter' : filter
                 
                 }, function(html, status){
@@ -8101,11 +8127,12 @@ $(document).ready( function() {
                 ChatId = 0;
                 ChannelId = 0;
                 $('#chatid').val("");
-                $('#socialwindow').html(LoadingGIF);
+                $('#socialwindow').html(LoadingGIF+"<br><div class='admintrace3'></div>");
                 
-                $.ajax({
+                xhrapp = $.ajax({
                     url: rootserver+'chatlist.php',
                     context: document.body,
+                    timeout: 10000,
                     type: 'POST',
                     data: 
                     { 'providerid': $('#pid').val(),
@@ -8116,8 +8143,20 @@ $(document).ready( function() {
                  
                 }).done(function( data, status ) {
                     //PanelShow(8);
+                    
                     var msg = jQuery.parseJSON(data);
                     //$('#chatwindow').scrollTop(0);
+                    if(msg.noitems === 'T'){
+                        
+                        $('#socialwindow').html(TimeoutError);
+                        return;
+                        
+                    }
+                    if(tester==='Y'){
+                        lastCheckIn3 = new Date();
+                        $('.admintrace3').html(lastCheckIn3+' '+status);
+                    }
+                    
                     if( msg.noitems === 'Y'){
                         /* Invite - No Contacts */
                         chatSelect('N','','','','',0);
@@ -8132,6 +8171,12 @@ $(document).ready( function() {
                     $('#socialwindow').show();
                     
                 }).fail(function( data, status ) {
+                    
+                    if(tester==='Y'){
+                        lastCheckIn3 = new Date();
+                        $('.admintrace3').html(lastCheckIn3+' '+status);
+                    }
+                    
                     $('#socialwindow').html(ConnectError);
                 });
                 
@@ -8652,7 +8697,7 @@ $(document).ready( function() {
             
             var fieldlen = $(this).val().length;
             
-            if ((e.keyCode === 10 || e.keyCode === 13) && !e.shiftKey){
+            if (hardenter === '' && (e.keyCode === 10 || e.keyCode === 13) && !e.shiftKey){
                 var streaming = $(this).data('streaming');
                 ToggleChatShow = false;
                 ToggleMembersShow=false;
@@ -9154,6 +9199,33 @@ $(document).ready( function() {
            $('.meetupenterpriselistarea').show();
            //$('.meetupconnectshow').hide();
         });
+        $('body').on('keyup','#meetuppublicfind',function(e) {
+            
+            if ((e.keyCode === 10 || e.keyCode === 13) && !e.shiftKey){
+                $("#meetuplistbutton1").click();
+            }
+        });        
+        $('body').on('keyup','#findchat',function(e) {
+            
+            if ((e.keyCode === 10 || e.keyCode === 13) && !e.shiftKey){
+                $("#selectchatlistbutton").click();
+            }
+        });        
+        $('body').on('click','#findchatbyname',function(e) {
+            $('#findchat').focus();
+            
+        });        
+        $('body').on('click','#findpeoplebyname',function(e) {
+            $('#meetuppublicfind').focus();
+            
+        });        
+        $('body').on('keyup','#filefiltername',function(e) {
+            if ((e.keyCode === 10 || e.keyCode === 13) && !e.shiftKey){
+                $("#refreshalbum").click();
+            }
+            
+        });        
+        
         $('body').on('click','.meetuplist', function()
         {
             
@@ -9183,7 +9255,7 @@ $(document).ready( function() {
 
                 $('#socialwindow').html(LoadingGIF);
                 //PanelShow(31);
-                $.ajax({
+                xhrapp = $.ajax({
                     url: rootserver+'findpeople.php',
                     context: document.body,
                     type: 'POST',
@@ -9194,8 +9266,15 @@ $(document).ready( function() {
                     }
                  
                 }).done(function( data, status ) {
+                    
                     PanelShow(31);
                     var msg = jQuery.parseJSON(data);
+                    if(msg.list ==='T'){
+                        
+                        $('#socialwindow').html(TimeoutError);
+                        return;
+                    }
+                    
                     $('#socialwindow').html(msg.list);//.fadeIn("800");
                     if( mode === ''){
                         //mode = msg.mode;
@@ -9219,6 +9298,9 @@ $(document).ready( function() {
                         $('.meetuppublicshow').show();
                         //$('body .meetupenterpriselist').trigger('click');
                     }
+                }).fail(function(){
+                    $('#socialwindow').html(ConnectError);
+                    
                 });
                 
             

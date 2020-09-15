@@ -40,7 +40,6 @@ $language = @mysql_safe_string($_GET['lang']);
 $roomhandle = @mysql_safe_string($_GET['h']);
 $roomstorehandle = @mysql_safe_string($_GET['store']);
 
-LogDebug($providerid,"Login($source,$version,$mobile,?)");
 
 
 if($language!=''){
@@ -104,6 +103,19 @@ $(document).ready( function() {
         });        
 
 
+        $('body').on('keyup','#password',function(e) {
+            
+            if ((e.keyCode === 10 || e.keyCode === 13) && !e.shiftKey){
+                $("#loginbutton").click();
+            }
+            if( fieldlen===0 && e.keyCode === 8){
+            }
+            //if(enlarge === 1) {
+            if(e.which === 13) {
+            }
+        });        
+
+
         $(document).on('click','#loginbutton', function(e){
             
             $('form').prop('action',"console.php");
@@ -113,8 +125,8 @@ $(document).ready( function() {
             if( providerid.indexOf("@") >= 0 ){
             } else {
                 $('#pid').val('@'+providerid);
-                alertify.alert("Missing @ in handle or email. Now added.");
-                return;
+                //alertify.alert("Missing @ in handle or email. Now added.");
+                //return;
             }
                 
             
@@ -257,6 +269,7 @@ $(document).ready( function() {
         <img class='logoimage' src="<?=$applogo?>" style=";width:auto;height:70px;">
         
         <br>
+        <div class="mainfont"><b>Brax.Me. Privacy Focused Social Media. Open Source.</b></div>
         </center>
     <div class="subcontainer1 mainfont" style='padding:15px;font-family:"Helvetica Nueue",Helvetica;font-weight:100' >
         <center>
@@ -314,13 +327,13 @@ $(document).ready( function() {
     if($source!=''){
     
 ?>
-        <div class="signup" style='color:<?=$activetextcolor?>;cursor:pointer;font-family:"Helvetica Neue",Helvetica;font-weight:500;width:200px'><?=$menu_createaccount?></div>
+        <div class="signup mainfont" style='color:<?=$activetextcolor?>;cursor:pointer;;width:200px'><?=$menu_createaccount?></div>
         <br>
 <?php
     }
 ?>
         
-        <div class="forgot" style='cursor:pointer;color:<?=$activetextcolor?>;;font-family:"Helvetica Neue",Helvetica;font-weight:300'><?=$menu_forgotpassword?></div>
+        <div class="forgot mainfont" style='cursor:pointer;color:<?=$activetextcolor?>;;'><?=$menu_forgotpassword?></div>
     </FORM>
     </div>
 <?php

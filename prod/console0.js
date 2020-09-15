@@ -14,6 +14,7 @@
     var xhrload = null;
     var xhralerts = null;
     var xhrchat = null;
+    var xhrapp = null;
     var FAST = 1;
     var SYNC = 0;
     var SentFlag = "N";
@@ -78,8 +79,8 @@
     var cameraChatPrompt = false;
     var cameraRoomPrompt = false;
     var MobileZoomLevel = 1;
-    var LoadingGIF = "<img class='icon50' src='../img/loading-blue.gif' style='height:100px;margin:10px' />";
-    var LoadingGIF2 = "<img class='icon50' src='../img/loading.gif' style='height:100px;margin:10px' />";
+    var LoadingGIF = "<img class='icon50 restarthome' src='../img/loading-blue.gif' style='height:100px;margin:10px' />";
+    var LoadingGIF2 = "<img class='icon50 restarthome' src='../img/loading.gif' style='height:100px;margin:10px' />";
     var backButton = "<img class='icon20' src='../img/Arrow-Left-in-Circle_120px.png' style='padding-left:10px' >";
     var popupwin = null;
     var visibleChatPanel = false;
@@ -98,6 +99,7 @@
     var chatEditing = false;
     var CaseId = 0;
     var statusBarHeight = 0;
+    var internetLost = 0;
     
         function ShowBanner()
         {
@@ -442,17 +444,31 @@
         }
         function CheckRefreshLoop( activeflag, innerWidth, innerHeight)
         {
-            //if(xhrload!==null){
-            //    return;
-            //}
+            if( !activeflag){
+                return;
+            }
+            
+            if(internetLost === 10){
+                internetLost++;
+                alert('Internet drop detected');
+                xhrload = null;
+                //$('.consolebody').html(ConnectError);
+                //return;
+            }
+            if(xhrload!==null){
+                return;
+            }
+            lastCheckIn2 = new Date();
             xhrload =  $.ajax({
                 url: rootserver+'check.php',
                 context: document.body,
+                timeout: 2000,
                 type: 'POST',
                 data: 
                  { 'sizing': $('.sizingplan').val(), 
                    'mobile' : MobileType,
                    'device' : mobileDevice,
+                   'mobilecapable' : MobileCapable,
                    'innerwidth' : innerWidth,
                    'innerheight' : innerHeight,
                    'pixelratio' : window.devicePixelRatio,
@@ -463,12 +479,18 @@
                  }
                  
             }).done(function(data){
+                internetLost = 0;
                 xhrload = null;
                 sized = true;
-                lastCheckIn = new Date();
+                //lastCheckIn = new Date();
+                //$('.admintrace').html(lastCheckIn);
+                $('.admintrace2').html(lastCheckIn2+' Done');
                 if(data!==''){
                 }
                 if( data==='timeout' ){
+                    if(tester==='Y'){
+                        alert('Session Timeout');
+                    }
                     TimedOutHandler();
                 }
                 if( data==='chat' ){
@@ -493,6 +515,8 @@
                 }
             }).fail(function(data){
                 xhrload = null;
+                internetLost++;
+                $('.admintrace2').html(lastCheckIn2+' Fail');
             });
             
         }
@@ -576,7 +600,7 @@
             if(!SlowDowner()){
                 return;
             }
-            Sizing();
+            Sizing('Y');
             if( MobileType === 'I'){
             
                 //$('.camera').hide();
@@ -914,7 +938,7 @@
             
                 $('.commandzone').show();
                 $('.hidemessagearea').show();
-                action = "<div class='mainfont restart tapped'  >"+backButton+
+                action = "<div class='mainfont restarthome tapped'  >"+backButton+
                         "&nbsp;&nbsp;&nbsp;"+
                         "</div>"; 
                 $('.actionarea').html( action );
@@ -1095,8 +1119,6 @@
                 return;
             }
             
-            $('#chatmessage').val("");
-            $('#chatmessage3').val("");
             
             if(passkey64===''){
                 chatinputpasskey = '';
@@ -1115,19 +1137,31 @@
             $('.chatextrahide').hide();
             
             
-            /* Google Analytics Pageview */
-            //ga('send', 'pageview');
-            AbortAjax();
-            $('#chatmessage').load( rootserver+"chatsend.php",  {
-                'providerid': $('#pid').val(),
-                'message' : msg,
-                'img' : img,
-                'chatid' : ChatId,
-                'msgid' : msgid,
-                'passkey64': passkey64,
-                'streaming' : streaming
-            }, function(html, status){
-
+            if(xhrapp){
+                //AbortAjax();
+                //xhrapp = null;
+            }
+            
+            
+            $.ajax({
+                url: rootserver+'chatsend.php',
+                context: document.body,
+                timeout: 3000,
+                type: 'POST',
+                data: 
+                 { 
+                    'providerid': $('#pid').val(),
+                    'message' : msg,
+                    'img' : img,
+                    'chatid' : ChatId,
+                    'msgid' : msgid,
+                    'passkey64': passkey64,
+                    'streaming' : streaming
+                 }
+                 
+             }).done(function(html, status){
+                 
+                ActiveChat(true, chatinputpasskey );
                 $('.chatcomment').html('');
                 $('#chatbottom').show();
                 $('#chatmessage').val("");
@@ -1155,53 +1189,51 @@
                     alertify.alert("Passkey Credential Failure.");
                     return;
                 }            
-                if( html==='FailQuiz'){
-                
+                if(html!=='success'){
                     $('#chatmessage').val(msg);
                     $('#chatmessage3').val(img);
-                    alertify.alert("Comments Restricted.");
-                    return;
-                }            
-                if(status!=='success'){
-                    $('#chatmessage').val(msg);
-                    $('#chatmessage3').val(img);
-                    alertify.alert('Chat connection failed. Check your network connection and retry.');
+                    alertify.alert(' Chat connection failed. Check your network connection and retry.');
                     //$('.mainview').scrollTop(0);
                     return;
                 }
-                if(status==='success'){
+                
+                $('#chatmessage').val("");
+                $('#chatmessage3').val("");
+                if(html==='success'){
+                    
                     $('.chatcomment').html('');
                     
-                    $('#chatmessage').val("");
-                    $('#chatmessage3').val("");
                     $('.mainview').scrollTop(0);
                     if( MobileCapable){
                         $('.chatsendareamobile').hide();
                     }
-                    ActiveChat(true, chatinputpasskey );
                     if(streaming){
                         GiveStars();
                     }
                     
+                } else {
+                    
+                    alertify.alert(status);
+                    
                 }
-
-            });
+                 
+             }).fail(function(){
+                    alertify.alert(' Chat send failed. Check your network connection and retry.');
+             });
+            
             
         }
-        
         function SideBarList( startup )
         {
             
             if( xhralerts ){
                 xhralerts.abort();
             }
-            if(hostedmode){
-                return;
-            }
 
             xhralerts = $.ajax({
                 url: rootserver+'sidebar-v2.php',
                 context: document.body,
+                timeout: 3000,
                 type: 'POST',
                 data: 
                  { 'providerid': $('#pid').val(),
@@ -1230,6 +1262,9 @@
                 if(data === ''){
                     return;
                 }
+                lastCheckIn = new Date();
+                $('.admintrace').html(lastCheckIn+' Side');
+                
                 
                 var msg = jQuery.parseJSON(data);
                 
@@ -1335,6 +1370,10 @@
             
                 $('.camera').hide();
                 $('.cameratext').hide();
+            } else {
+                $('.camera').show();
+                $('.cameratext').show();
+                
             }
             
             //Busy
@@ -1745,12 +1784,6 @@
                 //PingCount++;
             }
         }
-        function CheckImapMessages(ImapFlagRun)
-        {
-            RefreshMessageList( "INBOX", 0, SYNC, 0 );
-            
-            return;
-        }
 
 
         function CheckMessages()
@@ -1760,7 +1793,6 @@
                 return;
             }
             //This will check all
-            CheckImapMessages(0);
                 
                         
             return;
@@ -1896,6 +1928,10 @@
             xhralerts.abort();
             xhralerts = null;
         }
+        if( xhrapp ){ //&& xhralerts.readyState !== 4){
+            xhrapp.abort();
+            xhrapp = null;
+        }
         if( xhr ){ //&& xhralerts.readyState !== 4){
             xhr.abort();
             xhr = null;
@@ -1973,11 +2009,10 @@
         $('#alertrow').hide();
                 
         
-        //setInterval( function(){ CheckMessages(); }, 12000);
         //setInterval( function(){ SideBarList(false); }, 30000);
         //setInterval( function(){ ActiveChat(false,''); }, 5000);
         setInterval( function(){ TimerJob(); }, 2000);
-        setInterval( function(){ TimerFieldJob(); }, 1000);
+        //setInterval( function(){ TimerFieldJob(); }, 1000);
         $('#providername').load( rootserver+'providername.php',  {'providerid': $('#pid').val(), 'loginid' : $('#loginid').val() }); 
         $('#providername2').load( rootserver+'providername.php',  {'providerid': $('#pid').val(), 'loginid' : $('#loginid').val() }); 
         $('.searchcriteria').hide();
@@ -2219,7 +2254,7 @@
         if(MobileType!=='A' && MobileType!=='I'){
             return false;
         }
-        if(MobileCapable && (mobileversion === '' || mobileversion === '000')  ){
+        if(MobileCapable && (mobileversion === '000')  ){
             if(appStoreCheck > 0){
                 return 2;
             }
@@ -2242,11 +2277,19 @@
         MobileZoomLevel = 1;
         MobileCapable = false;
         MobileDivide = false;
-        DeviceCode = 'Unk';
+        DeviceCode = '';
+        if( navigator.userAgent.match(/Ubuntu Touch/i)) {
+            mobileDevice = "P";
+            MobileCapable = false;
+            MobileType = "U";
+            MobileDivide = false;
+            DeviceCode = 'ubuntutouch1';
+        }
+        else
         if( navigator.userAgent.match(/Linux; Ubuntu 16.04 like Android 4.4/i)) {
             mobileDevice = "P";
             MobileCapable = false;
-            MobileType = "";
+            MobileType = "U";
             MobileDivide = false;
             DeviceCode = 'ubuntutouch';
         }
@@ -2357,7 +2400,8 @@
                 navigator.userAgent.match(/Android 7/i) ||
                 navigator.userAgent.match(/Android 8/i) ||
                 navigator.userAgent.match(/Android 9/i) ||
-                navigator.userAgent.match(/Android 10/i) 
+                navigator.userAgent.match(/Android 10/i) ||
+                navigator.userAgent.match(/Android 11/i) 
                 )
             ){
             mobileDevice = "T";
@@ -2384,7 +2428,8 @@
                 navigator.userAgent.match(/Android 7/i) ||
                 navigator.userAgent.match(/Android 8/i) || 
                 navigator.userAgent.match(/Android 9/i) || 
-                navigator.userAgent.match(/Android 10/i) 
+                navigator.userAgent.match(/Android 10/i) ||
+                navigator.userAgent.match(/Android 11/i) 
                 )
             ){
             mobileDevice = "T";
@@ -2421,7 +2466,8 @@
                 navigator.userAgent.match(/Android 7/i) ||
                 navigator.userAgent.match(/Android 8/i) ||
                 navigator.userAgent.match(/Android 9/i) ||
-                navigator.userAgent.match(/Android 10/i)
+                navigator.userAgent.match(/Android 10/i) ||
+                navigator.userAgent.match(/Android 11/i)
                 )
                 &&
                 (

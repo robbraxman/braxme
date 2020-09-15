@@ -106,8 +106,11 @@ $time1 = microtime(true);
     $noitems = 'N';
     $listheading = "";
     
+<<<<<<< HEAD
     $list = "";
     
+=======
+>>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
     //$chatfunc = "startchatbutton";
     $chatfunc = "starthyperchatbutton";
             
@@ -208,7 +211,11 @@ $time1 = microtime(true);
     
     $limit = "limit 100";
     if($_SESSION['superadmin']=='Y'){
+<<<<<<< HEAD
         $limit = "limit 200";
+=======
+        $limit = "limit 50";
+>>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
     }
     
     $mobilequery = "";
@@ -226,12 +233,20 @@ $time1 = microtime(true);
     }
         
     
+<<<<<<< HEAD
    $result = pdo_query("1",
+=======
+   $result = do_mysqli_query("1",
+>>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
     
         "
         select 
         DATE_FORMAT(date_add(chatmaster.created, 
+<<<<<<< HEAD
         interval (?)*(60) MINUTE), '%b %d %h:%i%p') as created, 
+=======
+        interval ($timezone)*(60) MINUTE), '%b %d %h:%i%p') as created, 
+>>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
             
         chatmaster.chatid, 
         chatmaster.title,
@@ -243,27 +258,47 @@ $time1 = microtime(true);
         chatmaster.encoding,
         chatmaster.lastmessage,
         DATE_FORMAT(date_add(
+<<<<<<< HEAD
             chatmaster.lastmessage, interval (?)*(60) MINUTE), '%b %d %h:%i%p') as lastmessage2,
+=======
+            chatmaster.lastmessage, interval ($timezone)*(60) MINUTE), '%b %d %h:%i%p') as lastmessage2,
+>>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
         chatcount,
         chatmembers as membercount,
 
         (select timestampdiff(SECOND, lastread, chatmaster.lastmessage ) from chatmembers 
+<<<<<<< HEAD
             where providerid = ? and
                  chatmembers.chatid = chatmaster.chatid) as diff, 
                  
         (select lastread from chatmembers 
             where providerid = ? and
+=======
+            where providerid = $providerid and
+                 chatmembers.chatid = chatmaster.chatid) as diff, 
+                 
+        (select lastread from chatmembers 
+            where providerid = $providerid and
+>>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
                  chatmembers.chatid = chatmaster.chatid) as lastread,
 
                 
         (select count(*) from chatmessage 
             where chatmaster.chatid = chatmessage.chatid and 
+<<<<<<< HEAD
             chatmessage.providerid != ? and status='Y') as chatcountc,
+=======
+            chatmessage.providerid != $providerid and status='Y') as chatcountc,
+>>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
                 
         (select
         chatmembers.techsupport from chatmembers 
         where chatmaster.chatid = chatmembers.chatid and
+<<<<<<< HEAD
         chatmembers.providerid = ? ) as techsupport,
+=======
+        chatmembers.providerid = $providerid ) as techsupport,
+>>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
 
         $mobilequery
             
@@ -275,14 +310,22 @@ $time1 = microtime(true);
         left join provider on chatmaster.owner = provider.providerid
         where chatmaster.status='Y' and chatmaster.chatid in 
         (select chatid from chatmembers 
+<<<<<<< HEAD
         where providerid = ? and status='Y' )
+=======
+        where providerid = $providerid and status='Y' )
+>>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
         and (select count(*) from chatmessage where chatmaster.chatid = chatmessage.chatid) > 0
         $findfilter
         $livefilter
         $sortorder
         $limit
+<<<<<<< HEAD
         ",
            array($timezone,$timezone,$providerid,$providerid,$providerid,$providerid,$providerid)
+=======
+        "
+>>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
            
     );    
 
@@ -739,7 +782,11 @@ function DisplayChatMembers(
          * 
          *  Search for Regular Members in Chat
          */
+<<<<<<< HEAD
         $result3 = pdo_query("1",
+=======
+        $result3 = do_mysqli_query("1",
+>>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
         "
              select provider.providername, provider.companyname, provider.avatarurl,
              chatmembers.lastmessage, chatmembers.techsupport, provider.stealth
@@ -1119,12 +1166,21 @@ function DisplayChatMembersMobile(
     $list = "";
     $alert = "";
     $i1 = 0;
+<<<<<<< HEAD
     
     $lock = "<img class='icon15' src='$iconsource_braxlock_common' style='' />";
     if($keyhash==''){
         $lock = '';
     }
     
+=======
+    
+    $lock = "<img class='icon15' src='$iconsource_braxlock_common' style='' />";
+    if($keyhash==''){
+        $lock = '';
+    }
+    
+>>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
     $alert = "";
     if( ($diff > 0 || $lastread==0) ){
 
@@ -1147,8 +1203,13 @@ function DisplayChatMembersMobile(
         
             $avatar = "$rootserver/img/internetradio.png";
             if($roomid > 0 ){
+<<<<<<< HEAD
                 $result = pdo_query("1", "select photourl from roominfo where roomid = ? ",array($roomid));
                 if($row = pdo_fetch($result)){
+=======
+                $result = do_mysqli_query("1", "select photourl from roominfo where roomid = $roomid ");
+                if($row = do_mysqli_fetch("1",$result)){
+>>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
                     $avatar = RootServerReplace($row['photourl']);
                 }
             }
@@ -1260,6 +1321,7 @@ function DisplayChatMembersMobile(
      */
     if($membercount == 1){
 
+<<<<<<< HEAD
         $result2 = pdo_query("1",
 
              "
@@ -1267,6 +1329,15 @@ function DisplayChatMembersMobile(
              ",array($providerid, $chatid)
         );
         if($row2 = pdo_fetch($result2)){
+=======
+        $result2 = do_mysqli_query("1",
+
+             "
+             select name, email from invites where providerid=$providerid and chatid=$chatid limit 1
+             "
+        );
+        if($row2 = do_mysqli_fetch("1",$result2)){
+>>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
             $avatar = "$rootserver/img/newbie2.jpg";
 
             $header = true;

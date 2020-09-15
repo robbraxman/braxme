@@ -10,8 +10,8 @@ if($_SESSION['language']==''){
 
     $menu_handle = 'Username';
     $menu_home = 'Home';
-    $menu_rooms = 'Rooms';
-    $menu_room = 'Room';
+    $menu_rooms = 'Blogs';
+    $menu_room = 'Blog Room';
     $menu_live = 'Live';
     $menu_chats = 'Chats';
     $menu_chat = 'Chat';
@@ -25,8 +25,8 @@ if($_SESSION['language']==''){
     $menu_userprofile = "User Profile";
     $menu_myphotos = 'My Photos';
     $menu_myfiles = 'My Files';
-    $menu_myrooms = 'My Rooms';
-    $menu_whatsnew = "What's New";
+    $menu_myrooms = 'My Blog Rooms';
+    $menu_whatsnew = "Blogs - What's New";
     $menu_password ='Password';
     $menu_confirmpassword ='Confirm Password';
     $menu_changepassword ='Change Password';
@@ -38,8 +38,8 @@ if($_SESSION['language']==''){
     $menu_public = 'Public';
     $menu_community = 'Contacts';
     $menu_top = 'Top';
-    $menu_roomselect = 'Select Room';
-    $menu_discoverrooms = 'Discover Rooms';
+    $menu_roomselect = 'Select Blog Room';
+    $menu_discoverrooms = 'Discover Blog Rooms';
     $menu_trending = 'Trending';
     $menu_communitylist = 'Group Lists';
     
@@ -47,8 +47,8 @@ if($_SESSION['language']==''){
     $menu_mynotifications = 'My Notifications';
     $menu_advancedsettings = 'Advanced Settings';
     $menu_save = "Save Changes";
-    $menu_managerooms = "Manage Rooms";
-    $menu_manageroom = "Manage Room and Members";
+    $menu_managerooms = "Manage Blog Rooms";
+    $menu_manageroom = "Manage Blogs and Members";
     $menu_websites = "Websites";
     $menu_all = "All";
     $menu_activetoday = "Active Today";
@@ -65,7 +65,7 @@ if($_SESSION['language']==''){
     $menu_leave = "Leave";
     $menu_back = "Back";
     $menu_hide = "Hide";
-    $menu_gotoroom = "Go to room to post";
+    $menu_gotoroom = "Go to blog room to post";
     $menu_name = 'Name';
     $menu_email = 'Email';
     $menu_alias = 'External Alias';
@@ -82,21 +82,22 @@ if($_SESSION['language']==''){
     $menu_thanks = 'Thanks!';
     
     $menu_whoshere = "Who's Here";
-    $menu_roommembers = "Room Members";
+    $menu_roommembers = "Blog Room Members";
     $menu_aboutme = "About Me";
     $menu_managesocialvision = "Manage $enterpriseapp";
     $menu_upgrade = "Upgrade to $enterpriseapp";
-    $menu_manageupgrade = "$appname Store";
+    $menu_manageupgrade = "$appname Services Store";
     $menu_setprofilephoto = "Set a Profile Photo";    
     $menu_biography = "Profile";
+    $menu_biographyprompt = "Brief Biography";
     $menu_refresh = "Refresh";
     $menu_title = 'Title';
     $menu_newtopic = "New Topic, comment, link, photos, video";
     $menu_reply = "Topic Reply";
     $menu_replies = "Comments";
-    $menu_roomfiles = "Room Files";
+    $menu_roomfiles = "Blog Room Files";
     $menu_roominvite = "Invite";
-    $menu_roomunsubscribe = "Unsubscribe from Room";
+    $menu_roomunsubscribe = "Unsubscribe from Blog";
     $menu_mutenotifications = "Mute Notifications";
     $menu_unmutenotifications = "Enable Notifications";
     $menu_showoldermessages = "Show Older Messages";
@@ -130,7 +131,7 @@ if($_SESSION['language']==''){
     $menu_frienddelete = "Remove Friend";
     $menu_roomfavorite = "Add to Favorites";
     $menu_roomfavoritedelete = "Remove from Favorites";
-    $menu_roomfavorites = "Favorite Rooms";
+    $menu_roomfavorites = "Favorite Blog Rooms";
     $menu_new = "New";
     $menu_newfolder = "New Folder";
     $menu_sortbydate = "By Date";
@@ -150,6 +151,9 @@ if($_SESSION['language']==''){
     $menu_signupsuccess2 = "Download the $appname mobile app from your app store for a better experience.";
     $menu_techsupportfaq = "FAQ Tech Support";
     $menu_sms = "Mobile Phone";
+    $menu_manageroomscreate = "Create New Blog Room";
+    $menu_manageroomsview = "View Blog Room";
+    $menu_manageroomsedit = "Edit Blog Room Properties";
     
 if($_SESSION['language']=='spanish'){
 
@@ -233,6 +237,7 @@ if($_SESSION['language']=='spanish'){
     $menu_upgrade = "Actualice Mi Cuenta";
     $menu_setprofilephoto = "Establecer una Foto de Perfil";    
     $menu_biography = "Biografia";
+    $menu_biographyprompt = "Biografia";
     $menu_refresh = "Refresca";
     $menu_title = 'Titulo';
     $menu_newtopic = "Nuevo Tema - commentario, enlace, foto, video";
@@ -361,6 +366,7 @@ if($_SESSION['language']=='danish'){
     $menu_upgrade = "Opgrader Min Konto";
     $menu_setprofilephoto = "Indstil et Profilbillede";    
     $menu_biography = "Biografi";
+    $menu_biographyprompt = "Biografi";
     $menu_refresh = "Opdater";
     $menu_title = 'Titel';
     $menu_newtopic = "Nyt emne - kommentar, link, video, billede";
@@ -488,6 +494,7 @@ if($_SESSION['language']=='russian'){
     $menu_upgrade = "обновить аккаунт";
     $menu_setprofilephoto = "установить фотографию профиля";    
     $menu_biography = "биография";
+    $menu_biographyprompt = "биография";
     $menu_refresh = "обновление";
     $menu_title = 'название';
     $menu_newtopic = "Новая тема, комментарий, ссылка, фотографии, видео";
@@ -609,6 +616,7 @@ if($_SESSION['language']=='dutch'){
     $menu_upgrade = "Upgrade Account to $enterpriseapp";
     $menu_setprofilephoto = "Set a Profile Photo";    
     $menu_biography = "Biografie";
+    $menu_biographyprompt = "Biografie";
     $menu_refresh = "Verversen";
     $menu_title = 'Titel';
     $menu_newtopic = "Nieuw onderwerp, commentaar, link, fotos, video";
@@ -735,6 +743,7 @@ if($_SESSION['language']=='french'){
     $menu_upgrade = "Améliorer le Compte";
     $menu_setprofilephoto = "Définir une Photo de Profil";    
     $menu_biography = "Biographie";
+    $menu_biographyprompt = "Biographie";
     $menu_refresh = "Rafraîchir";
     $menu_title = 'Titre';
     $menu_newtopic = "Nouveau sujet - commentaire, lien, photos, vidéo";
@@ -854,6 +863,7 @@ if($_SESSION['language']=='korean'){
     $menu_upgrade = "업그레이드 계정"; 
     $menu_setprofilephoto = "프로필 사진 설정"; 
     $menu_biography = "전기문학";
+    $menu_biographyprompt = "전기문학";
     $menu_refresh = "새롭게 하다";
     $menu_title = '표제';
     $menu_newtopic = "새로운 화제, 연결, 사진, 영상";
@@ -979,6 +989,7 @@ if($_SESSION['language']=='german'){
     $menu_upgrade = "Konto Aktualisieren";
     $menu_setprofilephoto = "Legen Sie ein Profilfoto Fest";    
     $menu_biography = "Biografie";
+    $menu_biographyprompt = "Biografie";
     $menu_refresh = "Aktualisieren";
     $menu_title = 'Titel';
     $menu_newtopic = "Neues Thema, Kommentar, Link, Fotos, Video";
@@ -1105,6 +1116,7 @@ if($_SESSION['language']=='portuguese'){
     $menu_upgrade = "Atualizar conta";
     $menu_setprofilephoto = "Definir foto do perfil";    
     $menu_biography = "Biografia";
+    $menu_biographyprompt = "Biografia";
     $menu_refresh = "Refresca";
     $menu_title = 'Título';
     $menu_newtopic = "Novo tópico, comentários, fotos, links, arquivos";

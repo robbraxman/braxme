@@ -431,8 +431,13 @@
             update chatmaster set lastmessage=now(),
             chatcount = (select count(*) from chatmessage where chatmessage.chatid = chatmaster.chatid and chatmessage.status = 'Y'),
             chatmembers = (select count(*) from chatmembers where chatmembers.chatid = chatmaster.chatid )
+<<<<<<< HEAD
             where  chatid=? and chatmaster.status='Y'
             ",array($chatid));
+=======
+            where  chatid=$chatid and chatmaster.status='Y'
+            ");
+>>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
     
     }
     function FlagChatMessage($action, $msgid, $chatid)
@@ -481,7 +486,11 @@ function CreateChatMessage( $providerid, $chatid, $passkey, $message, $messagesh
         /*
          * This is the original and it is wrong because it's updating V even if not current broadcast
         if( $streaming ){
+<<<<<<< HEAD
             pdo_query("1"," 
+=======
+            do_mysqli_query("1"," 
+>>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
                update broadcastlog set chatcount=chatcount+1 
                where chatid=$chatid and providerid =$providerid
                and mode ='V'
@@ -490,6 +499,7 @@ function CreateChatMessage( $providerid, $chatid, $passkey, $message, $messagesh
          * 
          */
         if( $streaming ){
+<<<<<<< HEAD
             pdo_query("1"," 
                update broadcastlog set chatcount=chatcount+1 
                where chatid=? and providerid =?
@@ -497,6 +507,15 @@ function CreateChatMessage( $providerid, $chatid, $passkey, $message, $messagesh
                broadcastid = (select max(broadcastid) from broadcastlog 
                where mode='V' and providerid = ? and chatid=?)
             ",array($chatid,$providerid,$providerid,$chatid));
+=======
+            do_mysqli_query("1"," 
+               update broadcastlog set chatcount=chatcount+1 
+               where chatid=$chatid and providerid =$providerid
+               and mode ='V' and 
+               broadcastid = (select max(broadcastid) from broadcastlog 
+               where mode='V' and providerid = $providerid and chatid=$chatid)
+            ");
+>>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
         }
     
     

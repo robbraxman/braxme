@@ -21,6 +21,7 @@ require_once("signupfunc.php");
         $pin = "";
     }
     $colorscheme = @mysql_safe_string($_POST['colorscheme']);
+    $hardenter = @mysql_safe_string($_POST['hardenter']);
     
     
     $companyname = ucwords(@mysql_safe_string($_POST['companyname']));
@@ -99,7 +100,8 @@ require_once("signupfunc.php");
         $pin,
         $colorscheme,
         $gift,
-        $wallpaper
+        $wallpaper,
+        $hardenter
         );
 
     

@@ -499,6 +499,10 @@ require_once("internationalization.php");
          background-color:$global_background;color:$global_textcolor;
          padding-top:0px;max-width:100%;
          '>
+            <div class='' style='background-color:white;padding:10px'>
+         ";
+
+         /*
             <div class='gridnoborder' style='background-color:$global_titlebar_color;color:white;padding-left:20px;padding-right:20px;padding-bottom:3px;padding-top:0px;margin:0;' >
                 <img class='icon20 roomfiles mainbutton' Title='Back to Home' src='../img/Arrow-Left-in-Circle-White_120px.png' 
                     style='' data-roomid='$roomid' data-caller='none' />
@@ -508,8 +512,7 @@ require_once("internationalization.php");
                 </span>
                 <span class='pagetitle2a' style='color:white'>$menu_myfiles</span> 
             </div>
-            <div class='' style='background-color:white;padding:10px'>
-         ";
+        */
     } else 
     if($caller!=='chat'){
         
@@ -518,12 +521,6 @@ require_once("internationalization.php");
          background-color:$global_background;color:$global_textcolor;
          padding-top:0px;max-width:100%;
          '>
-            <div class='gridnoborder' style='background-color:$global_titlebar_color;color:white;padding-left:20px;padding-right:20px;padding-bottom:3px;padding-top:0px;margin:0;' >
-                <span style='opacity:.5'>
-                $icon_braxdoc2
-                </span>
-                <span class='pagetitle2a' style='color:white'>$doclibtitle</span> 
-            </div>
             <div class='' style='background-color:$global_background;padding:10px'>
          ";
     } else {
@@ -533,12 +530,6 @@ require_once("internationalization.php");
          background-color:$global_background;color:$global_textcolor;
          padding-top:0px;max-width:100%;
          '>
-            <div class='gridnoborder' style='background-color:$global_titlebar_color;color:white;padding-left:20px;padding-right:20px;padding-bottom:3px;padding-top:0px;margin:0;' >
-                <span style='opacity:.5'>
-                $icon_braxdoc2
-                </span>
-                <span class='pagetitle2a' style='color:white'>$doclibtitle</span> 
-            </div>
             <div class='' style='background-color:$global_background;padding:10px'>
          ";
         
@@ -1894,7 +1885,7 @@ function CreateFolderList( $providerid, $mode, $selectedfolder, $selectedfolderi
                     text-decoration:none;
                     padding-left:3px;
                     cursor:pointer;
-                    background-color:$global_menu2_color;vertical-align:middle;
+                    background-color:$global_menu_color;vertical-align:middle;
                     color:white;
                     '
                     >
@@ -2176,7 +2167,7 @@ function RefreshButton( $filtername, $selectedfolder, $selectedfolderid, $roomfo
                         title='Find a File'
                     >
                 <span class='doclibsearcharea' style='display:none'>
-                    <input type='text' name='filefiltername' placeholder='Search All Folders' class='inputline mainfont dataentry filefiltername' size='20' style='color:$global_textcolor;max-width:200px' value='$filtername' />
+                    <input id='filefiltername' type='text' name='filefiltername' placeholder='Search All Folders' class='inputline mainfont dataentry filefiltername' size='20' style='color:$global_textcolor;max-width:200px' value='$filtername' />
 
                 </span>
              ";

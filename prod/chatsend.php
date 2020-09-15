@@ -57,7 +57,11 @@ include("lib_autolink.php");
             $titleencrypted =  EncryptText( $title, "$chatid" );
             $encoding = $_SESSION['responseencoding'];
         }
+<<<<<<< HEAD
         $result = pdo_query("1",
+=======
+        $result = do_mysqli_query("1",
+>>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
             "
             update chatmaster set title='$titleencrypted', encoding='$encoding', radiostation='$radio' where chatid=$chatid 
             ");
@@ -187,6 +191,7 @@ include("lib_autolink.php");
             
             $streaming = CheckLiveStream($streamid);
             if(!$streaming){
+<<<<<<< HEAD
                 $result = pdo_query("1",
                     "
                     update chatmembers set broadcaster = null where chatid=? 
@@ -199,6 +204,20 @@ include("lib_autolink.php");
                     live='N', radiotitle='', reservestation=null 
                     where chatid=? and radiostation in ('Q','Y')
                     ",array(4chatid));
+=======
+                $result = do_mysqli_query("1",
+                    "
+                    update chatmembers set broadcaster = null where chatid=$chatid 
+                    ");
+
+
+                $result = do_mysqli_query("1",
+                    "
+                    update chatmaster set broadcaster = null, broadcastmode='', 
+                    live='N', radiotitle='', reservestation=null 
+                    where chatid=$chatid and radiostation in ('Q','Y')
+                    ");
+>>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
                 //Delete original Streamid.mp3
                 DeleteIcecastRecording($providerid, $chatid );
                 RenameIcecastRecording($providerid, $chatid, $broadcastername, $title );
@@ -243,6 +262,7 @@ include("lib_autolink.php");
         
         $streaming = true;
         $subtype = "LV";
+<<<<<<< HEAD
         $result = pdo_query("1",
             "
             update chatmaster set broadcaster = null,  
@@ -270,6 +290,35 @@ include("lib_autolink.php");
         if($row = pdo_fetch($result)){
         
             pdo_query("1",
+=======
+        $result = do_mysqli_query("1",
+            "
+            update chatmaster set broadcaster = null,  
+            live='N', broadcastmode=null, radiotitle='' 
+            where chatid=$chatid and radiostation in ('Y','Q')
+            ");
+        
+        $result = do_mysqli_query("1",
+            "
+            update chatmembers set broadcaster = null where chatid=$chatid 
+            ");
+        
+        $result = do_mysqli_query("1",
+            "
+            delete from notification where chatid=$chatid and notifytype='CP' and notifysubtype='LV'
+            and notifyid > 0
+            ");
+        
+        $result = do_mysqli_query("1",
+            "select broadcastid from broadcastlog  
+             where providerid = $providerid and 
+             chatid = $chatid order by broadcastid desc limit 1
+            "
+            );
+        if($row = do_mysqli_fetch("1",$result)){
+        
+            do_mysqli_query("1",
+>>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
                 "
                 update broadcastlog
                 set broadcastdate2 = now(),
@@ -305,10 +354,17 @@ include("lib_autolink.php");
         }
         
         DeleteIcecastRecordingFilename($providerid, $chatid, $action );
+<<<<<<< HEAD
         $result = pdo_query("1",
             "
             delete from recordings where recid=?
             ",$action);
+=======
+        $result = do_mysqli_query("1",
+            "
+            delete from recordings where recid=$action
+            ");
+>>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
         echo "success";
         exit();
     }
@@ -354,8 +410,13 @@ include("lib_autolink.php");
         update chatmaster set lastmessage=now(),
         chatcount = (select count(*) from chatmessage where chatmessage.chatid = chatmaster.chatid and chatmessage.status = 'Y'),
         chatmembers = (select count(*) from chatmembers where chatmembers.chatid = chatmaster.chatid )
+<<<<<<< HEAD
         where  chatid=? and chatmaster.status='Y'
         ",array($chatid));
+=======
+        where  chatid=$chatid and chatmaster.status='Y'
+        ");
+>>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
     
     
     TouchMembers($chatid);

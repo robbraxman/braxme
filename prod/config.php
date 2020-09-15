@@ -227,8 +227,10 @@ require('colorscheme.php');
             $deviceid = "";
         }
 
-        do_mysqli_query("1","delete from lastfunc where providerid=$providerid and deviceid='' ");
-        do_mysqli_query("1","delete from lastfunc where providerid=$providerid and deviceid='$deviceid' ");
+        do_mysqli_query("1",
+                "delete from lastfunc where providerid=$providerid and (deviceid='' or deviceid='$deviceid'
+                 or  datediff(now(),funcdate) > 1 ) "
+                );
         do_mysqli_query("1","insert into lastfunc (providerid, deviceid, func, parm1, funcdate )
                     values ($providerid, '$deviceid', '$func','$parm1',now() )
                         ");
@@ -432,6 +434,15 @@ require('colorscheme.php');
         }
         return false;
         
+    }
+    function ServerTimeOutCheck()
+    {
+        if(!isset($_SESSION['pid']) || $_SESSION['pid']=='') //Invalid Session
+        {
+            $_SESSION['reset']='Y';
+            return true;
+        }
+        return false;
     }
     function StripEmojis($text)
     {
