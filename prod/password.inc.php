@@ -398,6 +398,12 @@ require_once 'authenticator/GoogleAuthenticator.php';
             );
 
         //Fingerprint Without IP
+        /*
+         *  The purpose of fingerprint is from troll control. If you block one user
+         *  all users with the same fingerprint get blocked as well.
+         *  just a simplistic fingerprint and no IP addresses are collected.
+         * 
+         */
         $timezone = $_SESSION['timezone'];
         $ip = WhiteListCheck(false);
         $useragent = tvalidator("PURIFY",$_SERVER['HTTP_USER_AGENT']);
