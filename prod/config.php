@@ -17,37 +17,38 @@ require('colorscheme.php');
     $purifierconfig = HTMLPurifier_Config::createDefault();
     $purifier = new HTMLPurifier($purifierconfig);
 
-    function do_sql_connect( $connectnum, $sqlurl, $usr, $pwd, $database  )
+    function pdo_sql_connect( $connectnum, $sqlurl, $usr, $pwd, $database  )
     {
-        $mysqli = mysqli_init();
-        $temp = explode(":",$sqlurl);
-        $url = $temp[0];
-        $port = $temp[1];
-        $mysqli->ssl_set( NULL , NULL , "/var/www/html/rds-combined-ca-bundle.pem" , NULL,  NULL );
-        $mysqli->real_connect($url, $usr,  $pwd, $database, $port);    
-        $mysqli->set_charset('utf8');
 
-        if($mysqli->connect_errno){
-            echo "<br>SQL Connect Error $connectnum<br>";
-            echo $mysqli->connect_error;
-            exit();
-        }
-        return $mysqli;
+        $dsn = "mysql:host=$sqlurl;dbname=$database;charset=utf8mb4";
+        $options = [
+            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES   => false,
+        ];
+        try {
+             $pdo = new PDO($dsn, $usr, $pwd, $options);
+        } catch (\PDOException $e) {
+             echo "Connection: $connectnum";
+             throw new \PDOException($e->getMessage(), (int)$e->getCode());
+        }        
+        return $pdo;
+        
     }
 
     /* Connect to all the Databases and initialize Database Objects */
 
-    $dbconnect1 = do_sql_connect( "1", $_SESSION['sqlurl'], $_SESSION['sqlusr'], $_SESSION['sqlpwd'], $_SESSION['database'] );
-    $dbconnect2 = do_sql_connect( "2", $_SESSION['sqlurl2'], $_SESSION['sqlusr2'], $_SESSION['sqlpwd2'], $_SESSION['database2'] );
-    $dbconnect3 = do_sql_connect( "3", $_SESSION['sqlurl3'], $_SESSION['sqlusr3'], $_SESSION['sqlpwd3'], $_SESSION['database3'] );
-    $dbconnect6 = do_sql_connect( "6", $_SESSION['sqlurl6'], $_SESSION['sqlusr6'], $_SESSION['sqlpwd6'], $_SESSION['database6'] );
-    $dbconnect_news = do_sql_connect( "news", $_SESSION['sqlurl_news'], $_SESSION['sqlusr_news'], $_SESSION['sqlpwd_news'], $_SESSION['database_news'] );
+    $dbconnect1 = pdo_sql_connect( "1", $_SESSION['sqlurl'], $_SESSION['sqlusr'], $_SESSION['sqlpwd'], $_SESSION['database'] );
+    $dbconnect2 = pdo_sql_connect( "2", $_SESSION['sqlurl2'], $_SESSION['sqlusr2'], $_SESSION['sqlpwd2'], $_SESSION['database2'] );
+    $dbconnect3 = pdo_sql_connect( "3", $_SESSION['sqlurl3'], $_SESSION['sqlusr3'], $_SESSION['sqlpwd3'], $_SESSION['database3'] );
+    $dbconnect6 = pdo_sql_connect( "6", $_SESSION['sqlurl6'], $_SESSION['sqlusr6'], $_SESSION['sqlpwd6'], $_SESSION['database6'] );
+    $dbconnect_news = pdo_sql_connect( "news", $_SESSION['sqlurl_news'], $_SESSION['sqlusr_news'], $_SESSION['sqlpwd_news'], $_SESSION['database_news'] );
 
     
 /*******************
  * BRAXPRODUCTION SHARD 1
  *******************/
-    function do_mysqli_query( $connect, $query ){
+    function pdo_query( $connect, $query, $varlist ){
         
         global $dbconnect1;
         global $dbconnect2;
@@ -55,56 +56,57 @@ require('colorscheme.php');
         global $dbconnect6;
         global $dbconnect_news;
         
-        $db_mysqli['1'] = $dbconnect1;
-        $db_mysqli['2'] = $dbconnect2;
-        $db_mysqli['3'] = $dbconnect3;
-        $db_mysqli['6'] = $dbconnect6;
-        $db_mysqli['news'] = $dbconnect_news;
+        $db_pdo['1'] = $dbconnect1;
+        $db_pdo['2'] = $dbconnect2;
+        $db_pdo['3'] = $dbconnect3;
+        $db_pdo['6'] = $dbconnect6;
+        $db_pdo['news'] = $dbconnect_news;
         
-        if(!isset($db_mysqli[$connect])){
+        if(!isset($db_pdo[$connect])){
             echo "$query<br>";
             echo "No Connection Specified in Query<br>";
             exit();
         }
-        $result = $db_mysqli[$connect]->query($query);
-        if(!$result){
+        
+        $stmt = $pdo->prepare($query);
+        $stmt->execute($varlist);
+        if(!$stmt){
             //echo "$query<br>";
-            //echo "Error $db_mysqli[$connect]->error";
+            //echo "Error ";
             //exit();
         }
-        //echo "No Error query<br>";
-        //echo "$db_mysqli[$connect]->error";
-        //exit();
-        return $result;
+        return $stmt;
 
     }
     
-    function do_mysqli_fetch($connect, $result ){
+    function pdo_fetch($stmt ){
         if(!$result)
         {
             return false;
         }
-        if($result->num_rows == 0){
+        if($stmt->rowcount() == 0){
         //    return false;
         }
         
-        $row =  $result->fetch_assoc();
+        $row =  $stmt->fetch(PDO::FETCH_ASSOC);
         return $row;
     }
-    function do_mysqli_fetch_row($connect, $result ){
+    function pdo_fetch_row($stmt ){
         
-        if($result->num_rows == 0){
-            return false;
+        if($stmt->rowcount() == 0){
+        //    return false;
         }
-        return $result->fetch_row();
+        
+        $row =  $stmt->fetch(PDO::FETCH_NUM);
+        return $row;
         
     }
-    function do_mysqli_fetch_array($connect, $result ){
-        if($result->num_rows == 0){
+    function pdo_fetch_array($stmt ){
+        if($stmt->rowcount() == 0){
             return false;
         }
         
-        return $result->fetch_array();
+        return $stmt->fetchAll();
         
     }
     
@@ -116,9 +118,6 @@ require('colorscheme.php');
 /*******************
  * BRAXPRODUCTION SHARD 2
  *******************/
-    
-
-    //do_mysqli_query("1", "SET NAMES 'utf8'");
 
     
 /*******************
@@ -156,7 +155,7 @@ require('colorscheme.php');
         }
 
     }
-    function tvalidator($type, $string)
+    function tvalidator($type,$string)
     {
         global $purifier;
         global $dbconnect1;
@@ -227,21 +226,23 @@ require('colorscheme.php');
             $deviceid = "";
         }
 
-        do_mysqli_query("1",
-                "delete from lastfunc where providerid=$providerid and (deviceid='' or deviceid='$deviceid'
-                 or  datediff(now(),funcdate) > 1 ) "
+        pdo_query("1",
+                "delete from lastfunc where providerid= ? and (deviceid='' or deviceid=?
+                 or  datediff(now(),funcdate) > 1 ) ", array($providerid, $deviceid)
                 );
-        do_mysqli_query("1","insert into lastfunc (providerid, deviceid, func, parm1, funcdate )
-                    values ($providerid, '$deviceid', '$func','$parm1',now() )
-                        ");
+        pdo_query("1","insert into lastfunc (providerid, deviceid, func, parm1, funcdate )
+                    values (?, ?, ?, ?,now() )",
+                    array( $providerid, $deviceid, $func,$parm1 ) 
+                  );
         if( $func == 'R')
         {
             $parm1 = intval($parm1);
-            do_mysqli_query("1","update provider set lastroomid = $parm1 where providerid=$providerid");
+            pdo_query("1","update provider set lastroomid = ? where providerid=? ", array($parm1, $providerid ));
         }
-        do_mysqli_query("1","
-            update staff set lastaccess=now() where providerid= $providerid and loginid='$_SESSION[loginid]'
-        ");
+        pdo_query("1","
+            update staff set lastaccess=now() where providerid= ? and loginid=? ",
+                array($providerid, $SESSION['loginid'])
+        );
 
     }
 
@@ -255,18 +256,15 @@ require('colorscheme.php');
             return (object) $arr;
         }
         $deviceid = @tvalidator("PURIFY",$_SESSION['deviceid']);
-        /*
-        $result = do_mysqli_query("1","
-            select timestampdiff(SECOND, lastfuncdate, now()) as elapsed, lastfunc, lastfuncparm1 from provider where providerid=$providerid
-               ");
-        */
-        $result = do_mysqli_query("1","
-            select timestampdiff(SECOND, funcdate, now()) as elapsed, func, parm1 from lastfunc where providerid=$providerid
-                and deviceid='$deviceid' order by funcdate desc
-               ");
+
+        $result = do_query("1","
+            select timestampdiff(SECOND, funcdate, now()) as elapsed, func, parm1 from lastfunc where providerid= ?
+                and deviceid='? order by funcdate desc",
+                array($providerid, $deviceid)
+               );
 
 
-        if( $row = do_mysqli_fetch("1",$result) )
+        if( $row = pdo_fetch($result) )
         {
             $elapsed = intval($row['elapsed']);
             if($elapsed < $timelimit || intval($timelimit)===0 )
@@ -302,12 +300,12 @@ require('colorscheme.php');
     function ActiveInformationRequest($providerid)
     {
         
-        $result = do_mysqli_query("1"," 
+        $result = pdo_query("1"," 
             select *
             from credentialformtrigger
-            where providerid = $providerid and status='N'
-                ");
-        if($row = do_mysqli_fetch("1",$result)){
+            where providerid = ? and status='N'
+                ", array($providerid));
+        if($row = pdo_fetch($result)){
 
             return 'Y';
         }
@@ -400,8 +398,8 @@ require('colorscheme.php');
     function GetTimeoutPin($providerid)
     {
         $_SESSION['pin']='';
-        $result = do_mysqli_query("1","select pin, encoding from timeout where providerid = $providerid ");
-        if( $row = do_mysqli_fetch("1",$result)){
+        $result = pdo_query("1","select pin, encoding from timeout where providerid = ? ", array($providerid));
+        if( $row = pdo_fetch($result)){
             $_SESSION['pin'] = $row['pin'];
         }
         if(intval($_SESSION['timeout_seconds'])==0){

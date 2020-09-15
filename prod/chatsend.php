@@ -10,13 +10,13 @@ include("lib_autolink.php");
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
     $providerid = tvalidator("PURIFY",$_POST['providerid']);
     $message = @mysql_safe_string_unstripped($_POST['message']);
-    $chatid = @tvalidator("PURIFY",$_POST['chatid']);
-    $msgid = @tvalidator("PURIFY",$_POST['msgid']);
-    $img = @tvalidator("PURIFY",$_POST['img']);
-    $url = @tvalidator("PURIFY",$_POST['url']);
-    $mode = @tvalidator("PURIFY",$_POST['mode']);
-    $action = @tvalidator("PURIFY",$_POST['action']);
-    $popupurl = @tvalidator("PURIFY",$_POST['popupurl']);
+    $chatid = tvalidator("PURIFY",$_POST['chatid']);
+    $msgid = tvalidator("PURIFY",$_POST['msgid']);
+    $img = tvalidator("PURIFY",$_POST['img']);
+    $url = tvalidator("PURIFY",$_POST['url']);
+    $mode = tvalidator("PURIFY",$_POST['mode']);
+    $action = tvalidator("PURIFY",$_POST['action']);
+    $popupurl = tvalidator("PURIFY",$_POST['popupurl']);
     
     $radio = @tvalidator("PURIFY",$_POST['radio']);
     $passkey = DecryptE2EPasskey(@tvalidator("PURIFY",$_POST['passkey64']),$providerid);
@@ -198,7 +198,7 @@ include("lib_autolink.php");
                     update chatmaster set broadcaster = null, broadcastmode='', 
                     live='N', radiotitle='', reservestation=null 
                     where chatid=? and radiostation in ('Q','Y')
-                    ",array($chatid));
+                    ",array(4chatid));
                 //Delete original Streamid.mp3
                 DeleteIcecastRecording($providerid, $chatid );
                 RenameIcecastRecording($providerid, $chatid, $broadcastername, $title );
