@@ -572,7 +572,7 @@ require_once("chat.inc.php");
         while( $row = do_mysqli_fetch("1",$result)){
             $owner = $row['owner'];
             $room =stripslashes($row['room']);
-            $roomForSql = mysql_safe_string(stripslashes($room));
+            $roomForSql = tvalidator("PURIFY",stripslashes($room));
             
             do_mysqli_query("1","
                 insert ignore into statusroom ( roomid, owner, providerid, status, createdate, creatorid ) values
@@ -1595,11 +1595,11 @@ require_once("chat.inc.php");
         
         
         $roomdesc = htmlentities($roomdescription, ENT_QUOTES);
-        $tagsclean = mysql_safe_string($tags);
-        $sponsor = mysql_safe_string($sponsor);
-        $parent = mysql_safe_string($parent);
-        $nameclean = mysql_safe_string(stripslashes($name));
-        $photourl = mysql_safe_string($photourl);
+        $tagsclean = tvalidator("PURIFY",$tags);
+        $sponsor = tvalidator("PURIFY",$sponsor);
+        $parent = tvalidator("PURIFY",$parent);
+        $nameclean = tvalidator("PURIFY",stripslashes($name));
+        $photourl = tvalidator("PURIFY",$photourl);
         
         //$welcome = htmlentities($welcome, ENT_QUOTES);
         //$welcome = html_entity_decode($welcome,ENT_QUOTES);
@@ -1609,13 +1609,13 @@ require_once("chat.inc.php");
         //$autochatmsg = str_replace("\n","",$autochatmsg);
         //$autochatmsg = str_replace("\r","",$autochatmsg);
         //$autochatmsg = htmlentities($autochatmsg, ENT_QUOTES);
-        $community = mysql_safe_string($community);
-        $communitylink = mysql_safe_string($communitylink);
+        $community = tvalidator("PURIFY",$community);
+        $communitylink = tvalidator("PURIFY",$communitylink);
         
         
         $photourl2 = $photourl;
-        //$photourl2 = mysql_safe_string($photourl2);
-        $organizationclean = mysql_safe_string(stripslashes($organization));
+        //$photourl2 = tvalidator("PURIFY",$photourl2);
+        $organizationclean = tvalidator("PURIFY",stripslashes($organization));
         $age = intval($minage);
         $childsort = intval($childsort);
         
@@ -2189,7 +2189,7 @@ require_once("chat.inc.php");
             }
             
             $roomdata['room'] = stripslashes($row['room']);
-            $roomdata['roomForSql'] = mysql_safe_string(stripslashes($row['room']));
+            $roomdata['roomForSql'] = tvalidator("PURIFY",stripslashes($row['room']));
             $roomdata['roomHtml'] = htmlentities(stripslashes($row['room']),ENT_QUOTES);
             
             $roomdata['roomhandle'] = $row['handle'];

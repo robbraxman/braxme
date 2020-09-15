@@ -8,11 +8,11 @@ require_once("notifyfunc.php");
     $temp = rand ( 100000 , 999999 );
     $_SESSION['temporarypassword'] = $temp;
 
-    $providerid = @mysql_safe_string( "$_REQUEST[pid]");
-    $loginid = @mysql_safe_string( "$_REQUEST[l]");
-    $sig = @mysql_safe_string( "$_REQUEST[s]");
+    $providerid = @tvalidator("PURIFY", "$_REQUEST[pid]");
+    $loginid = @tvalidator("PURIFY", "$_REQUEST[l]");
+    $sig = @tvalidator("PURIFY", "$_REQUEST[s]");
     $origproviderid = $providerid;
-    $ip = mysql_safe_string($_SERVER['REMOTE_ADDR']);
+    $ip = tvalidator("PURIFY",$_SERVER['REMOTE_ADDR']);
 
     $handle = "";
     $replyemail = "";

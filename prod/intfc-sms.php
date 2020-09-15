@@ -10,13 +10,13 @@ require_once("hl7funcs.php");
  **********************************************************************/
 
 
-    $mac = @mysql_safe_string( "$_REQUEST[mac]");
+    $mac = @tvalidator("PURIFY", "$_REQUEST[mac]");
     $ip = $_SERVER['REMOTE_ADDR'];
 
-    $mode = @mysql_safe_string( "$_REQUEST[mode]");
+    $mode = @tvalidator("PURIFY", "$_REQUEST[mode]");
 
-    $msg = @mysql_safe_string("$_REQUEST[msg]");
-    $sms = @mysql_safe_string("$_REQUEST[sms]");
+    $msg = @tvalidator("PURIFY","$_REQUEST[msg]");
+    $sms = @tvalidator("PURIFY","$_REQUEST[sms]");
 
     $sms = CleanPhone($sms);
     if(strlen($sms)<10 || $msg == ''){

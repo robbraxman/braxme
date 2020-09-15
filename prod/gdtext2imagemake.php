@@ -6,24 +6,24 @@ require("aws.php");
 //*********************************************
 
 $text = $_GET['t'];
-$comment = htmlentities(@mysql_safe_string( $_GET['comment'] ), ENT_QUOTES);
-$save = @mysql_safe_string( $_GET['save'] );
-$fontsize = @mysql_safe_string( $_GET['f'] );
+$comment = htmlentities(@tvalidator("PURIFY", $_GET['comment'] ), ENT_QUOTES);
+$save = @tvalidator("PURIFY", $_GET['save'] );
+$fontsize = @tvalidator("PURIFY", $_GET['f'] );
 if($fontsize == "")
     $fontsize = 20;
-$fontfamily = @mysql_safe_string( $_GET['family'] );
+$fontfamily = @tvalidator("PURIFY", $_GET['family'] );
 
-$wrap = mysql_safe_string( $_GET['w'] );
+$wrap = tvalidator("PURIFY", $_GET['w'] );
 if( $wrap == "")
     $wrap = 20;
 
-$bcolor = mysql_safe_string( $_GET['b'] );
+$bcolor = tvalidator("PURIFY", $_GET['b'] );
 if( $bcolor == "")
    // $bcolor = "F5F5F5"; //whitesmoke
     $bcolor = "FFFFFF"; //whites
 $backgroundrgb = hex2RGB( $bcolor );
 
-$fcolor = mysql_safe_string( $_GET['c'] );
+$fcolor = tvalidator("PURIFY", $_GET['c'] );
 if( $fcolor == "")
     $fcolor = "000000"; //black
 $frgb = hex2RGB( $fcolor );

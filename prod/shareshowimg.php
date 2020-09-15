@@ -2,9 +2,9 @@
 session_start();
 include("config.php");
 
-$share = @mysql_safe_string( $_GET[p] );
-$alias = @mysql_safe_string( $_GET[a] );
-$open = @mysql_safe_string($_GET[o]);
+$share = @tvalidator("PURIFY", $_GET[p] );
+$alias = @tvalidator("PURIFY", $_GET[a] );
+$open = @tvalidator("PURIFY",$_GET[o]);
 
 ?>
 <html>

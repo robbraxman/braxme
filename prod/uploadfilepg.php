@@ -19,19 +19,19 @@ move_uploaded_file($_FILES["file"]["tmp_name"], "/var/www/html/prod/upload/serve
 
 $providerid = '';
 if(isset($_SESSION['pid'])){
-    $providerid = rtrim(mysql_safe_string( "$_SESSION[pid]"));
+    $providerid = rtrim(tvalidator("PURIFY", "$_SESSION[pid]"));
 }
 if($providerid == ''){
-    $tmp = @mysql_safe_string( "$_GET[pid]");
+    $tmp = @tvalidator("PURIFY", "$_GET[pid]");
     $tmp = explode("-",$tmp);
     $providerid = $tmp[0];
     $chatid = $tmp[1];
     
-    //$providerid = @mysql_safe_string( "$_GET[pid]");
+    //$providerid = @tvalidator("PURIFY", "$_GET[pid]");
     //$providerid = substr($providerid,1);
 }
 
-$loginid = mysql_safe_string( "$_SESSION[loginid]");
+$loginid = tvalidator("PURIFY", "$_SESSION[loginid]");
 $album = "";
 $uploadtype = "";
 

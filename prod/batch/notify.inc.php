@@ -16,7 +16,7 @@ function CSVText(
         $phone = "+1".$phone;
     }
     
-        $messagesql = mysql_safe_string($message);
+        $messagesql = tvalidator("PURIFY",$message);
         pdo_query("1"," 
             insert into csvtext (ownerid, message, sms, uploaded, status, error )
             values (?, ?,?,now(), 'N','' )

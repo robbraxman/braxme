@@ -6,8 +6,8 @@ require ("sendmail.php");
 require ("crypt.inc.php");
 
 
-    $gcm = @mysql_safe_string($_POST['gcm']);
-    $apn = @mysql_safe_string($_POST['apn']);
+    $gcm = @tvalidator("PURIFY",$_POST['gcm']);
+    $apn = @tvalidator("PURIFY",$_POST['apn']);
     $mobile = $gcm.$apn;
 
     if($gcm!='')
@@ -25,7 +25,7 @@ require ("crypt.inc.php");
 
 
 
-    $accountnote = @mysql_safe_string($_POST['accountnote']);
+    $accountnote = @tvalidator("PURIFY",$_POST['accountnote']);
 
     $result = do_mysqli_query("1", "SELECT active, announcement from service where msglevel='STATUS'  /*test2*/");
     if ($row = do_mysqli_fetch("1",$result)) 
@@ -40,16 +40,16 @@ require ("crypt.inc.php");
     
 
     
-    $providerid = @mysql_safe_string("$_POST[providerid]");
-    $password = @mysql_safe_string("$_POST[password]");
-    $providername = ucwords(stripslashes(@mysql_safe_string($_POST['providername'])));
-    $companyname = ucwords(stripslashes(@mysql_safe_string($_POST['companyname'])));
-    $invited = @mysql_safe_string("$_POST[invited]");
-    $replysms = @mysql_safe_string($_POST['replysms']);
-    $replyemail = strtolower(@mysql_safe_string($_POST['replyemail']));
-    $dealeremail = strtolower(@mysql_safe_string($_POST['dealeremail']));
+    $providerid = @tvalidator("PURIFY","$_POST[providerid]");
+    $password = @tvalidator("PURIFY","$_POST[password]");
+    $providername = ucwords(stripslashes(@tvalidator("PURIFY",$_POST['providername'])));
+    $companyname = ucwords(stripslashes(@tvalidator("PURIFY",$_POST['companyname'])));
+    $invited = @tvalidator("PURIFY","$_POST[invited]");
+    $replysms = @tvalidator("PURIFY",$_POST['replysms']);
+    $replyemail = strtolower(@tvalidator("PURIFY",$_POST['replyemail']));
+    $dealeremail = strtolower(@tvalidator("PURIFY",$_POST['dealeremail']));
     $password = strtolower( $password);
-    $invitesource = @mysql_safe_string("$_POST[emailinvite]");
+    $invitesource = @tvalidator("PURIFY","$_POST[emailinvite]");
     $msgmasterkey = '';
     
     $providername = ltrim($providername);
@@ -103,12 +103,12 @@ require ("crypt.inc.php");
     }
     
     
-    $industry = @mysql_safe_string($_POST['industry']);
-    $enterprise = @mysql_safe_string($_POST['enterprise']);
-    $avatarurl = @mysql_safe_string($_POST['avatarurl']);
-    $handle = @mysql_safe_string($_POST['handle']);
-    $roomhandle = @mysql_safe_string($_POST['roomhandle']);
-    $roomid = @mysql_safe_string($_POST['roomid']);
+    $industry = @tvalidator("PURIFY",$_POST['industry']);
+    $enterprise = @tvalidator("PURIFY",$_POST['enterprise']);
+    $avatarurl = @tvalidator("PURIFY",$_POST['avatarurl']);
+    $handle = @tvalidator("PURIFY",$_POST['handle']);
+    $roomhandle = @tvalidator("PURIFY",$_POST['roomhandle']);
+    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
     if($industry!='personal'){
         $enterprise = 'Y';
     }
@@ -121,7 +121,7 @@ require ("crypt.inc.php");
     
     
     
-    $lifespan = @mysql_safe_string("$_POST[lifespan]");
+    $lifespan = @tvalidator("PURIFY","$_POST[lifespan]");
     if( $lifespan == '')
         $msglifespan = 864000;
     else
@@ -129,7 +129,7 @@ require ("crypt.inc.php");
         
     
     $serverhost = "$rootserver";
-    $loginid = @mysql_safe_string($_POST['loginid']);
+    $loginid = @tvalidator("PURIFY",$_POST['loginid']);
     $loginid = strtolower($loginid);
     $autosendkey = 'N';
     $active = 'Y';

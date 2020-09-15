@@ -3,20 +3,20 @@ session_start();
 require("validsession.inc.php");
 require_once("config.php");
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = mysql_safe_string($_POST['providerid']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = tvalidator("PURIFY",$_POST['providerid']);
 
-    $mode = @mysql_safe_string($_POST['mode']);
-    $roomid = @mysql_safe_string($_POST['roomid']);
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
+    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
     //Data
-    $backgroundcolor = strip_tags(@mysql_safe_string($_POST['backgroundcolor']));
-    $color = strip_tags(@mysql_safe_string($_POST['color']));
-    $trimcolor = strip_tags(@mysql_safe_string($_POST['trimcolor']));
-    $title = strip_tags(@mysql_safe_string($_POST['title']),"<span><div>");
-    $subtitle = strip_tags(@mysql_safe_string($_POST['subtitle']),"<span><div><a>");
-    $subtitle2 = strip_tags(@mysql_safe_string($_POST['subtitle2']),"<span><div><a>");
-    $footer = strip_tags(@mysql_safe_string($_POST['footer']),"<span><div><a>");
-    $analytics = @mysql_safe_string($_POST['analytics']);
+    $backgroundcolor = strip_tags(@tvalidator("PURIFY",$_POST['backgroundcolor']));
+    $color = strip_tags(@tvalidator("PURIFY",$_POST['color']));
+    $trimcolor = strip_tags(@tvalidator("PURIFY",$_POST['trimcolor']));
+    $title = strip_tags(@tvalidator("PURIFY",$_POST['title']),"<span><div>");
+    $subtitle = strip_tags(@tvalidator("PURIFY",$_POST['subtitle']),"<span><div><a>");
+    $subtitle2 = strip_tags(@tvalidator("PURIFY",$_POST['subtitle2']),"<span><div><a>");
+    $footer = strip_tags(@tvalidator("PURIFY",$_POST['footer']),"<span><div><a>");
+    $analytics = @tvalidator("PURIFY",$_POST['analytics']);
     
     
     $dot = "<img class='unreadicon' src='../img/dot.png' style='height:10px;width:auto;padding-top:3;padding-right:2px;padding-bottom:3px;' />";

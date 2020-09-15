@@ -6,19 +6,19 @@ $providerid = $_SESSION['pid'];
 
 $mode = '';
 if(isset($_POST['mode'])){
-    $mode = mysql_safe_string($_POST['mode']);
+    $mode = tvalidator("PURIFY",$_POST['mode']);
 }
 $sort = '';
 if(isset($_POST['sort'])){
-    $sort = mysql_safe_string($_POST['sort']);
+    $sort = tvalidator("PURIFY",$_POST['sort']);
 }
 $active = '';
 if(isset($_POST['active'])){
-    $active = mysql_safe_string($_POST['active']);
+    $active = tvalidator("PURIFY",$_POST['active']);
 }
 $page = 0;
 if(isset($_POST['page'])){
-    $page = intval(mysql_safe_string($_POST['page']));
+    $page = intval(tvalidator("PURIFY",$_POST['page']));
 }
 
 $checked1='';
@@ -43,7 +43,7 @@ if( $sort == "shareexpire")
 
 if( $mode == 'D')
 {
-    $filename = mysql_safe_string($_POST['filename']);
+    $filename = tvalidator("PURIFY",$_POST['filename']);
     $collection = "";
     $result = do_mysqli_query("1", "
     select sharelocal from shares where shareid = '$filename' and sharetype='W'

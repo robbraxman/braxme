@@ -2,8 +2,8 @@
 session_start();
 require_once("config.php");
 
-$roomid = intval(@mysql_safe_string($_POST['roomid']));
-$handle = @mysql_safe_string($_POST['roomhandle']);
+$roomid = intval(@tvalidator("PURIFY",$_POST['roomid']));
+$handle = @tvalidator("PURIFY",$_POST['roomhandle']);
 
 $providerid = "";
 
@@ -16,8 +16,8 @@ $providerid = "";
     } else {
     //Not Logged in User
 
-        $userid = mysql_safe_string($_POST['userid']);
-        $password = mysql_safe_string($_POST['password']);
+        $userid = tvalidator("PURIFY",$_POST['userid']);
+        $password = tvalidator("PURIFY",$_POST['password']);
 
         //validate user
         $result = do_mysqli_query("1", 

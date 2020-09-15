@@ -4,15 +4,15 @@ require("validsession.inc.php");
 require_once("config.php");
 require_once("room.inc.php");
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = mysql_safe_string($_POST['providerid']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = tvalidator("PURIFY",$_POST['providerid']);
 
-    $mode = @mysql_safe_string($_POST['mode']);
-    $roomid = @mysql_safe_string($_POST['roomid']);
-    $url = @mysql_safe_string($_POST['url']);
-    $backgroundcolor = @mysql_safe_string($_POST['backgroundcolor']);
-    $color = @mysql_safe_string($_POST['color']);
-    $trimcolor = @mysql_safe_string($_POST['trimcolor']);
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
+    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+    $url = @tvalidator("PURIFY",$_POST['url']);
+    $backgroundcolor = @tvalidator("PURIFY",$_POST['backgroundcolor']);
+    $color = @tvalidator("PURIFY",$_POST['color']);
+    $trimcolor = @tvalidator("PURIFY",$_POST['trimcolor']);
 
     $content = html_entity_decode(file_get_contents($url));    
     $sizing = RoomSizing();

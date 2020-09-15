@@ -3,7 +3,7 @@ session_start();
 require("../validsession.inc.php");
 require("../config.php");
 $uploadtips = '';
-if( @mysql_safe_string($_SESSION['photouser'])=='N')
+if( @tvalidator("PURIFY",$_SESSION['photouser'])=='N')
 {
     $uploadtips = "
             <br>

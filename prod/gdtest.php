@@ -2,7 +2,7 @@
 session_start();
 require_once("config.php");
 
-$text = mysql_safe_string( $_GET[t] );
+$text = tvalidator("PURIFY", $_GET[t] );
 $x = explode("\\r\\n",$text);
 
 $x[1]='OK';

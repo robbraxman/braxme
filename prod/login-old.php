@@ -2,7 +2,7 @@
 session_start();
 require_once("config.php");
 /*
-$_SESSION[uuid] = mysql_safe_string($_GET['uuid']);
+$_SESSION[uuid] = tvalidator("PURIFY",$_GET['uuid']);
 
 if($_SESSION[uuid]==='') {
     $_SESSION[uuid]=session_id();
@@ -28,12 +28,12 @@ $apn = '';
 $_SESSION['gcm']='';
 $_SESSION['apn']='';
 
-$mobile = @mysql_safe_string($_GET['mobile']);
-$landing = @mysql_safe_string($_GET['l']);
-$source = @mysql_safe_string($_GET['s']);
-$gcm = @mysql_safe_string($_GET['gcm']);
+$mobile = @tvalidator("PURIFY",$_GET['mobile']);
+$landing = @tvalidator("PURIFY",$_GET['l']);
+$source = @tvalidator("PURIFY",$_GET['s']);
+$gcm = @tvalidator("PURIFY",$_GET['gcm']);
 $_SESSION['gcm']=$gcm;
-$apn = @mysql_safe_string($_GET['apn']);
+$apn = @tvalidator("PURIFY",$_GET['apn']);
 $_SESSION['apn']=$apn;
 //if($gcm!='' || $apn!=''){
 //    $source='mobile';

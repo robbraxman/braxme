@@ -4,18 +4,18 @@ include("config.php");
 include("lib_autolink.php");
 $uniqid = uniqid();
 
-$view = @mysql_safe_string( isset( $_REQUEST["v"] ) ? $_REQUEST["v"] : "" );
-$redisplay = @mysql_safe_string( isset( $_REQUEST["r"] ) ? $_REQUEST["r"] : ""  );
+$view = @tvalidator("PURIFY", isset( $_REQUEST["v"] ) ? $_REQUEST["v"] : "" );
+$redisplay = @tvalidator("PURIFY", isset( $_REQUEST["r"] ) ? $_REQUEST["r"] : ""  );
 
 
-$share = @mysql_safe_string( isset( $_REQUEST["p"] ) ? $_REQUEST["p"] : "" );
-$ip = @mysql_safe_string( isset( $_REQUEST["ip"] ) ? $_REQUEST["ip"] : "" );
-$c = @mysql_safe_string(isset( $_REQUEST["c"] ) ? $_REQUEST["c"] : ""  );
-$n = @mysql_safe_string( isset( $_REQUEST["n"] ) ? $_REQUEST["n"] : "" );
-$d = @mysql_safe_string( isset( $_REQUEST["d"] ) ? $_REQUEST["d"] : ""  );
-$i = @mysql_safe_string( isset( $_REQUEST["i"] ) ? $_REQUEST["i"] : "" );
-$a = @mysql_safe_string(isset( $_REQUEST["a"] ) ? $_REQUEST["a"] : ""  );
-$e = @mysql_safe_string( isset( $_REQUEST["e"] ) ? $_REQUEST["e"] : ""  );
+$share = @tvalidator("PURIFY", isset( $_REQUEST["p"] ) ? $_REQUEST["p"] : "" );
+$ip = @tvalidator("PURIFY", isset( $_REQUEST["ip"] ) ? $_REQUEST["ip"] : "" );
+$c = @tvalidator("PURIFY",isset( $_REQUEST["c"] ) ? $_REQUEST["c"] : ""  );
+$n = @tvalidator("PURIFY", isset( $_REQUEST["n"] ) ? $_REQUEST["n"] : "" );
+$d = @tvalidator("PURIFY", isset( $_REQUEST["d"] ) ? $_REQUEST["d"] : ""  );
+$i = @tvalidator("PURIFY", isset( $_REQUEST["i"] ) ? $_REQUEST["i"] : "" );
+$a = @tvalidator("PURIFY",isset( $_REQUEST["a"] ) ? $_REQUEST["a"] : ""  );
+$e = @tvalidator("PURIFY", isset( $_REQUEST["e"] ) ? $_REQUEST["e"] : ""  );
 
 $result = do_mysqli_query("1","
     select shareto, platform from shares where shareid='$share'

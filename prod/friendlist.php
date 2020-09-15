@@ -4,12 +4,12 @@ require("validsession.inc.php");
 require_once("config.php");
 require_once("room.inc.php");
 
-    $providerid = mysql_safe_string($_POST['providerid']);
-    $mode = @mysql_safe_string($_POST['mode']);
-    $room = @mysql_safe_string($_POST['room']);
-    $friendproviderid = @mysql_safe_string($_POST['friendproviderid']);
-    $roomid = intval(@mysql_safe_string($_POST['roomid']));
-    $caller = @mysql_safe_string($_POST['caller']);
+    $providerid = tvalidator("PURIFY",$_POST['providerid']);
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
+    $room = @tvalidator("PURIFY",$_POST['room']);
+    $friendproviderid = @tvalidator("PURIFY",$_POST['friendproviderid']);
+    $roomid = intval(@tvalidator("PURIFY",$_POST['roomid']));
+    $caller = @tvalidator("PURIFY",$_POST['caller']);
 
     
     

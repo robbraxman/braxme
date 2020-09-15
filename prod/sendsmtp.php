@@ -29,18 +29,18 @@ $_SESSION['sessionid'] = uniqid("", false);
 $_SESSION['status'] = "Y";
 $errorstate=false;
 
-$providerid = rtrim(@mysql_safe_string( "$_SESSION[pid]"));
-$loginid = @mysql_safe_string( "$_SESSION[loginid]");
-$imap_item = intval(rtrim(@mysql_safe_string($_POST['imap'])))-1;
-$autoencryption = intval(@mysql_safe_string($_POST['autoencryption']));
-$alwaysencrypt = intval(@mysql_safe_string($_POST['alwaysencrypt']));
-$originaltext = @mysql_safe_string($_POST['messagebase64']);
+$providerid = rtrim(@tvalidator("PURIFY", "$_SESSION[pid]"));
+$loginid = @tvalidator("PURIFY", "$_SESSION[loginid]");
+$imap_item = intval(rtrim(@tvalidator("PURIFY",$_POST['imap'])))-1;
+$autoencryption = intval(@tvalidator("PURIFY",$_POST['autoencryption']));
+$alwaysencrypt = intval(@tvalidator("PURIFY",$_POST['alwaysencrypt']));
+$originaltext = @tvalidator("PURIFY",$_POST['messagebase64']);
 
-$uuid = intval(rtrim(@mysql_safe_string($_POST['uuid'])));
-$folder = rtrim(@mysql_safe_string($_POST['folder']));
-$sig = rtrim(@mysql_safe_string($_POST['sig']));
-$contactgroup = rtrim(@mysql_safe_string($_POST['contactgroup']));
-$mobile = @mysql_safe_string($_POST['mobile']);
+$uuid = intval(rtrim(@tvalidator("PURIFY",$_POST['uuid'])));
+$folder = rtrim(@tvalidator("PURIFY",$_POST['folder']));
+$sig = rtrim(@tvalidator("PURIFY",$_POST['sig']));
+$contactgroup = rtrim(@tvalidator("PURIFY",$_POST['contactgroup']));
+$mobile = @tvalidator("PURIFY",$_POST['mobile']);
 
 $result = do_mysqli_query("1", "update imap set sig='$sig' where name = '".$_SESSION['imap_name'][$imap_item]."' and providerid=$providerid ");
 
@@ -85,13 +85,13 @@ if( !ProcessUpload("$_POST[pid]","BINARY" ))
     exit();
 }
 
-$recipients = mysql_safe_string( $_POST['recipientname']);
+$recipients = tvalidator("PURIFY", $_POST['recipientname']);
 $recipient_array  = imap_rfc822_parse_adrlist($recipients, "");
 
-$cc = mysql_safe_string( $_POST['ccname']);
+$cc = tvalidator("PURIFY", $_POST['ccname']);
 $cc_array  = imap_rfc822_parse_adrlist($cc, "");
 
-$bcc = mysql_safe_string( $_POST['bccname']);
+$bcc = tvalidator("PURIFY", $_POST['bccname']);
 $bcc_array  = imap_rfc822_parse_adrlist($bcc, "");
 
 if (
@@ -133,10 +133,10 @@ if (
 
 
 if($mobile ==''){
-$message = @mysql_safe_string( $_POST['message']);
+$message = @tvalidator("PURIFY", $_POST['message']);
     
 } else {
-$message = @mysql_safe_string( $_POST['messagemobile']);
+$message = @tvalidator("PURIFY", $_POST['messagemobile']);
     
 }
 $message = str_replace('\"',"", $message);
@@ -148,7 +148,7 @@ if( $sig!='')
     $sig = "<br><br>$sig";
     
 $message .= $sig;
-$msgtitle = mysql_safe_string( $_POST['msgtitle']);
+$msgtitle = tvalidator("PURIFY", $_POST['msgtitle']);
 
 /*********************************************************************
  *                        VALIDATION CODE RECIPIENT SPECIFIC

@@ -11,7 +11,7 @@ $braxsocial = "<img src='../img/braxphoto.png' style='position:relative;top:3px;
 require_once("htmlhead2.inc.php");
 
 
-$providerid = mysql_safe_string($_SESSION[pid]);
+$providerid = tvalidator("PURIFY",$_SESSION[pid]);
 $today = date("M-d-y",time()+$_SESSION[timezone]*60*60);
 
 

@@ -7,16 +7,16 @@ require_once("crypt-pdo.inc.php");
     $braxchat2 = "<img src='../img/braxchat-square.png' style='position:relative;top:3px;height:15px;width:auto;padding-top:0;padding-right:2px;padding-bottom:0px;margin:0' />";
     $braxchat = "<img src='../img/braxchat-128.png' style='height:30px;width:auto;padding-top:0;padding-right:2px;padding-bottom:0px;' />";
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = @mysql_safe_string($_POST['providerid']);
-    $mode = @mysql_safe_string($_POST['mode']);
-    $chatid = @mysql_safe_string($_POST['chatid']);
-    $lifespan =  @mysql_safe_string($_POST['lifespan']);
-    $passkey = @mysql_safe_string($_POST['passkey']);
-    $passkey64 =  @mysql_safe_string($_POST['passkey64']);
-    $title = base64_encode(@mysql_safe_string($_POST['title']));
-    $titledecoded = stripslashes(@mysql_safe_string($_POST['title']));
-    $find = rtrim(stripslashes(@mysql_safe_string($_POST['find'])));
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = @tvalidator("PURIFY",$_POST['providerid']);
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
+    $chatid = @tvalidator("PURIFY",$_POST['chatid']);
+    $lifespan =  @tvalidator("PURIFY",$_POST['lifespan']);
+    $passkey = @tvalidator("PURIFY",$_POST['passkey']);
+    $passkey64 =  @tvalidator("PURIFY",$_POST['passkey64']);
+    $title = base64_encode(@tvalidator("PURIFY",$_POST['title']));
+    $titledecoded = stripslashes(@tvalidator("PURIFY",$_POST['title']));
+    $find = rtrim(stripslashes(@tvalidator("PURIFY",$_POST['find'])));
     
     $email_available = false;
     $result = pdo_query("1","
@@ -48,7 +48,7 @@ require_once("crypt-pdo.inc.php");
     }
     $lasttime = '';
     if(isset($_POST['lasttime'])){
-        $lasttime = mysql_safe_string($_POST['lasttime']);
+        $lasttime = tvalidator("PURIFY",$_POST['lasttime']);
     }
 
     

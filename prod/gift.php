@@ -6,9 +6,9 @@ require("htmlhead.inc.php");
 require_once("crypt.inc.php");
 require_once("notify.inc.php");
 
-//$mode = @mysql_safe_string( $_GET['mode'] );
-$owner = @mysql_safe_string( $_POST['account'] );
-$mode = @mysql_safe_string( $_POST['mode'] );
+//$mode = @tvalidator("PURIFY", $_GET['mode'] );
+$owner = @tvalidator("PURIFY", $_POST['account'] );
+$mode = @tvalidator("PURIFY", $_POST['mode'] );
 //$tokens = 1;
 
         

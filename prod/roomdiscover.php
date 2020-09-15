@@ -6,10 +6,10 @@ require_once("internationalization.php");
 require_once("roomselect.inc.php");
 
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = @mysql_safe_string($_POST['providerid']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = @tvalidator("PURIFY",$_POST['providerid']);
     $providerid = $_SESSION['pid'];
-    $find = @mysql_safe_string($_POST['find']);
+    $find = @tvalidator("PURIFY",$_POST['find']);
 
     if($providerid == ''){
         exit();
@@ -17,44 +17,44 @@ require_once("roomselect.inc.php");
     
     $caller = '';
     if(isset($_POST['caller'])){
-        $caller = @mysql_safe_string($_POST['caller']);
+        $caller = @tvalidator("PURIFY",$_POST['caller']);
     }
     
     
     $mode = '';
     if(isset($_POST['mode'])){
-        $mode = @mysql_safe_string($_POST['mode']);
+        $mode = @tvalidator("PURIFY",$_POST['mode']);
     }
     
     $room = '';
     if(isset($_POST['room'])){
-        $room = @mysql_safe_string($_POST['room']);
+        $room = @tvalidator("PURIFY",$_POST['room']);
     }
     
     $roomid = '';
     if(isset($_POST['roomid'])){
-        $roomid = @mysql_safe_string($_POST['roomid']);
+        $roomid = @tvalidator("PURIFY",$_POST['roomid']);
     }
     
     $postid = '';
     if(isset($_POST['postid'])){
-        $postid = mysql_safe_string($_POST['postid']);
+        $postid = tvalidator("PURIFY",$_POST['postid']);
     }
     
     $search = '';
     if(isset($_POST['search'])){
-        $search = mysql_safe_string($_POST['search']);
+        $search = tvalidator("PURIFY",$_POST['search']);
     }
     
     $category = '';
     if(isset($_POST['category'])){
-        $category = mysql_safe_string($_POST['category']);
+        $category = tvalidator("PURIFY",$_POST['category']);
     }
     
 
     $friendproviderid = '';
     if(isset($_POST['friendproviderid'])){
-        $friendproviderid = mysql_safe_string($_POST['friendproviderid']);
+        $friendproviderid = tvalidator("PURIFY",$_POST['friendproviderid']);
     }
     if( $roomid == '') {
         $roomid = 'All';

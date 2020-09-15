@@ -3,10 +3,10 @@ session_start();
 require_once("config-pdo.php");
 require_once("internationalization.php");
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $lasttime = @mysql_safe_string($_POST['lasttime']);
-    $providerid = @mysql_safe_string($_POST['providerid']);
-    $handle = @mysql_safe_string($_SESSION['handle']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $lasttime = @tvalidator("PURIFY",$_POST['lasttime']);
+    $providerid = @tvalidator("PURIFY",$_POST['providerid']);
+    $handle = @tvalidator("PURIFY",$_SESSION['handle']);
     
     /*
     $result = pdo_query("1",

@@ -2,15 +2,15 @@
 session_start();
 require_once("config.php");
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = @mysql_safe_string($_POST['providerid']);
-    $mode = @mysql_safe_string($_POST['mode']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = @tvalidator("PURIFY",$_POST['providerid']);
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
     
     if($mode == 'A') //Add Connect Request
     {
-        $appname = @mysql_safe_string($_POST['appname']);
-        $appidentity = @mysql_safe_string($_POST['appidentity']);
-        $greeting = @mysql_safe_string($_POST['greeting']);
+        $appname = @tvalidator("PURIFY",$_POST['appname']);
+        $appidentity = @tvalidator("PURIFY",$_POST['appidentity']);
+        $greeting = @tvalidator("PURIFY",$_POST['greeting']);
         
         $appidentity= FormatHandle( $appname, $appidentity );
         
@@ -33,8 +33,8 @@ require_once("config.php");
     }
     if($mode == 'E') //Add Identity for Current User
     {
-        $appname = @mysql_safe_string($_POST['appname']);
-        $appidentity = @mysql_safe_string($_POST['appidentity']);
+        $appname = @tvalidator("PURIFY",$_POST['appname']);
+        $appidentity = @tvalidator("PURIFY",$_POST['appidentity']);
         
         $appidentity= FormatHandle( $appname, $appidentity );
         
@@ -88,8 +88,8 @@ require_once("config.php");
     }
     if($mode == 'D') //Delete Identity
     {
-        $appname = @mysql_safe_string($_POST['appname']);
-        $appidentity = @mysql_safe_string($_POST['appidentity']);
+        $appname = @tvalidator("PURIFY",$_POST['appname']);
+        $appidentity = @tvalidator("PURIFY",$_POST['appidentity']);
         
         do_mysqli_query("1"," 
             delete from appidentity where replyemail = '$_SESSION[replyemail]' and
@@ -99,8 +99,8 @@ require_once("config.php");
     }
     if($mode == 'D1') //Delete Connect Request
     {
-        $appname = @mysql_safe_string($_POST['appname']);
-        $appidentity = @mysql_safe_string($_POST['appidentity']);
+        $appname = @tvalidator("PURIFY",$_POST['appname']);
+        $appidentity = @tvalidator("PURIFY",$_POST['appidentity']);
         
         do_mysqli_query("1"," 
             delete from appmeetup where replyemail = '$_SESSION[replyemail]' and
@@ -110,8 +110,8 @@ require_once("config.php");
     }
     if($mode == 'C') //Connect listed Request
     {
-        //$targetid = @mysql_safe_string($_POST['targetid']);
-        $id = @mysql_safe_string($_POST['id']);
+        //$targetid = @tvalidator("PURIFY",$_POST['targetid']);
+        $id = @tvalidator("PURIFY",$_POST['id']);
         
         do_mysqli_query("1"," 
             update appmeetup set status='N' where id = $id
@@ -179,8 +179,8 @@ require_once("config.php");
     
     if($mode == 'CX') //Remove Connect Request
     {
-        //$targetid = @mysql_safe_string($_POST['targetid']);
-        $id = @mysql_safe_string($_POST['id']);
+        //$targetid = @tvalidator("PURIFY",$_POST['targetid']);
+        $id = @tvalidator("PURIFY",$_POST['id']);
         
         do_mysqli_query("1"," 
             update appmeetup set status='X' where id = $id

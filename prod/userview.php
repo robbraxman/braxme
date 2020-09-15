@@ -3,9 +3,9 @@ session_start();
 require("validsession.inc.php");
 require_once("config.php");
 require("roommanage.inc.php");
-$providerid = @mysql_safe_string($_SESSION['pid']);
-$userid = @mysql_safe_string($_POST['userid']);
-$caller = @mysql_safe_string($_POST['caller']);
+$providerid = @tvalidator("PURIFY",$_SESSION['pid']);
+$userid = @tvalidator("PURIFY",$_POST['userid']);
+$caller = @tvalidator("PURIFY",$_POST['caller']);
 
 $source = "";
 if($caller == ''){

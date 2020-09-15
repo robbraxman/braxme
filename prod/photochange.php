@@ -3,13 +3,13 @@ session_start();
 require("validsession.inc.php");
 require_once("config.php");
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = mysql_safe_string($_SESSION[pid]);
-    $filename = mysql_safe_string($_POST[filename]);
-    $xaccode = mysql_safe_string($_POST[xaccode]);
-    $value = mysql_safe_string($_POST[value]);
-    $value2 = mysql_safe_string($_POST[value2]);
-    $value3 = mysql_safe_string($_POST[value3]);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = tvalidator("PURIFY",$_SESSION[pid]);
+    $filename = tvalidator("PURIFY",$_POST[filename]);
+    $xaccode = tvalidator("PURIFY",$_POST[xaccode]);
+    $value = tvalidator("PURIFY",$_POST[value]);
+    $value2 = tvalidator("PURIFY",$_POST[value2]);
+    $value3 = tvalidator("PURIFY",$_POST[value3]);
 
     if( $xaccode == 'T')
     {

@@ -3,11 +3,11 @@ session_start();
 require("validsession.inc.php");
 require_once("config.php");
 
-    $providerid = mysql_safe_string("$_SESSION[pid]");
+    $providerid = tvalidator("PURIFY","$_SESSION[pid]");
 
-    $broadcasttype = mysql_safe_string("$_POST[broadcasttype]");
-    $channel = mysql_safe_string("$_POST[channel]");
-    $title = base64_encode(mysql_safe_string("$_POST[title]"));
+    $broadcasttype = tvalidator("PURIFY","$_POST[broadcasttype]");
+    $channel = tvalidator("PURIFY","$_POST[channel]");
+    $title = base64_encode(tvalidator("PURIFY","$_POST[title]"));
     if($broadcasttype ==''){
         exit();
     }

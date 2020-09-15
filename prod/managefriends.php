@@ -7,13 +7,13 @@ require_once("crypt.inc.php");
 require_once("notify.inc.php");
 
 
-    $providerid = mysql_safe_string($_POST['providerid']);
-    $mode = @mysql_safe_string($_POST['mode']);
-    $friendproviderid = @mysql_safe_string($_POST['friendid']);
-    $caller = @mysql_safe_string($_POST['caller']);
-    $filter = @mysql_safe_string($_POST['filter']);
-    $friendlevel = @mysql_safe_string($_POST['friendlevel']);
-    $chatid = @mysql_safe_string($_POST['chatid']);
+    $providerid = tvalidator("PURIFY",$_POST['providerid']);
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
+    $friendproviderid = @tvalidator("PURIFY",$_POST['friendid']);
+    $caller = @tvalidator("PURIFY",$_POST['caller']);
+    $filter = @tvalidator("PURIFY",$_POST['filter']);
+    $friendlevel = @tvalidator("PURIFY",$_POST['friendlevel']);
+    $chatid = @tvalidator("PURIFY",$_POST['chatid']);
 
     if($providerid == $friendproviderid ){
         exit();

@@ -5,67 +5,67 @@ require_once("config.php");
 require_once("signupfunc.php");
 
 
-    $providerid = @mysql_safe_string("$_POST[providerid]");
-    $providername = ucwords(@mysql_safe_string($_POST['providername']));
-    $name2 = ucwords(@mysql_safe_string($_POST['name2']));
-    $alias = ucwords(@mysql_safe_string($_POST['alias']));
-    $positiontitle = ucwords(@mysql_safe_string($_POST['positiontitle']));
-    $password = @mysql_safe_string("$_POST[password]");
-    $replysms = @mysql_safe_string($_POST['replysms']);
-    $replyemail = strtolower(@mysql_safe_string($_POST['replyemail']));
-    $handle = @mysql_safe_string($_POST['handle']);
-    $welcome = @mysql_safe_string($_POST['welcome']);
-    $inactivitytimeout = intval(@mysql_safe_string($_POST['inactivitytimeout']))*60;
-    $pin = @mysql_safe_string($_POST['pin']);
+    $providerid = @tvalidator("PURIFY","$_POST[providerid]");
+    $providername = ucwords(@tvalidator("PURIFY",$_POST['providername']));
+    $name2 = ucwords(@tvalidator("PURIFY",$_POST['name2']));
+    $alias = ucwords(@tvalidator("PURIFY",$_POST['alias']));
+    $positiontitle = ucwords(@tvalidator("PURIFY",$_POST['positiontitle']));
+    $password = @tvalidator("PURIFY","$_POST[password]");
+    $replysms = @tvalidator("PURIFY",$_POST['replysms']);
+    $replyemail = strtolower(@tvalidator("PURIFY",$_POST['replyemail']));
+    $handle = @tvalidator("PURIFY",$_POST['handle']);
+    $welcome = @tvalidator("PURIFY",$_POST['welcome']);
+    $inactivitytimeout = intval(@tvalidator("PURIFY",$_POST['inactivitytimeout']))*60;
+    $pin = @tvalidator("PURIFY",$_POST['pin']);
     if(strlen($pin)!=4){
         $pin = "";
     }
-    $colorscheme = @mysql_safe_string($_POST['colorscheme']);
-    $hardenter = @mysql_safe_string($_POST['hardenter']);
+    $colorscheme = @tvalidator("PURIFY",$_POST['colorscheme']);
+    $hardenter = @tvalidator("PURIFY",$_POST['hardenter']);
     
     
-    $companyname = ucwords(@mysql_safe_string($_POST['companyname']));
+    $companyname = ucwords(@tvalidator("PURIFY",$_POST['companyname']));
 
-    $industry = @mysql_safe_string($_POST['industry']);
-    $enterprise = @mysql_safe_string($_POST['enterprise']);
-    $sponsor = @mysql_safe_string($_POST['sponsor']);
-    $sponsorlist = @mysql_safe_string($_POST['sponsorlist']);
-    $streamplatform = @mysql_safe_string($_POST['streamplatform']);
+    $industry = @tvalidator("PURIFY",$_POST['industry']);
+    $enterprise = @tvalidator("PURIFY",$_POST['enterprise']);
+    $sponsor = @tvalidator("PURIFY",$_POST['sponsor']);
+    $sponsorlist = @tvalidator("PURIFY",$_POST['sponsorlist']);
+    $streamplatform = @tvalidator("PURIFY",$_POST['streamplatform']);
     $streamingaccount = "";
     if($streamplatform!=''){
         $streamplatform.="/";
-        $streamingaccount = @mysql_safe_string($_POST['streamingaccount']);
+        $streamingaccount = @tvalidator("PURIFY",$_POST['streamingaccount']);
     }
-    $enable_email = @mysql_safe_string($_POST['enable_email']);
+    $enable_email = @tvalidator("PURIFY",$_POST['enable_email']);
     if( $enable_email != 'Y'){
         $enable_email = 'N';
     }
-    $publish = @mysql_safe_string($_POST['publish']);
+    $publish = @tvalidator("PURIFY",$_POST['publish']);
     if( $publish != 'Y'){
         $publish = 'N';
     }
-    $publishprofile = @mysql_safe_string($_POST['publishprofile']);
+    $publishprofile = @tvalidator("PURIFY",$_POST['publishprofile']);
     
-    $roomdiscovery = @mysql_safe_string($_POST['roomdiscovery']);
+    $roomdiscovery = @tvalidator("PURIFY",$_POST['roomdiscovery']);
     if( $roomdiscovery == ''){
         $roomdiscovery = 'N';
     }
     
     
-    $notifications = @mysql_safe_string("$_POST[notifications]");
-    $notificationflags = @mysql_safe_string("$_POST[notificationflags]");
+    $notifications = @tvalidator("PURIFY","$_POST[notifications]");
+    $notificationflags = @tvalidator("PURIFY","$_POST[notificationflags]");
 
     $active = 'Y';
-    $terminateaccount = @mysql_safe_string($_POST['terminateaccount']) ;
+    $terminateaccount = @tvalidator("PURIFY",$_POST['terminateaccount']) ;
     if($terminateaccount == 'Y'){
         $active = 'N';
     }
     
-    $gift = @mysql_safe_string($_POST['gift']);
+    $gift = @tvalidator("PURIFY",$_POST['gift']);
     if( $gift == ''){
         $gift = 'N';
     }
-    $wallpaper = @mysql_safe_string($_POST['wallpaper']);
+    $wallpaper = @tvalidator("PURIFY",$_POST['wallpaper']);
     
     
     

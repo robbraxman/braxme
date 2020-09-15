@@ -3,10 +3,10 @@ session_start();
 require_once("config.php");
 require_once("crypt.inc.php");
 
-$providerid = @mysql_safe_string($_SESSION['pid']);
-$mode = @mysql_safe_string($_POST['mode']);
-$lastfunc = @mysql_safe_string($_POST['lastfunc']);
-$parm1 = @mysql_safe_string($_POST['parm1']);
+$providerid = @tvalidator("PURIFY",$_SESSION['pid']);
+$mode = @tvalidator("PURIFY",$_POST['mode']);
+$lastfunc = @tvalidator("PURIFY",$_POST['lastfunc']);
+$parm1 = @tvalidator("PURIFY",$_POST['parm1']);
 if( $mode == 'S')
 {
     //echo "parm1-$parm1";

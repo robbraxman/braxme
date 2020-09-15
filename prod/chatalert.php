@@ -19,14 +19,14 @@ require_once('internationalization.php');
     
     $time1 = microtime(true);
     $menucolor = '#3e4749';
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = mysql_safe_string($_POST['providerid']);
-    $chatid = mysql_safe_string($_POST['chatid']);
-    $togglechat = mysql_safe_string($_POST['togglechat']);
-    $togglemembers = @mysql_safe_string($_POST['togglemembers']);
-    $adminmode = @mysql_safe_string($_POST['adminmode']);
-    $videoactive = @mysql_safe_string($_POST['videoactive']);
-    $audiostreamactive = @mysql_safe_string($_POST['audiostreamactive']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = tvalidator("PURIFY",$_POST['providerid']);
+    $chatid = tvalidator("PURIFY",$_POST['chatid']);
+    $togglechat = tvalidator("PURIFY",$_POST['togglechat']);
+    $togglemembers = @tvalidator("PURIFY",$_POST['togglemembers']);
+    $adminmode = @tvalidator("PURIFY",$_POST['adminmode']);
+    $videoactive = @tvalidator("PURIFY",$_POST['videoactive']);
+    $audiostreamactive = @tvalidator("PURIFY",$_POST['audiostreamactive']);
     
     
     //COLOR SETUP
@@ -247,11 +247,7 @@ require_once('internationalization.php');
         $radiostationinfo = $broadcastobj->radiostationinfo;
         
         
-<<<<<<< HEAD
         pdo_query("1","update chatmaster set streamid=? where chatid=? ",array($streamid,$chatid));
-=======
-        do_mysqli_query("1","update chatmaster set streamid='$streamid' where chatid=$chatid ");
->>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
         
         $chatparty = "
                         <div class='x' style='background-color:$global_titlebar_alt_color;padding:5px'>
@@ -1612,15 +1608,9 @@ function BroadcastInfo($streaming, $broadcastmode, $broadcaster, $chatid, $strea
         
         
         //Get Video Source
-<<<<<<< HEAD
         $result = pdo_query("1","select url from chatpopup where chatid=? and url!='' and broadcaster in 
             (select broadcaster from chatmaster where chatid=? ) ",array($chatid,$chatid));
         if($row = pdo_fetch($result)){
-=======
-        $result = do_mysqli_query("1","select url from chatpopup where chatid=$chatid and url!='' and broadcaster in 
-            (select broadcaster from chatmaster where chatid=$chatid ) ");
-        if($row = do_mysqli_fetch("1",$result)){
->>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
             $audiopanelmode = "audiopanel_desktop";
             if($_SESSION['innerwidth']<1000){
                 $mode = 'M';
@@ -2544,7 +2534,6 @@ function AutoEndBroadcast($chatid)
 {
 
     //Look for Un-Ended Audio Broadcast
-<<<<<<< HEAD
     $result = pdo_query("1",
         "select broadcastid from broadcastlog  
          where broadcastdate2 is null and 
@@ -2554,17 +2543,6 @@ function AutoEndBroadcast($chatid)
     if($row = pdo_fetch($result)){
         
         pdo_query("1",
-=======
-    $result = do_mysqli_query("1",
-        "select broadcastid from broadcastlog  
-         where broadcastdate2 is null and 
-         chatid = $chatid order by broadcastid desc limit 1
-        "
-        );
-    if($row = do_mysqli_fetch("1",$result)){
-        
-        do_mysqli_query("1",
->>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
             "
             update broadcastlog
             set broadcastdate2 = now(),
@@ -2576,14 +2554,8 @@ function AutoEndBroadcast($chatid)
             
     }
     
-<<<<<<< HEAD
     pdo_query("1","
         update chatmaster set broadcaster = null, broadcastmode = null, live='N', radiotitle='' where chatid = ? 
     ",array($chatid));
-=======
-    do_mysqli_query("1","
-        update chatmaster set broadcaster = null, broadcastmode = null, live='N', radiotitle='' where chatid = $chatid 
-    ");
->>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
     
 }

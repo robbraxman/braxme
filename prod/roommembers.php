@@ -6,13 +6,13 @@ require_once("room.inc.php");
 require_once("roommanage.inc.php");
 require_once("internationalization.php");
 
-    $providerid = mysql_safe_string($_POST['providerid']);
-    $mode = @mysql_safe_string($_POST['mode']);
-    $room = @mysql_safe_string($_POST['room']);
-    $friendproviderid = @mysql_safe_string($_POST['friendproviderid']);
-    $roomid = intval(@mysql_safe_string($_POST['roomid']));
-    $caller = @mysql_safe_string($_POST['caller']);
-    $filter = @mysql_safe_string($_POST['filter']);
+    $providerid = tvalidator("PURIFY",$_POST['providerid']);
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
+    $room = @tvalidator("PURIFY",$_POST['room']);
+    $friendproviderid = @tvalidator("PURIFY",$_POST['friendproviderid']);
+    $roomid = intval(@tvalidator("PURIFY",$_POST['roomid']));
+    $caller = @tvalidator("PURIFY",$_POST['caller']);
+    $filter = @tvalidator("PURIFY",$_POST['filter']);
 
     
     

@@ -2,9 +2,9 @@
 session_start();
 require_once("config.php");
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = @mysql_safe_string($_POST['providerid']);
-    $lasttime = @mysql_safe_string($_POST['lasttime']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = @tvalidator("PURIFY",$_POST['providerid']);
+    $lasttime = @tvalidator("PURIFY",$_POST['lasttime']);
     
     $flag = "<img src='../img/check-yellow-128.png' style='height:15px;width:auto;padding-top:0;padding-right:2px;padding-bottom:0px;' />";
     

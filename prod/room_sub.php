@@ -6,15 +6,15 @@ require_once("crypt.inc.php");
 require_once("room.inc.php");
 require_once("internationalization.php");
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = @mysql_safe_string($_SESSION['pid']);
-    $shareid = @mysql_safe_string($_POST['shareid']);
-    $scrollreference = @mysql_safe_string($_POST['scrollreference']);
-    $selectedroomid = @mysql_safe_string($_POST['selectedroomid']);
-    $readonly = @mysql_safe_string($_POST['readonly']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = @tvalidator("PURIFY",$_SESSION['pid']);
+    $shareid = @tvalidator("PURIFY",$_POST['shareid']);
+    $scrollreference = @tvalidator("PURIFY",$_POST['scrollreference']);
+    $selectedroomid = @tvalidator("PURIFY",$_POST['selectedroomid']);
+    $readonly = @tvalidator("PURIFY",$_POST['readonly']);
     
-    $mode = @mysql_safe_string($_POST['mode']);
-    $limit =  @mysql_safe_string($_POST['limit']);
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
+    $limit =  @tvalidator("PURIFY",$_POST['limit']);
     $limitsql = "limit 200";
     if($limit!=''){
         $limitsql = "limit $limit";

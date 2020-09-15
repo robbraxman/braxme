@@ -10,9 +10,9 @@ require_once("internationalization2.php");
 /* This Routine is for performing automated processes after doing termsofuse agree */
 
 
-$mode = @mysql_safe_string( $_POST['mode'] );
-$providerid = @mysql_safe_string( $_SESSION['pid'] );
-$caller = @mysql_safe_string( $_SESSION['caller'] );
+$mode = @tvalidator("PURIFY", $_POST['mode'] );
+$providerid = @tvalidator("PURIFY", $_SESSION['pid'] );
+$caller = @tvalidator("PURIFY", $_SESSION['caller'] );
 
 
     if($mode == 'AGREE'){

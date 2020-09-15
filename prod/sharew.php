@@ -2,8 +2,8 @@
 session_start();
 include("config.php");
 
-$share = @mysql_safe_string( $_GET['p'] );
-$view = @mysql_safe_string( $_GET['v'] );
+$share = @tvalidator("PURIFY", $_GET['p'] );
+$view = @tvalidator("PURIFY", $_GET['v'] );
 
 $iconlock = "$rootserver/img/lock.png";
 $sharelink = "$rootserver/$installfolder/sharew.php?p=$share";

@@ -3,8 +3,8 @@ session_start();
 require_once("validsession.inc.php");
 require_once("config.php");
 
-    $mode = @mysql_safe_string($_POST['mode']);
-    $roomid = mysql_safe_string($_POST['roomid']);
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
+    $roomid = tvalidator("PURIFY",$_POST['roomid']);
     if( $mode == '2')
     {
         $fieldselect = "";

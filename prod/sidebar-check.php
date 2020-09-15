@@ -31,8 +31,8 @@ require_once("sidebar.inc.php");
         }
         
         
-        $startup = @mysql_safe_string($_POST['startup']);
-        $providerid = mysql_safe_string($_POST['providerid']);
+        $startup = @tvalidator("PURIFY",$_POST['startup']);
+        $providerid = tvalidator("PURIFY",$_POST['providerid']);
         
         if( TimeOutCheck()){
             $arr = array('notification'=>"T");

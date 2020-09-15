@@ -19,9 +19,9 @@ require_once("aws.php");
     $_SESSION['temporarypassword'] = substr( $temp, 5, 8 );
     $session = session_id();
     
-    $providerid = @mysql_safe_string( "$_POST[pid]");
-    $loginid = @mysql_safe_string( "$_POST[l]");
-    $ip = mysql_safe_string($_SERVER['REMOTE_ADDR']);
+    $providerid = @tvalidator("PURIFY", "$_POST[pid]");
+    $loginid = @tvalidator("PURIFY", "$_POST[l]");
+    $ip = tvalidator("PURIFY",$_SERVER['REMOTE_ADDR']);
     //$ip = "test";
     
     

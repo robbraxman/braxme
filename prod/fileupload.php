@@ -11,11 +11,11 @@ require("password.inc.php");
 require_once("htmlhead2.inc.php");
 
 
-$providerid = @mysql_safe_string($_SESSION['pid']);
+$providerid = @tvalidator("PURIFY",$_SESSION['pid']);
 $today = date("m-d",time()+$_SESSION['timezone']*60*60);
-$otherid = @mysql_safe_string($_POST['otherid']);
-$chatid = @mysql_safe_string($_POST['chatid']);
-$passkey64 = @mysql_safe_string($_POST['passkey64']);
+$otherid = @tvalidator("PURIFY",$_POST['otherid']);
+$chatid = @tvalidator("PURIFY",$_POST['chatid']);
+$passkey64 = @tvalidator("PURIFY",$_POST['passkey64']);
 
 ?>
 <script>

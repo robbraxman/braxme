@@ -2,11 +2,11 @@
 session_start();
 require_once("config-pdo.php");
 
-    $providerid = mysql_safe_string($_POST[providerid]);
-    $mode = mysql_safe_string($_POST[mode]);
-    $email = mysql_safe_string($_POST[email]);
-    $name = mysql_safe_string($_POST[name]);
-    $sms = mysql_safe_string($_POST[sms]);
+    $providerid = tvalidator("PURIFY",$_POST[providerid]);
+    $mode = tvalidator("PURIFY",$_POST[mode]);
+    $email = tvalidator("PURIFY",$_POST[email]);
+    $name = tvalidator("PURIFY",$_POST[name]);
+    $sms = tvalidator("PURIFY",$_POST[sms]);
     $name = ucwords($name);
     
     if( $sms!='')

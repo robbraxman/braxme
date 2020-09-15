@@ -23,14 +23,14 @@ require_once("advertising.inc.php");
     $_SESSION['innerwidth']=0;
 
 
-    $_SESSION['source']=@mysql_safe_string($_POST['source']);
+    $_SESSION['source']=@tvalidator("PURIFY",$_POST['source']);
     if( $_SESSION['source']=='app' || $_SESSION['source']=='android'){
     
         $source = 'Y';
         do_mysqli_query("1","update provider set mobile='$source' where providerid=$_SESSION[pid] ");
     }
 
-    $timezone = @mysql_safe_string( $_POST['timezone']);
+    $timezone = @tvalidator("PURIFY", $_POST['timezone']);
     if($timezone!==''){
         $_SESSION['timezone']=$timezone;
         $_SESSION['timezoneoffset'] = floatval($_SESSION['timezone']) - floatval($_SESSION['servertimezone']);
@@ -40,7 +40,7 @@ require_once("advertising.inc.php");
     }
     $today = date("M-d-y",time()+$_SESSION['timezone']*60*60);
 
-    $useragent=@mysql_safe_string($_POST['useragent']);
+    $useragent=@tvalidator("PURIFY",$_POST['useragent']);
     if( $useragent!='' ){ 
     
         do_mysqli_query("1","update provider set useragent='$useragent' where providerid=$_SESSION[pid] ");
@@ -164,9 +164,9 @@ require_once("advertising.inc.php");
         
         
         
-    $apn = @mysql_safe_string( $_POST['apn'] );
-    $gcm = @mysql_safe_string( $_POST['gcm'] );
-    $uuid = @mysql_safe_string( $_POST['uuid'] );
+    $apn = @tvalidator("PURIFY", $_POST['apn'] );
+    $gcm = @tvalidator("PURIFY", $_POST['gcm'] );
+    $uuid = @tvalidator("PURIFY", $_POST['uuid'] );
     $_SESSION['gcm']=$gcm;
     $_SESSION['apn']=$apn;
     $_SESSION['uuid']=$uuid;

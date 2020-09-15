@@ -6,23 +6,23 @@ require_once("crypt-pdo.inc.php");
 require ("notify.inc.php");
 require("chat.inc.php");
 
-    $providerid = @mysql_safe_string($_POST['providerid']);
-    $recipientid = @mysql_safe_string($_POST['recipientid']);
-    $mode = @mysql_safe_string($_POST['mode']);
-    $email = @mysql_safe_string($_POST['email']);
-    $name = @mysql_safe_string($_POST['name']);
-    $sms = @mysql_safe_string($_POST['sms']);
-    //$passkey64 = @mysql_safe_string($_POST['passkey64']);
-    $handle = @mysql_safe_string($_POST['handle']);
-    $techsupport = @mysql_safe_string($_POST['techsupport']);
-    $radiostation = @mysql_safe_string($_POST['radiostation']);
+    $providerid = @tvalidator("PURIFY",$_POST['providerid']);
+    $recipientid = @tvalidator("PURIFY",$_POST['recipientid']);
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
+    $email = @tvalidator("PURIFY",$_POST['email']);
+    $name = @tvalidator("PURIFY",$_POST['name']);
+    $sms = @tvalidator("PURIFY",$_POST['sms']);
+    //$passkey64 = @tvalidator("PURIFY",$_POST['passkey64']);
+    $handle = @tvalidator("PURIFY",$_POST['handle']);
+    $techsupport = @tvalidator("PURIFY",$_POST['techsupport']);
+    $radiostation = @tvalidator("PURIFY",$_POST['radiostation']);
     $name = ucwords($name);
-    $title = @mysql_safe_string($_POST['title']);
-    $passkey = @mysql_safe_string($_POST['passkey']);
-    $lifespan = @mysql_safe_string($_POST['lifespan']);
+    $title = @tvalidator("PURIFY",$_POST['title']);
+    $passkey = @tvalidator("PURIFY",$_POST['passkey']);
+    $lifespan = @tvalidator("PURIFY",$_POST['lifespan']);
     
     //For Full Room Chat
-    $roomid = @mysql_safe_string($_POST['roomid']);
+    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
     
     
     $msg = '';

@@ -1,7 +1,7 @@
 <?php
 function WhiteListCheck($cleaned)
 {
-    $ip = mysql_safe_string($_SERVER['REMOTE_ADDR']);
+    $ip = tvalidator("PURIFY",$_SERVER['REMOTE_ADDR']);
     
     $torexits = file_get_contents("/var/tmp/torexitnodes");
     if(strstr($torexits, $ip)!==FALSE){

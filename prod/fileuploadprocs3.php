@@ -14,14 +14,14 @@ echo "<div class='statustitle'>Upload Status</div>";
 
 $_SESSION['sessionid'] = uniqid("", false);
 
-$providerid = rtrim(@mysql_safe_string( "$_SESSION[pid]"));
-$loginid = @mysql_safe_string( "$_SESSION[loginid]");
-$subject = @mysql_safe_string( "$_POST[subject]");
-$uploadtype = @mysql_safe_string( "$_POST[uploadtype]");
-$folder = @mysql_safe_string( "$_POST[folder]");
-$sendemail = @mysql_safe_string( "$_POST[sendemail]");
-$chatid = @mysql_safe_string( "$_POST[chatid]");
-$passkey64 = @mysql_safe_string( "$_POST[passkey64]");
+$providerid = rtrim(@tvalidator("PURIFY", "$_SESSION[pid]"));
+$loginid = @tvalidator("PURIFY", "$_SESSION[loginid]");
+$subject = @tvalidator("PURIFY", "$_POST[subject]");
+$uploadtype = @tvalidator("PURIFY", "$_POST[uploadtype]");
+$folder = @tvalidator("PURIFY", "$_POST[folder]");
+$sendemail = @tvalidator("PURIFY", "$_POST[sendemail]");
+$chatid = @tvalidator("PURIFY", "$_POST[chatid]");
+$passkey64 = @tvalidator("PURIFY", "$_POST[passkey64]");
 
 
 $upload_dir = 'upload-zone';

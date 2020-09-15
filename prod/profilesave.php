@@ -82,7 +82,7 @@ require ("crypt.inc.php");
     //echo "$_POST[accountnote]";
     //$accountnote = mysqli_escape_string( $link, $_POST[accountnote]);
     //$accountnote = mysql_escape_string( $_POST[accountnote]);
-    $accountnote = @mysql_safe_string($_POST['accountnote']);
+    $accountnote = @tvalidator("PURIFY",$_POST['accountnote']);
 
     $result = do_mysqli_query("1", "SELECT active, announcement from service where msglevel='STATUS' /*test1*/");
     if ($row = do_mysqli_fetch("1",$result)) 
@@ -98,11 +98,11 @@ require ("crypt.inc.php");
     
     //$stdSmsMsg = mysql_escape_string($_POST[stdsmsmsg]);
     
-    $providerid = @mysql_safe_string("$_SESSION[pid]");
-    $loginid = @mysql_safe_string($_SESSION['loginid']);
-    $replysms = @mysql_safe_string("$_POST[replysms]");
-    $replyemail = @mysql_safe_string(strtolower("$_POST[replyemail]"));
-    $notifications = @mysql_safe_string("$_POST[notifications]");
+    $providerid = @tvalidator("PURIFY","$_SESSION[pid]");
+    $loginid = @tvalidator("PURIFY",$_SESSION['loginid']);
+    $replysms = @tvalidator("PURIFY","$_POST[replysms]");
+    $replyemail = @tvalidator("PURIFY",strtolower("$_POST[replyemail]"));
+    $notifications = @tvalidator("PURIFY","$_POST[notifications]");
     //if($notifications!=='Y'){
     //    $notifications = 'N';
     //}
@@ -127,18 +127,18 @@ require ("crypt.inc.php");
     }
     
     $active = 'Y';
-    $terminateaccount = @mysql_safe_string($_POST['terminateaccount']) ;
+    $terminateaccount = @tvalidator("PURIFY",$_POST['terminateaccount']) ;
     if($terminateaccount=='Y') {
         $active='N';
         $verified = 'Y';
     }
     
-    $msgmasterkey = @mysql_safe_string($_POST['msgmasterkey']);
+    $msgmasterkey = @tvalidator("PURIFY",$_POST['msgmasterkey']);
 
-    $companyname = @mysql_safe_string("$_POST[companyname]");
-    $providername = @mysql_safe_string(ucwords("$_POST[providername]"));
-    $name2 = @mysql_safe_string(ucwords("$_POST[name2]"));
-    $handle = @mysql_safe_string(("$_POST[handle]"));
+    $companyname = @tvalidator("PURIFY","$_POST[companyname]");
+    $providername = @tvalidator("PURIFY",ucwords("$_POST[providername]"));
+    $name2 = @tvalidator("PURIFY",ucwords("$_POST[name2]"));
+    $handle = @tvalidator("PURIFY",("$_POST[handle]"));
     
     $providername = ltrim($providername);
     $name2 = ltrim($name2);
@@ -172,11 +172,11 @@ require ("crypt.inc.php");
     }
     
     
-    $defaultsmtp = @mysql_safe_string($_POST[defaultsmtp]);
+    $defaultsmtp = @tvalidator("PURIFY",$_POST[defaultsmtp]);
 
-    $avatarurl = @mysql_safe_string($_POST['avatarurl']);
-    $industry = @mysql_safe_string($_POST['industry']);
-    $sponsor = @mysql_safe_string($_POST['sponsor']);
+    $avatarurl = @tvalidator("PURIFY",$_POST['avatarurl']);
+    $industry = @tvalidator("PURIFY",$_POST['industry']);
+    $sponsor = @tvalidator("PURIFY",$_POST['sponsor']);
     $sponsorhold = explode("/", $sponsor);
     $sponsor = $sponsorhold[0];
     $enterprise = '';
@@ -190,49 +190,49 @@ require ("crypt.inc.php");
         }
     }
     
-    $allowkeydownload = @mysql_safe_string($_POST['allowkeydownload']);
+    $allowkeydownload = @tvalidator("PURIFY",$_POST['allowkeydownload']);
     if( $allowkeydownload=='')
         $allowkeydownload='Y';
-    $allowrandomkey = @mysql_safe_string($_POST['allowrandomkey']);
+    $allowrandomkey = @tvalidator("PURIFY",$_POST['allowrandomkey']);
     if( $allowrandomkey=='')
         $allowrandomkey='N';
-    $afterreadlifespan = @mysql_safe_string($_POST['afterreadlifespan']);
+    $afterreadlifespan = @tvalidator("PURIFY",$_POST['afterreadlifespan']);
     if( $afterreadlifespan == '')
     {
         $afterreadlifespan = 0;
     }
-    $cookies_recipient = @mysql_safe_string($_POST['cookies_recipient']);
+    $cookies_recipient = @tvalidator("PURIFY",$_POST['cookies_recipient']);
     if( $cookies_recipient != 'Y')
         $cookies_recipient = 'N';
     
-    $cookies_sender = @mysql_safe_string($_POST['cookies_sender']);
+    $cookies_sender = @tvalidator("PURIFY",$_POST['cookies_sender']);
     if( $cookies_sender != 'Y')
         $cookies_sender = 'N';
     
-    $enable_email = @mysql_safe_string($_POST['enable_email']);
+    $enable_email = @tvalidator("PURIFY",$_POST['enable_email']);
     if( $enable_email != 'Y')
         $enable_email = 'N';
     
     
-    $inactivitytimeout = @mysql_safe_string($_POST['inactivitytimeout']);
+    $inactivitytimeout = @tvalidator("PURIFY",$_POST['inactivitytimeout']);
     if( $inactivitytimeout == "")
         $inactivitytimeout = 0;
     $inactivitytimeout = intval($inactivitytimeout) *60;
-    $autosendkey = @mysql_safe_string($_POST['autosendkey']);
-    $msglifespan = @mysql_safe_string($_POST['msglifespan']);
+    $autosendkey = @tvalidator("PURIFY",$_POST['autosendkey']);
+    $msglifespan = @tvalidator("PURIFY",$_POST['msglifespan']);
     if( $msglifespan == '')
     {
-        $lifespan = @mysql_safe_string($_POST['lifespan']);
+        $lifespan = @tvalidator("PURIFY",$_POST['lifespan']);
         if( $lifespan == '')
             $msglifespan = 864000;
         else
             $msglifespan = $lifespan * 24 * 60 * 60;
     }
-    $imagedisplayseconds = @mysql_safe_string($_POST['imagedisplayseconds']);
+    $imagedisplayseconds = @tvalidator("PURIFY",$_POST['imagedisplayseconds']);
     if( $imagedisplayseconds == '')
         $imagedisplayseconds = 0;
     
-    $alias = @mysql_safe_string($_POST['alias']);
+    $alias = @tvalidator("PURIFY",$_POST['alias']);
     
     //$contactphone1 = $contactphone1;
     //$contactphonec = $contactphonec;
@@ -243,11 +243,11 @@ require ("crypt.inc.php");
     }
         
     
-    $age = intval(@mysql_safe_string($_POST['age']));
+    $age = intval(@tvalidator("PURIFY",$_POST['age']));
     
     
-    $vpnallowed = @mysql_safe_string($_POST['vpn_allowed']) ;
-    $portal = @mysql_safe_string("") ;
+    $vpnallowed = @tvalidator("PURIFY",$_POST['vpn_allowed']) ;
+    $portal = @tvalidator("PURIFY","") ;
     if( $portal != 'Y')
         $portal = 'N';
     if( $defaultsmtp != '1')

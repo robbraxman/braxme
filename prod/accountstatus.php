@@ -5,7 +5,7 @@ require_once("password.inc.php");
 
 require_once("htmlmobile.inc");
 require("accountcheck.inc");
-$loginid = mysql_safe_string($_POST['loginid']);
+$loginid = tvalidator("PURIFY",$_POST['loginid']);
 ?>
     <title>Account Status</title>
 </head>    

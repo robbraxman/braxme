@@ -16,17 +16,17 @@ $apn = '';
 $_SESSION['gcm']='';
 $_SESSION['apn']='';
 
-$mobile = @mysql_safe_string($_GET['mobile']);
-$landing = @mysql_safe_string($_GET['l']);
-$source = @mysql_safe_string($_GET['s']);
-$gcm = @mysql_safe_string($_GET['gcm']);
+$mobile = @tvalidator("PURIFY",$_GET['mobile']);
+$landing = @tvalidator("PURIFY",$_GET['l']);
+$source = @tvalidator("PURIFY",$_GET['s']);
+$gcm = @tvalidator("PURIFY",$_GET['gcm']);
 $_SESSION['gcm']=$gcm;
-$apn = @mysql_safe_string($_GET['apn']);
+$apn = @tvalidator("PURIFY",$_GET['apn']);
 $_SESSION['apn']=$apn;
-$version = @mysql_safe_string($_GET['v']);
+$version = @tvalidator("PURIFY",$_GET['v']);
 
 
-$language = @mysql_safe_string($_GET['lang']);
+$language = @tvalidator("PURIFY",$_GET['lang']);
 
 if($language!=''){
     $_SESSION['language']=$language;

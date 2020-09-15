@@ -4,8 +4,8 @@ include("config.php");
 include("crypt.inc.php");
 require 'aws.php';
 
-$alias = @mysql_safe_string( $_GET['p'] );
-$inline = @mysql_safe_string( $_GET['i'] );
+$alias = @tvalidator("PURIFY", $_GET['p'] );
+$inline = @tvalidator("PURIFY", $_GET['i'] );
 
 
     $result = do_mysqli_query("1","

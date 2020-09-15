@@ -3,9 +3,9 @@ if(!isset($_SESSION['validsession'])){
     require_once("config.php");
     $ip2 = '';
     if(isset($_SERVER['HTTP_X_FORWARDED_FOR'])){
-        $ip2 = mysql_safe_string("$_SERVER[HTTP_X_FORWARDED_FOR]");
+        $ip2 = tvalidator("PURIFY","$_SERVER[HTTP_X_FORWARDED_FOR]");
     }
-    $ip = mysql_safe_string($_SERVER['REMOTE_ADDR']);
+    $ip = tvalidator("PURIFY",$_SERVER['REMOTE_ADDR']);
     do_mysqli_query("1"," 
         INSERT INTO attacker (ip, ip2, accessdate, accesscount ) values
         ('$ip','$ip2',now(), 0 )

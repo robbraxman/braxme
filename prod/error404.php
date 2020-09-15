@@ -1,6 +1,6 @@
 <?php
 require_once("prod/config.php");
-$file = mysql_safe_string(@$_GET['f']);
+$file = tvalidator("PURIFY",@$_GET['f']);
 $randomid = uniqid();
 ?>
 <!DOCTYPE html>

@@ -5,8 +5,8 @@ require_once("config.php");
 
 $providerid = $_SESSION['pid'];
 $lasttip = intval($_SESSION['lasttip']);
-$devicetype = @mysql_safe_string($_POST['devicetype']);
-$deviceplatform = @mysql_safe_string($_POST['deviceplatform']);
+$devicetype = @tvalidator("PURIFY",$_POST['devicetype']);
+$deviceplatform = @tvalidator("PURIFY",$_POST['deviceplatform']);
 
 $nexttip = intval($lasttip)+1;
 

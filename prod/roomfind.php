@@ -3,16 +3,16 @@ session_start();
 require("validsession.inc.php");
 require_once("config.php");
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = mysql_safe_string($_POST['providerid']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = tvalidator("PURIFY",$_POST['providerid']);
 
     $mode = '';
     if(isset($_POST['mode'])){
-        $mode = mysql_safe_string($_POST['mode']);
+        $mode = tvalidator("PURIFY",$_POST['mode']);
     }
     $roomid = '';
     if(isset($_POST['roomid'])){
-        $roomid = mysql_safe_string($_POST['roomid']);
+        $roomid = tvalidator("PURIFY",$_POST['roomid']);
     }
     
     

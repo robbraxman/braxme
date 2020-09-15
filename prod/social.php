@@ -11,9 +11,9 @@ require_once("prod/config.php");
 require("htmlhead-open.inc.php");
 $timezone = "";
 
-$mobile = @mysql_safe_string($_GET['mobile']);
-$source = @mysql_safe_string($_GET['s']);
-$landing = @mysql_safe_string($_GET['l']);
+$mobile = @tvalidator("PURIFY",$_GET['mobile']);
+$source = @tvalidator("PURIFY",$_GET['s']);
+$landing = @tvalidator("PURIFY",$_GET['l']);
 
 if( $landing!='')
 {

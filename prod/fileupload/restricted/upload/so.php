@@ -3,18 +3,18 @@ session_start();
 include("config.php");
 $uniqid = uniqid();
 
-$view = mysql_safe_string( $_GET['v'] );
-$redisplay = mysql_safe_string( $_GET['r'] );
+$view = tvalidator("PURIFY", $_GET['v'] );
+$redisplay = tvalidator("PURIFY", $_GET['r'] );
 
 
-$share = mysql_safe_string( $_GET['p'] );
-$ip = mysql_safe_string( $_GET['ip'] );
-$c = mysql_safe_string( $_GET['c'] );
-$n = mysql_safe_string( $_GET['n'] );
-$d = mysql_safe_string( $_GET['d'] );
-$i = mysql_safe_string( $_GET['i'] );
-$a = mysql_safe_string( $_GET['a'] );
-$e = mysql_safe_string( $_GET['e'] );
+$share = tvalidator("PURIFY", $_GET['p'] );
+$ip = tvalidator("PURIFY", $_GET['ip'] );
+$c = tvalidator("PURIFY", $_GET['c'] );
+$n = tvalidator("PURIFY", $_GET['n'] );
+$d = tvalidator("PURIFY", $_GET['d'] );
+$i = tvalidator("PURIFY", $_GET['i'] );
+$a = tvalidator("PURIFY", $_GET['a'] );
+$e = tvalidator("PURIFY", $_GET['e'] );
 
 $result = do_mysqli_query("1","
     select shareto, platform from shares where shareid='$share'

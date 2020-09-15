@@ -5,19 +5,19 @@ require("config-pdo.php");
 require_once("crypt-pdo.inc.php");
 require_once("internationalization.php");
 
-$providerid = @mysql_safe_string($_SESSION['pid']);
-$mode = @mysql_safe_string($_POST['mode']);
-$chatid = @mysql_safe_string($_POST['chatid']);
-$passkey64 = @mysql_safe_string($_POST['passkey64']);
+$providerid = @tvalidator("PURIFY",$_SESSION['pid']);
+$mode = @tvalidator("PURIFY",$_POST['mode']);
+$chatid = @tvalidator("PURIFY",$_POST['chatid']);
+$passkey64 = @tvalidator("PURIFY",$_POST['passkey64']);
 
-$recipientid = @mysql_safe_string($_POST['recipientid']);
-$handle = @mysql_safe_string($_POST['handle']);
-$name = @mysql_safe_string($_POST['name']);
-$email = @mysql_safe_string($_POST['email']);
-$sms = @mysql_safe_string($_POST['sms']);
-$techsupport = @mysql_safe_string($_POST['techsupport']);
-$roomid = @mysql_safe_string($_POST['roomid']);
-$radiostation = @mysql_safe_string($_POST['radiostation']);
+$recipientid = @tvalidator("PURIFY",$_POST['recipientid']);
+$handle = @tvalidator("PURIFY",$_POST['handle']);
+$name = @tvalidator("PURIFY",$_POST['name']);
+$email = @tvalidator("PURIFY",$_POST['email']);
+$sms = @tvalidator("PURIFY",$_POST['sms']);
+$techsupport = @tvalidator("PURIFY",$_POST['techsupport']);
+$roomid = @tvalidator("PURIFY",$_POST['roomid']);
+$radiostation = @tvalidator("PURIFY",$_POST['radiostation']);
 
 $buttonback = "<center><span class='mainfont'><img class='selectchatlist tapped icon20' 
     src='$iconsource_braxarrowleft_common' 

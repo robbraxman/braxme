@@ -3,20 +3,20 @@ session_start();
 require("validsession.inc.php");
 require_once("config.php");
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = mysql_safe_string($_POST['providerid']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = tvalidator("PURIFY",$_POST['providerid']);
 
-    $mode = @mysql_safe_string($_POST['mode']);
-    $roomid = @mysql_safe_string($_POST['roomid']);
-    $eventname = @mysql_safe_string($_POST['eventname']);
-    $eventdesc = @mysql_safe_string($_POST['eventdesc']);
-    $eventdate = @mysql_safe_string($_POST['eventdate']);
-    $eventtime = @mysql_safe_string($_POST['eventtime']);
-    $eventassign = @mysql_safe_string($_POST['eventassign']);
-    $eventid = @mysql_safe_string($_POST['eventid']);
-    $priority = @mysql_safe_string($_POST['priority']);
-    $sort = @mysql_safe_string($_POST['sort']);
-    $page= @mysql_safe_string($_POST['page']);
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
+    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+    $eventname = @tvalidator("PURIFY",$_POST['eventname']);
+    $eventdesc = @tvalidator("PURIFY",$_POST['eventdesc']);
+    $eventdate = @tvalidator("PURIFY",$_POST['eventdate']);
+    $eventtime = @tvalidator("PURIFY",$_POST['eventtime']);
+    $eventassign = @tvalidator("PURIFY",$_POST['eventassign']);
+    $eventid = @tvalidator("PURIFY",$_POST['eventid']);
+    $priority = @tvalidator("PURIFY",$_POST['priority']);
+    $sort = @tvalidator("PURIFY",$_POST['sort']);
+    $page= @tvalidator("PURIFY",$_POST['page']);
     
     if($priority ==''){
         $priority = '9';

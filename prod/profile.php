@@ -9,8 +9,8 @@ require_once("crypt.inc.php");
 require_once("internationalization.php");
 require("htmlhead.inc.php");
 
-    $providerid = mysql_safe_string($_POST['pid']);
-    $loginid = mysql_safe_string($_POST['loginid']);
+    $providerid = tvalidator("PURIFY",$_POST['pid']);
+    $loginid = tvalidator("PURIFY",$_POST['loginid']);
 
 
 

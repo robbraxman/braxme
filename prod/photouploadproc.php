@@ -12,12 +12,12 @@ echo "<div class='statustitle'>Photo Upload</div>";
 
 $_SESSION['sessionid'] = uniqid("", false);
 
-$providerid = rtrim(@mysql_safe_string( "$_SESSION[pid]"));
-$loginid = @mysql_safe_string( "$_SESSION[loginid]");
-$subject = @mysql_safe_string( "$_POST[subject]");
-$album = @mysql_safe_string( "$_POST[album]");
-$newalbum = @mysql_safe_string( "$_POST[newalbum]");
-$uploadtype = @mysql_safe_string( "$_POST[uploadtype]");
+$providerid = rtrim(@tvalidator("PURIFY", "$_SESSION[pid]"));
+$loginid = @tvalidator("PURIFY", "$_SESSION[loginid]");
+$subject = @tvalidator("PURIFY", "$_POST[subject]");
+$album = @tvalidator("PURIFY", "$_POST[album]");
+$newalbum = @tvalidator("PURIFY", "$_POST[newalbum]");
+$uploadtype = @tvalidator("PURIFY", "$_POST[uploadtype]");
 
 if( $newalbum!='')
 {

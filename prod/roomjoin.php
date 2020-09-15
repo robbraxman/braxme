@@ -6,15 +6,15 @@ require_once("roommanage.inc.php");
 
 
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = mysql_safe_string($_POST['providerid']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = tvalidator("PURIFY",$_POST['providerid']);
 
-    $mode = @mysql_safe_string($_POST['mode']);
-    $handle = stripslashes(@mysql_safe_string($_POST['handle']));
-    $caller = @mysql_safe_string($_POST['caller']);
-    $roomid = intval(@mysql_safe_string($_POST['roomid']));
-    $action = @mysql_safe_string($_POST['action']);
-    $inviteid = @mysql_safe_string($_POST['inviteid']);
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
+    $handle = stripslashes(@tvalidator("PURIFY",$_POST['handle']));
+    $caller = @tvalidator("PURIFY",$_POST['caller']);
+    $roomid = intval(@tvalidator("PURIFY",$_POST['roomid']));
+    $action = @tvalidator("PURIFY",$_POST['action']);
+    $inviteid = @tvalidator("PURIFY",$_POST['inviteid']);
     
     
     //$result = do_mysqli_query("1",
@@ -153,7 +153,7 @@ require_once("roommanage.inc.php");
             
             $owner = $row['owner'];
             $roomid = $row['roomid'];
-            $room = mysql_safe_string($row['room']);
+            $room = tvalidator("PURIFY",$row['room']);
             $exists = $row['existing'];
             
             //This is a website so don't display website

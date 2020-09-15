@@ -3,9 +3,9 @@ session_start();
 include("config.php");
 include("internationalization.php");
 
-$language = @mysql_safe_string( strtolower($_POST['language']) );
-$mode = @mysql_safe_string( $_POST['mode'] );
-$providerid = @mysql_safe_string( $_POST['providerid'] );
+$language = @tvalidator("PURIFY", strtolower($_POST['language']) );
+$mode = @tvalidator("PURIFY", $_POST['mode'] );
+$providerid = @tvalidator("PURIFY", $_POST['providerid'] );
 
 if($mode == 'S'){
     do_mysqli_query("1","update provider set language='$language' where providerid = $providerid");

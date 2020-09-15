@@ -5,25 +5,25 @@ require("crypt.inc.php");
 require("aws.php");
 
     
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = mysql_safe_string($_SESSION['pid']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = tvalidator("PURIFY",$_SESSION['pid']);
     
-    $roomid = @mysql_safe_string($_POST['roomid']);
-    $selectedfolder = @mysql_safe_string($_POST['folder']);
-    $filename = @mysql_safe_string($_POST['filename']);
-    $sort = @mysql_safe_string($_POST['sort']);
-    $target = @mysql_safe_string($_POST['target']);
-    $caller = @mysql_safe_string($_POST['caller']);
-    $page = @intval( mysql_safe_string($_POST['page']));
-    $mode = @mysql_safe_string($_POST['mode']);
-    $altfilename = @mysql_safe_string($_POST['altfilename']);
-    $filtername = @mysql_safe_string($_POST['filtername']);
+    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+    $selectedfolder = @tvalidator("PURIFY",$_POST['folder']);
+    $filename = @tvalidator("PURIFY",$_POST['filename']);
+    $sort = @tvalidator("PURIFY",$_POST['sort']);
+    $target = @tvalidator("PURIFY",$_POST['target']);
+    $caller = @tvalidator("PURIFY",$_POST['caller']);
+    $page = @intval( tvalidator("PURIFY",$_POST['page']));
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
+    $altfilename = @tvalidator("PURIFY",$_POST['altfilename']);
+    $filtername = @tvalidator("PURIFY",$_POST['filtername']);
 
-    $backgroundcolor = @mysql_safe_string($_POST['backgroundcolor']);
-    $color = @mysql_safe_string($_POST['color']);
-    $trimcolor = @mysql_safe_string($_POST['trimcolor']);
-    $subset = @mysql_safe_string($_POST['subset']);
-    $timezoneoffset = @mysql_safe_string($_POST['timezoneoffset']);
+    $backgroundcolor = @tvalidator("PURIFY",$_POST['backgroundcolor']);
+    $color = @tvalidator("PURIFY",$_POST['color']);
+    $trimcolor = @tvalidator("PURIFY",$_POST['trimcolor']);
+    $subset = @tvalidator("PURIFY",$_POST['subset']);
+    $timezoneoffset = @tvalidator("PURIFY",$_POST['timezoneoffset']);
     
     
     $result = do_mysqli_query("1","select room from statusroom where roomid=$roomid and owner=providerid limit 1");

@@ -2,8 +2,8 @@
 session_start();
 include("config.php");
 
-$share = mysql_safe_string( $_POST[share] );
-$proxy = mysql_safe_string( $_POST[proxy] );
+$share = tvalidator("PURIFY", $_POST[share] );
+$proxy = tvalidator("PURIFY", $_POST[proxy] );
 $providerid = $_SESSION[pid];
 
 $linkid1 = uniqid("X7", true);

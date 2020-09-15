@@ -2,24 +2,24 @@
 session_start();
 include("config.php");
 
-$share = mysql_safe_string( $_POST['share'] );
+$share = tvalidator("PURIFY", $_POST['share'] );
 $shareHtml = htmlentities(stripslashes($share),ENT_QUOTES);
 
-$page = @mysql_safe_string( $_POST['page'] );
-$proxy = @mysql_safe_string( $_POST['proxy'] );
-$sharetype = @mysql_safe_string( $_POST['sharetype'] );
-$shareto = @mysql_safe_string( $_POST['shareto'] );
-$sharetitle = @mysql_safe_string( $_POST['sharetitle'] );
-$shareopentitle = @mysql_safe_string( $_POST['shareopentitle'] );
-$expire = @mysql_safe_string( $_POST['expire'] );
-$platform = @mysql_safe_string( $_POST['platform'] );
-$mode = @mysql_safe_string( $_POST['mode'] );
-$providerid = @mysql_safe_string( $_SESSION['pid'] );
+$page = @tvalidator("PURIFY", $_POST['page'] );
+$proxy = @tvalidator("PURIFY", $_POST['proxy'] );
+$sharetype = @tvalidator("PURIFY", $_POST['sharetype'] );
+$shareto = @tvalidator("PURIFY", $_POST['shareto'] );
+$sharetitle = @tvalidator("PURIFY", $_POST['sharetitle'] );
+$shareopentitle = @tvalidator("PURIFY", $_POST['shareopentitle'] );
+$expire = @tvalidator("PURIFY", $_POST['expire'] );
+$platform = @tvalidator("PURIFY", $_POST['platform'] );
+$mode = @tvalidator("PURIFY", $_POST['mode'] );
+$providerid = @tvalidator("PURIFY", $_SESSION['pid'] );
 
 
 if( $mode == 'P' )
 {
-    $proxydefault = @mysql_safe_string( $_POST['proxydefault'] );
+    $proxydefault = @tvalidator("PURIFY", $_POST['proxydefault'] );
     if($proxydefault!='Y')
     {
         $proxydefault = 'N';
@@ -31,10 +31,10 @@ if( $mode == 'P' )
 }
 
     $share = stripslashes( $_POST['share'] );
-    $shareForSql = @mysql_safe_string($share);
+    $shareForSql = @tvalidator("PURIFY",$share);
     
     
-    $proxy = @mysql_safe_string( $_POST['proxy'] );
+    $proxy = @tvalidator("PURIFY", $_POST['proxy'] );
     $linkid1 = uniqid("X7");
     $setid = uniqid("$providerid");
     $securetype='C';
@@ -215,7 +215,7 @@ if( $mode == 'P' )
     if( $platform == 'E')
     {
         $share = htmlentities( $_POST['share'], ENT_QUOTES );
-        $shareForSql = mysql_safe_string($share);
+        $shareForSql = tvalidator("PURIFY",$share);
         
     
         echo "

@@ -12,10 +12,10 @@ require_once("signupfunc.php");
 require_once("internationalization.php");
 
 
-    $gcm = @mysql_safe_string($_POST['gcm']);
-    $apn = @mysql_safe_string($_POST['apn']);
+    $gcm = @tvalidator("PURIFY",$_POST['gcm']);
+    $apn = @tvalidator("PURIFY",$_POST['apn']);
     $mobile = $gcm.$apn;
-    $version = @mysql_safe_string($_POST['version']);
+    $version = @tvalidator("PURIFY",$_POST['version']);
 
     if($gcm!=''){
         $source="s=android&gcm=$gcm";
@@ -27,8 +27,8 @@ require_once("internationalization.php");
     }
     
     
-    $store = @mysql_safe_string($_POST['store']);
-    $roomhandle = @mysql_safe_string($_POST['roomhandle']);
+    $store = @tvalidator("PURIFY",$_POST['store']);
+    $roomhandle = @tvalidator("PURIFY",$_POST['roomhandle']);
     if($store == 'Y'){
         $website = substr($roomhandle, 1);
         $loginlink = $rootserver."/$installfolder/host.php?f=_store&h=$website&store=$website&s=$source&v=$version";
@@ -42,13 +42,13 @@ require_once("internationalization.php");
         //exit();
     }
 
-    $providerid = @mysql_safe_string("$_POST[providerid]");
-    $providername = ucwords(stripslashes(@mysql_safe_string($_POST['providername'])));
-    $password = @mysql_safe_string("$_POST[password]");
-    $replysms = @mysql_safe_string($_POST['replysms']);
-    $replyemail = strtolower(@mysql_safe_string($_POST['replyemail']));
-    $handle = @mysql_safe_string($_POST['handle']);
-    $loginid = @mysql_safe_string($_POST['loginid']);
+    $providerid = @tvalidator("PURIFY","$_POST[providerid]");
+    $providername = ucwords(stripslashes(@tvalidator("PURIFY",$_POST['providername'])));
+    $password = @tvalidator("PURIFY","$_POST[password]");
+    $replysms = @tvalidator("PURIFY",$_POST['replysms']);
+    $replyemail = strtolower(@tvalidator("PURIFY",$_POST['replyemail']));
+    $handle = @tvalidator("PURIFY",$_POST['handle']);
+    $loginid = @tvalidator("PURIFY",$_POST['loginid']);
 
     if($providerid == ''){
         //exit();
@@ -57,28 +57,28 @@ require_once("internationalization.php");
         exit();
     }
     
-    $companyname = ucwords(stripslashes(@mysql_safe_string($_POST['companyname'])));
-    $invited = @mysql_safe_string("$_POST[invited]");
-    $invitesource = @mysql_safe_string("$_POST[emailinvite]");
-    $inviteid = @mysql_safe_string("$_POST[inviteid]");
+    $companyname = ucwords(stripslashes(@tvalidator("PURIFY",$_POST['companyname'])));
+    $invited = @tvalidator("PURIFY","$_POST[invited]");
+    $invitesource = @tvalidator("PURIFY","$_POST[emailinvite]");
+    $inviteid = @tvalidator("PURIFY","$_POST[inviteid]");
     
-    $accountnote = @mysql_safe_string($_POST['accountnote']);
+    $accountnote = @tvalidator("PURIFY",$_POST['accountnote']);
 
-    $industry = @mysql_safe_string($_POST['industry']);
-    $enterprise = @mysql_safe_string($_POST['enterprise']);
-    $avatarurl = @mysql_safe_string($_POST['avatarurl']);
-    $roomid = @mysql_safe_string($_POST['roomid']);
-    $sponsor = @mysql_safe_string($_POST['sponsor']);
-    $onetimeflag = @mysql_safe_string($_POST['onetimeflag']);
-    $termsofuse = @mysql_safe_string($_POST['termsofuse']);
-    $language = @mysql_safe_string($_POST['language']);
-    $timezone = @mysql_safe_string($_POST['timezone']);
-    $deviceid = @mysql_safe_string($_POST['deviceid']);
-    $lastuser = @mysql_safe_string($_POST['lastuser']);
-    $innerwidth = @mysql_safe_string($_POST['innerwidth']);
-    $innerheight = @mysql_safe_string($_POST['innerheight']);
-    $trackerid = @mysql_safe_string($_POST['trackerid']);
-    $mobiletype = @mysql_safe_string($_POST['mobiletype']);
+    $industry = @tvalidator("PURIFY",$_POST['industry']);
+    $enterprise = @tvalidator("PURIFY",$_POST['enterprise']);
+    $avatarurl = @tvalidator("PURIFY",$_POST['avatarurl']);
+    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+    $sponsor = @tvalidator("PURIFY",$_POST['sponsor']);
+    $onetimeflag = @tvalidator("PURIFY",$_POST['onetimeflag']);
+    $termsofuse = @tvalidator("PURIFY",$_POST['termsofuse']);
+    $language = @tvalidator("PURIFY",$_POST['language']);
+    $timezone = @tvalidator("PURIFY",$_POST['timezone']);
+    $deviceid = @tvalidator("PURIFY",$_POST['deviceid']);
+    $lastuser = @tvalidator("PURIFY",$_POST['lastuser']);
+    $innerwidth = @tvalidator("PURIFY",$_POST['innerwidth']);
+    $innerheight = @tvalidator("PURIFY",$_POST['innerheight']);
+    $trackerid = @tvalidator("PURIFY",$_POST['trackerid']);
+    $mobiletype = @tvalidator("PURIFY",$_POST['mobiletype']);
     
     
     if(!isset($_COOKIE['signup'])) {

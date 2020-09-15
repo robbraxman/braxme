@@ -2,19 +2,19 @@
 session_start();
 include("config.php");
 
-$share = @mysql_safe_string( $_POST['share'] );
+$share = @tvalidator("PURIFY", $_POST['share'] );
 $shareHtml = htmlentities(stripslashes($share),ENT_QUOTES);
 
-$page = @mysql_safe_string( $_POST['page'] );
-$proxy = @mysql_safe_string( $_POST['proxy'] );
-$sharetype = @mysql_safe_string( $_POST['sharetype'] );
+$page = @tvalidator("PURIFY", $_POST['page'] );
+$proxy = @tvalidator("PURIFY", $_POST['proxy'] );
+$sharetype = @tvalidator("PURIFY", $_POST['sharetype'] );
 $providerid = $_SESSION['pid'];
-$shareto = @mysql_safe_string( $_POST['shareto'] );
-$sharetitle = @mysql_safe_string( $_POST['sharetitle'] );
-$shareopentitle = @mysql_safe_string( $_POST['shareopentitle'] );
-$expire = @mysql_safe_string( $_POST['expire'] );
-$platform = @mysql_safe_string( $_POST['platform'] );
-$mode = rtrim(@mysql_safe_string( $_POST['mode'] ));
+$shareto = @tvalidator("PURIFY", $_POST['shareto'] );
+$sharetitle = @tvalidator("PURIFY", $_POST['sharetitle'] );
+$shareopentitle = @tvalidator("PURIFY", $_POST['shareopentitle'] );
+$expire = @tvalidator("PURIFY", $_POST['expire'] );
+$platform = @tvalidator("PURIFY", $_POST['platform'] );
+$mode = rtrim(@tvalidator("PURIFY", $_POST['mode'] ));
 
 
 $stdproxy='T4AZ543daed3439067.08655546';
@@ -61,7 +61,7 @@ if($mode == "")
     else
     {
         $share = stripslashes( $_POST['share'] );
-        $shareForSql = mysql_safe_string($share);
+        $shareForSql = tvalidator("PURIFY",$share);
         
         
         $sharetext = "<br>Album: $share<br>";

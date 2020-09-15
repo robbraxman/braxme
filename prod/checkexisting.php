@@ -2,7 +2,7 @@
 session_start();
 require_once("config-pdo.php");
 
-$email = @mysql_safe_string($_POST['email']);
+$email = @tvalidator("PURIFY",$_POST['email']);
 
     if( $email == ''){
         Error("handletaken","Email is required");

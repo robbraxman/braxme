@@ -3,7 +3,7 @@ session_start();
 require("validsession.inc.php");
 require_once("config.php");
 
-$providerid = mysql_safe_string($_SESSION['pid']);
+$providerid = tvalidator("PURIFY",$_SESSION['pid']);
 
     $result = do_mysqli_query("1",
         "

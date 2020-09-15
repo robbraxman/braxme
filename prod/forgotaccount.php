@@ -4,8 +4,8 @@ require_once("config.php");
 
 $_SESSION[returnurl]="<a href='login.php'>Login</a>";
 
-$email = mysql_safe_string($_POST['email']);
-$name = strtolower(mysql_safe_string( "$_POST[name]"));
+$email = tvalidator("PURIFY",$_POST['email']);
+$name = strtolower(tvalidator("PURIFY", "$_POST[name]"));
 
     //Validation Checks
     if( $email == "" )

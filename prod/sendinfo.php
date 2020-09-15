@@ -10,7 +10,7 @@ require_once("config.php");
         echo "Missing Email";
         exit();
     }
-    $email = mysql_safe_string( $_POST[email]);
+    $email = tvalidator("PURIFY", $_POST[email]);
     
     $result = do_mysqli_query("1", 
             "insert ignore into emaillist (email, source) values ('$email', 'MOBILE' ) "

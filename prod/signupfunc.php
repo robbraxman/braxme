@@ -110,7 +110,7 @@ class SignUp
         } else {
             $this->iphash = $ip;
         }
-        $useragent = mysql_safe_string($_SERVER['HTTP_USER_AGENT']);
+        $useragent = tvalidator("PURIFY",$_SERVER['HTTP_USER_AGENT']);
         $this->iphash2 = hash("sha256",$ip.$useragent.$timezone);
         $this->iphash3 = hash("sha256",$ip.$useragent.$timezone.$innerwidth.$innerheight);
         
@@ -330,7 +330,7 @@ class SignUp
         $this->iphash = hash("sha256", WhiteListCheck(2));
         $ip = WhiteListCheck(true);
         $this->ipsource = $ip;
-        $useragent = mysql_safe_string($_SERVER['HTTP_USER_AGENT']);
+        $useragent = tvalidator("PURIFY",$_SERVER['HTTP_USER_AGENT']);
         $this->iphash2 = hash("sha256",$ip.$useragent.$timezone);
 
         $this->trackerid = $trackerid;

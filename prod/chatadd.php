@@ -3,12 +3,12 @@ session_start();
 require_once("config-pdo.php");
 require_once("crypt-pdo.inc.php");
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = @mysql_safe_string($_POST['c']);
-    $callingid = @mysql_safe_string($_POST['a']);
-    $mode = @mysql_safe_string($_POST['mode']);
-    $chatid = @mysql_safe_string($_POST['chatid']);
-    $passkey64 = @mysql_safe_string($_POST['passkey64']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = @tvalidator("PURIFY",$_POST['c']);
+    $callingid = @tvalidator("PURIFY",$_POST['a']);
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
+    $chatid = @tvalidator("PURIFY",$_POST['chatid']);
+    $passkey64 = @tvalidator("PURIFY",$_POST['passkey64']);
     
     $result = pdo_query("1",
         "

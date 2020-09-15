@@ -8,11 +8,11 @@ require_once("room.inc.php");
 
     $providerid = $_SESSION['pid'];
 
-    $mode = @mysql_safe_string($_POST['mode']);
-    $roomid = @mysql_safe_string($_POST['roomid']);
-    $room = htmlentities(stripslashes(@mysql_safe_string($_POST['room'])),ENT_COMPAT);
-    $postid = @mysql_safe_string($_POST['postid']);
-    $articleid = @mysql_safe_string($_POST['articleid']);
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
+    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+    $room = htmlentities(stripslashes(@tvalidator("PURIFY",$_POST['room'])),ENT_COMPAT);
+    $postid = @tvalidator("PURIFY",$_POST['postid']);
+    $articleid = @tvalidator("PURIFY",$_POST['articleid']);
     
     
     if( $mode == 'P')

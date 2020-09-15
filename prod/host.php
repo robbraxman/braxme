@@ -8,9 +8,9 @@ require_once("room.inc.php");
 require_once("lib_autolink.php");
 require_once("store.inc.php");
 
-$language = @mysql_safe_string($_GET['lang']);
-$version = @mysql_safe_string($_GET['version']);
-$providerid = @mysql_safe_string($_GET['p']);
+$language = @tvalidator("PURIFY",$_GET['lang']);
+$version = @tvalidator("PURIFY",$_GET['version']);
+$providerid = @tvalidator("PURIFY",$_GET['p']);
 if($providerid == '' && isset($_SESSION['pid'])){
     $providerid = $_SESSION['pid'];
 }
@@ -40,9 +40,9 @@ include("internationalization.php");
 
 $timezoneoffset = -7;
 $_SESSION['innerwidth']=320;
-$hashtag = @mysql_safe_string($_GET['h']);
-$folderid = @mysql_safe_string($_GET['f']);
-$trackerid = @mysql_safe_string($_GET['tracker']);
+$hashtag = @tvalidator("PURIFY",$_GET['h']);
+$folderid = @tvalidator("PURIFY",$_GET['f']);
+$trackerid = @tvalidator("PURIFY",$_GET['tracker']);
 
 $roomid = '0';
 $webcolorscheme = 'std';

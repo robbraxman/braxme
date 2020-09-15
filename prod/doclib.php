@@ -12,24 +12,24 @@ require_once("internationalization.php");
     $braxinfo = "<img class='info_file icon35' src='../img/braxinfo.png' style='top:0px;float:right;padding-right:10px;padding-bottom:0px;' />";
 
     
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = mysql_safe_string($_SESSION['pid']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = tvalidator("PURIFY",$_SESSION['pid']);
     
-    $selectedfolder = @mysql_safe_string($_POST['folder']);
-    $selectedfolderid = @mysql_safe_string(intval($_POST['folderid']));
-    $roomfolderid = @mysql_safe_string(intval($_POST['roomfolderid']));
-    $parentfolderid = @mysql_safe_string(intval($_POST['parentfolderid']));
-    $filename = @mysql_safe_string($_POST['filename']);
-    $sort = @mysql_safe_string($_POST['sort']);
-    $target = @mysql_safe_string($_POST['target']);
-    $caller = @mysql_safe_string($_POST['caller']);
-    $page = @intval( mysql_safe_string($_POST['page']));
-    $mode = @mysql_safe_string($_POST['mode']);
-    $altfilename = @mysql_safe_string($_POST['altfilename']);
-    $filtername = @mysql_safe_string($_POST['filtername']);
-    $roomid = @mysql_safe_string($_POST['roomid']);
-    $targetemail = @mysql_safe_string($_POST['targetemail']);
-    $passkey64 = @mysql_safe_string($_POST['passkey64']);
+    $selectedfolder = @tvalidator("PURIFY",$_POST['folder']);
+    $selectedfolderid = @tvalidator("PURIFY",intval($_POST['folderid']));
+    $roomfolderid = @tvalidator("PURIFY",intval($_POST['roomfolderid']));
+    $parentfolderid = @tvalidator("PURIFY",intval($_POST['parentfolderid']));
+    $filename = @tvalidator("PURIFY",$_POST['filename']);
+    $sort = @tvalidator("PURIFY",$_POST['sort']);
+    $target = @tvalidator("PURIFY",$_POST['target']);
+    $caller = @tvalidator("PURIFY",$_POST['caller']);
+    $page = @intval( tvalidator("PURIFY",$_POST['page']));
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
+    $altfilename = @tvalidator("PURIFY",$_POST['altfilename']);
+    $filtername = @tvalidator("PURIFY",$_POST['filtername']);
+    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+    $targetemail = @tvalidator("PURIFY",$_POST['targetemail']);
+    $passkey64 = @tvalidator("PURIFY",$_POST['passkey64']);
 
     $braxdocs = "<img class='icon20' src='../img/brax-doc-round-white-128.png' style='top:3px;padding-left:10px' />";
     $statusMessage = "";
@@ -358,7 +358,7 @@ require_once("internationalization.php");
     if( $mode == 'S'){
     
         $path = pathinfo("$filename");
-        $origfilename =  @mysql_safe_string($_POST['origfilename']);
+        $origfilename =  @tvalidator("PURIFY",$_POST['origfilename']);
         $pathname = pathinfo( $origfilename );
         if( strtolower($path['extension'])!=strtolower($pathname['extension'])){
         
@@ -371,7 +371,7 @@ require_once("internationalization.php");
         
         $origfilename_encrypted = EncryptTextCustomEncode( $origfilename,"PLAINTEXT","$filename" );
         
-        $title = EncryptTextCustomEncode(@mysql_safe_string($_POST['title']),"PLAINTEXT", "$filename");
+        $title = EncryptTextCustomEncode(@tvalidator("PURIFY",$_POST['title']),"PLAINTEXT", "$filename");
         $result = do_mysqli_query("1",
             "
                 update filelib set origfilename='$origfilename_encrypted', title='$title', encoding='PLAINTEXT', folder='$selectedfolder' where
@@ -405,7 +405,7 @@ require_once("internationalization.php");
             $contents = str_replace(chr(13),"",$contents);
             $contents = str_replace(chr(10),chr(13).chr(10),$contents);
 
-            $origfilename = @mysql_safe_string($_POST['textfilename']);
+            $origfilename = @tvalidator("PURIFY",$_POST['textfilename']);
             $upload_dir = "/var/www/html/$installfolder/upload-zone/files/$_SESSION[pid]";
 
             textsavefile($contents, $upload_dir, $origfilename, $roomid ) ;
@@ -418,7 +418,7 @@ require_once("internationalization.php");
         $contents = str_replace(chr(13),"",$contents);
         $contents = str_replace(chr(10),chr(13).chr(10),$contents);
         
-        $origfilename = @mysql_safe_string($_POST['filename']);
+        $origfilename = @tvalidator("PURIFY",$_POST['filename']);
         $upload_dir = "/var/www/html/$installfolder/upload-zone/files/$_SESSION[pid]";
         
         texteditfile($contents, $upload_dir, $origfilename, $roomid ) ;
@@ -435,7 +435,7 @@ require_once("internationalization.php");
      * 
      */
     
-    //$page = intval(mysql_safe_string($_POST['page']));
+    //$page = intval(tvalidator("PURIFY",$_POST['page']));
     if( $page == 0){
         $page = 1;
     }

@@ -2,10 +2,10 @@
 session_start();
 require_once("config-pdo.php");
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = mysql_safe_string($_POST['providerid']);
-    $chatid = mysql_safe_string($_POST['chatid']);
-    $mode = @mysql_safe_string($_POST['mode']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = tvalidator("PURIFY",$_POST['providerid']);
+    $chatid = tvalidator("PURIFY",$_POST['chatid']);
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
     
     $mobilesize = $_SESSION['mobilesize'];
     /*

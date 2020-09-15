@@ -40,7 +40,7 @@ require("nohost.php");
         $sponsorformat = "";
         $sizing = "";
         $lasttip = "";
-        $imap_item = 0;//intval(mysql_safe_string($_POST['imap_item']))-1;
+        $imap_item = 0;//intval(tvalidator("PURIFY",$_POST['imap_item']))-1;
 
         $flag = $global_icon_check;//"<img class='chatalert icon15' title='Checked' src='../img/check-yellow-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
         $flagblink = $global_icon_check_blink;//"<img class='chatalert icon15' title='Checked' src='../img/check-yellow-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
@@ -111,20 +111,20 @@ require("nohost.php");
             
         }
         
-        $startup = @mysql_safe_string($_POST['startup']);
-        $providerid = mysql_safe_string($_SESSION['pid']);
-        $devicecode = mysql_safe_string($_POST['devicecode']);
-        $chatid = mysql_safe_string($_POST['chatid']);
-        $_SESSION['iscore'] = @mysql_safe_string($_POST['iscore']);
+        $startup = @tvalidator("PURIFY",$_POST['startup']);
+        $providerid = tvalidator("PURIFY",$_SESSION['pid']);
+        $devicecode = tvalidator("PURIFY",$_POST['devicecode']);
+        $chatid = tvalidator("PURIFY",$_POST['chatid']);
+        $_SESSION['iscore'] = @tvalidator("PURIFY",$_POST['iscore']);
         
         $_SESSION['devicecode'] = $devicecode;
         
         if( $_SESSION['mobilesize']=='Y' ){
             
-            $innerheight = @mysql_safe_string($_SESSION['innerheight']);
-            $innerwidth = @mysql_safe_string($_SESSION['innerwidth']);
-            $pixelratio = @mysql_safe_string($_SESSION['pixelratio']);
-            $devicecode = @mysql_safe_string($_SESSION['devicecode']);
+            $innerheight = @tvalidator("PURIFY",$_SESSION['innerheight']);
+            $innerwidth = @tvalidator("PURIFY",$_SESSION['innerwidth']);
+            $pixelratio = @tvalidator("PURIFY",$_SESSION['pixelratio']);
+            $devicecode = @tvalidator("PURIFY",$_SESSION['devicecode']);
 
             if($innerheight!='' && $innerwidth!=''){
                 

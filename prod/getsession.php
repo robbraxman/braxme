@@ -7,10 +7,10 @@ require ("SmsInterface.inc");
 require ("crypt.inc");
 require ("sqlcore.inc");
 
-$sessionid = mysql_safe_string("$_REQUEST[sessionid]");
-$providerid = mysql_safe_string("$_REQUEST[pid]");
-$loginid = mysql_safe_string("$_REQUEST[loginid]");
-$password = mysql_safe_string("$_REQUEST[password]");
+$sessionid = tvalidator("PURIFY","$_REQUEST[sessionid]");
+$providerid = tvalidator("PURIFY","$_REQUEST[pid]");
+$loginid = tvalidator("PURIFY","$_REQUEST[loginid]");
+$password = tvalidator("PURIFY","$_REQUEST[password]");
         
 
 $result = mysql_query( 

@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once("config.php");
-$verificationcode = @mysql_safe_string($_REQUEST['i']);
+$verificationcode = @tvalidator("PURIFY",$_REQUEST['i']);
 
 
 

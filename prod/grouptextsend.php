@@ -8,15 +8,15 @@ require_once ("room.inc.php");
 require_once ("notify.inc.php");
 include("lib_autolink.php");
 
-    $providerid = $_SESSION['pid'];//@mysql_safe_string($_POST['providerid']);
-    $smstext = @mysql_safe_string($_POST['smstext']);
-    $text = @mysql_safe_string($_POST['text']);
-    $texttitle = @mysql_safe_string($_POST['texttitle']);
-    $roomid = @mysql_safe_string($_POST['roomid']);
-    $textgroup = @mysql_safe_string(rtrim($_POST['textgroup']));
-    $excludesms = @mysql_safe_string(rtrim($_POST['excludesms']));
-    $test = @mysql_safe_string(rtrim($_POST['test']));
-    $photo = @mysql_safe_string(rtrim($_POST['photo']));
+    $providerid = $_SESSION['pid'];//@tvalidator("PURIFY",$_POST['providerid']);
+    $smstext = @tvalidator("PURIFY",$_POST['smstext']);
+    $text = @tvalidator("PURIFY",$_POST['text']);
+    $texttitle = @tvalidator("PURIFY",$_POST['texttitle']);
+    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+    $textgroup = @tvalidator("PURIFY",rtrim($_POST['textgroup']));
+    $excludesms = @tvalidator("PURIFY",rtrim($_POST['excludesms']));
+    $test = @tvalidator("PURIFY",rtrim($_POST['test']));
+    $photo = @tvalidator("PURIFY",rtrim($_POST['photo']));
     
     $text_htmlentities = htmlentities(strip_tags(stripslashes($text)), ENT_QUOTES);
     $texttitle_htmlentities = htmlentities(strip_tags(stripslashes($texttitle)), ENT_QUOTES);

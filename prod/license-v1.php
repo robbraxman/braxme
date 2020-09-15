@@ -1,10 +1,10 @@
 <?php
 require_once("config.php");
 require_once("htmlhead.inc.php");
-$i = @mysql_safe_string($_GET['i']);
-$apn = @mysql_safe_string($_GET['apn']);
-$gcm = @mysql_safe_string($_GET['gcm']);
-$source = @mysql_safe_string($_GET['s']);
+$i = @tvalidator("PURIFY",$_GET['i']);
+$apn = @tvalidator("PURIFY",$_GET['apn']);
+$gcm = @tvalidator("PURIFY",$_GET['gcm']);
+$source = @tvalidator("PURIFY",$_GET['s']);
 if($i!='Y'){
     $i = "";
 }

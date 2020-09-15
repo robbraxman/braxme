@@ -3,8 +3,8 @@ session_start();
 include("config.php");
 
 $uniqid = uniqid('R');
-$providerid = mysql_safe_string( $_POST['providerid'] );
-$roomid = mysql_safe_string( $_POST['roomid'] );
+$providerid = tvalidator("PURIFY", $_POST['providerid'] );
+$roomid = tvalidator("PURIFY", $_POST['roomid'] );
 $result = do_mysqli_query("1",
         "insert into shares (providerid, sharetype, shareid, sharelocal, sharetitle, 
             shareopentitle,

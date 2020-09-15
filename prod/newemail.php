@@ -11,20 +11,20 @@ require("password.inc.php");
 require_once("htmlhead2.inc.php");
 
 
-$providerid = @mysql_safe_string($_POST['pid']);
-$msgtitle = @mysql_safe_string($_POST['msgtitle']);
-$recipientname = base64_decode(@mysql_safe_string($_POST['recipientname']));
+$providerid = @tvalidator("PURIFY",$_POST['pid']);
+$msgtitle = @tvalidator("PURIFY",$_POST['msgtitle']);
+$recipientname = base64_decode(@tvalidator("PURIFY",$_POST['recipientname']));
 
-$imap = intval(rtrim(@mysql_safe_string($_POST['imap'])));
-$imap_item = intval(rtrim(@mysql_safe_string($_POST['imap'])))-1;
-$originaltext = base64_decode(@mysql_safe_string($_POST['originaltext']));
-$originaltext_base64 = @mysql_safe_string($_POST['originaltext']);
-$uuid = @mysql_safe_string($_POST['uuid']);
+$imap = intval(rtrim(@tvalidator("PURIFY",$_POST['imap'])));
+$imap_item = intval(rtrim(@tvalidator("PURIFY",$_POST['imap'])))-1;
+$originaltext = base64_decode(@tvalidator("PURIFY",$_POST['originaltext']));
+$originaltext_base64 = @tvalidator("PURIFY",$_POST['originaltext']);
+$uuid = @tvalidator("PURIFY",$_POST['uuid']);
 
 //To Get Attachment to Forward
-$folder = rtrim(@mysql_safe_string(isset($_POST['folder']),$_POST['folder']));
+$folder = rtrim(@tvalidator("PURIFY",isset($_POST['folder']),$_POST['folder']));
 //This just goes directly into TextArea
-$sharetext = base64_decode(@mysql_safe_string($_POST['sharetext']));
+$sharetext = base64_decode(@tvalidator("PURIFY",$_POST['sharetext']));
 
 //Forwarding as attachment
 if( $recipientname == "" )

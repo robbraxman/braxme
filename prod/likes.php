@@ -2,8 +2,8 @@
 session_start();
 require_once("config.php");
 
-$shareid = mysql_safe_string( $_GET[p] );
-$ip = mysql_safe_string( $_GET[ip] );
+$shareid = tvalidator("PURIFY", $_GET[p] );
+$ip = tvalidator("PURIFY", $_GET[ip] );
 
 do_mysqli_query("1","
     update shares set likes=likes+1 where shareid='$shareid'

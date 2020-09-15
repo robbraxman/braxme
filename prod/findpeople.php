@@ -14,9 +14,9 @@ if(ServerTimeOutCheck()){
 require("validsession.inc.php");
 
 
-    $providerid = @mysql_safe_string($_POST['providerid']);
-    $mode = @mysql_safe_string($_POST['mode']);
-    $find = rtrim(@mysql_safe_string($_POST['find']));
+    $providerid = @tvalidator("PURIFY",$_POST['providerid']);
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
+    $find = rtrim(@tvalidator("PURIFY",$_POST['find']));
     
     if($mode == 'LIVE'){      
         $mode = "P1";

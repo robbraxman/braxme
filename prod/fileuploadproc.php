@@ -14,10 +14,10 @@ echo "<div class='statustitle'>Upload Status</div>";
 
 $_SESSION[sessionid] = uniqid("", false);
 
-$providerid = rtrim(mysql_safe_string( "$_SESSION[pid]"));
-$loginid = mysql_safe_string( "$_SESSION[loginid]");
-$subject = mysql_safe_string( "$_POST[subject]");
-$uploadtype = mysql_safe_string( "$_POST[uploadtype]");
+$providerid = rtrim(tvalidator("PURIFY", "$_SESSION[pid]"));
+$loginid = tvalidator("PURIFY", "$_SESSION[loginid]");
+$subject = tvalidator("PURIFY", "$_POST[subject]");
+$uploadtype = tvalidator("PURIFY", "$_POST[uploadtype]");
 
 
 $upload_dir = 'upload-zone';

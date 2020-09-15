@@ -3,7 +3,7 @@ session_start();
 require_once("config.php");
 require ("sendmail.php");
 
-$providerid = @mysql_safe_string($_SESSION['pid']);
+$providerid = @tvalidator("PURIFY",$_SESSION['pid']);
 if($providerid == ''){
     exit();
 }

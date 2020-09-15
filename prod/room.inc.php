@@ -220,7 +220,7 @@ function RoomPostNew(
         if($photo!=''){
             $photo = EncryptPost($photo, "$providerid","");
         }
-        //$room = mysql_safe_string($room);
+        //$room = tvalidator("PURIFY",$room);
         $posterid = $providerid;
         if($anonymousflag == 'Y'){
             $posterid = 0;
@@ -653,7 +653,7 @@ function GetSlideShowFirstImg($providerid, $album)
     global $rootserver;
     global $installfolder;
     
-    $albumclean = mysql_safe_string(html_entity_decode($album, ENT_QUOTES));
+    $albumclean = tvalidator("PURIFY",html_entity_decode($album, ENT_QUOTES));
     
     $result = do_mysqli_query("1","
         select alias from photolib where (providerid=$providerid or album like '*%')
@@ -1754,7 +1754,7 @@ function MemberCheck($providerid, $roomid)
                 ");
         if($row = do_mysqli_fetch("1",$result)){
             $memberinfo['roomid'] = $row['roomid'];
-            $memberinfo['roomforsql'] = mysql_safe_string($row['room']);
+            $memberinfo['roomforsql'] = tvalidator("PURIFY",$row['room']);
             $memberinfo['roomhtml'] = htmlentities($row['room'],ENT_QUOTES);
             $memberinfo['owner'] = $row['owner'];
             $memberinfo['moderator'] = $row['moderator'];
@@ -2850,7 +2850,7 @@ function WrapLinks($text)
             //$link->href = 'https://bytz.io/prod/wrap.php?u=' . htmlentities($link->href);
             $link->href = "$rootserver/$installfolder/wrap.php?u=" . $link->href;
         }
-        if(@mysql_safe_string($_SESSION['mobiletype'])=='A' || @mysql_safe_string($_SESSION['mobiletype'])=='I'){
+        if(@tvalidator("PURIFY",$_SESSION['mobiletype'])=='A' || @tvalidator("PURIFY",$_SESSION['mobiletype'])=='I'){
             $link->target = "_blank";
         }
     }

@@ -15,9 +15,9 @@ require_once("signupfunc.php");
 </head>
 <?php
 
-    $providerid = mysql_safe_string("$_SESSION[pid]");
+    $providerid = tvalidator("PURIFY","$_SESSION[pid]");
 
-    $avatarurl = mysql_safe_string("$_POST[avatarurl]");
+    $avatarurl = tvalidator("PURIFY","$_POST[avatarurl]");
     
     $avatarurl = HttpsWrapper($avatarurl);
 

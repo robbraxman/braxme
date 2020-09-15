@@ -62,9 +62,9 @@ function StatusMessage( $status, $level )
        
         if( $_POST[recipientemail]!='' )
         {
-            $recipientemail = stripslashes(mysql_safe_string($_POST[recipientemail]));
-            $recipientname = stripslashes(mysql_safe_string($_POST[recipientname]));
-            $message = stripslashes(mysql_safe_string($_POST[message]));
+            $recipientemail = stripslashes(tvalidator("PURIFY",$_POST[recipientemail]));
+            $recipientname = stripslashes(tvalidator("PURIFY",$_POST[recipientname]));
+            $message = stripslashes(tvalidator("PURIFY",$_POST[message]));
 
 
             $to = "techsupport01@brax.me";

@@ -5,9 +5,9 @@ require("colorscheme.php");
 require("crypt-pdo.inc.php");
 require_once 'authenticator/GoogleAuthenticator.php';
 
-    $providerid = mysql_safe_string("$_SESSION[pid]");
-    $code = mysql_safe_string("$_POST[code]");
-    $secret = mysql_safe_string("$_POST[secret]");
+    $providerid = tvalidator("PURIFY","$_SESSION[pid]");
+    $code = tvalidator("PURIFY","$_POST[code]");
+    $secret = tvalidator("PURIFY","$_POST[secret]");
     
     if($secret == 'delete'){
 

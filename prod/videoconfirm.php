@@ -3,8 +3,8 @@ session_start();
 require("validsession.inc.php");
 require_once("config.php");
 
-$chatid = mysql_safe_string($_POST['chatid']);
-$mode = mysql_safe_string($_POST['mode']);
+$chatid = tvalidator("PURIFY",$_POST['chatid']);
+$mode = tvalidator("PURIFY",$_POST['mode']);
 ?>
     <title>Broadcast Choices</title>
 </head>    

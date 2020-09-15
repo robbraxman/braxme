@@ -10,15 +10,15 @@ if(@$_SESSION['pid']!=''){
 }
 $uniqid = uniqid();
 
-$trackerid = @mysql_safe_string($_GET['tracker']);
-$store = @mysql_safe_string($_GET['store']);
+$trackerid = @tvalidator("PURIFY",$_GET['tracker']);
+$store = @tvalidator("PURIFY",$_GET['store']);
 
 //echo "$trackerid, $store";
-$portal = @mysql_safe_string( $_GET['portal'] );
-$r = @mysql_safe_string( $_GET['r'] );
-$i = @mysql_safe_string( $_GET['i'] );
-$k = @mysql_safe_string( $_GET['k'] );
-$language = @mysql_safe_string( $_GET['lang'] );
+$portal = @tvalidator("PURIFY", $_GET['portal'] );
+$r = @tvalidator("PURIFY", $_GET['r'] );
+$i = @tvalidator("PURIFY", $_GET['i'] );
+$k = @tvalidator("PURIFY", $_GET['k'] );
+$language = @tvalidator("PURIFY", $_GET['lang'] );
 $share = strtolower("#$r");
 
 

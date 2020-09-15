@@ -3,14 +3,14 @@ session_start();
 ob_start();
 require_once("config.php");
 
-$providerid = mysql_safe_string($_POST['providerid']);
-$version = mysql_safe_string($_POST['version']);
+$providerid = tvalidator("PURIFY",$_POST['providerid']);
+$version = tvalidator("PURIFY",$_POST['version']);
 //$_SESSION['version']=$version;
 if($version == ''){
     $version = @$_SESSION['version'];
 }
-$apn = mysql_safe_string($_POST['apn']);
-$gcm = mysql_safe_string($_POST['gcm']);
+$apn = tvalidator("PURIFY",$_POST['apn']);
+$gcm = tvalidator("PURIFY",$_POST['gcm']);
 
 do_mysqli_query("1","update provider set pinlock = 'Y' where providerid = $providerid");
 $_SESSION['pinlock']='Y';

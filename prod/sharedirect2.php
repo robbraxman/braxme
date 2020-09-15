@@ -7,10 +7,10 @@ $alias = '';
 $share = '';
 
 if(isset($_GET['a'])){
-    $alias = mysql_safe_string( $_GET['a'] );
+    $alias = tvalidator("PURIFY", $_GET['a'] );
 }
 if(isset($_GET['p'])){
-    $share = mysql_safe_string( $_GET['p'] );
+    $share = tvalidator("PURIFY", $_GET['p'] );
 }
 if($alias == '' && $share == ''){
     exit(); 

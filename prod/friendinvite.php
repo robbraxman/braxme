@@ -4,14 +4,14 @@ require_once("config.php");
 require_once("sendmail.php");
 require ("SmsInterface.inc");
 
-    $providerid = mysql_safe_string($_POST['providerid']);
-    $mode = @mysql_safe_string($_POST['mode']);
-    $caller = @mysql_safe_string($_POST['caller']);
-    $roomid = intval(@mysql_safe_string($_POST['roomid']));
-    $inviteemail = @mysql_safe_string($_POST['inviteemail']);
-    $invitesms = @mysql_safe_string($_POST['invitesms']);
-    $invitename = @mysql_safe_string($_POST['invitename']);
-    $invitemsg = @mysql_safe_string($_POST['invitemsg']);
+    $providerid = tvalidator("PURIFY",$_POST['providerid']);
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
+    $caller = @tvalidator("PURIFY",$_POST['caller']);
+    $roomid = intval(@tvalidator("PURIFY",$_POST['roomid']));
+    $inviteemail = @tvalidator("PURIFY",$_POST['inviteemail']);
+    $invitesms = @tvalidator("PURIFY",$_POST['invitesms']);
+    $invitename = @tvalidator("PURIFY",$_POST['invitename']);
+    $invitemsg = @tvalidator("PURIFY",$_POST['invitemsg']);
 
     $inviteroomname = "";
     $inviteroomnameForSql = "";
@@ -23,7 +23,7 @@ require ("SmsInterface.inc");
         //$inviteroomname='';
         $inviteroom = $row['roomid'];
         $inviteroomname = $row['room'];
-        $inviteroomnameForSql = mysql_safe_string($row['room']);
+        $inviteroomnameForSql = tvalidator("PURIFY",$row['room']);
     }
     
     $result = do_mysqli_query("1","

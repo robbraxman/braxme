@@ -5,12 +5,12 @@ require_once("lib_autolink.php");
 
 
 
-    $providerid = mysql_safe_string($_POST['providerid']);
+    $providerid = tvalidator("PURIFY",$_POST['providerid']);
 
-    $mode = @mysql_safe_string($_POST['mode']);
-    $roomid = @mysql_safe_string($_POST['roomid']);
-    $page = intval(@mysql_safe_string($_POST['page']));
-    $find = stripslashes(htmlentities(@mysql_safe_string($_POST['find'],ENT_QUOTES)));
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
+    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+    $page = intval(@tvalidator("PURIFY",$_POST['page']));
+    $find = stripslashes(htmlentities(@tvalidator("PURIFY",$_POST['find'],ENT_QUOTES)));
     
     $maxperpage = 100;
     $limitstart = $page * $maxperpage;

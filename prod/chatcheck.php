@@ -2,8 +2,8 @@
 session_start();
 require_once("config-pdo.php");
 
-$providerid = mysql_safe_string($_POST[providerid]);
-$override = mysql_safe_string($_POST[override]);
+$providerid = tvalidator("PURIFY",$_POST[providerid]);
+$override = tvalidator("PURIFY",$_POST[override]);
 
 
 if( $override == "")

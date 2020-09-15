@@ -3,19 +3,19 @@ session_start();
 require_once("config.php");
 require_once("room.inc.php");
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = mysql_safe_string($_POST['providerid']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = tvalidator("PURIFY",$_POST['providerid']);
 
-    $mode = @mysql_safe_string($_POST['mode']);
-    $roomid = @mysql_safe_string($_POST['roomid']);
-    $eventname = @mysql_safe_string($_POST['eventname']);
-    $eventdesc = @mysql_safe_string($_POST['eventdesc']);
-    $eventdate = @mysql_safe_string($_POST['eventdate']);
-    $eventtime = @mysql_safe_string($_POST['eventtime']);
-    $eventid = @mysql_safe_string($_POST['eventid']);
-    $backgroundcolor = @mysql_safe_string($_POST['backgroundcolor']);
-    $color = @mysql_safe_string($_POST['color']);
-    $trimcolor = @mysql_safe_string($_POST['trimcolor']);
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
+    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+    $eventname = @tvalidator("PURIFY",$_POST['eventname']);
+    $eventdesc = @tvalidator("PURIFY",$_POST['eventdesc']);
+    $eventdate = @tvalidator("PURIFY",$_POST['eventdate']);
+    $eventtime = @tvalidator("PURIFY",$_POST['eventtime']);
+    $eventid = @tvalidator("PURIFY",$_POST['eventid']);
+    $backgroundcolor = @tvalidator("PURIFY",$_POST['backgroundcolor']);
+    $color = @tvalidator("PURIFY",$_POST['color']);
+    $trimcolor = @tvalidator("PURIFY",$_POST['trimcolor']);
 
     //Detect MM/DD/YYYY format from Firefox/IE
     $datehold = explode("/",$eventdate);

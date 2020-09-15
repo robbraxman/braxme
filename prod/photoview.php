@@ -3,8 +3,8 @@ session_start();
 header('X-Frame-Options: SAMEORIGIN');
 header('X-Content-Type: nosniff');
 require_once("config.php");
-$providerid = @mysql_safe_string($_POST['pid']);
-$filename = @mysql_safe_string($_POST['filename']);
+$providerid = @tvalidator("PURIFY",$_POST['pid']);
+$filename = @tvalidator("PURIFY",$_POST['filename']);
 if(strstr($filename,"\\")!==false){
     $filename = "";
 }

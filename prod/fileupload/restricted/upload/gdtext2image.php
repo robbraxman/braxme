@@ -2,8 +2,8 @@
 session_start();
 require_once("config.php");
 
-$text = base64_decode(mysql_safe_string( $_GET['t'] ));
-$c = mysql_safe_string( $_GET['c'] );
+$text = base64_decode(tvalidator("PURIFY", $_GET['t'] ));
+$c = tvalidator("PURIFY", $_GET['c'] );
 
 // Set the content-type
 header('Content-type: image/png');

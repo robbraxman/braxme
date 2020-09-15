@@ -4,10 +4,10 @@ require_once("config-pdo.php");
 require_once("sendmail.php");
 require ("SmsInterface.inc");
 
-    $providerid = mysql_safe_string($_POST[providerid]);
-    $mode = mysql_safe_string($_POST[mode]);
-    $email = mysql_safe_string($_POST[email]);
-    $name = mysql_safe_string($_POST[name]);
+    $providerid = tvalidator("PURIFY",$_POST[providerid]);
+    $mode = tvalidator("PURIFY",$_POST[mode]);
+    $email = tvalidator("PURIFY",$_POST[email]);
+    $name = tvalidator("PURIFY",$_POST[name]);
     
     $result = pdo_query("1","
         select providername, replyemail, alias from

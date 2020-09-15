@@ -17,8 +17,8 @@ move_uploaded_file($_FILES["file"]["tmp_name"], "/var/www/html/prod/upload/serve
 
 
 
-$providerid = rtrim(mysql_safe_string( "$_SESSION[pid]"));
-$loginid = mysql_safe_string( "$_SESSION[loginid]");
+$providerid = rtrim(tvalidator("PURIFY", "$_SESSION[pid]"));
+$loginid = tvalidator("PURIFY", "$_SESSION[loginid]");
 $album = "";
 $uploadtype = "";
 

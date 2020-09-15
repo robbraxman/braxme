@@ -9,13 +9,13 @@ require_once("internationalization.php");
 
     //savelastfunc ( "P" );
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = mysql_safe_string($_SESSION['pid']);
-    $userid = mysql_safe_string($_POST['userid']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = tvalidator("PURIFY",$_SESSION['pid']);
+    $userid = tvalidator("PURIFY",$_POST['userid']);
     
     SaveLastFunction($providerid,"V", "$userid"); //View Shared Photos
     
-    $mode = mysql_safe_string($_POST['mode']);
+    $mode = tvalidator("PURIFY",$_POST['mode']);
     if($mode == 'F'){
         do_mysqli_query("1","update provider set photosharelevel = 'F' where providerid = $providerid ");
     }
@@ -71,7 +71,7 @@ require_once("internationalization.php");
     $showfilename = '';
     if(isset($_POST['filename'])){
     
-        $showfilename = mysql_safe_string($_POST['filename']);
+        $showfilename = tvalidator("PURIFY",$_POST['filename']);
     }
     
     
@@ -82,10 +82,10 @@ require_once("internationalization.php");
     $origalbum = "";
     if(isset($_POST['album'])){
     
-        $selectedalbum = DeconvertHTML(mysql_safe_string($_POST['album']));
+        $selectedalbum = DeconvertHTML(tvalidator("PURIFY",$_POST['album']));
         $selectedalbumHtml = ConvertHTML($selectedalbum);
-        $selectedalbumSql = mysql_safe_string($selectedalbum);
-        $origalbum = DeconvertHTML(mysql_safe_string($_POST['origalbum']));
+        $selectedalbumSql = tvalidator("PURIFY",$selectedalbum);
+        $origalbum = DeconvertHTML(tvalidator("PURIFY",$_POST['origalbum']));
         //echo $selectedalbum;
     }
     
@@ -123,7 +123,7 @@ require_once("internationalization.php");
     
     $page = 1;
     if(isset($_POST['page'])){
-        $page = intval(mysql_safe_string($_POST['page']));
+        $page = intval(tvalidator("PURIFY",$_POST['page']));
     }
     if( $page == 0){
         $page = 1;

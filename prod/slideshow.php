@@ -4,22 +4,22 @@ header('X-Frame-Options: SAMEORIGIN');
 require_once("config.php");
 require_once("aws.php");
 
-$providerid = @mysql_safe_string($_GET['pid']);
+$providerid = @tvalidator("PURIFY",$_GET['pid']);
 if($providerid == ''){
-    $providerid = @mysql_safe_string($_POST['pid']);
+    $providerid = @tvalidator("PURIFY",$_POST['pid']);
 }
-$backgroundcolor = @mysql_safe_string($_SESSION['webbackgroundcolor']);
+$backgroundcolor = @tvalidator("PURIFY",$_SESSION['webbackgroundcolor']);
 if($backgroundcolor ==''){
     $backgroundcolor = 'black';
 }
-$getalbum = @mysql_safe_string($_GET['album']);
+$getalbum = @tvalidator("PURIFY",$_GET['album']);
 $album = $getalbum;
 if($getalbum ==''){
 
-    $album = @mysql_safe_string($_POST['album']);
+    $album = @tvalidator("PURIFY",$_POST['album']);
 }
 $width = intval($_SESSION['innerwidth']);
-$innerwidth = @mysql_safe_string($_POST['innerwidth']);
+$innerwidth = @tvalidator("PURIFY",$_POST['innerwidth']);
 if(intval($innerwidth)>0){
     $width = $innerwidth;
 }

@@ -62,7 +62,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
         
         //No PID Username
         if( $pid == '' ){
-            $pid = @mysql_safe_string($_POST['pid']);
+            $pid = @tvalidator("PURIFY",$_POST['pid']);
         }
 
         if(  $pid =='' ){
@@ -100,8 +100,8 @@ require_once 'authenticator/GoogleAuthenticator.php';
 
         if( isset($_SESSION['pid'])){
 
-            $pid = rtrim(mysql_safe_string( "$_SESSION[pid]"));
-            $loginid = rtrim(@mysql_safe_string( "$_SESSION[loginid]"));
+            $pid = rtrim(tvalidator("PURIFY", "$_SESSION[pid]"));
+            $loginid = rtrim(@tvalidator("PURIFY", "$_SESSION[loginid]"));
             $password = "";
             if($loginid == ''){
                 $logind = 'admin';
@@ -113,22 +113,22 @@ require_once 'authenticator/GoogleAuthenticator.php';
 
             $_SESSION['timeoutcheck']=time();
 
-            $pid = rtrim(mysql_safe_string( "$_POST[pid]"));
-            $_SESSION['pid'] = mysql_safe_string($_POST['pid']);
+            $pid = rtrim(tvalidator("PURIFY", "$_POST[pid]"));
+            $_SESSION['pid'] = tvalidator("PURIFY",$_POST['pid']);
             $_SESSION['logintoken']=session_id();
             $_SESSION['pwd_hash'] = session_id();
-            $_SESSION['loginid'] = mysql_safe_string($_POST['loginid']);
-            $_SESSION['init'] = mysql_safe_string($_POST['init']);
+            $_SESSION['loginid'] = tvalidator("PURIFY",$_POST['loginid']);
+            $_SESSION['init'] = tvalidator("PURIFY",$_POST['init']);
             if(!isset($_SESSION['version'])){
                 $_SESSION['version']='000';
             }
             if(isset($_POST['version']) && $_POST['version']!=''){
-                $_SESSION['version'] = mysql_safe_string($_POST['version']);
+                $_SESSION['version'] = tvalidator("PURIFY",$_POST['version']);
             }
             
-            $roomhandle = mysql_safe_string($_POST['roomhandle']);
-            $roomstorehandle = mysql_safe_string($_POST['roomstorehandle']);
-            $timezone = mysql_safe_string($_POST['timezone']);
+            $roomhandle = tvalidator("PURIFY",$_POST['roomhandle']);
+            $roomstorehandle = tvalidator("PURIFY",$_POST['roomstorehandle']);
+            $timezone = tvalidator("PURIFY",$_POST['timezone']);
             if($timezone!=''){
                 do_mysqli_query("1","update provider set timezone='$timezone' where providerid = $pid and timezone is null ");
                 $_SESSION['timezone']=$timezone;
@@ -141,7 +141,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
             }
 
             //Load Existing Device ID
-            $_SESSION['deviceid'] = mysql_safe_string($_POST['deviceid']);
+            $_SESSION['deviceid'] = tvalidator("PURIFY",$_POST['deviceid']);
 
             //Anti CSRF
             $_SESSION['remote_addr'] = $_SERVER['REMOTE_ADDR'];
@@ -150,7 +150,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
             $password = rtrim(mysql_safe_string_unstripped( "$_POST[password]"));
             
             //Password in Local Storage
-            $clientstoredpassword = mysql_safe_string($_POST['stored']);
+            $clientstoredpassword = tvalidator("PURIFY",$_POST['stored']);
             if($clientstoredpassword!=''){
                 $password = DecryptJs($clientstoredpassword,"");
             }
@@ -398,7 +398,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
         //Fingerprint Without IP
         $timezone = $_SESSION['timezone'];
         $ip = WhiteListCheck(false);
-        $useragent = mysql_safe_string($_SERVER['HTTP_USER_AGENT']);
+        $useragent = tvalidator("PURIFY",$_SERVER['HTTP_USER_AGENT']);
         $iphash2 = hash("sha256",$ip.$useragent.$timezone);
         $iphash = hash("sha256", WhiteListCheck(2));
         $ip = WhiteListCheck(true);
@@ -842,7 +842,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
             
 
             if(isset($_POST['mobile'])){
-                $_SESSION['mobile'] = @mysql_safe_string($_POST['mobile']);
+                $_SESSION['mobile'] = @tvalidator("PURIFY",$_POST['mobile']);
             }
             //Initialize Only
             $_SESSION['mobilesize']='Y';
@@ -1035,7 +1035,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
 
 function InitializeLanguage($providerid)
 {
-    $language = strtolower(mysql_safe_string($_POST['language']));
+    $language = strtolower(tvalidator("PURIFY",$_POST['language']));
     if($language!=''){
         $result = do_mysqli_query("1", "
             update provider set language='$language' where providerid = $providerid

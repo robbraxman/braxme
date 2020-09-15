@@ -4,9 +4,9 @@ require("validsession.inc.php");
 require_once("config.php");
 
 
-$suspendsms = mysql_safe_string( $_POST[suspendsms]);
-$suspendemail = mysql_safe_string( $_POST[suspendemail]);
-$providerid = mysql_safe_string( $_POST[providerid]);
+$suspendsms = tvalidator("PURIFY", $_POST[suspendsms]);
+$suspendemail = tvalidator("PURIFY", $_POST[suspendemail]);
+$providerid = tvalidator("PURIFY", $_POST[providerid]);
 
     if( $suspendsms == 'is')
     {

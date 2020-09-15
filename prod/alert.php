@@ -3,9 +3,9 @@ session_start();
 require("validsession.inc.php");
 require_once("config.php");
 
-$replyflag = mysql_safe_string($_POST['replyflag']);
-$createtime = mysql_safe_string($_POST['createtime']);
-$providerid = mysql_safe_string($_POST['providerid']);
+$replyflag = tvalidator("PURIFY",$_POST['replyflag']);
+$createtime = tvalidator("PURIFY",$_POST['createtime']);
+$providerid = tvalidator("PURIFY",$_POST['providerid']);
 
 
 echo "<span class='NoAlert'><img class='buttonicon' src='../img/check-box-128.png' style='height:25px;width:auto;padding-top:0px;padding-bottom:0px;padding-right:10px;'  alt='No Alert' title='No Alert'/></span>";

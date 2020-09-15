@@ -4,10 +4,10 @@ header('X-Frame-Options: SAMEORIGIN');
 require( "config.php");
 require( "htmlhead.inc.php");
 
-$i = @mysql_safe_string($_GET['i']);
-$apn = @mysql_safe_string($_GET['apn']);
-$gcm = @mysql_safe_string($_GET['gcm']);
-$source = @mysql_safe_string($_GET['s']);
+$i = @tvalidator("PURIFY",$_GET['i']);
+$apn = @tvalidator("PURIFY",$_GET['apn']);
+$gcm = @tvalidator("PURIFY",$_GET['gcm']);
+$source = @tvalidator("PURIFY",$_GET['s']);
 ?>
 </head>
 <title>Privacy Policy</title>

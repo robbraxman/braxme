@@ -13,9 +13,9 @@ require("sidebar.inc.php");
         exit();
     }
     
-    $providerid = mysql_safe_string($_POST['providerid']);
-    $chatid = mysql_safe_string($_POST['chatid']);
-    $roomid = mysql_safe_string($_POST['roomid']);
+    $providerid = tvalidator("PURIFY",$_POST['providerid']);
+    $chatid = tvalidator("PURIFY",$_POST['chatid']);
+    $roomid = tvalidator("PURIFY",$_POST['roomid']);
     if($roomid == ''){
         $roomid = 0;
     }

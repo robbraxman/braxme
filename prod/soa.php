@@ -2,19 +2,19 @@
 session_start();
 include("config.php");
 
-$share = @mysql_safe_string( $_GET['p'] );
-$view = @mysql_safe_string( $_GET['v'] );
-$page = intval(@mysql_safe_string($_GET['page']));
+$share = @tvalidator("PURIFY", $_GET['p'] );
+$view = @tvalidator("PURIFY", $_GET['v'] );
+$page = intval(@tvalidator("PURIFY",$_GET['page']));
 $uniqid = uniqid();
-$redisplay = @mysql_safe_string( $_GET['r'] );
+$redisplay = @tvalidator("PURIFY", $_GET['r'] );
 
-$ip = @mysql_safe_string( $_GET['ip'] );
-$c = @mysql_safe_string( $_GET['c'] );
-$n = @mysql_safe_string( $_GET['n'] );
-$d = @mysql_safe_string( $_GET['d'] );
-$i = @mysql_safe_string( $_GET['i'] );
-$a = @mysql_safe_string( $_GET['a'] );
-$e = @mysql_safe_string( $_GET['e'] );
+$ip = @tvalidator("PURIFY", $_GET['ip'] );
+$c = @tvalidator("PURIFY", $_GET['c'] );
+$n = @tvalidator("PURIFY", $_GET['n'] );
+$d = @tvalidator("PURIFY", $_GET['d'] );
+$i = @tvalidator("PURIFY", $_GET['i'] );
+$a = @tvalidator("PURIFY", $_GET['a'] );
+$e = @tvalidator("PURIFY", $_GET['e'] );
 
 
 function BotDetected() {
@@ -242,7 +242,7 @@ if( $row = do_mysqli_fetch("1",$result))
     //$titlebase64 = base64_encode ($row[sharetitle]);
     //if( $row[sharetitle]=='')
         $titlebase64 = base64_encode("$row[album]");
-    $sharelocal = mysql_safe_string($row['album']);
+    $sharelocal = tvalidator("PURIFY",$row['album']);
     $providerid = "$row[providerid]";
     $total = $row['count'];
     

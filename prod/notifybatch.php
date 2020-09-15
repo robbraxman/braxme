@@ -503,7 +503,7 @@ require ("aws.php");
             catch (Exception $err) {
                 
                 echo "SNS Error $err<br>";
-                $errsql = mysql_safe_string("{$err->getMessage()}");
+                $errsql = tvalidator("PURIFY","{$err->getMessage()}");
                 do_mysqli_query("1","update notifytokens set status='E', error='$errsql' where arn='$arn' and providerid=$recipientid ");
             }
         }

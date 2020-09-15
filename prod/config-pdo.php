@@ -155,7 +155,7 @@ require('colorscheme.php');
         }
 
     }
-    function mysql_safe_string($string)
+    function tvalidator($type,$string)
     {
         global $purifier;
         global $dbconnect1;
@@ -163,6 +163,8 @@ require('colorscheme.php');
         if(TrapJs($string)){
             return "";
         }
+        
+        //Validation by type to be added
 
             //$clean_html = $purifier->purify($dirty_html);
             if( isset($string)){
@@ -220,7 +222,7 @@ require('colorscheme.php');
             return;
         }
         if(isset($_SESSION['deviceid'])){
-            $deviceid = @mysql_safe_string($_SESSION['deviceid']);
+            $deviceid = @tvalidator("PURIFY",$_SESSION['deviceid']);
             //$devicecode = @$_SESSION['devicecode'];
         } else {
             $deviceid = "";
@@ -255,7 +257,7 @@ require('colorscheme.php');
             $arr['parm1']='';
             return (object) $arr;
         }
-        $deviceid = @mysql_safe_string($_SESSION['deviceid']);
+        $deviceid = @tvalidator("PURIFY",$_SESSION['deviceid']);
 
         $result = do_query("1","
             select timestampdiff(SECOND, funcdate, now()) as elapsed, func, parm1 from lastfunc where providerid= ?
@@ -286,7 +288,7 @@ require('colorscheme.php');
         if($providerid == ''){
             $providerid = 0;
         }
-        $event = mysql_safe_string($event);
+        $event = tvalidator("PURIFY",$event);
         do_mysqli_query("1","insert into debuglog (providerid, logdate, event ) values ($providerid, now(), '$event' ) ");
 
     }

@@ -4,8 +4,8 @@ require_once("config-pdo.php");
 require ("password.inc.php");
 //require("htmlhead.inc.php");   
 
-$sessionid = mysql_safe_string( $_POST[sessionid]);
-$party = mysql_safe_string( $_POST[party]);
+$sessionid = tvalidator("PURIFY", $_POST[sessionid]);
+$party = tvalidator("PURIFY", $_POST[party]);
 
 $result = pdo_query("1", 
       "delete from msgto where sessionid = ? and party=? ",array($sessionid,$party)

@@ -27,18 +27,18 @@ $apn = '';
 $_SESSION['gcm']='';
 $_SESSION['apn']='';
 
-$mobile = @mysql_safe_string($_GET['mobile']);
-$landing = @mysql_safe_string($_GET['l']);
-$source = @mysql_safe_string($_GET['s']);
-$version = @mysql_safe_string($_GET['v']);
-$gcm = @mysql_safe_string($_GET['gcm']);
+$mobile = @tvalidator("PURIFY",$_GET['mobile']);
+$landing = @tvalidator("PURIFY",$_GET['l']);
+$source = @tvalidator("PURIFY",$_GET['s']);
+$version = @tvalidator("PURIFY",$_GET['v']);
+$gcm = @tvalidator("PURIFY",$_GET['gcm']);
 $_SESSION['gcm']=$gcm;
-$apn = @mysql_safe_string($_GET['apn']);
+$apn = @tvalidator("PURIFY",$_GET['apn']);
 $_SESSION['apn']=$apn;
-$init = @mysql_safe_string($_GET['init']);
-$language = @mysql_safe_string($_GET['lang']);
-$roomhandle = @mysql_safe_string($_GET['h']);
-$roomstorehandle = @mysql_safe_string($_GET['store']);
+$init = @tvalidator("PURIFY",$_GET['init']);
+$language = @tvalidator("PURIFY",$_GET['lang']);
+$roomhandle = @tvalidator("PURIFY",$_GET['h']);
+$roomstorehandle = @tvalidator("PURIFY",$_GET['store']);
 
 
 
@@ -48,7 +48,7 @@ if($language!=''){
 require_once("internationalization.php");
 
 
-$enterprise = @mysql_safe_string($_GET['e']);
+$enterprise = @tvalidator("PURIFY",$_GET['e']);
 $forgotlink = "$rootserver/$installfolder/forgotreq.php?apn=$apn&gcm=$gcm&s=$source&mobile=$mobile&lang=$language";
 $enterprisehidden = 'hidden';
 if(strtoupper($enterprise) =='E'){

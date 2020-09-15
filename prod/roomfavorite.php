@@ -6,9 +6,9 @@ include("config.php");
 /* This Routine is for performing automated processes after doing termsofuse agree */
 
 
-$mode = @mysql_safe_string( $_POST['mode'] );
-$providerid = @mysql_safe_string( $_SESSION['pid'] );
-$roomid = @mysql_safe_string( $_POST['roomid'] );
+$mode = @tvalidator("PURIFY", $_POST['mode'] );
+$providerid = @tvalidator("PURIFY", $_SESSION['pid'] );
+$roomid = @tvalidator("PURIFY", $_POST['roomid'] );
 
 if($mode == 'A'){
     do_mysqli_query("1","

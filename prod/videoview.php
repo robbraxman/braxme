@@ -3,8 +3,8 @@ session_start();
 require_once("validsession.inc.php");
 require_once("config.php");
 require_once("htmlhead.inc.php");
-$providerid = @mysql_safe_string($_POST['pid']);
-$url = @mysql_safe_string($_POST['url']);
+$providerid = @tvalidator("PURIFY",$_POST['pid']);
+$url = @tvalidator("PURIFY",$_POST['url']);
 
 $iframe = YouTube($url);
 function YouTube($url )

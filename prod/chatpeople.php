@@ -3,9 +3,9 @@ session_start();
 require("validsession.inc.php");
 require_once("config-pdo.php");
 
-    $providerid = @mysql_safe_string($_POST['providerid']);
-    $find = rtrim(@mysql_safe_string($_POST['find']));
-    $chatid = rtrim(@mysql_safe_string($_POST['chatid']));
+    $providerid = @tvalidator("PURIFY",$_POST['providerid']);
+    $find = rtrim(@tvalidator("PURIFY",$_POST['find']));
+    $chatid = rtrim(@tvalidator("PURIFY",$_POST['chatid']));
     
     SaveLastFunction($_SESSION['pid'],"C", $chatid);
 

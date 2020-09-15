@@ -6,9 +6,9 @@ include("aws.php");
 
 $uniqid = uniqid();
 
-$share = @mysql_safe_string( $_GET['p'] );
-$view = @mysql_safe_string( $_GET['v'] );
-$redisplay = @mysql_safe_string( $_GET['r'] );
+$share = @tvalidator("PURIFY", $_GET['p'] );
+$view = @tvalidator("PURIFY", $_GET['v'] );
+$redisplay = @tvalidator("PURIFY", $_GET['r'] );
 
 $exposedtitle = "Private Video Share";
 $iconlock = "$rootserver/img/logo-b2.png";

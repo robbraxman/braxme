@@ -7,21 +7,21 @@ require_once("chatsend.inc.php");
 require_once("broadcast.inc.php");
 include("lib_autolink.php");
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = mysql_safe_string($_POST['providerid']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = tvalidator("PURIFY",$_POST['providerid']);
     $message = @mysql_safe_string_unstripped($_POST['message']);
-    $chatid = @mysql_safe_string($_POST['chatid']);
-    $msgid = @mysql_safe_string($_POST['msgid']);
-    $img = @mysql_safe_string($_POST['img']);
-    $url = @mysql_safe_string($_POST['url']);
-    $mode = @mysql_safe_string($_POST['mode']);
-    $action = @mysql_safe_string($_POST['action']);
-    $popupurl = @mysql_safe_string($_POST['popupurl']);
+    $chatid = @tvalidator("PURIFY",$_POST['chatid']);
+    $msgid = @tvalidator("PURIFY",$_POST['msgid']);
+    $img = @tvalidator("PURIFY",$_POST['img']);
+    $url = @tvalidator("PURIFY",$_POST['url']);
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
+    $action = @tvalidator("PURIFY",$_POST['action']);
+    $popupurl = @tvalidator("PURIFY",$_POST['popupurl']);
     
-    $radio = @mysql_safe_string($_POST['radio']);
-    $passkey = DecryptE2EPasskey(@mysql_safe_string($_POST['passkey64']),$providerid);
-    $streaming = intval(@mysql_safe_string($_POST['streaming']));
-    $title = base64_encode(@mysql_safe_string(StripEmojis($_POST['title'])));
+    $radio = @tvalidator("PURIFY",$_POST['radio']);
+    $passkey = DecryptE2EPasskey(@tvalidator("PURIFY",$_POST['passkey64']),$providerid);
+    $streaming = intval(@tvalidator("PURIFY",$_POST['streaming']));
+    $title = base64_encode(@tvalidator("PURIFY",StripEmojis($_POST['title'])));
     
     $broadcastmode = '';
     if($action =='VIDEO'){
@@ -48,7 +48,7 @@ include("lib_autolink.php");
     
     if( $mode == 'T'){
     
-        $title = stripslashes(@mysql_safe_string(StripEmojis($_POST['title'])));
+        $title = stripslashes(@tvalidator("PURIFY",StripEmojis($_POST['title'])));
         
         if($title == ''){
             $encoding = '';
@@ -57,11 +57,7 @@ include("lib_autolink.php");
             $titleencrypted =  EncryptText( $title, "$chatid" );
             $encoding = $_SESSION['responseencoding'];
         }
-<<<<<<< HEAD
         $result = pdo_query("1",
-=======
-        $result = do_mysqli_query("1",
->>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
             "
             update chatmaster set title='$titleencrypted', encoding='$encoding', radiostation='$radio' where chatid=$chatid 
             ");
@@ -191,7 +187,6 @@ include("lib_autolink.php");
             
             $streaming = CheckLiveStream($streamid);
             if(!$streaming){
-<<<<<<< HEAD
                 $result = pdo_query("1",
                     "
                     update chatmembers set broadcaster = null where chatid=? 
@@ -203,21 +198,7 @@ include("lib_autolink.php");
                     update chatmaster set broadcaster = null, broadcastmode='', 
                     live='N', radiotitle='', reservestation=null 
                     where chatid=? and radiostation in ('Q','Y')
-                    ",array(4chatid));
-=======
-                $result = do_mysqli_query("1",
-                    "
-                    update chatmembers set broadcaster = null where chatid=$chatid 
-                    ");
-
-
-                $result = do_mysqli_query("1",
-                    "
-                    update chatmaster set broadcaster = null, broadcastmode='', 
-                    live='N', radiotitle='', reservestation=null 
-                    where chatid=$chatid and radiostation in ('Q','Y')
-                    ");
->>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
+                    ",array($chatid));
                 //Delete original Streamid.mp3
                 DeleteIcecastRecording($providerid, $chatid );
                 RenameIcecastRecording($providerid, $chatid, $broadcastername, $title );
@@ -262,7 +243,6 @@ include("lib_autolink.php");
         
         $streaming = true;
         $subtype = "LV";
-<<<<<<< HEAD
         $result = pdo_query("1",
             "
             update chatmaster set broadcaster = null,  
@@ -290,35 +270,6 @@ include("lib_autolink.php");
         if($row = pdo_fetch($result)){
         
             pdo_query("1",
-=======
-        $result = do_mysqli_query("1",
-            "
-            update chatmaster set broadcaster = null,  
-            live='N', broadcastmode=null, radiotitle='' 
-            where chatid=$chatid and radiostation in ('Y','Q')
-            ");
-        
-        $result = do_mysqli_query("1",
-            "
-            update chatmembers set broadcaster = null where chatid=$chatid 
-            ");
-        
-        $result = do_mysqli_query("1",
-            "
-            delete from notification where chatid=$chatid and notifytype='CP' and notifysubtype='LV'
-            and notifyid > 0
-            ");
-        
-        $result = do_mysqli_query("1",
-            "select broadcastid from broadcastlog  
-             where providerid = $providerid and 
-             chatid = $chatid order by broadcastid desc limit 1
-            "
-            );
-        if($row = do_mysqli_fetch("1",$result)){
-        
-            do_mysqli_query("1",
->>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
                 "
                 update broadcastlog
                 set broadcastdate2 = now(),
@@ -354,17 +305,10 @@ include("lib_autolink.php");
         }
         
         DeleteIcecastRecordingFilename($providerid, $chatid, $action );
-<<<<<<< HEAD
         $result = pdo_query("1",
             "
             delete from recordings where recid=?
             ",$action);
-=======
-        $result = do_mysqli_query("1",
-            "
-            delete from recordings where recid=$action
-            ");
->>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
         echo "success";
         exit();
     }
@@ -410,13 +354,8 @@ include("lib_autolink.php");
         update chatmaster set lastmessage=now(),
         chatcount = (select count(*) from chatmessage where chatmessage.chatid = chatmaster.chatid and chatmessage.status = 'Y'),
         chatmembers = (select count(*) from chatmembers where chatmembers.chatid = chatmaster.chatid )
-<<<<<<< HEAD
         where  chatid=? and chatmaster.status='Y'
         ",array($chatid));
-=======
-        where  chatid=$chatid and chatmaster.status='Y'
-        ");
->>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
     
     
     TouchMembers($chatid);

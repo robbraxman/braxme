@@ -3,10 +3,10 @@ session_start();
 require_once("config-pdo.php");
 require_once("internationalization.php");
 
-$colorscheme = @mysql_safe_string( strtolower($_POST['colorscheme']) );
-$wallpaper = @mysql_safe_string( strtolower($_POST['wallpaper']) );
-$mode = @mysql_safe_string( $_POST['mode'] );
-$providerid = @mysql_safe_string( $_POST['providerid'] );
+$colorscheme = @tvalidator("PURIFY", strtolower($_POST['colorscheme']) );
+$wallpaper = @tvalidator("PURIFY", strtolower($_POST['wallpaper']) );
+$mode = @tvalidator("PURIFY", $_POST['mode'] );
+$providerid = @tvalidator("PURIFY", $_POST['providerid'] );
 
 if($mode == 'S'){
     pdo_query("1","update provider set colorscheme=? where providerid = ? ",array($colorscheme,$providerid));

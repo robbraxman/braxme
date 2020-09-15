@@ -11,7 +11,7 @@ require_once("htmlhead.inc.php");
 $deviceid = uniqid();
 
 
-$lang = @mysql_safe_string($_GET['lang']);
+$lang = @tvalidator("PURIFY",$_GET['lang']);
 if($lang==''){
     $_SESSION['language']='english';
 } else {
@@ -20,32 +20,32 @@ if($lang==''){
 
 require_once("internationalization.php");
 
-$landing = @mysql_safe_string($_GET['l']);
+$landing = @tvalidator("PURIFY",$_GET['l']);
 //if($inviteemail[0]=='@'){
 //    $inviteemail = "";
 //}
-$invitename = @mysql_safe_string($_REQUEST['name']);
-$inviteemail = @mysql_safe_string($_REQUEST['invite']);
-$invitesms = @mysql_safe_string($_REQUEST['invitesms']);
-$invitehandle = @mysql_safe_string($_REQUEST['handle']);
-$source = @mysql_safe_string($_REQUEST['s']);
-$version = @mysql_safe_string($_REQUEST['v']);
-$trackerid = @mysql_safe_string($_REQUEST['tracker']);
+$invitename = @tvalidator("PURIFY",$_REQUEST['name']);
+$inviteemail = @tvalidator("PURIFY",$_REQUEST['invite']);
+$invitesms = @tvalidator("PURIFY",$_REQUEST['invitesms']);
+$invitehandle = @tvalidator("PURIFY",$_REQUEST['handle']);
+$source = @tvalidator("PURIFY",$_REQUEST['s']);
+$version = @tvalidator("PURIFY",$_REQUEST['v']);
+$trackerid = @tvalidator("PURIFY",$_REQUEST['tracker']);
 
 
-$gcm = @mysql_safe_string($_REQUEST['gcm']);
-$apn = @mysql_safe_string($_REQUEST['apn']);
+$gcm = @tvalidator("PURIFY",$_REQUEST['gcm']);
+$apn = @tvalidator("PURIFY",$_REQUEST['apn']);
 $loginlink = "$rootserver/$installfolder/login.php?apn=$apn&gcm=$gcm&s=$source&lang=$lang&v-$version";
 $signuplink = "$rootserver/$installfolder/signupproc.php";
 
-$email = @mysql_safe_string($_POST['pid']);
+$email = @tvalidator("PURIFY",$_POST['pid']);
 if($email!='' && $email[0]!='@'){
 
     $inviteemail = $email;
 }
 $providerid = "";
 $invitername = "";
-$inviteid = @mysql_safe_string($_REQUEST['i']);
+$inviteid = @tvalidator("PURIFY",$_REQUEST['i']);
 if($inviteid!=''){
     
     $result = do_mysqli_query("1", "

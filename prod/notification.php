@@ -4,7 +4,7 @@ require("validsession.inc.php");
 require_once("config.php");
 
 $providerid = $_SESSION['pid'];
-$mode = @mysql_safe_string($_POST['mode']);
+$mode = @tvalidator("PURIFY",$_POST['mode']);
 
 
 ?>

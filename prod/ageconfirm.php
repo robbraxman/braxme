@@ -5,7 +5,7 @@ require_once("config.php");
 require_once("password.inc.php");
 
 require_once("htmlhead.inc.php");
-$providerid = @mysql_safe_string($_SESSION['pid']);
+$providerid = @tvalidator("PURIFY",$_SESSION['pid']);
 
 ?>
 <script>

@@ -3,8 +3,8 @@ session_start();
 require("validsession.inc.php");
 require_once("config.php");
 
-    $providerid = @mysql_safe_string($_POST['providerid']);
-    $find = rtrim(@mysql_safe_string($_POST['find']));
+    $providerid = @tvalidator("PURIFY",$_POST['providerid']);
+    $find = rtrim(@tvalidator("PURIFY",$_POST['find']));
     
     
 

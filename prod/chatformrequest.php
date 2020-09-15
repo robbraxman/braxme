@@ -4,12 +4,12 @@ require_once("config-pdo.php");
 require_once("password.inc.php");
 require_once("crypt-pdo.inc.php");
 
-$providerid = @mysql_safe_string($_SESSION['pid']);
-$mode = @mysql_safe_string($_POST['mode']);
-$chatid = @mysql_safe_string($_POST['chatid']);
-$roomid = @mysql_safe_string($_POST['roomid']);
-$formid = @mysql_safe_string($_POST['formid']);
-$passkey64 = @mysql_safe_string($_POST['passkey64']);
+$providerid = @tvalidator("PURIFY",$_SESSION['pid']);
+$mode = @tvalidator("PURIFY",$_POST['mode']);
+$chatid = @tvalidator("PURIFY",$_POST['chatid']);
+$roomid = @tvalidator("PURIFY",$_POST['roomid']);
+$formid = @tvalidator("PURIFY",$_POST['formid']);
+$passkey64 = @tvalidator("PURIFY",$_POST['passkey64']);
 
     $result = pdo_query("1","select keyhash from chatmaster where chatid = ? ",array($chatid));
     $keyhash = '';

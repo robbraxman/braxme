@@ -7,9 +7,9 @@ $_SESSION[returnurl]="<a href='login.php'>Login</a>";
 $temp = rand ( 100000 , 999999 );
 $_SESSION['temporarypassword'] = $temp;
 
-$pid = mysql_safe_string($_POST['pid']);
-$providerid = mysql_safe_string( "$_POST[pid]");
-$loginid = mysql_safe_string($_POST['loginid']);
+$pid = tvalidator("PURIFY",$_POST['pid']);
+$providerid = tvalidator("PURIFY", "$_POST[pid]");
+$loginid = tvalidator("PURIFY",$_POST['loginid']);
 
     //Validation Checks
     if( $pid == ""  || !is_numeric($pid) )

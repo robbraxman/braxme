@@ -7,69 +7,69 @@ require_once("room.inc.php");
 require_once("roommanage.inc.php");
 require_once("internationalization.php");
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = mysql_safe_string($_POST['providerid']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = tvalidator("PURIFY",$_POST['providerid']);
     
-    $mode = @mysql_safe_string($_POST['mode']);
-    $roomid = stripslashes(@mysql_safe_string($_POST['roomid']));
-    $friendproviderid = @mysql_safe_string($_POST['friendproviderid']);
-    $handle = strtolower(stripslashes(@mysql_safe_string($_POST['handle'])));
-    $newroom = @mysql_safe_string(stripslashes($_POST['newroom']));
-    $filter = @mysql_safe_string(stripslashes($_POST['filter']));
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
+    $roomid = stripslashes(@tvalidator("PURIFY",$_POST['roomid']));
+    $friendproviderid = @tvalidator("PURIFY",$_POST['friendproviderid']);
+    $handle = strtolower(stripslashes(@tvalidator("PURIFY",$_POST['handle'])));
+    $newroom = @tvalidator("PURIFY",stripslashes($_POST['newroom']));
+    $filter = @tvalidator("PURIFY",stripslashes($_POST['filter']));
     
-    $room = @mysql_safe_string(stripslashes($_POST['room']));
-    $roomForSql = @mysql_safe_string(stripslashes($room));
+    $room = @tvalidator("PURIFY",stripslashes($_POST['room']));
+    $roomForSql = @tvalidator("PURIFY",stripslashes($room));
     $roomHtml = htmlentities(stripslashes($room),ENT_QUOTES);
-    $caller = @mysql_safe_string($_POST['caller']);
-    $minage = intval(@mysql_safe_string($_POST['minage']));
-    $tags = stripslashes(@mysql_safe_string($_POST['tags']));
-    $category = stripslashes(@mysql_safe_string($_POST['category']));
-    $organization = stripslashes(@mysql_safe_string($_POST['organization']));
-    $discover = stripslashes(@mysql_safe_string($_POST['discover']));
-    //$roomdescription = stripslashes(@mysql_safe_string($_POST['roomdescription']));
-    $roomdescription = @mysql_safe_string($_POST['roomdescription']);
+    $caller = @tvalidator("PURIFY",$_POST['caller']);
+    $minage = intval(@tvalidator("PURIFY",$_POST['minage']));
+    $tags = stripslashes(@tvalidator("PURIFY",$_POST['tags']));
+    $category = stripslashes(@tvalidator("PURIFY",$_POST['category']));
+    $organization = stripslashes(@tvalidator("PURIFY",$_POST['organization']));
+    $discover = stripslashes(@tvalidator("PURIFY",$_POST['discover']));
+    //$roomdescription = stripslashes(@tvalidator("PURIFY",$_POST['roomdescription']));
+    $roomdescription = @tvalidator("PURIFY",$_POST['roomdescription']);
     //$roomdesc = url_decode($roomdescription);
-    $photourl = stripslashes(@mysql_safe_string($_POST['photourl']));
-    $photourl2 = stripslashes(@mysql_safe_string($_POST['photourl2']));
-    $roomanonymous = stripslashes(@mysql_safe_string($_POST['roomanonymous']));
-    $roomexternal = stripslashes(@mysql_safe_string($_POST['roomexternal']));
-    $private = stripslashes(@mysql_safe_string($_POST['private']));
-    $contactexchange = stripslashes(@mysql_safe_string($_POST['contactexchange']));
-    $adminonly = stripslashes(@mysql_safe_string($_POST['adminonly']));
-    $notifications = stripslashes(@mysql_safe_string($_POST['notifications']));
-    $soundalert = stripslashes(@mysql_safe_string($_POST['soundalert']));
-    $sharephotoflag = stripslashes(@mysql_safe_string($_POST['sharephotoflag']));
-    $rsscategory = stripslashes(@mysql_safe_string($_POST['rsscategory']));
-    $rsssource = stripslashes(@mysql_safe_string($_POST['rsssource']));
-    $showmembers = stripslashes(@mysql_safe_string($_POST['showmembers']));
-    $groupid = stripslashes(@mysql_safe_string($_POST['groupid']));
-    $sponsor = stripslashes(@mysql_safe_string($_POST['sponsor']));
-    $parent = stripslashes(@mysql_safe_string($_POST['parent']));
-    $childsort = stripslashes(@mysql_safe_string($_POST['childsort']));
-    $copymembers = stripslashes(@mysql_safe_string($_POST['copymembers']));
-    $profileflag = stripslashes(@mysql_safe_string($_POST['profileflag']));
-    $roominvitehandle = stripslashes(@mysql_safe_string($_POST['roominvitehandle']));
-    $webcolorscheme = stripslashes(@mysql_safe_string($_POST['webcolorscheme']));
-    $webtextcolor = stripslashes(@mysql_safe_string($_POST['webtextcolor']));
-    $webpublishprofile = stripslashes(@mysql_safe_string($_POST['webpublishprofile']));
-    $webflags = stripslashes(@mysql_safe_string($_POST['webflags']));
-    $wallpaper = stripslashes(@mysql_safe_string($_POST['wallpaper']));
+    $photourl = stripslashes(@tvalidator("PURIFY",$_POST['photourl']));
+    $photourl2 = stripslashes(@tvalidator("PURIFY",$_POST['photourl2']));
+    $roomanonymous = stripslashes(@tvalidator("PURIFY",$_POST['roomanonymous']));
+    $roomexternal = stripslashes(@tvalidator("PURIFY",$_POST['roomexternal']));
+    $private = stripslashes(@tvalidator("PURIFY",$_POST['private']));
+    $contactexchange = stripslashes(@tvalidator("PURIFY",$_POST['contactexchange']));
+    $adminonly = stripslashes(@tvalidator("PURIFY",$_POST['adminonly']));
+    $notifications = stripslashes(@tvalidator("PURIFY",$_POST['notifications']));
+    $soundalert = stripslashes(@tvalidator("PURIFY",$_POST['soundalert']));
+    $sharephotoflag = stripslashes(@tvalidator("PURIFY",$_POST['sharephotoflag']));
+    $rsscategory = stripslashes(@tvalidator("PURIFY",$_POST['rsscategory']));
+    $rsssource = stripslashes(@tvalidator("PURIFY",$_POST['rsssource']));
+    $showmembers = stripslashes(@tvalidator("PURIFY",$_POST['showmembers']));
+    $groupid = stripslashes(@tvalidator("PURIFY",$_POST['groupid']));
+    $sponsor = stripslashes(@tvalidator("PURIFY",$_POST['sponsor']));
+    $parent = stripslashes(@tvalidator("PURIFY",$_POST['parent']));
+    $childsort = stripslashes(@tvalidator("PURIFY",$_POST['childsort']));
+    $copymembers = stripslashes(@tvalidator("PURIFY",$_POST['copymembers']));
+    $profileflag = stripslashes(@tvalidator("PURIFY",$_POST['profileflag']));
+    $roominvitehandle = stripslashes(@tvalidator("PURIFY",$_POST['roominvitehandle']));
+    $webcolorscheme = stripslashes(@tvalidator("PURIFY",$_POST['webcolorscheme']));
+    $webtextcolor = stripslashes(@tvalidator("PURIFY",$_POST['webtextcolor']));
+    $webpublishprofile = stripslashes(@tvalidator("PURIFY",$_POST['webpublishprofile']));
+    $webflags = stripslashes(@tvalidator("PURIFY",$_POST['webflags']));
+    $wallpaper = stripslashes(@tvalidator("PURIFY",$_POST['wallpaper']));
     
     $analytics = @htmlentities(stripslashes($_POST['analytics']));
-    $searchengine = stripslashes(@mysql_safe_string($_POST['searchengine']));
-    $subscription = stripslashes(@mysql_safe_string($_POST['subscription']));
-    $subscriptionusd = stripslashes(@mysql_safe_string($_POST['subscriptionusd']));
-    $subscriptiondays = stripslashes(@mysql_safe_string($_POST['subscriptiondays']));
+    $searchengine = stripslashes(@tvalidator("PURIFY",$_POST['searchengine']));
+    $subscription = stripslashes(@tvalidator("PURIFY",$_POST['subscription']));
+    $subscriptionusd = stripslashes(@tvalidator("PURIFY",$_POST['subscriptionusd']));
+    $subscriptiondays = stripslashes(@tvalidator("PURIFY",$_POST['subscriptiondays']));
     
-    $autochatuser = stripslashes(@mysql_safe_string($_POST['autochatuser']));
-    $autochatmsg = @mysql_safe_string($_POST['autochatmsg']);
-    $community = @mysql_safe_string($_POST['community']);
-    $communitylink = @mysql_safe_string($_POST['communitylink']);
-    $store = @mysql_safe_string(stripslashes($_POST['store']));
-    $roomstyle = @mysql_safe_string(stripslashes($_POST['roomstyle']));
+    $autochatuser = stripslashes(@tvalidator("PURIFY",$_POST['autochatuser']));
+    $autochatmsg = @tvalidator("PURIFY",$_POST['autochatmsg']);
+    $community = @tvalidator("PURIFY",$_POST['community']);
+    $communitylink = @tvalidator("PURIFY",$_POST['communitylink']);
+    $store = @tvalidator("PURIFY",stripslashes($_POST['store']));
+    $roomstyle = @tvalidator("PURIFY",stripslashes($_POST['roomstyle']));
         
 
-    $radiostation = strtoupper(stripslashes(@mysql_safe_string($_POST['radiostation'])));
+    $radiostation = strtoupper(stripslashes(@tvalidator("PURIFY",$_POST['radiostation'])));
     
     if($handle!=''){
     
@@ -177,7 +177,7 @@ require_once("internationalization.php");
         $room = $newroom;
         if( $room!=''){
         
-            $roomForSql = mysql_safe_string(stripslashes($newroom));
+            $roomForSql = tvalidator("PURIFY",stripslashes($newroom));
             $roomHtml = htmlentities(stripslashes($newroom),ENT_QUOTES);
 
             $roomid = 0;
@@ -204,7 +204,7 @@ require_once("internationalization.php");
             if( $row = do_mysqli_fetch("1",$result))
             {
                 $room = $row[room];
-                $roomForSql = mysql_safe_string($room);
+                $roomForSql = tvalidator("PURIFY",$room);
                 $roomHtml = htmlentities(stripslashes($room),ENT_QUOTES);
             }
         }
@@ -263,7 +263,7 @@ require_once("internationalization.php");
         
             
             $room = stripslashes($newroom);
-            $roomForSql = mysql_safe_string(stripslashes($newroom));
+            $roomForSql = tvalidator("PURIFY",stripslashes($newroom));
             $roomHtml = htmlentities(stripslashes($newroom),ENT_QUOTES);
             
 

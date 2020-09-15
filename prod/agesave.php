@@ -3,9 +3,9 @@ session_start();
 require("validsession.inc.php");
 require_once("config.php");
 
-    $providerid = mysql_safe_string("$_SESSION[pid]");
+    $providerid = tvalidator("PURIFY","$_SESSION[pid]");
 
-    $age = mysql_safe_string("$_POST[age]");
+    $age = tvalidator("PURIFY","$_POST[age]");
     
     $_SESSION['age'] = $age;
 

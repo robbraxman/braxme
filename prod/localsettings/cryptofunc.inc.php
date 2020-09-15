@@ -13,7 +13,7 @@ require_once("localsettings.php");
     {
         $currentencoding = $row['encoding'];
     }
-    $superadmin = @mysql_safe_string($_SESSION['superadmin']);
+    $superadmin = @tvalidator("PURIFY",$_SESSION['superadmin']);
     //if($superadmin!='Y'){
     //    $currentencoding = "SPA1.1";
     //}

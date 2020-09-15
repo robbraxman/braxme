@@ -4,22 +4,22 @@ require_once("config.php");
 require_once("aws.php");
 require_once("internationalization.php");
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = mysql_safe_string($_SESSION['pid']);
-    $target = mysql_safe_string($_POST['target']);
-    $src = @mysql_safe_string($_POST['src']);
-    $passkey64 = @mysql_safe_string($_POST['passkey64']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = tvalidator("PURIFY",$_SESSION['pid']);
+    $target = tvalidator("PURIFY",$_POST['target']);
+    $src = @tvalidator("PURIFY",$_POST['src']);
+    $passkey64 = @tvalidator("PURIFY",$_POST['passkey64']);
     
-    $mode = mysql_safe_string($_POST['mode']);
-    $caller = mysql_safe_string($_POST['caller']);
+    $mode = tvalidator("PURIFY",$_POST['mode']);
+    $caller = tvalidator("PURIFY",$_POST['caller']);
     $selectedalbum = "";
     $selectedalbumHtml = "";
     
     if(isset($_POST['album'])){
     
-        $selectedalbum = DeconvertHTML(mysql_safe_string($_POST['album']));
+        $selectedalbum = DeconvertHTML(tvalidator("PURIFY",$_POST['album']));
         $selectedalbumHtml = ConvertHTML($selectedalbum);
-        $selectedalbumSql = mysql_safe_string($selectedalbum);
+        $selectedalbumSql = tvalidator("PURIFY",$selectedalbum);
     }
     
     if($selectedalbum == 'All'){
@@ -38,7 +38,7 @@ require_once("internationalization.php");
             ");
         if( $row2 = do_mysqli_fetch("1",$result2))
         {
-            $selectedalbum = mysql_safe_string($row2['album']);
+            $selectedalbum = tvalidator("PURIFY",$row2['album']);
             $selectedalbumHtml = htmlentities(stripslashes($row2['album']),ENT_QUOTES);
         }
         else
@@ -65,7 +65,7 @@ require_once("internationalization.php");
     //*************************************************************
 
     
-    $page = intval(@mysql_safe_string($_POST['page']));
+    $page = intval(@tvalidator("PURIFY",$_POST['page']));
     if( $page == 0)
         $page = 1;
     $pagenext = intval($page)+1;

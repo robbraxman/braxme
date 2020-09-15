@@ -189,10 +189,10 @@ require_once("config.php");
             $roomid = 'null';
         }
         $desc = htmlentities($description, ENT_QUOTES);
-        $nameclean = mysql_safe_string(stripslashes($name));
-        $photourlclean = mysql_safe_string($photourl);
-        $organizationclean = mysql_safe_string(stripslashes($organization));
-        $roomid = mysql_safe_string(stripslashes($roomid));
+        $nameclean = tvalidator("PURIFY",stripslashes($name));
+        $photourlclean = tvalidator("PURIFY",$photourl);
+        $organizationclean = tvalidator("PURIFY",stripslashes($organization));
+        $roomid = tvalidator("PURIFY",stripslashes($roomid));
         
         $result = do_mysqli_query("1","
             update groups set groupname ='$nameclean', groupdesc='$desc', 
@@ -370,7 +370,7 @@ require_once("config.php");
             }
             
             $groupdata['groupname'] = stripslashes($row['groupname']);
-            $groupdata['groupForSql'] = mysql_safe_string(stripslashes($row['groupname']));
+            $groupdata['groupForSql'] = tvalidator("PURIFY",stripslashes($row['groupname']));
             $groupdata['groupHtml'] = htmlentities(stripslashes($row['groupname']),ENT_QUOTES);
             
             $groupdata['groupdesc'] = $row['groupdesc'];

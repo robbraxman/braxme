@@ -5,9 +5,9 @@ require("validsession.inc.php");
 require("htmlhead.inc.php");
 require("roommanage.inc.php");
 
-$paycode = @mysql_safe_string( $_POST['paycode'] );
-$mode = @mysql_safe_string( $_GET['mode'] );
-$roomid = @mysql_safe_string( $_GET['roomid'] );
+$paycode = @tvalidator("PURIFY", $_POST['paycode'] );
+$mode = @tvalidator("PURIFY", $_GET['mode'] );
+$roomid = @tvalidator("PURIFY", $_GET['roomid'] );
 
 
 

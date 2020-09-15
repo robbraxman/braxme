@@ -6,14 +6,14 @@ require("aws.php");
 
     $braxinfo = "<img class='info_file' src='../img/info-yellow-128.png' style='float:right;cursor:pointer;position:relative;top:3px;height:25px;width:auto;padding-left:20px;padding-top:0;padding-right:2px;padding-bottom:0px;' />";
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = mysql_safe_string($_SESSION[pid]);
-    $page = mysql_safe_string($_POST[page]);
-    $mode = mysql_safe_string($_POST[mode]);
-    $filename = mysql_safe_string($_POST[filename]);
-    $sort = mysql_safe_string($_POST[sort]);
-    $target = mysql_safe_string($_POST[target]);
-    $caller = mysql_safe_string($_POST[caller]);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = tvalidator("PURIFY",$_SESSION[pid]);
+    $page = tvalidator("PURIFY",$_POST[page]);
+    $mode = tvalidator("PURIFY",$_POST[mode]);
+    $filename = tvalidator("PURIFY",$_POST[filename]);
+    $sort = tvalidator("PURIFY",$_POST[sort]);
+    $target = tvalidator("PURIFY",$_POST[target]);
+    $caller = tvalidator("PURIFY",$_POST[caller]);
     
     if( $sort == "" || $sort == "createdate desc")
     {
@@ -50,7 +50,7 @@ require("aws.php");
     //*************************************************************
 
     
-    $page = intval(mysql_safe_string($_POST[page]));
+    $page = intval(tvalidator("PURIFY",$_POST[page]));
     if( $page == 0)
         $page = 1;
     $pagenext = intval($page)+1;

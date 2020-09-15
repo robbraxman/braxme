@@ -2,8 +2,8 @@
 session_start();
 require("validsession.inc.php");
 require("config-pdo.php");
-$streamid = @mysql_safe_string($_POST['streamid']);
-$chatid = @mysql_safe_string($_POST['chatid']);
+$streamid = @tvalidator("PURIFY",$_POST['streamid']);
+$chatid = @tvalidator("PURIFY",$_POST['chatid']);
 $live = 0;
 
 if($chatid > 0){

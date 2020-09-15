@@ -9,10 +9,10 @@ require("aws.php");
  * Sharedirect.php uses filenames
  */
 
-$share = mysql_safe_string( $_GET['p'] );
+$share = tvalidator("PURIFY", $_GET['p'] );
 $n = "";
 if(isset($_GET['n'])) {
-    $n = mysql_safe_string( "$_GET[n]" );
+    $n = tvalidator("PURIFY", "$_GET[n]" );
 }
 
 
@@ -31,7 +31,7 @@ if( !$row = do_mysqli_fetch("1",$result))
     }
     exit();
 }
-$sharelocal = mysql_safe_string($row['sharelocal']);
+$sharelocal = tvalidator("PURIFY",$row['sharelocal']);
 $providerid = $row['providerid'];
 
 

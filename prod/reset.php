@@ -2,7 +2,7 @@
 session_start();
 require_once("config.php");
 
-$providerid = mysql_safe_string($_POST['providerid']);
+$providerid = tvalidator("PURIFY",$_POST['providerid']);
 
 SaveLastFunction($providerid, "","");
     

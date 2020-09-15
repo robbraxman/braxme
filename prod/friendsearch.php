@@ -3,13 +3,13 @@ session_start();
 require("validsession.inc.php");
 require_once("config.php");
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = @mysql_safe_string($_POST['providerid']);
-    $roomid = @mysql_safe_string($_POST['roomid']);
-    $groupid = @mysql_safe_string($_POST['groupid']);
-    $sponsor = @mysql_safe_string($_POST['sponsor']);
-    $filter = @mysql_safe_string($_POST['filter']);
-    $caller = @mysql_safe_string($_POST['caller']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = @tvalidator("PURIFY",$_POST['providerid']);
+    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+    $groupid = @tvalidator("PURIFY",$_POST['groupid']);
+    $sponsor = @tvalidator("PURIFY",$_POST['sponsor']);
+    $filter = @tvalidator("PURIFY",$_POST['filter']);
+    $caller = @tvalidator("PURIFY",$_POST['caller']);
     $braxsocial = "<img src='../img/braxroom.png' style='position:relative;top:5px;height:20px;width:auto;padding-top:0;padding-right:2px;padding-bottom:0px;' />";
 
     if($filter !==''){

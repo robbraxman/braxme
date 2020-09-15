@@ -5,18 +5,18 @@ require_once("config.php");
 
 require_once("htmlhead.inc.php");
 
-$inviteemail = @mysql_safe_string($_GET['invite']);
-$invitename = @mysql_safe_string($_GET['name']);
-$landing = @mysql_safe_string($_GET['l']);
-$email = @mysql_safe_string($_POST['pid']);
+$inviteemail = @tvalidator("PURIFY",$_GET['invite']);
+$invitename = @tvalidator("PURIFY",$_GET['name']);
+$landing = @tvalidator("PURIFY",$_GET['l']);
+$email = @tvalidator("PURIFY",$_POST['pid']);
 if($email!='')
 {
     $inviteemail = $email;
 }
-$invitesms = @mysql_safe_string($_POST['invitesms']);
-$invitehandle = @mysql_safe_string($_POST['handle']);
-$gcm = @mysql_safe_string($_POST['gcm']);
-$apn = @mysql_safe_string($_POST['apn']);
+$invitesms = @tvalidator("PURIFY",$_POST['invitesms']);
+$invitehandle = @tvalidator("PURIFY",$_POST['handle']);
+$gcm = @tvalidator("PURIFY",$_POST['gcm']);
+$apn = @tvalidator("PURIFY",$_POST['apn']);
 
 
 

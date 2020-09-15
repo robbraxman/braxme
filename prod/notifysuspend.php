@@ -3,8 +3,8 @@ session_start();
 require("validsession.inc.php");
 require_once("config.php");
 
-$chatid = mysql_safe_string($_POST['chatid']);
-$providerid = mysql_safe_string($_POST['providerid']);
+$chatid = tvalidator("PURIFY",$_POST['chatid']);
+$providerid = tvalidator("PURIFY",$_POST['providerid']);
 
 
 $result = do_mysqli_query("1",

@@ -9,21 +9,21 @@ require_once("internationalization.php");
     $braxinfo = "<img class='icon30 info_file' src='../img/braxinfo.png' style='float:right;' />&nbsp;&nbsp;&nbsp;";
 
     
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = mysql_safe_string($_SESSION['pid']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = tvalidator("PURIFY",$_SESSION['pid']);
     
-    $roomid = @mysql_safe_string($_POST['roomid']);
-    $selectedfolder = @mysql_safe_string($_POST['folder']);
-    $selectedfolderid = @mysql_safe_string(intval($_POST['folderid']));
-    $roomfolderid = @mysql_safe_string(intval($_POST['roomfolderid']));
-    $filename = @mysql_safe_string($_POST['filename']);
-    $sort = @mysql_safe_string($_POST['sort']);
-    $target = @mysql_safe_string($_POST['target']);
-    $caller = @mysql_safe_string($_POST['caller']);
-    $page = @intval( mysql_safe_string($_POST['page']));
-    $mode = @mysql_safe_string($_POST['mode']);
-    $altfilename = @mysql_safe_string($_POST['altfilename']);
-    $filtername = @mysql_safe_string($_POST['filtername']);
+    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+    $selectedfolder = @tvalidator("PURIFY",$_POST['folder']);
+    $selectedfolderid = @tvalidator("PURIFY",intval($_POST['folderid']));
+    $roomfolderid = @tvalidator("PURIFY",intval($_POST['roomfolderid']));
+    $filename = @tvalidator("PURIFY",$_POST['filename']);
+    $sort = @tvalidator("PURIFY",$_POST['sort']);
+    $target = @tvalidator("PURIFY",$_POST['target']);
+    $caller = @tvalidator("PURIFY",$_POST['caller']);
+    $page = @intval( tvalidator("PURIFY",$_POST['page']));
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
+    $altfilename = @tvalidator("PURIFY",$_POST['altfilename']);
+    $filtername = @tvalidator("PURIFY",$_POST['filtername']);
 
     //echo "selected folder = $roomfolderid";
     
@@ -103,8 +103,8 @@ require_once("internationalization.php");
         }
         
         
-        $jsonfilelist = stripslashes(@mysql_safe_string($_POST['filenamelist']));
-        //$jsonfilelist = @mysql_safe_string($_POST['filenamelist']);
+        $jsonfilelist = stripslashes(@tvalidator("PURIFY",$_POST['filenamelist']));
+        //$jsonfilelist = @tvalidator("PURIFY",$_POST['filenamelist']);
         
         $filenamelist =  json_decode($jsonfilelist, true);
         //var_dump($filenamelist);
@@ -209,7 +209,7 @@ require_once("internationalization.php");
     //*************************************************************
 
     
-    //$page = intval(mysql_safe_string($_POST['page']));
+    //$page = intval(tvalidator("PURIFY",$_POST['page']));
     if( $page == 0)
         $page = 1;
     $pagenext = intval($page)+1;

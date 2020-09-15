@@ -3,7 +3,7 @@ session_start();
 require_once("config.php");
 
 $providerid = $_SESSION['pid'];
-$contacts = mysql_safe_string($_POST['contacts']);
+$contacts = tvalidator("PURIFY",$_POST['contacts']);
 
 $contactArray = explode(";",$contacts);
 foreach($contactArray as $contactItem)

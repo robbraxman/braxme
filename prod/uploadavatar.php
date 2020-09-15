@@ -10,12 +10,12 @@ require ("photouploadprocpg.inc.php");
 
 $providerid = '';
 if(isset($_SESSION['pid'])){
-    $providerid = rtrim(mysql_safe_string( "$_SESSION[pid]"));
+    $providerid = rtrim(tvalidator("PURIFY", "$_SESSION[pid]"));
 }
 if($providerid == ''){
-    $providerid = @mysql_safe_string( "$_GET[pid]");
+    $providerid = @tvalidator("PURIFY", "$_GET[pid]");
 }
-$loginid = mysql_safe_string( "$_SESSION[loginid]");
+$loginid = tvalidator("PURIFY", "$_SESSION[loginid]");
 $subject = "Mobile Upload";
 //$album = "MobileUpload";
 $uploadtype = "";

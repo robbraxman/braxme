@@ -6,12 +6,12 @@ $_SESSION[returnurl]="<a href='index.htm'>Login</a>";
 
 require_once("htmlhead.inc.php");
 
-$inviteemail = mysql_safe_string($_GET['e']);
-$email = mysql_safe_string($_POST['pid']);
+$inviteemail = tvalidator("PURIFY",$_GET['e']);
+$email = tvalidator("PURIFY",$_POST['pid']);
 if($email!='')
     $inviteemail = $email;
-$invitename = mysql_safe_string($_GET['n']);
-$invitesms = mysql_safe_string($_POST['s']);
+$invitename = tvalidator("PURIFY",$_GET['n']);
+$invitesms = tvalidator("PURIFY",$_POST['s']);
 
 $providerid = 0;
 $result = do_mysqli_query("1", "select max(val1)+1 as maxid from parms where parmkey='SUBSCRIBER' AND PARMCODE='ID' ");

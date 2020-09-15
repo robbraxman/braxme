@@ -15,39 +15,39 @@ require("sidebar.inc.php");
 
 
     if(@intval($_POST['sizing'])>0 ){
-        $_SESSION['sizing']=mysql_safe_string($_POST['sizing']);
+        $_SESSION['sizing']=tvalidator("PURIFY",$_POST['sizing']);
     }
     
     
-    if(isset($_POST['active']) && mysql_safe_string($_POST['active'])=='Y'){
+    if(isset($_POST['active']) && tvalidator("PURIFY",$_POST['active'])=='Y'){
         $_SESSION['timeoutcheck'] = time();
     }
     if(!isset($_POST['innerwidth']) ){
         exit();
     }
 
-    $mobilecapable = @mysql_safe_string($_POST['mobilecapable']);
+    $mobilecapable = @tvalidator("PURIFY",$_POST['mobilecapable']);
     if($mobilecapable=='true'){
         $_SESSION['mobilecapable']='Y';
     } else {
         $_SESSION['mobilecapable']='N';
         
     }
-    $_SESSION['innerwidth']=@mysql_safe_string($_POST['innerwidth']);
-    $_SESSION['innerheight']=@mysql_safe_string($_POST['innerheight']);
-    $_SESSION['pixelratio']=@mysql_safe_string($_POST['pixelratio']);
-    if(isset($_POST['timezoneoffset']) && @mysql_safe_string($_POST['timezoneoffset']!='')){
-        $_SESSION['timezoneoffset']=mysql_safe_string($_POST['timezoneoffset']);
+    $_SESSION['innerwidth']=@tvalidator("PURIFY",$_POST['innerwidth']);
+    $_SESSION['innerheight']=@tvalidator("PURIFY",$_POST['innerheight']);
+    $_SESSION['pixelratio']=@tvalidator("PURIFY",$_POST['pixelratio']);
+    if(isset($_POST['timezoneoffset']) && @tvalidator("PURIFY",$_POST['timezoneoffset']!='')){
+        $_SESSION['timezoneoffset']=tvalidator("PURIFY",$_POST['timezoneoffset']);
     }
-    $chatid =@mysql_safe_string($_POST['chatid']);
+    $chatid =@tvalidator("PURIFY",$_POST['chatid']);
     
     if(isset($_POST['mobile'])){
-        $mobiletype=mysql_safe_string($_POST['mobile']);
+        $mobiletype=tvalidator("PURIFY",$_POST['mobile']);
         $_SESSION['mobiletype']=$mobiletype;
     }
     if(isset($_POST['device'])){
         
-        $mobiledevice=mysql_safe_string($_POST['device']);
+        $mobiledevice=tvalidator("PURIFY",$_POST['device']);
         $_SESSION['mobiledevice']=$mobiledevice;
         if( $mobiledevice === 'P' || $mobiledevice === 'U' ){
             $_SESSION['mobilesize']='Y';

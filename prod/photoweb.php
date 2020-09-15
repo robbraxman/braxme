@@ -6,10 +6,10 @@ require_once("config.php");
 
 $max = 50;
 
-    $providerid = mysql_safe_string($_SESSION[pid]);
-    $collection = mysql_safe_string($_POST[collection]);
-    $description = mysql_safe_string($_POST[description]);
-    $mode = mysql_safe_string($_POST[mode]);
+    $providerid = tvalidator("PURIFY",$_SESSION[pid]);
+    $collection = tvalidator("PURIFY",$_POST[collection]);
+    $description = tvalidator("PURIFY",$_POST[description]);
+    $mode = tvalidator("PURIFY",$_POST[mode]);
     if( $collection != "" && $mode =='D')
     {
         do_mysqli_query("1","
@@ -84,7 +84,7 @@ $max = 50;
         for($i=1;$i<=$max;$i++)
         {
             $albumpost = "album".$i;
-            $album = mysql_safe_string($_POST[$albumpost]);
+            $album = tvalidator("PURIFY",$_POST[$albumpost]);
             if( $album!="")
             {
                 

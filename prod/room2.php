@@ -10,33 +10,33 @@ require_once("roomuserview.php");
  
     $timestart = microtime();
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = @mysql_safe_string($_SESSION['pid']);
-    $host = @mysql_safe_string($_POST['host']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = @tvalidator("PURIFY",$_SESSION['pid']);
+    $host = @tvalidator("PURIFY",$_POST['host']);
     
-    $mode = @mysql_safe_string($_POST['mode']);
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
     $comment = @mysql_safe_string_unstripped($_POST['comment']);
-    $title = @mysql_safe_string($_POST['title']);
-    $link = @mysql_safe_string($_POST['link']);
-    $photo = @mysql_safe_string($_POST['photo']);
-    $video = @mysql_safe_string($_POST['video']);
-    $friendproviderid = @mysql_safe_string($_POST['friendproviderid']);
-    $anonymous = @mysql_safe_string($_POST['anonymous']);
-    $parent = @mysql_safe_string($_POST['parent']);
-    $shareid = @mysql_safe_string($_POST['shareid']);
-    $postid = @mysql_safe_string($_POST['postid']);
-    $filtername = rtrim(@mysql_safe_string($_POST['filtername']));
-    $filterterm = rtrim(@mysql_safe_string($_POST['filterterm']));
-    $filterdate = @mysql_safe_string($_POST['filterdate']);
-    $room = @mysql_safe_string($_POST['room']);
-    $roomid = @mysql_safe_string($_POST['roomid']);
-    $selectedroomid = @mysql_safe_string($_POST['selectedroomid']);
-    $page = @mysql_safe_string($_POST['page']);
-    $timezone = @mysql_safe_string($_POST['timezone']);
-    $trimcolor = @mysql_safe_string($_POST['trimcolor']);
-    $readonly = @mysql_safe_string($_POST['readonly']);
-    $caller = @mysql_safe_string($_POST['caller']);
-    $_SESSION['iscore'] = @mysql_safe_string($_POST['iscore']);
+    $title = @tvalidator("PURIFY",$_POST['title']);
+    $link = @tvalidator("PURIFY",$_POST['link']);
+    $photo = @tvalidator("PURIFY",$_POST['photo']);
+    $video = @tvalidator("PURIFY",$_POST['video']);
+    $friendproviderid = @tvalidator("PURIFY",$_POST['friendproviderid']);
+    $anonymous = @tvalidator("PURIFY",$_POST['anonymous']);
+    $parent = @tvalidator("PURIFY",$_POST['parent']);
+    $shareid = @tvalidator("PURIFY",$_POST['shareid']);
+    $postid = @tvalidator("PURIFY",$_POST['postid']);
+    $filtername = rtrim(@tvalidator("PURIFY",$_POST['filtername']));
+    $filterterm = rtrim(@tvalidator("PURIFY",$_POST['filterterm']));
+    $filterdate = @tvalidator("PURIFY",$_POST['filterdate']);
+    $room = @tvalidator("PURIFY",$_POST['room']);
+    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+    $selectedroomid = @tvalidator("PURIFY",$_POST['selectedroomid']);
+    $page = @tvalidator("PURIFY",$_POST['page']);
+    $timezone = @tvalidator("PURIFY",$_POST['timezone']);
+    $trimcolor = @tvalidator("PURIFY",$_POST['trimcolor']);
+    $readonly = @tvalidator("PURIFY",$_POST['readonly']);
+    $caller = @tvalidator("PURIFY",$_POST['caller']);
+    $_SESSION['iscore'] = @tvalidator("PURIFY",$_POST['iscore']);
 
     $postid_query='';
     if($host == 'Y'){

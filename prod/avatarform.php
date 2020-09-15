@@ -5,9 +5,9 @@ require_once("config-pdo.php");
 require_once("password.inc.php");
 
 require_once("htmlhead.inc.php");
-$providerid = @mysql_safe_string($_SESSION['pid']);
-$loginid = @mysql_safe_string($_SESSION['loginid']);
-$devicetype = @mysql_safe_string($_POST['devicetype']);
+$providerid = @tvalidator("PURIFY",$_SESSION['pid']);
+$loginid = @tvalidator("PURIFY",$_SESSION['loginid']);
+$devicetype = @tvalidator("PURIFY",$_POST['devicetype']);
 
 $result = pdo_query("1","select publish, publishprofile from provider where providerid=?",array($providerid));
 if($row = pdo_fetch($result)){

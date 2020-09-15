@@ -3,8 +3,8 @@ session_start();
 require_once("config.php");
 require_once("htmlhead.inc.php");
 
-///$providerid = mysql_safe_string($_POST['providerid']);
-//$loginid = mysql_safe_string($_POST['loginid']);
+///$providerid = tvalidator("PURIFY",$_POST['providerid']);
+//$loginid = tvalidator("PURIFY",$_POST['loginid']);
 
 $date = date(DATE_RFC2822);   
 ?>

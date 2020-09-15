@@ -2,10 +2,10 @@
 session_start();
 require_once("config-pdo.php");
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = @mysql_safe_string($_POST['c']);
-    $callingid = @mysql_safe_string($_POST['a']);
-    $mode = @mysql_safe_string($_POST['mode']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = @tvalidator("PURIFY",$_POST['c']);
+    $callingid = @tvalidator("PURIFY",$_POST['a']);
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
     
     
     $result = pdo_query("1",

@@ -12,7 +12,7 @@ $braxsocial = "<img src='../img/brax-photo-round-greatlake.png' style='position:
 require_once("htmlhead.inc.php");
 
 
-$providerid = mysql_safe_string($_SESSION[pid]);
+$providerid = tvalidator("PURIFY",$_SESSION[pid]);
 $today = date("M-d-y",time()+$_SESSION[timezone]*60*60);
 
 

@@ -6,9 +6,9 @@ require ("SmsInterface.inc");
 require_once("htmlhead.inc");
 require_once("crypt.inc");
 
-$sessionid = mysql_safe_string("$_GET[sid]");
-$language = mysql_safe_string("$_GET[lang]");
-$party = mysql_safe_string("$_GET[party]");
+$sessionid = tvalidator("PURIFY","$_GET[sid]");
+$language = tvalidator("PURIFY","$_GET[lang]");
+$party = tvalidator("PURIFY","$_GET[party]");
 
 require_once("language.inc");
 

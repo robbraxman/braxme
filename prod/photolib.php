@@ -10,25 +10,25 @@ require_once("internationalization.php");
 
     //savelastfunc ( "P" );
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = mysql_safe_string($_SESSION['pid']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = tvalidator("PURIFY",$_SESSION['pid']);
     
     
     $showfilename = '';
     if(isset($_POST['filename'])){
     
-        $showfilename = mysql_safe_string($_POST['filename']);
+        $showfilename = tvalidator("PURIFY",$_POST['filename']);
     }
 
     $deletefilename = '';
     if(isset($_POST['deletefilename'])){
     
-        $deletefilename = mysql_safe_string($_POST['deletefilename']);
+        $deletefilename = tvalidator("PURIFY",$_POST['deletefilename']);
     }
     $rotateangle = "";
     if(isset($_POST['rotate'])){
     
-        $rotateangle = mysql_safe_string($_POST['rotate']);
+        $rotateangle = tvalidator("PURIFY",$_POST['rotate']);
     }
     
     //ForSQL
@@ -38,10 +38,10 @@ require_once("internationalization.php");
     $origalbum = "";
     if(isset($_POST['album'])){
     
-        $selectedalbum = DeconvertHTML(mysql_safe_string($_POST['album']));
+        $selectedalbum = DeconvertHTML(tvalidator("PURIFY",$_POST['album']));
         $selectedalbumHtml = ConvertHTML($selectedalbum);
-        $selectedalbumSql = mysql_safe_string($selectedalbum);
-        $origalbum = DeconvertHTML(mysql_safe_string($_POST['origalbum']));
+        $selectedalbumSql = tvalidator("PURIFY",$selectedalbum);
+        $origalbum = DeconvertHTML(tvalidator("PURIFY",$_POST['origalbum']));
         //echo $selectedalbum;
     }
     
@@ -65,7 +65,7 @@ require_once("internationalization.php");
             if($row = do_mysqli_fetch("1",$result)){
             
                 $selectedalbum = $row['album'];
-                $selectedalbumSql = mysql_safe_string($row['album']);
+                $selectedalbumSql = tvalidator("PURIFY",$row['album']);
                 $selectedalbumHtml = ConvertHTML($selectedalbum);
             } else {
             
@@ -75,7 +75,7 @@ require_once("internationalization.php");
                 if($row = do_mysqli_fetch("1",$result)){
                 
                     $selectedalbum = $row['album'];
-                    $selectedalbumSql = mysql_safe_string($row['album']);
+                    $selectedalbumSql = tvalidator("PURIFY",$row['album']);
                     $selectedalbumHtml = ConvertHTML($selectedalbum);
                 } else {
                     
@@ -110,13 +110,13 @@ require_once("internationalization.php");
     //*************************************************************
     $save = "";
     if(isset($_POST['save'])){
-        $save = mysql_safe_string($_POST['save']);
+        $save = tvalidator("PURIFY",$_POST['save']);
     }
     if( $save=='DA'){ //delete album
 
         /*Can't Delete Public Pics */
         
-        $selectedalbum = mysql_safe_string(stripslashes($_POST['album']));        
+        $selectedalbum = tvalidator("PURIFY",stripslashes($_POST['album']));        
         $result = do_mysqli_query("1",
             "
                 delete from photolib 
@@ -134,7 +134,7 @@ require_once("internationalization.php");
 
         /*Can't Delete Public Pics */
         
-        $selectedalbum = mysql_safe_string(stripslashes($_POST['album']));        
+        $selectedalbum = tvalidator("PURIFY",stripslashes($_POST['album']));        
         $result = do_mysqli_query("1",
             "
                 update photolib set hide='Y' 
@@ -155,7 +155,7 @@ require_once("internationalization.php");
 
         /*Can't Delete Public Pics */
         
-        $selectedalbum = mysql_safe_string(stripslashes($_POST['album']));        
+        $selectedalbum = tvalidator("PURIFY",stripslashes($_POST['album']));        
         $result = do_mysqli_query("1",
             "
                 update photolib set hide='N' 
@@ -171,10 +171,10 @@ require_once("internationalization.php");
     }
     if( $save=='FAMILYSHARE' || $save=='FRIENDSHARE' || $save =='ALLSHARE'){ //Change Photo
     
-        $comment = @mysql_safe_string($_POST['comment']);
-        $title = @mysql_safe_string($_POST['title']);
-        $selectedalbum = DeconvertHTML(mysql_safe_string($_POST['album']));        
-        $selectedalbumSql = mysql_safe_string($selectedalbum);
+        $comment = @tvalidator("PURIFY",$_POST['comment']);
+        $title = @tvalidator("PURIFY",$_POST['title']);
+        $selectedalbum = DeconvertHTML(tvalidator("PURIFY",$_POST['album']));        
+        $selectedalbumSql = tvalidator("PURIFY",$selectedalbum);
         $sharetype= 'C';
         if($save == 'FRIENDSHARE'){
             $sharetype = 'F';
@@ -193,9 +193,9 @@ require_once("internationalization.php");
         ");
             
        $save ='';         
-        $selectedalbum = DeconvertHTML(mysql_safe_string($_POST['origalbum']));
+        $selectedalbum = DeconvertHTML(tvalidator("PURIFY",$_POST['origalbum']));
         $selectedalbumHtml = ConvertHTML($selectedalbum);
-        $selectedalbumSql = mysql_safe_string($selectedalbum);
+        $selectedalbumSql = tvalidator("PURIFY",$selectedalbum);
        $showfilename = "";
        
        
@@ -203,10 +203,10 @@ require_once("internationalization.php");
     }
     if( $save=='FRIENDUNSHARE'){ //Change Photo
     
-        $comment = @mysql_safe_string($_POST['comment']);
-        $title = @mysql_safe_string($_POST['title']);
-        $selectedalbum = DeconvertHTML(mysql_safe_string($_POST['album']));        
-        $selectedalbumSql = mysql_safe_string($selectedalbum);
+        $comment = @tvalidator("PURIFY",$_POST['comment']);
+        $title = @tvalidator("PURIFY",$_POST['title']);
+        $selectedalbum = DeconvertHTML(tvalidator("PURIFY",$_POST['album']));        
+        $selectedalbumSql = tvalidator("PURIFY",$selectedalbum);
         
         $result = do_mysqli_query("1",
         "
@@ -214,9 +214,9 @@ require_once("internationalization.php");
         ");
             
        $save ='';         
-        $selectedalbum = DeconvertHTML(mysql_safe_string($_POST['origalbum']));
+        $selectedalbum = DeconvertHTML(tvalidator("PURIFY",$_POST['origalbum']));
         $selectedalbumHtml = ConvertHTML($selectedalbum);
-        $selectedalbumSql = mysql_safe_string($selectedalbum);
+        $selectedalbumSql = tvalidator("PURIFY",$selectedalbum);
        $showfilename = "";
        
        
@@ -225,13 +225,13 @@ require_once("internationalization.php");
     
     if( $save=='C'){ //Change Photo
     
-        $comment = @mysql_safe_string($_POST['comment']);
-        $title = @mysql_safe_string($_POST['title']);
-        $selectedalbum = DeconvertHTML(mysql_safe_string($_POST['album']));        
-        $selectedalbumSql = mysql_safe_string($selectedalbum);
+        $comment = @tvalidator("PURIFY",$_POST['comment']);
+        $title = @tvalidator("PURIFY",$_POST['title']);
+        $selectedalbum = DeconvertHTML(tvalidator("PURIFY",$_POST['album']));        
+        $selectedalbumSql = tvalidator("PURIFY",$selectedalbum);
         if($selectedalbum==''){
             $selectedalbum = $origalbum;
-            $selectedalbumSql = mysql_safe_string($selectedalbum);
+            $selectedalbumSql = tvalidator("PURIFY",$selectedalbum);
         }
             $result = do_mysqli_query("1",
             "
@@ -240,9 +240,9 @@ require_once("internationalization.php");
             ");
             
        $save ='';         
-        $selectedalbum = DeconvertHTML(mysql_safe_string($_POST['origalbum']));
+        $selectedalbum = DeconvertHTML(tvalidator("PURIFY",$_POST['origalbum']));
         $selectedalbumHtml = ConvertHTML($selectedalbum);
-        $selectedalbumSql = mysql_safe_string($selectedalbum);
+        $selectedalbumSql = tvalidator("PURIFY",$selectedalbum);
        $showfilename = "";
        
        
@@ -275,8 +275,8 @@ require_once("internationalization.php");
     if( $save=='CA'){ //Change Album
         
         $newalbum = "";
-        $newalbum = DeconvertHTML(mysql_safe_string($_POST['newalbum'] ));
-        $newalbumSql = mysql_safe_string($newalbum);
+        $newalbum = DeconvertHTML(tvalidator("PURIFY",$_POST['newalbum'] ));
+        $newalbumSql = tvalidator("PURIFY",$newalbum);
         if( $newalbum!=''){
             
             $newpublic = "N";
@@ -302,7 +302,7 @@ require_once("internationalization.php");
        $showfilename = "";
         $selectedalbum = $newalbum;
         $selectedalbumHtml = ConvertHTML($newalbum);
-        $selectedalbumSql = mysql_safe_string($newalbum);
+        $selectedalbumSql = tvalidator("PURIFY",$newalbum);
         $save = "";
     }
         
@@ -354,7 +354,7 @@ require_once("internationalization.php");
 
     $page = 1;
     if(isset($_POST['page'])){
-        $page = intval(mysql_safe_string($_POST['page']));
+        $page = intval(tvalidator("PURIFY",$_POST['page']));
     }
     if( $page == 0)
         $page = 1;
@@ -1428,7 +1428,7 @@ function CreateAlbumList( $providerid, $selectedalbum, $selectedalbumHtml, $page
     global $iconsource_braxcheck_common;
     global $iconsource_braxsettings_common;
     
-    $selectedalbumSql = mysql_safe_string($selectedalbum);
+    $selectedalbumSql = tvalidator("PURIFY",$selectedalbum);
     $selectedalbumDisplay = DeconvertHTML($selectedalbum);
     $albumexclude = " and photolib.album not like '* Artist%' ";
     if($_SESSION['enterprise']=='Y' && $_SESSION['superadmin']!='Y'){
@@ -1766,7 +1766,7 @@ function CreateAlbumList( $providerid, $selectedalbum, $selectedalbumHtml, $page
 function AlbumMenu($providerid, $selectedalbum, $page)
 {
     $selectedalbumHtml = ConvertHTML($selectedalbum);
-    $selectedalbumSql = mysql_safe_string($selectedalbum);
+    $selectedalbumSql = tvalidator("PURIFY",$selectedalbum);
             
      $albumselect = "";  
      $albummenu = "<ul id='photomenu' style='height:500px;overflow:scroll'>";  

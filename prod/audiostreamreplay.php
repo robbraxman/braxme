@@ -2,10 +2,10 @@
 session_start();
 require("validsession.inc.php");
 require("config-pdo.php");
-$streamid = @mysql_safe_string($_POST['streamid']);
-$chatid = @mysql_safe_string($_POST['chatid']);
-$broadcastid = @mysql_safe_string($_POST['broadcastid']);
-$filename = @mysql_safe_string($_POST['filename']);
+$streamid = @tvalidator("PURIFY",$_POST['streamid']);
+$chatid = @tvalidator("PURIFY",$_POST['chatid']);
+$broadcastid = @tvalidator("PURIFY",$_POST['broadcastid']);
+$filename = @tvalidator("PURIFY",$_POST['filename']);
 $live = 0;
 
     pdo_query("1",

@@ -7,24 +7,24 @@ require_once("room.inc.php");
 require_once("groupmanage.inc.php");
 require_once("internationalization.php");
 
-    //$replyflag = mysql_safe_string($_POST[replyflag]);
-    $providerid = mysql_safe_string($_SESSION['pid']);
+    //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
+    $providerid = tvalidator("PURIFY",$_SESSION['pid']);
     
-    $mode = @mysql_safe_string($_POST['mode']);
-    $groupid = stripslashes(@mysql_safe_string($_POST['groupid']));
-    $roomid = stripslashes(@mysql_safe_string($_POST['roomid']));
-    $friendproviderid = @mysql_safe_string($_POST['friendproviderid']);
-    $newgroupname = @mysql_safe_string(stripslashes($_POST['groupname']));
-    $filter = @mysql_safe_string(stripslashes($_POST['filter']));
+    $mode = @tvalidator("PURIFY",$_POST['mode']);
+    $groupid = stripslashes(@tvalidator("PURIFY",$_POST['groupid']));
+    $roomid = stripslashes(@tvalidator("PURIFY",$_POST['roomid']));
+    $friendproviderid = @tvalidator("PURIFY",$_POST['friendproviderid']);
+    $newgroupname = @tvalidator("PURIFY",stripslashes($_POST['groupname']));
+    $filter = @tvalidator("PURIFY",stripslashes($_POST['filter']));
     
-    $groupname = @mysql_safe_string(stripslashes($_POST['groupname']));
-    $groupnameForSql = @mysql_safe_string(stripslashes($groupname));
+    $groupname = @tvalidator("PURIFY",stripslashes($_POST['groupname']));
+    $groupnameForSql = @tvalidator("PURIFY",stripslashes($groupname));
     $groupnameHtml = htmlentities(stripslashes($groupname),ENT_QUOTES);
-    $caller = @mysql_safe_string($_POST['caller']);
-    $organization = stripslashes(@mysql_safe_string($_POST['organization']));
-    $groupdescription = stripslashes(@mysql_safe_string($_POST['groupdesc']));
+    $caller = @tvalidator("PURIFY",$_POST['caller']);
+    $organization = stripslashes(@tvalidator("PURIFY",$_POST['organization']));
+    $groupdescription = stripslashes(@tvalidator("PURIFY",$_POST['groupdesc']));
     $groupdesc = htmlentities(stripslashes($groupdescription),ENT_QUOTES);
-    $photourl = stripslashes(@mysql_safe_string($_POST['photourl']));
+    $photourl = stripslashes(@tvalidator("PURIFY",$_POST['photourl']));
 
     
     $dot = "<img class='unreadicon' src='../img/dot.png' style='height:10px;width:auto;padding-top:3;padding-right:2px;padding-bottom:3px;' />";
@@ -73,7 +73,7 @@ require_once("internationalization.php");
         $groupname = $newgroupname;
         if( $groupname!=''){
         
-            $groupnameForSql = mysql_safe_string(stripslashes($newgroupname));
+            $groupnameForSql = tvalidator("PURIFY",stripslashes($newgroupname));
             $groupnameHtml = htmlentities(stripslashes($newgroupname),ENT_QUOTES);
 
             $groupid = 0;
@@ -116,7 +116,7 @@ require_once("internationalization.php");
         
             
             $groupname = stripslashes($newgroupname);
-            $groupnameForSql = mysql_safe_string(stripslashes($newgroupname));
+            $groupnameForSql = tvalidator("PURIFY",stripslashes($newgroupname));
             $groupnameHtml = htmlentities(stripslashes($newgroupname),ENT_QUOTES);
             
             $error = SaveGroup($groupid, $groupname, $groupdesc, $organization, $photourl, $roomid );
