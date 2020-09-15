@@ -2,12 +2,12 @@
 ini_set('session.cookie_httponly', 1);
 ini_set('session.cookie_secure', 1);
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("colorscheme.php");
 require_once("aws.php");
 require_once("SmsInterface.inc");
 require_once("sendmail.php");
-require_once("crypt.inc.php");
+require_once("crypt-pdo.inc.php");
 require_once("signupfunc.php");
 require_once("internationalization.php");
 

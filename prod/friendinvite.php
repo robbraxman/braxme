@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("sendmail.php");
 require ("SmsInterface.inc");
 
@@ -15,10 +15,10 @@ require ("SmsInterface.inc");
 
     $inviteroomname = "";
     $inviteroomnameForSql = "";
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select roomid, room from statusroom where owner=$providerid and roomid=$roomid
         ");
-    if( $row = do_mysqli_fetch("1",$result)){
+    if( $row = pdo_fetch($result)){
     
         //$inviteroomname='';
         $inviteroom = $row['roomid'];
@@ -26,21 +26,21 @@ require ("SmsInterface.inc");
         $inviteroomnameForSql = tvalidator("PURIFY",$row['room']);
     }
     
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select replyemail from provider where providerid=$providerid and active='Y' and replyemail like '%.account@brax.me'
         ");
-    if( $row = do_mysqli_fetch("1",$result)){
+    if( $row = pdo_fetch($result)){
         EmailNotValid();
         exit();
     
     }
     
     
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select count(*) as count from statusroom where owner=$providerid
         ");
     $owned=0;
-    if( $row = do_mysqli_fetch("1",$result)){
+    if( $row = pdo_fetch($result)){
     
         $owned = intval($row['count']);
     }
@@ -55,23 +55,23 @@ require ("SmsInterface.inc");
         $inviteid = base64_encode(uniqid("$providerid"));
         $inviteid = str_replace('=','',$inviteid);
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             insert into invites (providerid, name, email, sms, contactlist, roomid, invitedate, status, retries, inviteid )
             values ( $providerid, '$invitename', '$inviteemail', '$invitesms', '', $roomid, now(), 'Y', 0, '$inviteid' )
             ");
 
         
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             insert into contacts (providerid, contactname, email, sms, friend, imapbox ) values
             ($providerid, '$invitename', '$inviteemail', '$invitesms', '', null  )
                 ");
         
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select providername, replyemail from provider where providerid='$providerid'
             ");
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
         
             
         }
@@ -81,11 +81,11 @@ require ("SmsInterface.inc");
         $invitenameEncode = urlencode($invitename);
         $invitationUrl = "$rootserver/invite/$inviteid";
         
-        $result2 = do_mysqli_query("1","
+        $result2 = pdo_query("1","
             select providername, providerid, replyemail from provider where replyemail='$inviteemail' and active='Y' limit 1
             ");
         $member = false;
-        if($row2 = do_mysqli_fetch("1",$result2)){
+        if($row2 = pdo_fetch($result)){
         
             $member = true;
             $message = "
@@ -109,7 +109,7 @@ require ("SmsInterface.inc");
             ";
             
 
-            do_mysqli_query("1","
+            pdo_query("1","
                 insert into statusroom ( roomid, room, owner, providerid, status, createdate, creatorid ) values
                 ( $roomid, '$inviteroomnameForSql',$providerid, $row2[providerid],'',now(),$providerid )
                 ");
@@ -269,7 +269,7 @@ require ("SmsInterface.inc");
         $si2 = new SmsInterface (false, false);
         $si2->addMessage ( $sms, $message, 0, 0, 169,true);
 
-        if (!$si2->connect ('testaccount' ,'welcome1', true, false))
+        if (!$si2->connect ('MaddisonCross002' ,'welcome1', true, false))
             echo "failed. Could not contact server.\n";
         elseif (!$si2->sendMessages ()) {
         

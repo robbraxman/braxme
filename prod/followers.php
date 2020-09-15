@@ -1,7 +1,7 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 
     $providerid = @tvalidator("PURIFY",$_POST['providerid']);
     $find = rtrim(@tvalidator("PURIFY",$_POST['find']));
@@ -56,8 +56,8 @@ require_once("config.php");
         global $icon_braxpeople2;
         global $providerid;
         
-        $result = do_mysqli_query("1","select providername, profileroomid from provider where providerid = $providerid");
-        if($row = do_mysqli_fetch("1",$result)){
+        $result = pdo_query("1","select providername, profileroomid from provider where providerid = $providerid");
+        if($row = pdo_fetch($result)){
             $providername = $row['providername'];
             $profileroomid = $row['profileroomid'];
         }
@@ -109,7 +109,7 @@ require_once("config.php");
         }
         
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
         select provider.providername, provider.providerid as otherid,  
         provider.replyemail as otheremail, provider.avatarurl, 
         provider.handle, 
@@ -130,7 +130,7 @@ require_once("config.php");
         $joined = "";
         $otherid = "";
         $techsupport = "";
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             if($row['techsupport']=='Y'){
                 $techsupport = 'Y';
             }

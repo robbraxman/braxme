@@ -1,8 +1,8 @@
 <?php
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("SmsInterface.inc");
 require_once("sendmail.php");
-require_once("crypt.inc.php");
+require_once("crypt-pdo.inc.php");
 require_once("roommanage.inc.php");
 require_once("whitelist.inc.php");
 class SignUp 
@@ -120,58 +120,58 @@ class SignUp
         if($iphash == ''){
             return true;
         }
-        do_mysqli_query("1"," 
+        pdo_query("1"," 
             insert ignore into iphash ( ip, activitydate, lastaction, icount )
             values( '$iphash', now(), null, 0 )
             ");
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select lastaction from iphash where ip = '$iphash' 
                 ");
-        if( $row = do_mysqli_fetch("1",$result)){
+        if( $row = pdo_fetch($result)){
             $lastaction = $row['lastaction'];
         }
         
         
         if($deviceid!=''){
-            do_mysqli_query("1"," 
+            pdo_query("1"," 
                 update iphash set deviceid='$deviceid' where deviceid is null and ip = '$iphash'
                 ");
         }
         if($lastuser!=''){
-            do_mysqli_query("1"," 
+            pdo_query("1"," 
                 update iphash set lastuser='$lastuser' where lastuser is null and ip = '$iphash'
                 ");
             //Connect this account to other user.
-            do_mysqli_query("1"," 
+            pdo_query("1"," 
                 update provider set iphash2 ='$iphash', multi=multi+1 where handle='$lastuser' and active='Y' 
                 ");
             
         }
         if($timezone!=''){
-            do_mysqli_query("1"," 
+            pdo_query("1"," 
                 update iphash set timezone='$timezone' where timezone is null and ip = '$iphash'
                 ");
         }
         if($signupcookie!=''){
-            do_mysqli_query("1"," 
+            pdo_query("1"," 
                 update iphash set signupcookie='$signupcookie' where signupcookie is null and ip = '$iphash'
                 ");
         }
         if($innerwidth!=''){
-            do_mysqli_query("1"," 
+            pdo_query("1"," 
                 update iphash set innerwidth='$innerwidth' where innerwidth is null and ip = '$iphash'
                 ");
         }
         if($innerheight!=''){
-            do_mysqli_query("1"," 
+            pdo_query("1"," 
                 update iphash set innerheight='$innerheight' where innerheight is null and ip = '$iphash'
                 ");
         }
         
         
         
-        do_mysqli_query("1"," 
+        pdo_query("1"," 
             update iphash set icount = icount+1, lastaction = now() 
                 where 
                 (   ip = '$iphash' or 
@@ -180,20 +180,20 @@ class SignUp
                 )
             ");
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select icount from iphash where ip = '$iphash' and datediff('$lastaction', lastaction)<1
                 and icount > 2
                 ");
-        if( $row = do_mysqli_fetch("1",$result)){
+        if( $row = pdo_fetch($result)){
             $icount = $row['icount'];
-            do_mysqli_query("1"," 
+            pdo_query("1"," 
                 update iphash set ipattacker = '$ip' where ip = '$iphash' and ipattacker is null
                 ");
             
                 return $icount;
         }
         
-        do_mysqli_query("1"," 
+        pdo_query("1"," 
             update iphash set icount = 1 where ip = '$iphash' and datediff(activitydate, lastaction)>0
             ");
         return true;
@@ -238,7 +238,7 @@ class SignUp
         $this->sponsor = $sponsor;
         $this->companyname = $companyname;
         
-        $result = do_mysqli_query("1"," 
+        $result = pdo_query("1"," 
             insert ignore into csvsignup ( email, sms, name, handle, ownerid, roomid, temppassword, sponsor, companyname, uploaded, status )
             values ('$this->replyemail','$this->replysms',
             '$this->providername','$this->handle',$_SESSION[pid],$this->roomid,'$this->password', '$this->sponsor','$this->companyname', now(),'U' )
@@ -256,11 +256,11 @@ class SignUp
         $timezone = "-8";
         $trackerid = '';
         
-        $result = do_mysqli_query("1"," 
+        $result = pdo_query("1"," 
             select id, name, email, sms,handle,  temppassword, ownerid, roomid, sponsor, companyname  from csvsignup
             where status='N'  $limit
             ");
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             
             $ownerid = $row['ownerid'];
             $name = ucwords(strtolower($row['name']));
@@ -295,12 +295,12 @@ class SignUp
             //Change Status to Success
             if($status){
                 //echo "OK - ".$row['name']."<br>";
-                do_mysqli_query("1","update csvsignup set status='Y' where status='N' and id = $row[id]  ");
+                pdo_query("1","update csvsignup set status='Y' where status='N' and id = $row[id]  ");
             } else {
                 echo $this->DisplayErrors();
                   echo "Error - ".$row['name']."<br>";
                 $errorcount++;
-                do_mysqli_query("1","update csvsignup set status='E', error='$this->error1' where status='N' and id = $row[id] ");
+                pdo_query("1","update csvsignup set status='E', error='$this->error1' where status='N' and id = $row[id] ");
                 
             }
             
@@ -509,7 +509,7 @@ class SignUp
             $this->roomhandle = '';
         }
         
-        $result = do_mysqli_query("1", 
+        $result = pdo_query("1", 
             "insert into provider 
             ( newbie, providerid, createdate, providername, name2, 
              companyname, handle, active, 
@@ -542,20 +542,20 @@ class SignUp
             return false;
         }
         if($this->termsofuse=='Y'){
-            do_mysqli_query("1","update provider set termsofuse = now() where providerid=$this->providerid ");
+            pdo_query("1","update provider set termsofuse = now() where providerid=$this->providerid ");
         }
         
-        $result = do_mysqli_query("1", 
+        $result = pdo_query("1", 
           " delete from staff where providerid=$this->providerid and loginid='$this->loginid' ");
 
-        $result = do_mysqli_query("1", 
+        $result = pdo_query("1", 
           " insert into staff (providerid, loginid, adminright, emailalert, workgroup, staffname, active, email) values  " .
           " ($this->providerid, '$this->loginid', 'Y',  'Y', 'admin', '$this->providername','Y', '$this->replyemail' )");
     
         if( "$this->password"!=""){
         
             $pwd_hash = password_hash($this->password, PASSWORD_DEFAULT);
-            $result = do_mysqli_query("1", 
+            $result = pdo_query("1", 
              " 
                 update staff set 
                 pwd_ver = 3, 
@@ -568,13 +568,13 @@ class SignUp
         }
     
         //Create encrypted SMS
-        do_mysqli_query("1","
+        pdo_query("1","
             delete from sms where providerid = $this->providerid
             ");
     
         if($this->replysms!=''){
             $sms_encrypted = EncryptText($this->replysms, $this->providerid);
-            do_mysqli_query("1","
+            pdo_query("1","
                 insert into sms (providerid, sms, encoding ) values 
                 (
                     $this->providerid, '$sms_encrypted','$_SESSION[responseencoding]'
@@ -585,7 +585,7 @@ class SignUp
     
         if( $this->enterprise == 'Y'){
         
-            $result = do_mysqli_query("1", 
+            $result = pdo_query("1", 
               " 
                   insert into msgplan (providerid, planid, datestart, dateend, count, active, created )
                   values ($this->providerid, 'STD',now(), now(), 1, 'N', now() )
@@ -595,7 +595,7 @@ class SignUp
         //Invitation - Add Email if Missing so invite can be sent with SMS only
         if($this->replysms!='+1' && $this->replysms!='' && $this->invited=='Y'){
         
-            $result = do_mysqli_query("1", 
+            $result = pdo_query("1", 
                 "
                 update invites set email = '$this->replyemail' where sms='$this->replysms'
                 and email = '' and status='Y'
@@ -612,14 +612,14 @@ class SignUp
         } else 
         if( $this->roomhandle !==''){
         
-            $result = do_mysqli_query("1", 
+            $result = pdo_query("1", 
                 "
                 select roomid, 
                 (select owner from statusroom where roomhandle.roomid = statusroom.roomid limit 1 ) as owner
                 from roomhandle where handle='$this->roomhandle' 
                 "
               );
-            if($row = do_mysqli_fetch("1",$result)){
+            if($row = pdo_fetch($result)){
             
                 $roomid = $row['roomid'];
                 $owner = $row['owner'];
@@ -631,7 +631,7 @@ class SignUp
                 /*
                 $inviteid = base64_encode(uniqid("$owner"));
 
-                $result = do_mysqli_query("1", 
+                $result = pdo_query("1", 
                     "
                     insert into invites 
                     (providerid, name, email, status, invitedate, 
@@ -641,7 +641,7 @@ class SignUp
                     $this->roomid, '','',0, null, null, '$inviteid' )
                     "
                   );
-                $result = do_mysqli_query("1","
+                $result = pdo_query("1","
                     insert into contacts (providerid, contactname, email, friend, imapbox, blocked ) values
                     ($owner, '$this->providername', '$this->replyemail', '', null,''  )
                 ");
@@ -652,9 +652,9 @@ class SignUp
 
         }
         
-        do_mysqli_query("1","insert into handle (handle, email, providerid) values ('$this->handle', '$this->replyemail',$this->providerid) ");
-        $result = do_mysqli_query("1","select * from provider where providerid = $this->providerid and active='Y' ");
-        if($row = do_mysqli_fetch("1",$result)){
+        pdo_query("1","insert into handle (handle, email, providerid) values ('$this->handle', '$this->replyemail',$this->providerid) ");
+        $result = pdo_query("1","select * from provider where providerid = $this->providerid and active='Y' ");
+        if($row = pdo_fetch($result)){
             $this->SendSignUpEmail();
         }
         
@@ -668,10 +668,10 @@ class SignUp
             $publish, $publishprofile, $roomdiscovery, $streamingaccount, $welcome, $sponsorlist,
             $inactivitytimeout, $pin, $colorscheme, $gift, $wallpaper, $hardenter )
     {
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select handle, replyemail, verified from provider where providerid = $providerid
                 ");
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
             $this->orig_handle = $row['handle'];
             $origemail = $row['replyemail'];
             $origverified = $row['verified'];
@@ -723,8 +723,8 @@ class SignUp
         $this->companyname = $companyname;
         $this->loginid = strtolower( $loginid);
         
-        $result = do_mysqli_query("1","select superadmin from provider where providerid = $this->providerid ");
-        if($row = do_mysqli_fetch("1",$result)){
+        $result = pdo_query("1","select superadmin from provider where providerid = $this->providerid ");
+        if($row = pdo_fetch($result)){
             $this->superadmin = $row['superadmin'];
         }
         
@@ -812,7 +812,7 @@ class SignUp
     {
         
         
-        $result = do_mysqli_query("1", 
+        $result = pdo_query("1", 
           " update provider " .
           " set verified='$this->verified', providername= '$this->providername', ".
           " name2='$this->name2', companyname= '$this->companyname', handle='$this->handle', ".
@@ -828,14 +828,14 @@ class SignUp
           );
         
         //Create encrypted SMS
-        do_mysqli_query("1","
+        pdo_query("1","
             delete from sms where providerid = $this->providerid
             ");
 
         if($this->replysms!=''){
             $sms_encrypted = EncryptText($this->replysms, $this->providerid);
             //$sms_decrypted = DecryptText($sms_encrypted, $_SESSION['responseencoding'], $providerid);
-            do_mysqli_query("1","
+            pdo_query("1","
                 insert into sms (providerid, sms, encoding ) values 
                 (
                     $this->providerid, '$sms_encrypted','$_SESSION[responseencoding]'
@@ -843,83 +843,83 @@ class SignUp
             ");
         }
         
-        do_mysqli_query("1","delete from timeout where providerid = $this->providerid ");
+        pdo_query("1","delete from timeout where providerid = $this->providerid ");
 
         if($this->pin!=''){
-            do_mysqli_query("1","insert into timeout (providerid, pin, encoding ) values ($this->providerid, '$this->pin', 'PLAINTEXT' ) ");
+            pdo_query("1","insert into timeout (providerid, pin, encoding ) values ($this->providerid, '$this->pin', 'PLAINTEXT' ) ");
 
         }
         
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
             update contacts set handle ='$this->handle', targetproviderid=$this->providerid  where handle='$this->orig_handle' and '$this->orig_handle'!=''
             "
         );
 
-        $result = do_mysqli_query("1", 
+        $result = pdo_query("1", 
             " update staff set staffname='$this->providername' where loginid='admin' and providerid=$this->providerid " 
           );
         
         //Account Termination Cleanup
         if($this->active == 'N'){
-            do_mysqli_query("1","delete from invites where email='$this->replyemail' and chatid is not null ");
-            do_mysqli_query("1","delete from handle where providerid = $this->providerid  ");
+            pdo_query("1","delete from invites where email='$this->replyemail' and chatid is not null ");
+            pdo_query("1","delete from handle where providerid = $this->providerid  ");
              
-            do_mysqli_query("1","update iphash set icount = icount-1 where iphash = (select iphash2 from provider where providerid = $this->providerid) ");
+            pdo_query("1","update iphash set icount = icount-1 where iphash = (select iphash2 from provider where providerid = $this->providerid) ");
              
         }
          
         if($this->enterprise != ''){
-            do_mysqli_query("1","update provider set enterprise = '$this->enterprise' where providerid = $this->providerid ");
+            pdo_query("1","update provider set enterprise = '$this->enterprise' where providerid = $this->providerid ");
         }
          
          //Check Email
          if($this->replyemail!=$this->newemail && $this->newemail!='' && $this->replyemail!=''){
             $this->SendChangedEmail();
              
-            $result = do_mysqli_query("1",
+            $result = pdo_query("1",
                 "
                 update provider set replyemail = '$this->newemail', verified='N', verifiedemail='' where providerid = $this->providerid and active='Y'
                 "
             );
-            $result = do_mysqli_query("1",
+            $result = pdo_query("1",
                 "
                 update staff set email = '$this->newemail' where providerid = $this->providerid and email='$this->replyemail' and active='Y'
                 "
             );
-            $result = do_mysqli_query("1",
+            $result = pdo_query("1",
                 "
                 update appidentity set replyemail = '$this->newemail' where  replyemail='$this->replyemail'
                 "
             );
-            $result = do_mysqli_query("1",
+            $result = pdo_query("1",
                 "
                 update invites set email = '$this->newemail' where  email='$this->replyemail'
                 "
             );
-            $result = do_mysqli_query("1",
+            $result = pdo_query("1",
                 "
                 update contacts set email = '$this->newemail', targetproviderid=$this->providerid where  email='$this->replyemail'
                 "
             );
-            $result = do_mysqli_query("1",
+            $result = pdo_query("1",
                 "
                 delete from verification where email='$this->replyemail'
                 "
             );
         }
         if( $this->enterprise == 'Y'){
-            $result = do_mysqli_query("1", "select * from msgplan where providerid = $this->providerid ");
-            if(!$row = do_mysqli_fetch("1",$result)){
+            $result = pdo_query("1", "select * from msgplan where providerid = $this->providerid ");
+            if(!$row = pdo_fetch($result)){
 
-                $result = do_mysqli_query("1", 
+                $result = pdo_query("1", 
                   " 
                       insert into msgplan (providerid, planid, datestart, dateend, count, active, created )
                       values ($this->providerid, 'STD',now(), now(), 1, 'N', now() )
                   ");
 
             } else {
-                do_mysqli_query("1","update msgplan set active='N' where active='F' and providerid = $this->providerid");
+                pdo_query("1","update msgplan set active='N' where active='F' and providerid = $this->providerid");
 
             }
 
@@ -935,10 +935,10 @@ class SignUp
         $industry = "";
         $partitioned = "";
         //If not enterprise - see if sponsor requires partitioning
-        $result = do_mysqli_query("1", 
+        $result = pdo_query("1", 
           " select partitioned, industry from sponsor where sponsor = '$this->sponsor' " 
           );
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
             $partitioned = $row['partitioned'];
             $industry = $row['industry'];
             
@@ -1007,10 +1007,10 @@ class SignUp
         $partitioned = "";
         $roomdiscovery = $this->roomdiscovery;
         //If not enterprise - see if sponsor requires partitioning
-        $result = do_mysqli_query("1", 
+        $result = pdo_query("1", 
           " select partitioned, industry from sponsor where sponsor = '$this->sponsor' " 
           );
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
             $partitioned = $row['partitioned'];
             $industry = $row['industry'];
             
@@ -1031,24 +1031,24 @@ class SignUp
     function GetProviderid()
     {
         $providerid = 0;
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "select max(val1)+1 as maxid from parms where parmkey='SUBSCRIBER' AND PARMCODE='ID' "
         );
-        if( $row = do_mysqli_fetch("1",$result)){
+        if( $row = pdo_fetch($result)){
             
             $providerid =$row['maxid'];
         }
 
 
-        $result = do_mysqli_query("1", "select max(providerid)+1 as providerid from provider ");
-        if( $row = do_mysqli_fetch("1",$result)){
+        $result = pdo_query("1", "select max(providerid)+1 as providerid from provider ");
+        if( $row = pdo_fetch($result)){
             
             $highid = $row['providerid'];
         }
 
         if( $providerid == 0 ){
             
-            $result = do_mysqli_query("1", "insert into parms (parmkey, parmcode, val1, val2 ) values ('SUBSCRIBER','ID', $highid, 0 )");
+            $result = pdo_query("1", "insert into parms (parmkey, parmcode, val1, val2 ) values ('SUBSCRIBER','ID', $highid, 0 )");
         }
 
         if( $highid > $providerid){
@@ -1056,10 +1056,10 @@ class SignUp
             $providerid = $highid;
         }
 
-        $result = do_mysqli_query("1", "update parms set val1 = $providerid where parmkey='SUBSCRIBER' and parmcode='ID' ");
+        $result = pdo_query("1", "update parms set val1 = $providerid where parmkey='SUBSCRIBER' and parmcode='ID' ");
 
-        do_mysqli_query("1","delete from handle where providerid=$providerid");
-        do_mysqli_query("1","insert into handle (handle, email, providerid) values ('$this->handle', '$this->replyemail',$this->providerid) ");
+        pdo_query("1","delete from handle where providerid=$providerid");
+        pdo_query("1","insert into handle (handle, email, providerid) values ('$this->handle', '$this->replyemail',$this->providerid) ");
         
         
         return $providerid;
@@ -1215,8 +1215,8 @@ class SignUp
         //$this->handle = preg_replace('/[^\da-z0-9]/i', '', $this->handle);        
         
         if($providerid != null && $providerid!= ''){
-            $result = do_mysqli_query("1","select handle from provider where handle='$this->handle' and providerid!= $providerid and active='Y' ");
-            if($row = do_mysqli_fetch("1",$result)){
+            $result = pdo_query("1","select handle from provider where handle='$this->handle' and providerid!= $providerid and active='Y' ");
+            if($row = pdo_fetch($result)){
                 return false;
             }
             return true;
@@ -1238,8 +1238,8 @@ class SignUp
         if($this->handle!=='@' && $this->handle!==''){
 
             /*
-            $result = do_mysqli_query("1","select handle from handle where handle='$this->handle' ");
-            if($row = do_mysqli_fetch("1",$result)){
+            $result = pdo_query("1","select handle from handle where handle='$this->handle' ");
+            if($row = pdo_fetch($result)){
 
                 $this->handle = $row['handle'];
             } else {
@@ -1250,8 +1250,8 @@ class SignUp
             }
              * 
              */
-            $result = do_mysqli_query("1","select handle from provider where handle='$this->handle' and active = 'Y' ");
-            if($row = do_mysqli_fetch("1",$result)) {
+            $result = pdo_query("1","select handle from provider where handle='$this->handle' and active = 'Y' ");
+            if($row = pdo_fetch($result)) {
                 $this->StoreError("Duplicate Handle Error");
                 return false;
 
@@ -1296,10 +1296,10 @@ class SignUp
             return false;
         }
         
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
                 "select providerid from provider where replyemail='$this->replyemail' and active='Y' "
                 );
-        if( $row = do_mysqli_fetch("1",$result)){
+        if( $row = pdo_fetch($result)){
             if($this->overwrite == 'Y'){
                 $this->InactivateDuplicateAccount();
                 return false;
@@ -1314,10 +1314,10 @@ class SignUp
     function EmailCheck()
     {
         
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
                 "select providerid from provider where replyemail='$this->newemail' and active='Y' "
                 );
-        if( $row = do_mysqli_fetch("1",$result)){
+        if( $row = pdo_fetch($result)){
             return false;
         }
         
@@ -1328,7 +1328,7 @@ class SignUp
     {
         
         
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
                 "update provider set active='N' where replyemail='$this->replyemail' and active='Y' "
                 );
         return true;
@@ -1337,10 +1337,10 @@ class SignUp
     function VerifyAccountCheck( ){
         
         
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
                 "select providerid from provider where providerid='$this->providerid' and active='Y' "
                 );
-        if( $row = do_mysqli_fetch("1",$result)){
+        if( $row = pdo_fetch($result)){
             
             return true;
         }
@@ -1352,7 +1352,7 @@ class SignUp
         if($inviteid==''){
             return true;
         }
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
                 "update invites set email='$this->replyemail' where inviteid='$inviteid' "
                 );
         
@@ -1377,7 +1377,7 @@ class SignUp
         }
         
         $signupverificationkey = uniqid("", true);
-        do_mysqli_query("1", 
+        pdo_query("1", 
                 "insert into verification (type, providerid, verificationkey, loginid, email, createdate ) values (".
                 " 'ACCOUNT', $this->providerid, '$signupverificationkey', 'admin', '$this->replyemail', now() ) "
                 );
@@ -1439,7 +1439,7 @@ class SignUp
             return;
         }
         $signupverificationkey = uniqid("", true);
-        do_mysqli_query("1", 
+        pdo_query("1", 
                 "insert into verification (type, providerid, verificationkey, loginid, email, createdate ) values (".
                 " 'ACCOUNT', $this->providerid, '$signupverificationkey', 'admin', '$this->newemail', now() ) "
                 );

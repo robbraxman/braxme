@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 
 $providerid = $_SESSION['pid'];
 
@@ -45,29 +45,29 @@ if( $mode == 'D')
 {
     $filename = tvalidator("PURIFY",$_POST['filename']);
     $collection = "";
-    $result = do_mysqli_query("1", "
+    $result = pdo_query("1", "
     select sharelocal from shares where shareid = '$filename' and sharetype='W'
     ");
-    if( $row = do_mysqli_fetch("1",$result))
+    if( $row = pdo_fetch($result))
     {
         $collection = $row['sharelocal'];
     }
     if( $collection == "")
     {
-        do_mysqli_query("1", "
+        pdo_query("1", "
             delete from shares where shareid = '$filename'
             ");
-        do_mysqli_query("1", "
+        pdo_query("1", "
             delete from shareposts where shareid = '$filename'
             ");
     }
     else
     {
-        do_mysqli_query("1", "
+        pdo_query("1", "
             delete from shares where providerid=$providerid 
                 and sharelocal = '$collection' and sharetype='W'
             ");
-        do_mysqli_query("1", "
+        pdo_query("1", "
             delete from shares where providerid=$providerid 
                 and collection = '$collection' and sharetype='A'
             ");
@@ -125,7 +125,7 @@ echo "
 
 
 
-$result = do_mysqli_query("1","
+$result = pdo_query("1","
     select 
     sharelocal, shareid, sharetitle, sharetype, shareto, sharedate, collection,
     (select postdate from shareposts where shares.shareid = shareposts.shareid
@@ -155,7 +155,7 @@ echo "
      </tr>
      ";
 
-while($row = do_mysqli_fetch("1",$result))
+while($row = pdo_fetch($result))
 {
     $securetype = 'Private';
     if( $row['securetype']=='O')
@@ -176,8 +176,8 @@ while($row = do_mysqli_fetch("1",$result))
     if ($row['sharetype']=='P')
     {
         $image = "";
-        $result2 = do_mysqli_query("1","select aws_url from photolib where filename='$row[sharelocal]' ");
-        if($row2=do_mysqli_fetch("1",$result2)){
+        $result2 = pdo_query("1","select aws_url from photolib where filename='$row[sharelocal]' ");
+        if($row2=pdo_fetch($result)){
             $aws_url = $row2['aws_url'];
             $image = "<img src='$aws_url' style='height:100px;width:100px' />";
         }

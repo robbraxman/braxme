@@ -559,7 +559,7 @@ function GetChildLinks($readonly, $roominfo, $caller )
         $count++;
     }
     
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select distinct roominfo.room, roominfo.roomid, roomhandle.handle from roominfo 
         left join roomhandle on roominfo.roomid = roomhandle.roomid
         where parentroom='$handle' and '$handle'!=''  and roominfo.external!='Y' 
@@ -575,7 +575,7 @@ function GetChildLinks($readonly, $roominfo, $caller )
      * 
      */
     
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         $room = $row['room'];
         $roomhandle = $row['handle'];
         $roomid = $row['roomid'];

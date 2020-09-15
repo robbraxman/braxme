@@ -1,5 +1,5 @@
 <?php
-require_once("config.php");
+require_once("config-pdo.php");
 
 function ProcessUpload( $providerid, $encoding, $subject, $upload_hdr, $uploadtype )
 {
@@ -127,7 +127,7 @@ function ProcessUpload( $providerid, $encoding, $subject, $upload_hdr, $uploadty
                                         
                                         $alias = uniqid("T4AZ", true);
 
-                                        $result = do_mysqli_query("1", 
+                                        $result = pdo_query("1", 
                                                 "
                                                     insert into filelib
                                                     ( providerid, filename, origfilename, folder, filesize, filetype, title, createdate, alias, status )
@@ -147,7 +147,7 @@ function ProcessUpload( $providerid, $encoding, $subject, $upload_hdr, $uploadty
                                     $_SESSION[attachmentfilename]= "$_SESSION[sessionid]_".$UploadNo."_$filename";
                                     echo("<br>File uploaded successfully. - <a href='". $upload_dir.$upload_hdr.$filename."' target='_blank'>".$filename."</a><br>"); 
                                     
-                                    $result = do_mysqli_query("1", 
+                                    $result = pdo_query("1", 
                                             "insert into attachments ( sessionid, item, attachfilename, providerid, encoding ) ". 
                                             " values ( '$_SESSION[sessionid]', $UploadNo, '$_SESSION[attachmentfilename]', $providerid, '$encoding' )"
                                      );

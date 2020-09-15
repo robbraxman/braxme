@@ -1,14 +1,14 @@
 <?php
 session_start();
-include("config.php");
-include("crypt.inc.php");
+include("config-pdo.php");
+include("crypt-pdo.inc.php");
 require 'aws.php';
 
 $alias = @tvalidator("PURIFY", $_GET['p'] );
 $inline = @tvalidator("PURIFY", $_GET['i'] );
 
 
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select filelib.filename, filelib.folder, filelib.origfilename, 
         filelib.filetype, filelib.filesize, filelib.providerid, 
         filelib.encoding, filelib.fileencoding, provider.blockdownload, provider.active
@@ -16,7 +16,7 @@ $inline = @tvalidator("PURIFY", $_GET['i'] );
         left join provider on filelib.providerid = provider.providerid
         where filelib.alias='$alias' and filelib.status='Y'
         ");
-    if( !$row = do_mysqli_fetch("1",$result)){
+    if( !$row = pdo_fetch($result)){
     
         echo "File Not Found";
         exit();
@@ -33,11 +33,11 @@ $inline = @tvalidator("PURIFY", $_GET['i'] );
     }
     
     
-    do_mysqli_query("1","
+    pdo_query("1","
         update filelib set views=views+1 where filename='$row[filename]' and providerid=$row[providerid]
         ");
     
-    do_mysqli_query("1","
+    pdo_query("1","
         insert into fileviews (filename, providerid, viewdate, filesize, views, status )
         values ('$row[filename]', $row[providerid], now(), $row[filesize], 1, 'Y' )
         ");

@@ -1,11 +1,11 @@
 <?php
-require_once("config.php");
+require_once("config-pdo.php");
 
     function DeleteGroup( $groupid )
     {
     
-        do_mysqli_query("1","delete from groups where groupid = $groupid and creator=$_SESSION[pid] ");
-        do_mysqli_query("1","delete from groupmembers where groupid = $groupid ");
+        pdo_query("1","delete from groups where groupid = $groupid and creator=$_SESSION[pid] ");
+        pdo_query("1","delete from groupmembers where groupid = $groupid ");
         return;
     }
     
@@ -13,7 +13,7 @@ require_once("config.php");
     function DeleteGroupMember( $groupid, $providerid, $friendproviderid )
     {
         //Delete from statusroom if member\ is inactive
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             delete from groupmembers 
             where groupid=$groupid and 
             providerid = $friendproviderid 
@@ -32,7 +32,7 @@ require_once("config.php");
         }
     
             
-        do_mysqli_query("1","
+        pdo_query("1","
             insert into groupmembers ( groupid, providerid, createdate ) values 
             ($groupid, $friendproviderid, now() )
             ");
@@ -54,12 +54,12 @@ require_once("config.php");
         
         $selectroom = "<select class='grouproom' id='grouproomid' name='grouproomid'  style='width:250px'>";
         $selectroom .= "<option value=''>- Not Used -</option>";
-         $result = do_mysqli_query("1","
+         $result = pdo_query("1","
                 select distinct room, roomid
                 from roominfo where roomid in (select roomid from statusroom where owner = $_SESSION[pid] )
                 order by room
                 ");
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
         
             $roomname = htmlentities($row['room']);
             $selected = '';
@@ -146,32 +146,32 @@ require_once("config.php");
     {
             
         
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 select val1 from parms where parmkey='$parmkey' and parmcode='$parmcode' 
                 ");
-            if( $row = do_mysqli_fetch("1",$result)){
+            if( $row = pdo_fetch($result)){
                 $val1 =intval($row['val1']);
             } else {
                 
                 $maxval = 100;
                 if($parmkey =='ROOM') {
-                    $result = do_mysqli_query("1","
+                    $result = pdo_query("1","
                         select max(groupid)+1 as maxval from statusroom
                         ");
-                    if( $row = do_mysqli_fetch("1",$result)){
+                    if( $row = pdo_fetch($result)){
                     
                         $maxval =intval($row['maxval']);
                     }
                 }
                 
-                $result = do_mysqli_query("1","
+                $result = pdo_query("1","
                     insert into parms (parmkey, parmcode, val1, val2 ) values 
                     ('$parmkey','$parmcode', $maxval, 0 )
                 ");
                 $val1 = $maxgroupid;
      
             }
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 update parms set val1=val1+1 where parmkey='$parmkey' and parmcode='$parmcode'
             ");
             $val1++;
@@ -194,7 +194,7 @@ require_once("config.php");
         $organizationclean = tvalidator("PURIFY",stripslashes($organization));
         $roomid = tvalidator("PURIFY",stripslashes($roomid));
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             update groups set groupname ='$nameclean', groupdesc='$desc', 
                 photourl='$photourlclean',organization='$organizationclean', roomid=$roomid
                 where groupid = $groupid
@@ -202,13 +202,13 @@ require_once("config.php");
         
         if(intval($roomid)>0){
 
-            do_mysqli_query("1"," 
+            pdo_query("1"," 
                 delete from groupmembers where groupid = (select groupid from groups where groupid=$groupid and 
                 creator = $_SESSION[pid] )
                     ");
             
             
-            do_mysqli_query("1"," 
+            pdo_query("1"," 
                 insert into groupmembers( groupid, providerid, createdate ) 
                 select $groupid, providerid, now() from statusroom where 
                 roomid = $roomid and owner = $_SESSION[pid]
@@ -235,7 +235,7 @@ require_once("config.php");
                   ";
         
 
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select groupid, groupname, organization, photourl, roomid from
             groups
             where 
@@ -247,7 +247,7 @@ require_once("config.php");
     
     
         $i=0;
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
         
 
             $selected = "";
@@ -291,7 +291,7 @@ require_once("config.php");
     {
         global $rootserver;
         
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 select provider.replyemail, providername as name, provider.providerid,
                 avatarurl, groups.groupname, groupmembers.groupid, provider.handle, 
@@ -306,7 +306,7 @@ require_once("config.php");
                 order by providername limit 500
              ");
 
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
         
             $avatar = $row['avatarurl'];
             if($avatar == "$rootserver/img/faceless.png"){
@@ -357,12 +357,12 @@ require_once("config.php");
         $groupdata['roomid'] = '';
         
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select groupid, groupname, groupdesc, organization, photourl, creator, roomid from groups 
             where groupid=$groupid and creator = $providerid
             ");
 
-        if( $row = do_mysqli_fetch("1",$result)){
+        if( $row = pdo_fetch($result)){
 
             $groupdata['IsOwner'] = false;
             if($row['creator']==$providerid ){

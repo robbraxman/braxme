@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("config.php");
+include("config-pdo.php");
 
 $share = tvalidator("PURIFY", $_POST[share] );
 $proxy = tvalidator("PURIFY", $_POST[proxy] );
@@ -17,11 +17,11 @@ $iconlock = "$rootserver/img/lock.png";
 //*************************
 //Read Proxy Filename
 //*************************
-$result2 =do_mysqli_query("1","
+$result2 =pdo_query("1","
     select filename, folder from photoproxy where providerid = $providerid and section='T'
     ");
 $proxyphotolink = "$rootserver/img/privatepost.jpg";
-if( $row2 = do_mysqli_fetch("1",$result2))
+if( $row2 = pdo_fetch($result))
 {
     $proxyphotolink = "$rootserver/$installfolder/$row2[folder]$row2[filename]";
     $proxyfilename = "$row2[filename]";
@@ -30,11 +30,11 @@ if( $proxy == 'N')
     $proxyfilename = "";
 //*************************
 
-$result2 =do_mysqli_query("1","
+$result2 =pdo_query("1","
     select comment from statuspostpublic where shareid = '$share'
     ");
 $comment = "$proxyphotolink";
-if( $row2 = do_mysqli_fetch("1",$result2))
+if( $row2 = pdo_fetch($result))
     $comment = html_entity_decode($row2[comment], ENT_QUOTES);
 
 
@@ -53,7 +53,7 @@ else
     $securetype = 'O';
     $exposedtitle = "$title";
 }
-$result = do_mysqli_query("1","
+$result = pdo_query("1","
             insert into shares 
             (setid, providerid, sharedate, sharetype, sharelocal, 
             shareid, shareto, shareexpire, sharetitle, platform, 

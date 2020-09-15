@@ -19,7 +19,7 @@ $e = tvalidator("PURIFY", $_GET['e'] );
 $result = do_mysqli_query("1","
     select shareto, platform from shares where shareid='$share'
     ");
-$row = do_mysqli_fetch("1",$result);
+$row = pdo_fetch($result);
 $shareto = $row['shareto'];
 if( $shareto == "Unspecified")
     $shareto = "$row[platform]";
@@ -98,7 +98,7 @@ $result = do_mysqli_query("1","
         ");
 
 
-if( !$row = do_mysqli_fetch("1",$result))
+if( !$row = pdo_fetch($result))
 {
     
     
@@ -223,7 +223,7 @@ if( !$row = do_mysqli_fetch("1",$result))
         DATE_FORMAT( postdate, '%m/%d/%y %h:%i %p') as fpostdate
         from shareposts where shareid='$share' order by postdate asc
     ");
-    while( $row2 = do_mysqli_fetch("1",$result2))
+    while( $row2 = pdo_fetch($result))
     {
         $action = "&nbsp;&nbsp;&nbsp;<div 
                 class='delete' 
@@ -395,7 +395,7 @@ if( $view == 'N')
         ");
     
     
-    while($row= do_mysqli_fetch("1",$result))
+    while($row= pdo_fetch($result))
     {
         echo "
             <tr>

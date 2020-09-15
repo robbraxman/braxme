@@ -2,7 +2,7 @@
 session_start();
 //session_unset();
 //session_destroy();
-require_once("prod/config.php");
+require_once("prod/config-pdo.php");
 //session_destroy();
 //$_SESSION = array();
 //$_SESSION['mobile']='N';
@@ -18,7 +18,7 @@ $landing = @tvalidator("PURIFY",$_GET['l']);
 if( $landing!='')
 {
     $mobileflag = 'X';
-    do_mysqli_query("1","insert into landing (createdate, landingcode, mobile, target) values (now(), '$landing', '$mobileflag','home' ) ");
+    pdo_query("1","insert into landing (createdate, landingcode, mobile, target) values (now(), '$landing', '$mobileflag','home' ) ");
 }
 
 $maxwidth = 'width:1000px;max-width:80%;margin:auto';

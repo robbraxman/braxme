@@ -2,8 +2,8 @@
 session_start();
 set_time_limit ( 30 );
 require("validsession.inc.php");
-require_once("config.php");
-require_once("crypt.inc.php");
+require_once("config-pdo.php");
+require_once("crypt-pdo.inc.php");
 include("lib_autolink.php");
 require_once("room.inc.php");    
 require_once("roomuserview.php");
@@ -142,7 +142,7 @@ require_once("roomfunc.inc.php");
 
     $profile = ShowMyProfile($providerid, $memberinfo->owner, $caller, $roominfo->profileflag );
     $topbar =  TopBar( $readonly, $caller, $memberinfo->owner, $roominfo->profileflag, $gotohome );
-    $childlinks = GetChildLinks($readonly, $roominfo);
+    $childlinks = GetChildLinks($readonly, $roominfo, $caller);
     $roomfilesmessage = RoomFilesMessage($memberinfo->roomfiles);
     
     if($roominfo->subscriptionpending == 'Y'){
@@ -280,12 +280,12 @@ require_once("roomfunc.inc.php");
     $limit_to_owner = "";
     
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
             select statuspost.anonymous, statuspost.encoding, statuspost.postid, 
             statuspost.pin, statuspost.locked,
             providername, provider.name2, statuspost.comment, statuspost.link, 
-            provider.active,
+            provider.active, provider.medal,
             statuspost.photo, statuspost.album, statuspost.video,  statuspost.videotitle, statuspost.roomid,
             avatarurl, alias, statuspost.providerid, statuspost.articleid,
             DATE_FORMAT(date_add(statuspost.postdate,INTERVAL $_SESSION[timezoneoffset]*60 MINUTE), 
@@ -330,7 +330,7 @@ require_once("roomfunc.inc.php");
     
     
     $postcount = 0;
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         
         $postcount++;
         $cleanPostid = str_replace(".","",$row['postid']);
@@ -345,7 +345,7 @@ require_once("roomfunc.inc.php");
         
         $posterobj = RoomPosterInfo($row['roomid'], $row['owner'], $row['avatarurl'], $memberinfo->adminroom, $memberinfo->private,
                 $row['anonymous'], $row['anonymousflag'], $row['providername'], $row['name2'], 
-                $row['alias'], $row['handle'], $row['blockee'], $row['blocker']  );
+                $row['alias'], $row['handle'], $row['blockee'], $row['blocker'], $row['medal']  );
         $avatarurl = RootServerReplace(HttpsWrapper($posterobj->avatar));
         $postername = $posterobj->name;
         
@@ -526,6 +526,11 @@ function DisplayStdRoomPost(
         global $rootserver;
         global $menu_replies;
         global $menu_hide;
+        global $appname;
+        global $iconsource_braxmedal_common;
+        
+        $braxmedal = "<img class='icon15' src='$iconsource_braxmedal_common' title='Trusted $appname Resource' style='top:0px;bottom:0px;height:15px' />";
+        
         
         $cleanPostid = str_replace(".","",$postid);
         $post_pid = "";
@@ -557,6 +562,10 @@ function DisplayStdRoomPost(
         } 
         if(intval($_SESSION['innerwidth'])<414){
             $shadow = "";
+        }
+        $usermedal = "$posterobj->medal";
+        if($posterobj->medal=='1'){
+            $usermedal = $braxmedal;
         }
 
         $commentcounttext = '';
@@ -639,7 +648,7 @@ function DisplayStdRoomPost(
                     <div class='pagetitle3' 
                         style='display:inline-block;vertical-align:top;
                         padding-left:10px;padding-top:10px'>
-                            <div class='pagetitle3' style='color:black;'><b>$posterobj->name</b></div>
+                            <div class='pagetitle3' style='color:black;'><b>$posterobj->name $usermedal</b></div>
                           <div class=smalltext style='color:black;'>$postdate</div>
                     </div>
 
@@ -691,6 +700,10 @@ function DisplayForumRoomPost(
         global $rootserver;
         global $menu_replies;
         global $menu_hide;
+        global $appname;
+        global $iconsource_braxmedal_common;
+        
+        $braxmedal = "<img class='icon15' src='$iconsource_braxmedal_common' title='Trusted $appname Resource' style='top:0px;bottom:0px;height:15px' />";
         
         $cleanPostid = str_replace(".","",$postid);
         $post_pid = "";
@@ -713,6 +726,12 @@ function DisplayForumRoomPost(
                 $post_pid_action = '';
             }
         }
+        
+        $usermedal = "";
+        if($posterobj->medal=='1'){
+            $usermedal = $braxmedal;
+        }
+        
         $shadow = "shadow gridstdborder";
         if($icon_darkmode){
             $shadow = "";
@@ -766,7 +785,7 @@ function DisplayForumRoomPost(
 
                     $commentcounttext
                     <br>
-                    <span class='smalltext2' style='color:$global_textcolor'>$posterobj->name $postdate</span>                        
+                    <span class='smalltext2' style='color:$global_textcolor'>$posterobj->name $usermedal $postdate</span>                        
 
                     </div>
                 </td>
@@ -841,6 +860,10 @@ function LastComment( $owner, $adminroom, $shareid, $handle, $providerid, $roomi
 {
     global $rootserver;
     //global $owner;
+    global $appname;
+    global $iconsource_braxmedal_common;
+
+        $braxmedal = "<img class='icon15' src='$iconsource_braxmedal_common' title='Trusted $appname Resource' style='top:0px;bottom:0px;height:15px' />";
     
     $commentshow = "";
     if($commentitems > 5 ){
@@ -850,11 +873,11 @@ function LastComment( $owner, $adminroom, $shareid, $handle, $providerid, $roomi
         return "";
     }
         
-    $result2 = do_mysqli_query("1",
+    $result2 = pdo_query("1",
          
         "
             select anonymous, encoding, postid, providername, comment, link, photo, album, video, videotitle,
-            avatarurl, alias, providerid, name2, postdate2, postdate, flagged, active,
+            avatarurl, alias, providerid, name2, postdate2, postdate, flagged, active, medal,
             shareid, roomid, likes, owner, public, handle, private, anonymousflag, 
             blockee, blocker, profileroomid, moderator
             
@@ -862,7 +885,7 @@ function LastComment( $owner, $adminroom, $shareid, $handle, $providerid, $roomi
             (
 				select statuspost.anonymous, statuspost.encoding, postid, providername, statuspost.comment, statuspost.link, statuspost.photo, statuspost.album, 
                                 statuspost.video, statuspost.videotitle,
-				avatarurl, alias, statuspost.providerid, provider.name2, statuspost.postdate as postdate2, provider.active,
+				avatarurl, alias, statuspost.providerid, provider.name2, statuspost.postdate as postdate2, provider.active, provider.medal,
 				DATE_FORMAT(date_add(statuspost.postdate, INTERVAL $_SESSION[timezoneoffset]  HOUR), '%m/%d/%y %h:%i%p') as postdate, 
                                 (select 'Y' from statusreads st2 
                                     where st2.shareid = statuspost.shareid and
@@ -894,7 +917,7 @@ function LastComment( $owner, $adminroom, $shareid, $handle, $providerid, $roomi
         );
             
     $i = 0;
-    while($row2 = do_mysqli_fetch("1",$result2)){
+    while($row2 = pdo_fetch($result)){
 
         $comment = FormatComment( "", $row2['postid'], $row2['owner'], $roomid, $row2['encoding'], 
                 $row2['comment'], '', $row2['photo'], $row2['album'], $row2['video'], $row2['link'], "","N",  
@@ -903,7 +926,7 @@ function LastComment( $owner, $adminroom, $shareid, $handle, $providerid, $roomi
         
         $posterobj = RoomPosterInfo( $roomid, $row2['owner'],$row2['avatarurl'], $adminroom, $private,
                 $row2['anonymous'], $anonymousflag, $row2['providername'], $row2['name2'], 
-                $row2['alias'], $handle, $row2['blockee'], $row2['blocker']  );
+                $row2['alias'], $handle, $row2['blockee'], $row2['blocker'], $row2['medal']  );
         $postername = $posterobj->name;
 
         $avatarurl2 = RootServerReplace(HttpsWrapper($posterobj->avatar));
@@ -922,6 +945,10 @@ function LastComment( $owner, $adminroom, $shareid, $handle, $providerid, $roomi
         if($posterobj->nochat == 'Y' || $providerid == $post_pid){
             $post_pid = '';
             $post_pid_action = '';
+        }
+        $usermedal = "";
+        if($posterobj->medal=='1'){
+            $usermedal = $braxmedal;
         }
         $avatarimg = "<div class='circular' style='height:30px;width:30px;overflow:hidden;margin-right:10px;position:relative;top:0px'>
                 <img class='$post_pid_action' src='$avatarurl2' 
@@ -953,7 +980,7 @@ function LastComment( $owner, $adminroom, $shareid, $handle, $providerid, $roomi
                         $avatarimg
                 </div>
                 <div id='$cleanPostid' class='roomothertext' data-reply='$postername' style='display:inline-block;vertical-align:top;'>
-                        <span class='pagetitle3' style='color:black;'><b>$postername</b></span><br>
+                        <span class='pagetitle3' style='color:black;'><b>$postername $usermedal</b></span><br>
                         $postdate
                 </div>
                 <br>

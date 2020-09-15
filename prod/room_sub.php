@@ -1,8 +1,8 @@
 <?php
 session_start();
 require_once("validsession.inc.php");
-require_once("config.php");
-require_once("crypt.inc.php");
+require_once("config-pdo.php");
+require_once("crypt-pdo.inc.php");
 require_once("room.inc.php");
 require_once("internationalization.php");
 
@@ -20,12 +20,16 @@ require_once("internationalization.php");
         $limitsql = "limit $limit";
     }
     
+
+    $braxmedal = "<img class='icon15' src='$iconsource_braxmedal_common' placeholder='Trusted $appname Resource' style='top:0px;bottom:0px;height:15px' />";
+    
+    
     if($mode == 'X')
     {
-        $result2 = do_mysqli_query("1",
+        $result2 = pdo_query("1",
         "
             select distinct statuspost.anonymous, provider.providerid, provider.providername, provider.alias, statusreads.xaccode, 
-            statusreads.actiontime as actiontime2, provider.name2, provider.active,
+            statusreads.actiontime as actiontime2, provider.name2, provider.active, provider.medal
             DATE_FORMAT(date_add(statusreads.actiontime, INTERVAL $_SESSION[timezoneoffset]*60 MINUTE), '%m/%d/%y %a %h:%i %p') as actiontime,
             (select 'Y' from publicrooms where publicrooms.roomid = statusreads.roomid ) as public,
             provider.handle,
@@ -40,7 +44,7 @@ require_once("internationalization.php");
             order by actiontime2 desc limit 100
         ");
         $activity = "";
-        while( $row2 = do_mysqli_fetch("1",$result2))
+        while( $row2 = pdo_fetch($result))
         {
             
             $postername = $row2['providername'];
@@ -82,30 +86,30 @@ require_once("internationalization.php");
     
     $sizing = RoomSizing();
 
-    do_mysqli_query("1","
+    pdo_query("1","
         delete from statusreads where shareid='$shareid' and xaccode='R'
         ");
     
     
-    $result2 = do_mysqli_query("1",
+    $result2 = pdo_query("1",
         "
             select count(*) as count
             from statuspost
             where parent!='Y' and shareid='$shareid'
         ");
-    $row2 = do_mysqli_fetch("1",$result2);
+    $row2 = pdo_fetch($result);
     $iCount = $row2['count'];
             
 
         
-    $result2 = do_mysqli_query("1",
+    $result2 = pdo_query("1",
 
         "
             select anonymous, encoding, postid, providername, 
             comment, link, photo, album,
             video, videotitle, 
             avatarurl, alias, providerid, name2,
-            postdate, postdate2, active,
+            postdate, postdate2, active, medal,
             shareid, roomid, likes, owner,
             public, handle, private, anonymousflag, blockee, blocker,
             profileroomid, moderator
@@ -119,7 +123,7 @@ require_once("internationalization.php");
                 statuspost.video, statuspost.videotitle, 
                 avatarurl, provider.alias, statuspost.providerid, provider.name2,
                 DATE_FORMAT(date_add(statuspost.postdate, INTERVAL $_SESSION[timezoneoffset] HOUR), '%m/%d/%y %h:%i%p') as postdate, 
-                statuspost.postdate as postdate2, provider.active,                    
+                statuspost.postdate as postdate2, provider.active, provider.medal,                  
                 statuspost.shareid, statuspost.roomid, statuspost.likes, statuspost.owner, 
                 (select 'Y' from publicrooms where statuspost.roomid = publicrooms.roomid 
                  ) as public,
@@ -145,7 +149,7 @@ require_once("internationalization.php");
     $i = 0;
     $page = 0;
     //echo "<br>";
-    while($row2 = do_mysqli_fetch("1",$result2))
+    while($row2 = pdo_fetch($result))
     {
         $comment = FormatComment("", $row2['postid'],$row2['owner'], $row2['roomid'], $row2['encoding'], 
                 $row2['comment'], '',$row2['photo'], $row2['album'], $row2['video'], $row2['link'], "","N",  
@@ -154,7 +158,7 @@ require_once("internationalization.php");
 
         $posterobj = RoomPosterInfo( $row2['roomid'], $row2['owner'], $row2['avatarurl'], $row2['public'], 
                 $row2['private'], $row2['anonymous'], $row2['anonymousflag'], $row2['providername'], $row2['name2'], 
-                $row2['alias'], $row2['handle'], $row2['blockee'], $row2['blocker']  );
+                $row2['alias'], $row2['handle'], $row2['blockee'], $row2['blocker'], $row2['medal']  );
         $avatarurl2 = HttpsWrapper($posterobj->avatar);
         $postername = $posterobj->name;
         
@@ -181,7 +185,10 @@ require_once("internationalization.php");
             $post_pid = '';
             $post_pid_action = "";
         }
-
+        $usermedal = "";
+        if($posterobj->medal == '1'){
+            $usermedal = $braxmedal;
+        }
         echo "
                 $deletebutton
                 $like2button
@@ -197,7 +204,7 @@ require_once("internationalization.php");
                     </div>
                 </div>
                 <div style='display:inline-block;vertical-align:top;padding-left:5px'>
-                        <span class='pagetitle3' style='color:black;'>$postername</span><br>
+                        <span class='pagetitle3' style='color:black;'>$postername $usermedal</span><br>
                         $postdate
                 </div>
                 <div id='$row2[postid]' style='display:inline' ></div>

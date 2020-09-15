@@ -1,7 +1,7 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
     $providerid = tvalidator("PURIFY",$_POST['providerid']);
@@ -22,12 +22,12 @@ require_once("config.php");
         $call = "feedphoto";
     }
     //Find Room Owner
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select roomid, room, owner
         from statusroom 
         where roomid='$roomid' 
             ");
-    if($row = do_mysqli_fetch("1",$result))
+    if($row = pdo_fetch($result))
     {
         $roomid = $row['roomid'];
         $room = $row['room'];

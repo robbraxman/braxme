@@ -1,11 +1,11 @@
 <?php 
 session_start();
-include("config.php");
+include("config-pdo.php");
 
 $uniqid = uniqid('R');
 $providerid = tvalidator("PURIFY", $_POST['providerid'] );
 $roomid = tvalidator("PURIFY", $_POST['roomid'] );
-$result = do_mysqli_query("1",
+$result = pdo_query("1",
         "insert into shares (providerid, sharetype, shareid, sharelocal, sharetitle, 
             shareopentitle,
             shareto, sharedate, shareexpire, securetype, platform, views, likes, 

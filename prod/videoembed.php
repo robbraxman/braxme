@@ -1,7 +1,7 @@
 <?php
 session_start();
-include("config.php");
-include("crypt.inc.php");
+include("config-pdo.php");
+include("crypt-pdo.inc.php");
 include("aws.php");
 
 $uniqid = uniqid();
@@ -18,10 +18,10 @@ $proxyphotolink = "$rootserver/img/videostream.png";
 $icon = "$rootserver/img/privatepost.jpg";
 $iconlock = "$rootserver/img/logo.png";
 
-$result = do_mysqli_query("1","
+$result = pdo_query("1","
     select filename, folder, origfilename, title, providerid, encoding from filelib where alias='$share' and status='Y'
     ");
-if($row = do_mysqli_fetch("1",$result))
+if($row = pdo_fetch($result))
 {
     $mp3 = "$rootserver/$installfolder/$row[folder]$row[filename]";
     $origfilename = DecryptText($row['origfilename'],$row['encoding'],$row['filename']);
@@ -38,7 +38,7 @@ if($row = do_mysqli_fetch("1",$result))
 else 
     exit();
 
-do_mysqli_query("1","
+pdo_query("1","
     update filelib set views=views+1 where filename='$row[filename]' and providerid=$row[providerid]
     ");
 

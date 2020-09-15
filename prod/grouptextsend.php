@@ -1,9 +1,9 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("sendmail.php");
 require_once ("SmsInterface.inc");
-require_once ("crypt.inc.php");
+require_once ("crypt-pdo.inc.php");
 require_once ("room.inc.php");
 require_once ("notify.inc.php");
 include("lib_autolink.php");
@@ -87,7 +87,7 @@ include("lib_autolink.php");
      */
     
     
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select 
         replyemail, providername, providerid as recipientid,
         (select room from statusroom where roomid=$roomid and owner=$providerid limit 1) as roomname
@@ -100,7 +100,7 @@ include("lib_autolink.php");
         //    and providerid!=$providerid
 
     $count = 0;
-    while($row = do_mysqli_fetch("1",$result))
+    while($row = pdo_fetch($result))
     {
         if( $count == 0)
         {
@@ -154,7 +154,7 @@ include("lib_autolink.php");
     
     if( $smstext !== '' && $excludesms!='Y')
     {
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select sms, email, name from csvtemp
                 where roomid = $roomid and
                 ownerid = $providerid 
@@ -171,7 +171,7 @@ include("lib_autolink.php");
                 ");
 
         $smscount = 0;
-        while($row = do_mysqli_fetch("1",$result))
+        while($row = pdo_fetch($result))
         {
             if( $smscount == 0)
             {

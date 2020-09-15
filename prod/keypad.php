@@ -1,7 +1,7 @@
 <?php
 session_start();
 ob_start();
-require_once("config.php");
+require_once("config-pdo.php");
 
 $providerid = tvalidator("PURIFY",$_POST['providerid']);
 $version = tvalidator("PURIFY",$_POST['version']);
@@ -12,7 +12,7 @@ if($version == ''){
 $apn = tvalidator("PURIFY",$_POST['apn']);
 $gcm = tvalidator("PURIFY",$_POST['gcm']);
 
-do_mysqli_query("1","update provider set pinlock = 'Y' where providerid = $providerid");
+pdo_query("1","update provider set pinlock = 'Y' where providerid = $providerid");
 $_SESSION['pinlock']='Y';
 
 $start = $rootserver."/".$startupphp."?s=$_SESSION[source]&v=$version&apn=$apn&gcm=$gcm";

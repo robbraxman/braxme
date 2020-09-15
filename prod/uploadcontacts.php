@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 
 $providerid = $_SESSION['pid'];
 $contacts = tvalidator("PURIFY",$_POST['contacts']);
@@ -14,13 +14,13 @@ foreach($contactArray as $contactItem)
     
     if( $name!=='')
     {
-        $result = do_mysqli_query("1", 
+        $result = pdo_query("1", 
             "select * from contacts where providerid = $providerid  
              and email = '$email' 
             ");
-        if( !$row = do_mysqli_fetch("1",$result))
+        if( !$row = pdo_fetch($result))
         {
-            $result = do_mysqli_query("1", "
+            $result = pdo_query("1", "
                 insert ignore into contacts
                  (providerid, contactname, email, sms, handle, friend, imapbox, source )
                  values
@@ -30,7 +30,7 @@ foreach($contactArray as $contactItem)
             
         }
     }   
-    $result = do_mysqli_query("1", "
+    $result = pdo_query("1", "
         delete from contacts
         where providerid=$providerid and email like '%noreply%' 
         or email like '%no-reply%'    

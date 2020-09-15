@@ -112,7 +112,7 @@ function UnreadRooms($providerid)
     */
         $discoverbutton = "";
     
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
             select 
             distinct statusroom.roomid, roominfo.room, provider.providername as ownername, statusroom.owner, 
             roominfo.lastactive as lastaccess,
@@ -149,7 +149,7 @@ function UnreadRooms($providerid)
 
     $count = 0;
               
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         
         if($count == 0){
             echo $heading;
@@ -269,7 +269,7 @@ function ActiveRooms($providerid)
          */
     
     
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
             select 
             distinct statusroom.roomid, roominfo.room, provider.providername as ownername, statusroom.owner, 
             roominfo.lastactive as lastaccess,
@@ -311,7 +311,7 @@ function ActiveRooms($providerid)
     $count = 0;
     //        (select count(*) from statuspost where statuspost.roomid = roominfo.roomid and statuspost.providerid > 0 ) as postcount
               
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         
         if($count == 0){
             echo "<br>
@@ -416,7 +416,7 @@ function FeedRooms($providerid )
     global $global_textcolor;
     global $global_background;
 
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
             select 
             distinct statusroom.roomid, roominfo.room, provider.providername as ownername, statusroom.owner, 
             roominfo.lastactive as lastaccess,
@@ -447,7 +447,7 @@ function FeedRooms($providerid )
     //        and datediff( now(), roominfo.lastactive)  < 2
     //        (select count(*) from statuspost where statuspost.roomid = roominfo.roomid and statuspost.providerid = 0) as postcount
               
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         
         if($count == 0){
             echo "<br>
@@ -581,7 +581,7 @@ function AlphaRooms($providerid, $find )
         return "";
     }
 
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
             select 
             distinct statusroom.roomid, 
             roominfo.room, provider.providername as ownername, statusroom.owner,
@@ -633,7 +633,7 @@ function AlphaRooms($providerid, $find )
         $lastroomid = '';
         $lastcategory = 'Unspecified';
         $count = 0;
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             if($count == 0){
                 echo "<br><div class='pagetitle2'  style='max-width:300px;margin:auto;color:$global_textcolor;'>ROOMS - MEMBER</div>";
                 echo "<img class='icon15 rounded' src='../img/Arrow-Circle_120px.png' style='padding:3px;background-color:white;top:3px;opacity:.3' /> <span class='smalltext2'>Active this Week</span>";
@@ -745,7 +745,7 @@ function OwnedRooms($providerid, $find )
         return "";
     }
 
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
             select 
             distinct statusroom.roomid, 
             roominfo.room, provider.providername as ownername, statusroom.owner,
@@ -798,7 +798,7 @@ function OwnedRooms($providerid, $find )
         $lastroomid = '';
         $lastcategory = 'Unspecified';
         $count = 0;
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             
             if($count == 0){
                 echo "<br><br><br><div class='pagetitle2'  style='max-width:300px;margin:auto;color:$global_textcolor;'>ROOMS - OWNER</div>";
@@ -931,7 +931,7 @@ function OwnedRooms2($providerid, $find, $owned )
     }
     
 
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
             select 
             distinct statusroom.roomid, 
             roominfo.room, provider.providername as ownername, statusroom.owner,
@@ -988,7 +988,7 @@ function OwnedRooms2($providerid, $find, $owned )
         $lastroomid = '';
         $lastcategory = 'Unspecified';
         $count = 0;
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             
             if($count == 0){
                 echo "<br><div class='pagetitle2'  style='max-width:300px;margin:auto;color:$global_textcolor;'>$roomtitle</div>";
@@ -1151,7 +1151,7 @@ function DiscoverRooms($providerid, $find, $roomdiscovery )
     
     
 
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
             select 
             statusroom.roomid, 
             roominfo.room, provider.providername as ownername, statusroom.owner,
@@ -1208,7 +1208,7 @@ function DiscoverRooms($providerid, $find, $roomdiscovery )
         $lastroomid = '';
         $lastcategory = 'Unspecified';
         $count = 0;
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             if($row['existing']=='Y'){
                 continue;
             }
@@ -1365,7 +1365,7 @@ function FavoriteRooms($providerid, $find, $owned )
     
     $roomtitle = "$menu_roomfavorites";
 
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
             select 
             distinct statusroom.roomid, 
             roominfo.room, provider.providername as ownername, statusroom.owner,
@@ -1410,7 +1410,7 @@ function FavoriteRooms($providerid, $find, $owned )
         $lastroomid = '';
         $lastcategory = 'Unspecified';
         $count = 0;
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             
             if($count == 0){
                 echo "<br><br><br><div class='pagetitle2'  style='max-width:300px;margin:auto;color:$global_textcolor;'>$roomtitle</div>";
@@ -1571,7 +1571,7 @@ function WebsiteRooms($providerid, $find )
     };
     
 
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
             select 
             distinct statusroom.roomid, 
             roominfo.room, provider.providername as ownername, statusroom.owner,
@@ -1628,7 +1628,7 @@ function WebsiteRooms($providerid, $find )
         $lastroomid = '';
         $lastcategory = 'Unspecified';
         $count = 0;
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             
             if($count == 0){
                 echo "<br><div class='pagetitle2'  style='max-width:300px;margin:auto;color:$global_textcolor;'>$roomtitle</div>";
@@ -1777,7 +1777,7 @@ function TrendingRooms($providerid, $roomdiscovery)
     
     if($roomdiscovery =='Y'){
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select distinct roomhandle.roomid, roominfo.room, statusroom.owner,
             statusroom.lastaccess,
             roomhandle.handle,
@@ -1824,7 +1824,7 @@ function TrendingRooms($providerid, $roomdiscovery)
             order by featured desc, rss, postcount desc, roominfo.room asc limit 30
             ");
     } else {
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select distinct roomhandle.roomid, statusroom.owner,
             statusroom.lastaccess,
             roomhandle.handle,
@@ -1877,7 +1877,7 @@ function TrendingRooms($providerid, $roomdiscovery)
     $lastroomid = '';
     $lastcategory = 'Unspecified';
     $count = 0;
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         
         if($count == 0){
             echo "<br><br><br><div class='pagetitle2' style='color:$global_textcolor;'>
@@ -2015,7 +2015,7 @@ function RadioRooms($providerid, $roomdiscovery, $mode)
     
     if($roomdiscovery =='Y'){
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select distinct roomhandle.roomid, roominfo.room, statusroom.owner,
             statusroom.lastaccess,
             roomhandle.handle,
@@ -2053,7 +2053,7 @@ function RadioRooms($providerid, $roomdiscovery, $mode)
             order by radiostation desc, member asc, roomhandle.handle asc
             ");
     } else {
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select distinct roomhandle.roomid, statusroom.owner,
             statusroom.lastaccess,
             roomhandle.handle,
@@ -2097,7 +2097,7 @@ function RadioRooms($providerid, $roomdiscovery, $mode)
     $lastroomid = '';
     $lastcategory = 'Unspecified';
     $count = 0;
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         
         if($count == 0){
             echo "<div class='pagetitle2a' style='color:#68809f'>
@@ -2213,8 +2213,8 @@ function RadioRooms($providerid, $roomdiscovery, $mode)
                     <br>
             ";
             $action = "";
-            $result2 = do_mysqli_query("1","select chatid from chatspawned where roomid='$row[roomid]' ");
-            if($row2 = do_mysqli_fetch("1",$result2)){
+            $result2 = pdo_query("1","select chatid from chatspawned where roomid='$row[roomid]' ");
+            if($row2 = pdo_fetch($result)){
                 $chatid = $row2['chatid'];
             }
             
@@ -2284,7 +2284,7 @@ function CommunityRooms($providerid, $find )
     };
     
 
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
             select 
             distinct statusroom.roomid, 
             roominfo.room, provider.providername as ownername, statusroom.owner,
@@ -2341,7 +2341,7 @@ function CommunityRooms($providerid, $find )
         $lastroomid = '';
         $lastcategory = 'Unspecified';
         $count = 0;
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             
             if($count == 0){
                 echo "<br><div class='pagetitle2'  style='max-width:300px;margin:auto;color:$global_textcolor;'>$roomtitle</div>";
@@ -2493,7 +2493,7 @@ function JoinCommunity($providerid, $roomdiscovery, $preformat, $postformat)
     }
     $list = '';
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select distinct roomhandle.roomid, roominfo.room, statusroom.owner,
             statusroom.lastaccess,
             roomhandle.handle,
@@ -2547,7 +2547,7 @@ function JoinCommunity($providerid, $roomdiscovery, $preformat, $postformat)
     $lastroomid = '';
     $lastcategory = 'Unspecified';
     $count = 0;
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         
         if($count == 0){
             $list .=

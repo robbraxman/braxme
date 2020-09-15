@@ -1,7 +1,7 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("password.inc.php");
 require_once("aws.php");
 require_once("internationalization.php");
@@ -17,15 +17,15 @@ require_once("internationalization.php");
     
     $mode = tvalidator("PURIFY",$_POST['mode']);
     if($mode == 'F'){
-        do_mysqli_query("1","update provider set photosharelevel = 'F' where providerid = $providerid ");
+        pdo_query("1","update provider set photosharelevel = 'F' where providerid = $providerid ");
     }
     if($mode == 'A'){
-        do_mysqli_query("1","update provider set photosharelevel = 'A' where providerid = $providerid ");
+        pdo_query("1","update provider set photosharelevel = 'A' where providerid = $providerid ");
     }
     
     
     //Common Level to all people
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
     "
         select providername, avatarurl, profileroomid,handle,
         (select level from friends where friends.providerid = provider.providerid and friendid = $providerid) as level    
@@ -36,7 +36,7 @@ require_once("internationalization.php");
     $profileroomid = "";
     $avatarurl = '';
     $handle = '';
-    if($row = do_mysqli_fetch("1",$result)){
+    if($row = pdo_fetch($result)){
         $providername = $row['providername'];
         $avatarurl = $row['avatarurl'];
         $profileroomid = $row['profileroomid'];
@@ -59,8 +59,8 @@ require_once("internationalization.php");
     //Check for Friend Level display    
     /*
     if($sharelevel !='A'){
-        $result = do_mysqli_query("1","select friendid from friends where (providerid = $userid and friendid = $providerid) or '$userid'='$providerid' ");
-        if(!$row = do_mysqli_fetch("1",$result)){
+        $result = pdo_query("1","select friendid from friends where (providerid = $userid and friendid = $providerid) or '$userid'='$providerid' ");
+        if(!$row = pdo_fetch($result)){
             echo "<div class='tilebutton mainfont' style='padding:20px;cursor:pointer;color:$global_activetextcolor'>No Photos Shared</div> ";
             exit();
         }
@@ -106,7 +106,7 @@ require_once("internationalization.php");
     //*************************************************************
     //*************************************************************
 
-    $result2 = do_mysqli_query("1",
+    $result2 = pdo_query("1",
         "
             select count(*) as count
             from photolib where 
@@ -117,7 +117,7 @@ require_once("internationalization.php");
         ");
          
     
-    $row2 = do_mysqli_fetch("1",$result2);
+    $row2 = pdo_fetch($result);
     $total = $row2['count'];
     
     
@@ -154,14 +154,14 @@ require_once("internationalization.php");
     
     if( $showfilename!=''){
     
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
         "
             select folder, title, filename, comment, album, alias, aws_url, public, owner,
             datediff(aws_expire,now()) as expire, 
             (select providername from provider where provider.providerid = photolib.owner) as ownername
             from photolib where filename ='$showfilename' 
         ");
-        $row = do_mysqli_fetch("1",$result);
+        $row = pdo_fetch($result);
         $folder = $row['folder'];
         $title = htmlentities($row['title'], ENT_QUOTES);
         $comment = str_replace("<br />","\r\n",html_entity_decode($row['comment']));
@@ -369,7 +369,7 @@ require_once("internationalization.php");
              <table  class='gridnoborder' style='background-color:$global_background;border-collapse:collapse;border:0'>
          ";
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
             select filename, folder, album, title, createdate, alias, filesize,
             aws_url, aws_expire, datediff(aws_expire,now()) as expire
@@ -385,7 +385,7 @@ require_once("internationalization.php");
     $col=1;
     $items = 0;
     $closed = false;
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         
         if($items == 0){
             echo GetSharedAlbums($sharelevel, $userid);
@@ -559,7 +559,7 @@ function GetSharedAlbums($sharelevel, $userid )
                     style='padding-left:20px;padding-right:0px;padding:top:10px;padding-bottom:10px;margin-right:10px;display:inline-block;cursor:pointer;color:$global_activetextcolor'>
                  All
                  </div>";
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
             select distinct album
             from photolib where 
@@ -568,7 +568,7 @@ function GetSharedAlbums($sharelevel, $userid )
             )
             order by album
         ");
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         $album = $row['album'];
         $albumHtml = ConvertHtml($album);
         $albumlist .= "<div class='photolibshare'

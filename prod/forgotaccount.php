@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 
 $_SESSION[returnurl]="<a href='login.php'>Login</a>";
 
@@ -15,7 +15,7 @@ $name = strtolower(tvalidator("PURIFY", "$_POST[name]"));
     }
 
     
-    $result = do_mysqli_query("1", 
+    $result = pdo_query("1", 
             "SELECT staff.providerid, staff.loginid, staff.adminright, staff.email, ".
             " provider.verifiedemail from staff ".
             "left join provider on staff.providerid = provider.providerid ".
@@ -25,7 +25,7 @@ $name = strtolower(tvalidator("PURIFY", "$_POST[name]"));
             );
     
     
-    if ($row = do_mysqli_fetch("1",$result)) 
+    if ($row = pdo_fetch($result)) 
     {
         if( $row[adminright]!='Y')
         {

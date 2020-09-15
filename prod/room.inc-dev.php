@@ -2,16 +2,13 @@
 require_once("notify.inc.php");
 require_once('simple_html_dom.php');
 require_once("lib_autolink.php");
-require_once("roommanage.inc.php");
 
 function RoomPostNew( 
-        $mode, $providerid, $shareid, $roomid, $title, $comment, 
+        $mode, $providerid, $shareid, $roomid, $room, $title, $comment, 
         $video, $photo, $link, $anonymous, $articleid )
 {
         global $rootserver;
         global $installfolder;
-                
-        $slideshow_album = "";
     
         if( $roomid =='' || $roomid == 'All ') {
             return false;
@@ -23,51 +20,17 @@ function RoomPostNew(
             $shareid = uniqid("BZG", true);
             $parent = 'Y';
             $owner = $providerid;
-            $commentcount = 0;
             
         } else {
             
             $parent = 'N';
-            $owner = $providerid;
-            $title = '';
-            
-            $result2 = pdo_query("1",
-                "
-                    select count(*) as commentcount from
-                    statuspost where parent!='Y' and shareid='$shareid'
+            $result = pdo_query("1","
+                select owner from statuspost where shareid='$shareid' and parent = 'Y'
                 ");
-            if( $row2 = pdo_fetch($result)){
-                $commentcount = intval($row2['commentcount'])+1;
-                $result2 = pdo_query("1",
-                    "
-                        update statuspost set commentcount = $commentcount where shareid='$shareid' and parent='Y'
-                    ");
+            if( $row = pdo_fetch($result)){
+                $owner = $row['owner'];   
             }
             
-            
-        }
-        $profileflag = "";
-        $roomstyle = "";
-        $result = pdo_query("1","
-            select anonymousflag, adminonly, profileflag, roomstyle,
-            (select 'Y' from statusroom where statusroom.roomid = roominfo.roomid and owner = $providerid limit 1 )
-               as owner,
-            (select 'Y' from roommoderator where roommoderator.roomid = roominfo.roomid and roommoderator.providerid = $providerid)
-               as moderator
-            from roominfo where roomid = $roomid
-            ");
-        
-        if( $row = pdo_fetch($result)){
-            
-            $anonymousflag = $row['anonymousflag'];   
-            if($providerid!=0){
-                if(($row['owner']!='Y' && $row['moderator']!='Y') && $row['adminonly']=='Y'){
-                    //echo "Owner Posting Only";
-                    return false;
-                }
-            }
-            $profileflag = $row['profileflag'];
-            $roomstyle = $row['roomstyle'];
         }
 
         $postid = uniqid("A", true);
@@ -77,11 +40,6 @@ function RoomPostNew(
         $video = rtrim(ltrim($video));
         $link = rtrim(ltrim($link));
         $slideshow = "";
-        
-        //if($comment == 'stfu'){
-        //    $comment = "I am zucking idiot. I'm sorry";
-        //}
-        
         //Special Handling 
         $photo = rawurldecode(rtrim(ltrim($photo)));
         if( IsSlideshow($photo)){
@@ -132,25 +90,15 @@ function RoomPostNew(
                     
                 } else
                 if( IsSlideshow($comment_item)){
-                    
                     $vars = null;
                     parse_str( parse_url( $comment_item, PHP_URL_QUERY ), $vars );
                     $firstimg = GetSlideShowFirstImg($providerid, rawurldecode($vars['a']));
-                    $slideshow_album = $vars['a'];
-                    $photo = $firstimg;
-                    
-                    //Temporary during testing
-                    //if($_SESSION['superadmin']!='Y'){
-                    //$text_comment .= "
-                    //    <img src='$firstimg' class='slideshow' data-providerid='$providerid' data-album='".$vars['a']."' style='position:relative' />    
-                    //    <br>
-                    //    ";
-                    //}
-                    $text_comment .= "
-                        
-                            <div class='roomalbumtitle' style='text-align:left'>
+                    $text_comment .= "<br><br>
+                    <img src='$firstimg' class='slideshow roomalbum' data-providerid='$providerid' data-album='".$vars['a']."' style='cursor:pointer;width:100%;height:auto' />    
+                            <br>
+                            <div class='roomalbumtitle'>
                                 Slideshow: ".$vars['a']."
-                                <br>
+                                <br><span class='smalltext' style='color:firebrick'>Tap Image for Slideshow </span>
                             </div>
                            ";
                     
@@ -160,7 +108,7 @@ function RoomPostNew(
                     
                 } else
                 if(IsPhoto($comment_item )){
-                    //echo "$comment_item\nIs Photo...";
+                    
                     if($photo==''){
                         //Post Photo if first
                         $photo = $comment_item;
@@ -171,7 +119,6 @@ function RoomPostNew(
                     
                 } else 
                 if(IsLink($comment_item )){
-                    //echo "$comment_item\nIs Link...";
                     if(filter_var($comment_item, FILTER_VALIDATE_URL)){
                         $imageOG = GetOGImageTag($comment_item);
                         if($imageOG!=''){
@@ -201,7 +148,7 @@ function RoomPostNew(
         if($title!='' && $combinedcomment==''){
             $precomment = strip_tags($title);
         }
-        $title = htmlentities($title, ENT_QUOTES);
+        
         //HtmlEntities now DOUBLED
         $combinedcomment = htmlentities( $precomment.$combinedcomment, ENT_QUOTES );
 
@@ -221,78 +168,220 @@ function RoomPostNew(
             $photo = EncryptPost($photo, "$providerid","");
         }
         //$room = tvalidator("PURIFY",$room);
-        $posterid = $providerid;
-        if($anonymousflag == 'Y'){
-            $posterid = 0;
-        }
 
-        
-        $result = pdo_query("1","
+        pdo_query("1","
             insert into statuspost
             (providerid, comment, postdate, shareid, parent, 
-             owner, likes, roomid, postid,
-             link, photo, video, encoding, anonymous, articleid, title, album ) values
-            ($posterid, '$encryptedcomment', now(), '$shareid','$parent', 
-             $owner, 0, $roomid,'$postid',
-              '','$photo','$video','$encoding','$anonymous', $articleid, '$title','$slideshow_album' )
+             owner, likes, room, roomid, postid,
+             link, photo, video, encoding, anonymous, articleid ) values
+            ($providerid, '$encryptedcomment', now(), '$shareid','$parent', 
+             $owner, 0, '$room', $roomid,'$postid',
+              '','$photo','$video','$encoding','$anonymous', $articleid )
                 ");
-        if(!$result){
-            /*
-            echo "            
-            insert into statuspost
-            (providerid, comment, postdate, shareid, parent, 
-             owner, likes, roomid, postid,
-             link, photo, video, encoding, anonymous, articleid, title ) values
-            ($posterid, '$encryptedcomment', now(), '$shareid','$parent', 
-             $owner, 0, $roomid,'$postid',
-              '','$photo','$video','$encoding','$anonymous', $articleid, '$title' )
-                  ";
-             * 
-             */
-
-
-        }
-        if($profileflag == 'Y'){
-            pdo_query("1","update provider set lastactive = now() where providerid = $posterid ");
-        }    
-        
-        FlagUnreadPost( $providerid, $shareid, $postid, $roomid, $anonymous, $mode, $articleid );
+            
+            
+        FlagUnreadPost( $providerid, $shareid, $postid, $roomid, $anonymous, $mode );
         FlagMakePost(   $providerid, $shareid, $postid, $roomid );
 
         return $postid;
 }
 
 
-
-function RoomPostEdit( 
-        $providerid, $postid, $comment ) 
+function RoomPostNew2( 
+        $mode, $providerid, $shareid, $roomid, $room, $title, $comment, 
+        $video, $photo, $link, $anonymous, $articleid )
 {
         global $rootserver;
         global $installfolder;
     
-        if( $comment == ''){
+        if( $roomid =='' || $roomid == 'All ') {
             return false;
         }
-        //extract title
-        $i1 = strpos($comment,"<title>");
-        $i2 = strpos($comment,"</title>");
-        $title = substr($comment,0, $i2);
-        $title = htmlentities(substr($title,$i1+7), ENT_QUOTES);
         
-        //$comment = substr($comment, $i2+8);
+        //New Post
+        if($mode == 'P'){
+            
+            $shareid = uniqid("BZG", true);
+            $parent = 'Y';
+            $owner = $providerid;
+            
+        } else {
+            
+            $parent = 'N';
+            $result = pdo_query("1","
+                select owner from statuspost where shareid='$shareid' and parent = 'Y'
+                ");
+            if( $row = pdo_fetch($result)){
+                $owner = $row['owner'];   
+            }
+            
+        }
+
+        $postid = uniqid("A", true);
         
-        //$title = rtrim(ltrim($title));
+        $title = rtrim(ltrim($title));
         $comment = rtrim(ltrim($comment));
-        $comment = str_replace("title>","span>",$comment);
-        $comment = htmlentities( $comment, ENT_QUOTES );
-        $comment = str_replace("\\n","<br> ",$comment);
+        $video = rtrim(ltrim($video));
+        $link = rtrim(ltrim($link));
+        $slideshow = "";
+        //Special Handling 
+        $photo = rawurldecode(rtrim(ltrim($photo)));
+        if( IsSlideshow($photo)){
+            //Allow Handling of Photo Albums with Spaces
+            //An Issue here because Spaces are used to separate entity types (Image, Link, etc.)
+            $temp = explode("=",$photo);
+            //$photo = $temp[0]."=".rawurlencode($temp[1]);
+            $photo = $temp[0]."=".rawurlencode($temp[1]);
+        }
         
-        $comment = str_replace("&lt;span&gt;","<span class='roomposttitle'>",$comment);
-        $comment = str_replace("&lt;/span&gt;","</span>",$comment);
-        $text_comment = autolink($comment, 50, ' class="chatlink" target="_blank" ', false);
+        $combinedcomment = "$photo $link $comment";
+        
+        //FIRST Htmlentities - Should be no valid HTML from user in here after this
+        $combinedcomment = htmlentities($combinedcomment, ENT_COMPAT );
+        
+        //$combinedcomment = strip_tags($combinedcomment );
+        $hold_comment = str_replace("\\n", " <br>", $combinedcomment);
+        $hold_comment = str_replace("\\r", " ", $hold_comment);
+                
+        $hold = explode(" ",$hold_comment);
+        $text_comment = '';
+        $photo = "";
+        $video = "";
+        foreach($hold as $comment_item){
+            
+            if($comment_item!==''  ){
+            
+                if(IsVideoStreaming($comment_item)){
+                    $vars = null;
+                    parse_str( parse_url( $comment_item, PHP_URL_QUERY ), $vars );
+                    $text_comment .= "<br>
+                            <a href='$comment_item' style='text-decoration:none;color:black' target='_blank'>
+                                <img src='$rootserver/img/videostream.png' style='max-width:100%;height:auto' />
+                            </a>
+                            <br><br>".$vars['f']." <br>".$vars['t']."
+                            ";
+                    
+                } else
+                if(IsAudioStreaming($comment_item)){
+                    $vars = null;
+                    parse_str( parse_url( $comment_item, PHP_URL_QUERY ), $vars );
+                    $text_comment .= "<br>
+                            <a href='$comment_item' style='text-decoration:none;color:black' target='_blank'>
+                                <img src='$rootserver/img/musicpost1.png' style='max-width:100%;height:auto' />
+                            </a>
+                            <br><br>".$vars['f']." <br>".$vars['t']."
+                            ";
+                    
+                } else
+                if( IsSlideshow($comment_item)){
+                    $vars = null;
+                    parse_str( parse_url( $comment_item, PHP_URL_QUERY ), $vars );
+                    $firstimg = GetSlideShowFirstImg($providerid, rawurldecode($vars['a']));
+                    $text_comment .= "<br><br>
+                    <img src='$firstimg' class='slideshow roomalbum' data-providerid='$providerid' data-album='".$vars['a']."' style='cursor:pointer;width:100%;height:auto' />    
+                            <br>
+                            <div class='roomalbumtitle'>
+                                Slideshow: ".$vars['a']."
+                                <br><span class='smalltext' style='color:firebrick'>Tap Image for Slideshow </span>
+                            </div>
+                           ";
+                    
+                } else
+                if(IsVideo($comment_item)){
+                    $text_comment .= " ".YouTube($comment_item);
+                    
+                } else
+                if(IsPhoto($comment_item )){
+                    
+                    if($photo==''){
+                        //Post Photo if first
+                        $photo = $comment_item;
+                                
+                    } else {
+                        $text_comment .= " ".$comment_item;
+                    }
+                    
+                } else 
+                if(IsLink($comment_item )){
+                    if(filter_var($comment_item, FILTER_VALIDATE_URL)){
+                        $imageOG = GetOGImageTag($comment_item);
+                        $photo = $imageOG;  
+                        $text_comment .= " ".$photo;
+                    } else {
+                        $text_comment .= " ".$comment_item;
+                    }               
+                    
+                } else {
+                    $text_comment .= " ".$comment_item;
+                }
+            } 
+
+        }
+        $text_comment = autolink($text_comment, 50, ' class="chatlink" target="_blank" ', false);
+        
+        $combinedcomment = $text_comment;
+        
+        
+        $precomment = "";
+        if($title!='' && $combinedcomment!=''){
+            $precomment = "<span class='roomposttitle'>".strip_tags($title)."</span> &nbsp;<br><br>";
+        } else
+        if($title!='' && $combinedcomment==''){
+            $precomment = strip_tags($title);
+        }
         
         //HtmlEntities now DOUBLED
-        $combinedcomment = htmlentities( $text_comment, ENT_QUOTES );
+        $combinedcomment = htmlentities( $precomment.$combinedcomment, ENT_QUOTES );
+
+        //Test
+        $encoding = $_SESSION['responseencoding'];
+        $encryptedcomment = EncryptPost($combinedcomment, "$providerid","");    
+        /*
+        if($video!=''){
+            $video = EncryptPost($video, "$providerid","");
+        }
+        if($photo!=''){
+            $photo = EncryptPost($photo, "$providerid","");
+        }
+         * 
+         */
+        if($photo!=''){
+            $photo = EncryptPost($photo, "$providerid","");
+        }
+        //$room = tvalidator("PURIFY",$room);
+
+        pdo_query("1","
+            insert into statuspost
+            (providerid, comment, postdate, shareid, parent, 
+             owner, likes, room, roomid, postid,
+             link, photo, video, encoding, anonymous, articleid ) values
+            ($providerid, '$encryptedcomment', now(), '$shareid','$parent', 
+             $owner, 0, '$room', $roomid,'$postid',
+              '','$photo','$video','$encoding','$anonymous', $articleid )
+                ");
+            
+            
+        FlagUnreadPost( $providerid, $shareid, $postid, $roomid, $anonymous, $mode );
+        FlagMakePost(   $providerid, $shareid, $postid, $roomid );
+
+        return $postid;
+}
+
+function RoomPostEdit( 
+        $providerid, $postid, $title, $comment ) 
+{
+        global $rootserver;
+        global $installfolder;
+    
+        
+        $title = rtrim(ltrim($title));
+        $comment = rtrim(ltrim($comment));
+        $text_comment = autolink($text_comment, 50, ' class="chatlink" target="_blank" ', false);
+        
+        $combinedcomment = $text_comment;
+        
+        //HtmlEntities now DOUBLED
+        $combinedcomment = htmlentities( $precomment.$combinedcomment, ENT_QUOTES );
 
         //Test
         $encoding = $_SESSION['responseencoding'];
@@ -301,7 +390,7 @@ function RoomPostEdit(
 
         pdo_query("1","
             update statuspost
-            set title='$title', comment = '$encryptedcomment', encoding='$encoding'
+            set comment = '$encryptedcomment', encoding='$encoding'
             where postid = '$postid'
                 ");
 
@@ -310,14 +399,242 @@ function RoomPostEdit(
 
 
 function RoomPost( 
-        $mode, $providerid, $shareid, $roomid, $title, $comment, 
+        $mode, $providerid, $shareid, $roomid, $room, $title, $comment, 
         $video, $photo, $link, $anonymous, $articleid )
 {
+        if($_SESSION['superadmin']=='Y'){
+            
+            return RoomPostNew( 
+            $mode, $providerid, $shareid, $roomid, $room, $title, $comment, 
+            $video, $photo, $link, $anonymous, $articleid );
+            
+        } 
         return RoomPostNew( 
-        $mode, $providerid, $shareid, $roomid, $title, $comment, 
+        $mode, $providerid, $shareid, $roomid, $room, $title, $comment, 
         $video, $photo, $link, $anonymous, $articleid );
-        
         return;
+    
+        global $rootserver;
+        global $installfolder;
+    
+        if( $roomid =='' || $roomid == 'All ') {
+            return false;
+        }
+        
+        //New Post
+        if($mode == 'P'){
+            
+            $shareid = uniqid("BZG", true);
+            $parent = 'Y';
+            $owner = $providerid;
+            
+        } else {
+            
+            $parent = 'N';
+            $result = pdo_query("1","
+                select owner from statuspost where shareid='$shareid' and parent = 'Y'
+                ");
+            if( $row = pdo_fetch($result)){
+                $owner = $row['owner'];   
+            }
+            
+        }
+
+        $postid = uniqid("A", true);
+        
+        $title = rtrim(ltrim($title));
+        $comment = rtrim(ltrim($comment));
+        $video = rtrim(ltrim($video));
+        $photo = rtrim(ltrim($photo));
+        $link = rtrim(ltrim($link));
+        $slideshow = "";
+        
+
+        //Works only if Entire link is photo ONLY
+        if($photo === '' && IsPhoto($comment)){
+            $photo = $comment;
+            $comment = "";
+        }
+        
+        //Detect Video
+        if(IsVideo($comment)){
+            $video = $comment;
+            $comment = "";
+        }
+        if($photo !== '' && IsSlideshow($photo)){
+            //$photo = $comment;
+            $slideshow = $photo;
+            $photo = '';
+        }
+        
+        
+        
+        //LogDebug($providerid, "2providerid $providerid, room $roomid, share $shareid, roomforsql $room, imgurl $photo, title $title ");
+        $combinedcomment = "";
+        if( $comment!='' || 
+            $title!='' || 
+            $video!='' || 
+            $photo!='' || 
+            $link!='' || 
+            $slideshow!='' ){
+            
+            if($comment!=''){
+                //$comment = strip_tags($comment, "<a><br><b><u><ul><li><iframe>");
+                $comment = htmlspecialchars($comment, ENT_COMPAT);
+                $comment = str_replace("\\n","<br>", $comment);
+                
+                if(filter_var($comment, FILTER_VALIDATE_URL)){
+                    $imageOG = GetOGImageTag($comment);
+                    $photo = $imageOG;  
+                }                
+                
+                $comment = autolink($comment, 50, ' class="chatlink" target="_blank" ', false);
+            }
+            
+            
+            //$link = strip_tags($link );
+            
+            $combinedcomment = $comment;
+            if( $photo!=''){
+                
+                $photo = strip_tags($photo );
+                $hold_photo = str_replace("\\n", " <br>", $photo);
+                
+                $hold = explode(" ",$hold_photo);
+                $text_comment = '';
+                foreach($hold as $comment_item){
+                    //Is URL?
+                    $pos1 = strpos($comment_item,"://");
+                    if($comment_item!=='' && $pos1===false ){
+                        $text_comment .= " ".$comment_item;
+                    }
+                    if($pos1!==false){
+                        $photo = $comment_item;
+                    }
+                
+                }
+                $combinedcomment = $combinedcomment.$text_comment;
+                
+            }
+            if( $video!='') {
+                
+                $video = strip_tags($video );
+                $hold_video = str_replace("\\n", " <br>", $video);
+                $hold_video = str_replace("\\r", " ", $hold_video);
+                
+                $hold = explode(" ",$hold_video);
+                $text_comment = '';
+                foreach($hold as $comment_item){
+                    $pos1 = strpos(strtolower($comment_item),"//youtu");
+                    $pos2 = strpos(strtolower($comment_item),"//www.youtube");
+                    if($comment_item!=='' && $pos1===false && $pos2===false){
+                        $text_comment .= " ".$comment_item;
+                    }
+                
+                }
+                $combinedcomment = $text_comment;
+                
+                $video = YouTube($video);
+                $photo = '';
+                //$combinedcomment .= $video;
+            }
+            $precomment = "";
+            if($title!='' && $combinedcomment!=''){
+                $precomment = "<span class='roomposttitle'>".strip_tags($title)."</span> &nbsp;<br><br>";
+            } else
+            if($title!='' && $combinedcomment==''){
+                $precomment = strip_tags($title);
+            }
+            
+            $combinedcomment = htmlentities( $precomment.$combinedcomment, ENT_QUOTES );
+            //$og =  GetOGTags($comment);
+            //$combinedcomment .= $og;
+            
+            if($link!=''){
+                
+                $link = strip_tags($link );
+                if(IsPhoto($link)){
+                    $photo = $link;
+                    
+                } else
+                if(IsVideoStreaming($link)){
+                    $vars = null;
+                    parse_str( parse_url( $link, PHP_URL_QUERY ), $vars );
+                    $combinedcomment = $combinedcomment."<br>
+                            <a href='$link' style='text-decoration:none;color:black' target='_blank'>
+                                <img src='$rootserver/img/videostream.png' style='max-width:100%;height:auto' />
+                            </a>
+                            <br><br>".$vars['f']." <br>".$vars['t']."
+                            ";
+                    
+                } else
+                if(IsAudioStreaming($link)){
+                    $vars = null;
+                    parse_str( parse_url( $link, PHP_URL_QUERY ), $vars );
+                    $combinedcomment = $combinedcomment."<br>
+                            <a href='$link' style='text-decoration:none;color:black' target='_blank'>
+                                <img src='$rootserver/img/musicpost1.png' style='max-width:100%;height:auto' />
+                            </a>
+                            <br><br>".$vars['f']." <br>".$vars['t']."
+                            ";
+                    
+                } else {
+                    $vars = null;
+                    parse_str( parse_url( $link, PHP_URL_QUERY ), $vars );
+                    $combinedcomment = $combinedcomment."<br><br>
+                            <a href='$link' style='text-decoration:none;color:black'>
+                                <div class='roomfilelink divbutton3'>File Link</div>
+                            </a>
+                            <br><br>".$vars['f']."
+                            ";
+                }
+            };
+            if($slideshow!=''){
+            
+                    $vars = null;
+                    parse_str( parse_url( $slideshow, PHP_URL_QUERY ), $vars );
+                    $firstimg = GetSlideShowFirstImg($providerid, $vars['a']);
+                    $combinedcomment = $combinedcomment."<br><br>
+                    <img src='$firstimg' class='slideshow roomalbum' data-providerid='$providerid' data-album='".$vars['a']."' style='cursor:pointer;width:100%;height:auto' />    
+                            <br>
+                            <div class='roomalbumtitle'>
+                                Slideshow: ".$vars['a']."
+                                <br><span class='smalltext' style='color:firebrick'>Tap Image for Slideshow </span>
+                            </div>
+                           ";
+            };
+            
+            
+            //Test
+            $encoding = $_SESSION['responseencoding'];
+            $encryptedcomment = EncryptPost($combinedcomment, "$providerid","");
+            if($encoding!='SPA1.0'){
+                if($video!=''){
+                    $video = EncryptPost($video, "$providerid","");
+                }
+                if($photo!=''){
+                    $photo = EncryptPost($photo, "$providerid","");
+                }
+            }
+            //$room = tvalidator("PURIFY",$room);
+            
+            pdo_query("1","
+                insert into statuspost
+                (providerid, comment, postdate, shareid, parent, 
+                 owner, likes, room, roomid, postid,
+                 link, photo, video, encoding, anonymous, articleid ) values
+                ($providerid, '$encryptedcomment', now(), '$shareid','$parent', 
+                 $owner, 0, '$room', $roomid,'$postid',
+                  '','$photo','$video','$encoding','$anonymous', $articleid )
+                    ");
+            
+            
+            FlagUnreadPost( $providerid, $shareid, $postid, $roomid, $anonymous, $mode );
+            FlagMakePost(   $providerid, $shareid, $postid, $roomid );
+            
+            return $postid;
+        }    
+        return false;
 }
 function SharePost( $providerid, $articleid, $roomid, $room )
 {
@@ -332,7 +649,6 @@ function SharePost( $providerid, $articleid, $roomid, $room )
         ");
     
     if($row = pdo_fetch($result)){
-        
         $decrypted = DecryptPost("$row[comment]", "$row[encoding]", "$row[providerid]", "");
         $encrypted = EncryptPost("$decrypted", $providerid, "");
         
@@ -346,17 +662,17 @@ function SharePost( $providerid, $articleid, $roomid, $room )
         insert into statuspost
 
         (providerid, comment, postdate, shareid, parent, 
-        owner, likes, roomid, postid,
+        owner, likes, room, roomid, postid,
         link, photo, video, encoding, anonymous, articleid ) 
 
         select $providerid, '$encrypted', now(), '$shareid', 'Y',
-        $providerid, 0,  $roomid, '$postid',
+        $providerid, 0, '$room', $roomid, '$postid',
         '', '$encryptedphoto', '', '$_SESSION[responseencoding]', anonymous, articleid 
-        from statuspost where articleid = $articleid and providerid = 0 limit 1
+        from statuspost where articleid = $articleid and providerid = 0
         ");
-
     
-    FlagUnreadPost( $providerid, $shareid, $postid, $roomid, '', 'P',"" );
+    
+    FlagUnreadPost( $providerid, $shareid, $postid, $roomid, '', 'P' );
     FlagMakePost(   $providerid, $shareid, $postid, $roomid );
     
     return;
@@ -568,17 +884,6 @@ function IsPhoto( $comment )
         }
     }
     
-    $pos1 = strpos(strtolower($comment),"$rootserver");
-    if($pos1 === false){
-        $pos1 = strpos(strtolower($comment),"https://bytz.io");
-    }
-    $pos2 = strpos(strtolower($comment),"sharedirect.php?a=");
-    if($pos1!==false && $pos2!==false ){
-        return true;
-    }
-    
-    
-    
     $pos3 = strpos(strtolower($comment),"sharedirect.php?a=");
     if($pos1!==false && $pos3!==false  ){
         
@@ -597,14 +902,13 @@ function IsPhoto( $comment )
         }
     }
     if(!filter_var($comment, FILTER_VALIDATE_URL)){  
-        //echo "Not valid URL-$comment";
         return false;
     }      
     
 
     try {
         $url_headers=get_headers($comment, 1);
-        if($url_headers!==FALSE && isset($url_headers['Content-Type'])){
+        if(isset($url_headers['Content-Type'])){
 
             $type=explode("/",strtolower($url_headers['Content-Type']));
             if(
@@ -612,17 +916,8 @@ function IsPhoto( $comment )
                ){
                 return true;
             }
+            return false    ;
         }    
-        //Exception
-        if(strstr(strtolower($comment),".jpg?")!==FALSE && 
-           substr(strtolower($comment),0,8)=="https://" 
-           ){
-                //echo "<img src='$comment' />";
-                //echo "Exception Error";
-                return true;
-        }
-        return false;
-        
     } catch (Exception $e) {
         return false;
     }
@@ -651,7 +946,6 @@ function IsLink($comment)
 function GetSlideShowFirstImg($providerid, $album)
 {
     global $rootserver;
-    global $installfolder;
     
     $albumclean = tvalidator("PURIFY",html_entity_decode($album, ENT_QUOTES));
     
@@ -662,7 +956,7 @@ function GetSlideShowFirstImg($providerid, $album)
             ");
     if($row = pdo_fetch($result)){
         $alias = $row['alias'];
-        return "$rootserver/$installfolder/sharedirect.php?a=$alias";
+        return "$rootserver/prod/sharedirect.php?a=$alias";
     }
     
     //$firstimg = GetSlideShowFirstImg($providerid, $vars['a']);
@@ -836,7 +1130,7 @@ function RoomPostLike( $providerid, $shareid, $postid, $roomid)
             }
 
 
-            FlagUnreadPost( $providerid, $shareid, $postid, $roomid, "", "L","" );
+            FlagUnreadPost( $providerid, $shareid, $postid, $roomid, "", "L" );
         }
     
 }
@@ -881,25 +1175,6 @@ function RoomPostDelete( $providerid, $shareid, $postid, $roomid )
             delete from statuspost
                 where shareid='$shareid'  
                 ");
-        
-    } else {
-        //deleting a non-parent post
-        
-        $result2 = pdo_query("1",
-            "
-                select count(*) as commentcount from
-                statuspost where parent!='Y' and shareid='$shareid'
-            ");
-        if( $row2 = pdo_fetch($result)){
-            $commentcount = intval($row2['commentcount'])-1;
-            if($commentcount < 0 ){
-                $commentcount = 0;
-            }
-            $result2 = pdo_query("1",
-                "
-                    update statuspost set commentcount = $commentcount where shareid='$shareid' and parent='Y'
-                ");
-        }
         
     }
     
@@ -976,17 +1251,15 @@ function FlagBumpPost( $providerid, $shareid, $postid, $roomid )
 
 function FlagMakePost( $providerid, $shareid, $postid, $roomid )
 {
-    if($providerid > 0){
         pdo_query("1","
             insert into statusreads 
             (providerid, shareid, postid, xaccode, actiontime, roomid ) values
             ( $providerid, '$shareid', '$postid', 'P', now(), $roomid )
             ");
-    }
 
-    pdo_query("1","
-        update roominfo set lastactive = now() where roomid = $roomid
-        ");
+        pdo_query("1","
+            update roominfo set lastactive = now() where roomid = $roomid
+            ");
         
         
 }
@@ -1017,16 +1290,14 @@ function FlagBlockPost( $providerid, $shareid, $postid, $roomid )
  * 
  */
 
-function FlagUnreadPost( $providerid, $shareid, $postid, $roomid, $anonymous, $subtype, $articleid )
+function FlagUnreadPost( $providerid, $shareid, $postid, $roomid, $anonymous, $subtype )
 {
     pdo_query("1","
         delete from statusreads where shareid='$shareid' and xaccode='R'
         ");
     
-    if(intval($articleid)==0){
-        //RoomNotification($providerid, $roomid, $subtype, $shareid, $postid, $anonymous );
-        RoomNotificationRequest($providerid, $roomid, $subtype, $shareid, $postid, $anonymous );
-    }
+    //RoomNotification($providerid, $roomid, $subtype, $shareid, $postid, $anonymous );
+    RoomNotificationRequest($providerid, $roomid, $subtype, $shareid, $postid, $anonymous );
 
     pdo_query("1"," 
         update statusroom set lastaccess = now()
@@ -1077,37 +1348,6 @@ function PinPost( $providerid, $shareid, $postid, $roomid )
         ");
         
 }
-function LockPost( $providerid, $shareid, $postid, $roomid )
-{
-    
-    $result = pdo_query("1","
-        select locked from statuspost where postid = '$postid' 
-            ");
-    if($row = pdo_fetch($result)){
-        $lock = 1;
-        if($row['locked']==1){
-           $lock = 0;
-        }
-    
-        pdo_query("1","
-            update statuspost set locked = $lock where postid = '$postid' and 
-                (
-                    owner = '$providerid'
-                    or exists 
-                     (   select providerid from roommoderator 
-                         where roomid=$roomid and providerid=$providerid 
-                     ) 
-                    or exists 
-                     (   select providerid from statusroom 
-                         where roomid=$roomid and owner=$providerid 
-                     ) 
-                )
-
-            ");
-    }
-        
-}
-
 /****************************************************************
  * 
  * 
@@ -1146,8 +1386,105 @@ function UnPinPost( $providerid, $shareid, $postid, $roomid )
 
 function RecentRooms ( $providerid, $format, $fulllist )
 {
+    $recentrooms = "";
+    $chatlist = "";
 
-    return "";
+    $limit = "11";
+    $result = pdo_query("1","
+            select distinct statusroom.roomid, roominfo.room, 
+            provider.providername as ownername, statusroom.owner,
+            roominfo.lastactive as actiontime,
+            date_format( now(), '%Y%m%d%H%i') as now,  
+            (select handle from roomhandle where roomhandle.roomid = statusroom.roomid )
+            as handle,
+            (select count(*) from statusreads where xaccode = 'R' 
+             and statusroom.roomid = statusreads.roomid 
+             and statusroom.providerid = statusreads.providerid ) as activeflag
+            from statusreads
+            left join statusroom on 
+                statusroom.roomid = statusreads.roomid and
+                statusreads.providerid = statusroom.providerid
+            left join provider on provider.providerid = statusroom.owner
+            left join roominfo on roominfo.roomid = statusroom.roomid
+            where statusroom.providerid=$providerid
+            and statusreads.xaccode = 'R'
+            and datediff( now(), roominfo.lastactive)  < 7
+            order by actiontime desc, roominfo.room asc limit $limit
+
+            ");
+    $i=0;
+            while($row = pdo_fetch($result)){
+                
+                $elapsed = intval($row['now'])-intval($row['actiontime']);
+                $recentflag = false;
+                if($elapsed < 60*24*60){
+                    $recentflag = true;
+                }
+                $active = "";
+                if(intval($row['activeflag']) > 0){
+                    $active = "<img  src='../img/warning-orange2-128.png' style='height:10px;position:relative:top:0px' /> ";
+                }
+                
+                if($row['handle']!=''){
+                    $row['ownername']=$row['handle'];
+                }
+                if($i == 0) {
+                    $recentrooms = "<br>
+                                    <div  class='gridstdborder' 
+                                        style='padding-left:20px;padding-right:20px;padding-top:10px;padding-bottom:10px;
+                                        display:inline-block;text-align:center;background-color:#50c8e8;margin:auto;
+                                        vertical-align:top;border-radius:25px'>
+                                        <div class='smalltext' style='padding-bottom:5px;color:#ffdd00'><b>Trending</b></div>
+                                    ";
+                }
+                /* *******************
+                 * 
+                 * DESKTOP QUICK JUMP
+                 * 
+                 * *******************/
+                $roomfit = $row['room'];
+                if( strlen($row['room'])>25){
+                    $roomfit = preg_replace('/\s+?(\S+)?$/', '', substr($row['room'], 0, 25));
+                }
+                if($fulllist || $recentflag ){
+                    $recentrooms .= "
+                    <div class='feed mainbutton mainfont tapped2 recentbutton' data-roomid='".$row['roomid']."' 
+                        data-room='".$row['room']."' data-selectedroom='Y' 
+                        style='display:inline-block;cursor:pointer;border:0px solid lightgray;
+                        background-color:transparent;color:black;overflow:hidden;'>
+                            <div class='smalltext'
+                            style='display:block;color:white;white-space:nowrap;'>
+                            <b>$active ".$roomfit."</b>
+                            </div>
+                            <span class=smalltext style='color:white'>
+                                ".$row['ownername']."<br>
+                            </span>
+                    </div>
+                    ";
+                }
+                $i++;
+            }
+            if( $i == 1) {
+                $recentrooms = "";
+            }
+            else
+            if( $i > 0) {
+                if( $fulllist ){
+                    $recentrooms .= "
+                    <div class='mainbutton roomselect tapped2 recentbutton'  
+                        style='display:inline-block;cursor:pointer;border:0px solid lightgray;
+                        background-color:transparent;color:black;overflow:hidden;
+                        ;max-width:90%;text-align:left;margin-bottom:5px;vertical-align:top' >
+                            <div class='smalltext'
+                                style='display:block;color:gold;'>
+                                More...
+                            </div>
+                    </div>
+                    ";
+                }
+                $recentrooms .= "</div>";
+            }
+    return $recentrooms;
 }
 /****************************************************************
  * 
@@ -1161,7 +1498,7 @@ function RecentRooms ( $providerid, $format, $fulllist )
 function RoomSizing()
 {
     $mainwidth = '540px';
-    $statuswidth = '500px';
+    $statuswidth = '510px';
     $statuswidth2 = '460px';
     $padding = '5px';
     if( !isset($_SESSION['sizing'])){
@@ -1182,38 +1519,30 @@ function RoomSizing()
         $mainwidth = '940px';
         $statuswidth = '910px';
         $statuswidth2 = '860px';
-        $padding = "0px";
+        $padding = "20px";
     }
     if( $_SESSION['sizing']=='1600'){
         $mainwidth = '840px';
         $statuswidth = '810px';
         $statuswidth2 = '760px';
-        $padding = "0px";
+        $padding = "20px";
     }
     if( $_SESSION['sizing']=='1400'){
-        $mainwidth = '540px';
-        $statuswidth = '480px';
-        $statuswidth2 = '480px';
-        $padding = "0px";
-        /*
-        $mainwidth = '640px';
-        $statuswidth = '610px';
-        $statuswidth2 = '560px';
+        $mainwidth = '840px';
+        $statuswidth = '810px';
+        $statuswidth2 = '760px';
         $padding = "20px";
-         * 
-         */
     }
     if( $_SESSION['sizing']=='1200'){
         $mainwidth = '540px';
-        $statuswidth = '480px';
-        $statuswidth2 = '480px';
-        $padding = "0px";
+        $statuswidth = '500px';
+        $statuswidth2 = '500px';
         
     }
     if( $_SESSION['sizing']=='1000'){
         $mainwidth = '540px';
-        $statuswidth = '480px';
-        $statuswidth2 = '480px';
+        $statuswidth = '500px';
+        $statuswidth2 = '500px';
         $padding = '0px';
         
     }
@@ -1270,14 +1599,11 @@ function RoomSizing()
  * 
  */
 
-function RoomInfo($providerid, $roomid, $mainwidth, $page, $memberinfo)
+function RoomOwner($providerid, $roomid, $mainwidth, $page)
 {
     global $rootserver;
     global $installfolder;
     global $appname;
-    global $global_titlebar_color;
-    global $global_textcolor;
-    global $menu_aboutme;
     
     $room = '';
     $handle = '';
@@ -1285,257 +1611,62 @@ function RoomInfo($providerid, $roomid, $mainwidth, $page, $memberinfo)
     $photo = '';
     $slideshow = "";
     $photourl = "";
-    $photourl2 = "";
-    $chatid = "";
-    $chatidquiz = "";
-    $profileflag = "";
-    $avatarurl = "";
-    $roominvitehandle = "";
-    $publishprofile = "";
-    $webpublishprofile = "";
-    $ownerhandle = "";
-    $sponsor="";
-    $storeurl="";
-    $external = "";
-    $searchengine = "";
-    $analytics = "";
-    $subscription = 0;
-    $subscriptionusd = 0;
-    $subscriptionpending = '';
-    $subscriptiondays = 0;
-    $tokenpay = "";
-    $adminroom = "";
-    $wallpaper="";
-    $radiostation = '';
-    $store = '';
-    $roomstyle = '';
     
     
     if($roomid == 'All'){
         return "";
     }
     $origproviderid = $providerid;
-    
-    
-    if($providerid!=''){
-        pdo_query("1","
-            delete from statusreads where xaccode = 'R' and providerid = $providerid and roomid = $roomid
-        ");
+    if($providerid==''){
+        $result = pdo_query("1","
+            select owner from statusroom where roomid=$roomid and owner=providerid "
+            );
+        if($row = pdo_fetch($result)){
+            $providerid = "$row[owner]";
+        }
+        
     }
+    pdo_query("1","
+        delete from statusreads where xaccode = 'R' and providerid = $providerid and roomid = $roomid
+    ");
 
     $result = pdo_query("1","
-            select distinct 
-                roominfo.roomid, roominfo.room, 
-                (select owner from statusroom where owner = providerid and statusroom.roomid = roominfo.roomid ) as owner,
-                roominfo.external,
-                roominfo.profileflag,
+            select distinct statusroom.roomid, roominfo.room, 
+                provider.providername as ownername, 
+                statusroom.owner,
                 roominfo.photourl,
-                roominfo.photourl2,
                 roominfo.roomdesc,
                 roominfo.adminroom,
-                roominfo.sponsor,
-                roominfo.parentroom,
-                roominfo.rsscategory,
-                roominfo.anonymousflag,
-                roominfo.adminroom,
-                roominfo.roominvitehandle,
-                roominfo.webtextcolor,
-                roominfo.webpublishprofile,
-                roominfo.webflags,
-                roominfo.storeurl,
-                roominfo.store,
-                roominfo.searchengine,
-                roominfo.analytics,
-                roominfo.subscription,
-                roominfo.subscriptionusd,
-                roominfo.subscriptiondays,
-                roominfo.wallpaper,
-                roominfo.radiostation,
-                roominfo.roomstyle,
-                (select sponsor.logo from sponsor where sponsor.sponsor = roominfo.sponsor) as logo,
-                (select chatid from chatspawned where chatspawned.roomid = roominfo.roomid limit 1) as chatid,
-                (select chatid from chatmaster where chatmaster.roomid = roominfo.roomid and status='Y' order by chatid desc limit 1) as chatidquiz,
-                (select handle from roomhandle where roomhandle.roomid = roominfo.roomid )
-                as handle,
-                (select count(*) from statuspost where statuspost.roomid = roominfo.roomid) as postcount
+                (select handle from roomhandle where roomhandle.roomid = statusroom.roomid )
+                as handle
             
-            from roominfo
+            from statusroom
+            left join provider on provider.providerid = statusroom.owner
+            left join roominfo on statusroom.roomid = roominfo.roomid
             where 
-            roominfo.roomid=$roomid 
-            limit 1
+            (
+                (statusroom.owner=$providerid or statusroom.providerid=$providerid)
+                or 
+                (
+                statusroom.roomid in (select roomid from publicrooms)
+                )
+            )
+            and statusroom.roomid=$roomid
 
             ");
 
-    
     //<img src='../img/door-128.png' style='position:relative;top:5px;height:20px' />
-    $ownername2 = 'Abandoned';
-    $ownername = "Unmoderated";
-    $avatarurl = "$rootserver/img/faceless.png";
-    $profileroomid = 0;
-    $ownerhandle = '';
-    $publishprofile = '';
 
     if($row = pdo_fetch($result)){
-
-        $profileflag = $row['profileflag'];
-        $ownerid = $row['owner'];
-
-        $result2 = pdo_query("1","
-            select
-            provider.profileroomid,
-            provider.providername as ownername, 
-            provider.avatarurl, provider.publishprofile,
-            provider.handle as ownerhandle, provider.store
-            from provider where providerid = $ownerid
-                "
-                );
-        if($row2 = pdo_fetch($result)){
-
-            $ownername2 = $row2['ownername'];
-            $ownername = "Moderated by ".rtrim($row2['ownername']);
-            if($row['adminroom']=='Y' ){
-                $ownername = "Moderated by ".$appname ;
-            }
-            if($profileflag == 'Y'){
-                $ownername = $row2['ownername'];
-            }
-            $profileroomid = $row2['profileroomid'];
-            
-            $ownerhandle = $row2['ownerhandle'];
-            $publishprofile = $row2['publishprofile'];
-            $avatarurl = $row2['avatarurl'];
-
-            //Feed Room
-            if($row['rsscategory']!='' || $row['anonymousflag']=='Y'){
-                $avatarurl = "$rootserver/img/faceless.png";
-                $ownerid = 0;
-            }
-            if($row2['store']!='Y'){
-                $row['store']='N';
-            }
-            
-
+        $ownername = "Moderated by ".rtrim($row['ownername']);
+        if($row['adminroom']=='Y' ){
+            $ownername = "Moderated by ".$appname ;
         }
-        
-        
-        
-        $room = htmlentities($row['room'],ENT_QUOTES);
-        $roomdesc = urldecode($row['roomdesc']);
+        $room = $row['room'];
         $handle = $row['handle'];
         $photourl = $row['photourl'];
-        $photourl2 = $row['photourl2'];
-        $chatid = $row['chatid'];
-        $chatidquiz = $row['chatidquiz'];
-        $roomstyle = $row['roomstyle'];
-        $postcount = $row['postcount'];
+        $roomdesc = $row['roomdesc'];
         $photo = '';
-        $sponsor = $row['sponsor'];
-        $external = $row['external'];
-        $adminroom = $row['adminroom'];
-        $roominvitehandle = $row['roominvitehandle'];
-        $webpublishprofile = $row['webpublishprofile'];
-        $webtextcolor = $row['webtextcolor'];
-        $webflags = $row['webflags'];
-        $wallpaper = $row['wallpaper'];
-        $searchengine = $row['searchengine'];
-        $analytics = base64_decode($row['analytics']);
-        $storeurl = $row['storeurl'];
-        $store = $row['store'];
-        $logo = $row['logo'];
-        $radiostation = $row['radiostation'];
-        $subscription = (float) $row['subscription'];
-        $subscriptionusd = (float) $row['subscriptionusd'];
-        $subscriptiondays = (float) $row['subscriptiondays'];
-        if((float) $subscription !== 0 && $subscription!='' && $row['owner'] != $providerid){
-
-            $subscriptionperiod = "One Time";
-            if($subscriptiondays > 0){
-                $subscriptionperiod = "for $subscriptiondays Days";
-            }
-            
-            $subscriptionpending = 'Y';
-            $tokenpaymsg = "This room has premium content. Subscribe
-                        to get access.";
-            if($memberinfo->subscribedate!='' && 
-               $memberinfo->today >= $memberinfo->expiredate && $memberinfo->expiredate!='' ){
-                $tokenpaymsg = "Your subscription has expired. Subscribe
-                        to get access. ";
-            }
-            if($subscription < 0){
-                $tokenpaymsg = " 
-                    This is a subscription test. No actual subscription tokens are required. Please click on Subscribe to continue. 
-                    To repeat the test, unsubscribe from the room.
-                        ";
-                
-            }
-            
-            $tokenpay = "        
-                <tr>
-                    <td>
-                        <br><center>
-                        <span class='mainfont' style='color:$global_textcolor'>$tokenpaymsg
-                        </span><br><br><br>
-                        <a href='$rootserver/prod/roomtokenpay.php?roomid=$roomid&mode=p' 
-                             style='text-decoration:none'>
-                             <div class='divbuttontext' 
-                             style='background-color:$global_titlebar_color;color:white'>
-                                Subscribe $subscription Tokens $subscriptionperiod</div></a></center><br><br>
-                    </td>
-                </tr>
-                ";
-        }
-        if((float) $subscriptionusd !== 0 && $subscriptionusd!='' && $row['owner'] != $providerid){
-
-            $subscriptionperiod = "One Time";
-            if($subscriptiondays > 0){
-                $subscriptionperiod = "for $subscriptiondays Days";
-            }
-            
-            $subscriptionpending = 'Y';
-            $tokenpaymsg = "This room has premium content. Subscribe
-                        to get access.";
-            if($memberinfo->subscribedate!='' && 
-               $memberinfo->today >= $memberinfo->expiredate && $memberinfo->expiredate!='' ){
-                $tokenpaymsg = "Your subscription has expired. Subscribe
-                        to get access. ";
-            }
-            if($subscriptionusd < 0){
-                $tokenpaymsg = " 
-                    This is a subscription test. No actual subscription tokens are required. Please click on Subscribe to continue. 
-                    To repeat the test, unsubscribe from the room.
-                        ";
-                
-            }
-            
-            $tokenpay = "        
-                <tr>
-                    <td>
-                        <br><center>
-                        <span class='mainfont' style='color:$global_textcolor'>$tokenpaymsg
-                            <br>
-                                Subscribe Paypal $subscriptionusd  $subscriptionperiod
-                            
-                        </span><br><br><br>
-                            <form id='fmPaypal' method='post' action= 'https://www.sandbox.paypal.com/cgi-bin/webscr'>
-                                    <input type='hidden' name='cmd' value='_xclick'>
-                                    <input type='hidden' name='currency_code' value='USD'>
-                                    <input type='hidden' name='business' value='rob@brax.me'>
-                                    <input type='hidden' name='item_name' value='Room/$roomid'>
-                                    <input type='hidden' name='item_number' value='$_SESSION[pid]'>
-                                    <input type='hidden' name='amount' value='$subscriptionusd'>
-                                    <input type='hidden' name='no_shipping' value='1'>
-                                    <input type='hidden' name='tax' value='0'>
-                                    <input type='hidden' name='return' value='$rootserver/$installfolder/paypalreturn.php?mode=1' />
-                                    <input type='hidden' name='cancel_return' value='$rootserver/$installfolder/paypalreturn.php?mode=cancel1' />
-                                    <input type='image' src='https://www.paypalobjects.com/en_US/i/btn/btn_subscribeCC_LG.gif' border='0' name='submit' alt='PayPal - The safer, easier way to pay online!'  style='height:47px'>
-                                    <img alt='' border='0' src='https://www.paypalobjects.com/en_US/i/scr/pixel.gif' width='1' height='1'>
-                            </form>
-                           </center><br><br>
-                    </td>
-                </tr>
-                ";
-        }
-
         
         if($photourl !== '' && IsSlideshow($photourl)){
             //$photo = $comment;
@@ -1613,70 +1744,13 @@ function RoomInfo($providerid, $roomid, $mainwidth, $page, $memberinfo)
                         $photo_plus
                     </div>
                     ";
-
-        $parentroomid = "";
-        $parentroomhandle = $row['parentroom'];
-        if($row['parentroom']!=''){
-            $result = pdo_query("1","
-                select roominfo.roomid, roominfo.external
-                from roomhandle 
-                left join roominfo on roomhandle.roomid = roominfo.roomid
-                where roomhandle.handle = '$row[parentroom]' and roominfo.external!='Y'
-                ");
-            if($row = pdo_fetch($result)){
-                $parentroomid = $row['roomid'];
-            }
-                
-            
-        }
         
-        $ownerinfo['profileflag'] = $profileflag;
         $ownerinfo['room'] = $room;
-        if($profileflag == 'Y'){
-            $ownerinfo['room'] = "$menu_aboutme";
-        }
-        
         $ownerinfo['ownername'] = $ownername;
-        $ownerinfo['ownername2'] = $ownername2;
         $ownerinfo['photo'] = $photo;
         $ownerinfo['roomdesc'] = $roomdesc;
         $ownerinfo['photourl'] = $photourl;
-        $ownerinfo['photourl2'] = $photourl2;
         $ownerinfo['handle'] = $handle;
-        $ownerinfo['chatid'] = $chatid;
-        $ownerinfo['chatidquiz'] = $chatidquiz;
-        $ownerinfo['sponsor'] = $sponsor;
-        $ownerinfo['parentroomid'] = $parentroomid;
-        $ownerinfo['parentroomhandle'] = $parentroomhandle;
-        $ownerinfo['profileroomid'] = $profileroomid;
-        $ownerinfo['adminroom']= $adminroom;
-        $ownerinfo['avatarurl'] = $avatarurl;
-        $ownerinfo['ownerid'] = $ownerid;
-        $ownerinfo['postcount'] = $postcount;
-        $ownerinfo['roominvitehandle'] = $roominvitehandle;
-        $ownerinfo['publishprofile'] = $publishprofile;
-        $ownerinfo['webpublishprofile'] = $webpublishprofile;
-        $ownerinfo['webtextcolor'] = $webtextcolor;
-        $ownerinfo['webflags'] = $webflags;
-        $ownerinfo['wallpaper'] = $wallpaper;
-        $ownerinfo['ownerhandle'] = $ownerhandle;
-        $ownerinfo['storeurl'] = $storeurl;
-        $ownerinfo['store'] = $store;
-        $ownerinfo['logo'] = $logo;
-        $ownerinfo['external'] = $external;
-        $ownerinfo['analytics'] = html_entity_decode($analytics);
-        if($searchengine != 'Y'){
-            $ownerinfo['analytics']='';
-        }
-        $ownerinfo['tokenpay'] = $tokenpay;
-        $ownerinfo['subscriptionpending'] = $subscriptionpending;
-            
-        if($memberinfo->subscribedate!='' && $memberinfo->today <= $memberinfo->expiredate && $memberinfo->expiredate!='' ){
-            $ownerinfo['subscriptionpending']='';
-            $ownerinfo['tokenpay']='';
-        }
-        $ownerinfo['radiostation'] = $radiostation;
-        $ownerinfo['roomstyle'] = $roomstyle;
         
         return( (object) $ownerinfo );
     }
@@ -1693,135 +1767,13 @@ function RoomInfo($providerid, $roomid, $mainwidth, $page, $memberinfo)
  * 
  */
 
-function MemberCheck($providerid, $roomid)
+function DisplayRoomTip($providerid, $roomid, $handle )
 {
-    if($providerid==''){
-        $providerid ='0';
-    }
-    $memberinfo = array();
-    $memberinfo['roomid'] = "All";
-    $memberinfo['roomforsql'] = "";
-    $memberinfo['roomhtml'] = "";
-    $memberinfo['owner'] = "";
-    $memberinfo['ownername'] = "";
-    $memberinfo['handle'] = "";
-    $memberinfo['anonymous'] = "";
-    $memberinfo['member'] = "";
-    $memberinfo['private'] = "";
-    $memberinfo['adminonly'] = "";
-    $memberinfo['roomfiles'] = "";
-    $memberinfo['adminroom'] = "";
-    $memberinfo['unread'] = "";
-    $memberinfo['showmembers']="";
-    $memberinfo['moderator']="";
-    $memberinfo['groupname']="";
-    $memberinfo['radiostation']="";
-    $memberinfo['sponsor']="";
-    $memberinfo['subscribedate']="";
-    $memberinfo['today']='';
-    
-    if(intval($roomid) > 0){
-        //Find Room Owner
-        $result = pdo_query("1","
-            select statusroom.roomid, roominfo.room, roominfo.radiostation,
-            statusroom.owner, provider.providername as ownername,
-            (select 'Y' from notifymute where notifymute.id = statusroom.roomid and idtype='R' and notifymute.providerid = $providerid ) as mute,
-            (select groupname from groups where groups.groupid = roominfo.groupid ) as groupname,
-            (select providerid from roommoderator where roommoderator.roomid = statusroom.roomid
-             and roommoderator.providerid = $providerid) as moderator,
-            (select handle from roomhandle where roomhandle.roomid = statusroom.roomid) as handle,
-            (select 'Y' from roomfavorites where roomfavorites.roomid = statusroom.roomid and roomfavorites.providerid = statusroom.providerid ) as favorite,
-            roominfo.private, roominfo.anonymousflag, roominfo.adminonly, roominfo.adminroom, roominfo.showmembers,
-            roominfo.sponsor, roominfo.profileflag,
-            (select DATE_FORMAT(now(),'%Y%m%d' )) as today,
-            (select DATE_FORMAT(subscribedate,'%Y%m%d') from statusroom s2 where s2.roomid = statusroom.roomid and s2.providerid = $providerid limit 1 ) as subscribedate,
-            (select DATE_FORMAT(expiredate,'%Y%m%d') from statusroom s2 where s2.roomid = statusroom.roomid and s2.providerid = $providerid limit 1 ) as expiredate,
-            (select 'Y' from statusroom s2 where s2.roomid = statusroom.roomid and s2.providerid = $providerid limit 1 ) as member,
-            (select 
-                DATE_FORMAT(date_add(createdate,INTERVAL $_SESSION[timezoneoffset]*60 MINUTE), '%b %d %a %h:%i %p')  
-                from roomfiles 
-                where roomfiles.roomid = statusroom.roomid 
-                and timestampdiff( DAY, createdate, now() ) < 30
-                order by createdate desc limit 1 
-            ) as roomfiles,
-            ( select 'Y' from statusreads where statusreads.providerid = $providerid
-                and xaccode = 'R' and datediff( now(), actiontime) < 2 and 
-                statusreads.roomid != $roomid limit 1 ) as unread
-            from statusroom 
-            left join roominfo on statusroom.roomid = roominfo.roomid
-            left join provider on statusroom.owner = provider.providerid
-            where statusroom.roomid=$roomid  and statusroom.owner = statusroom.providerid
-                ");
-        if($row = pdo_fetch($result)){
-            $memberinfo['roomid'] = $row['roomid'];
-            $memberinfo['roomforsql'] = tvalidator("PURIFY",$row['room']);
-            $memberinfo['roomhtml'] = htmlentities($row['room'],ENT_QUOTES);
-            $memberinfo['owner'] = $row['owner'];
-            $memberinfo['moderator'] = $row['moderator'];
-            $memberinfo['ownername'] = $row['ownername'];
-            $memberinfo['handle'] = $row['handle'];
-            $memberinfo['anonymous'] = $row['anonymousflag'];
-            $memberinfo['member'] = $row['member'];
-            $memberinfo['private'] = $row['private'];
-            $memberinfo['adminonly'] = $row['adminonly'];
-            $memberinfo['roomfiles'] = $row['roomfiles'];
-            $memberinfo['adminroom'] = $row['adminroom'];
-            $memberinfo['unread'] = $row['unread'];
-            $memberinfo['showmembers'] = $row['showmembers'];
-            $memberinfo['groupname'] = $row['groupname'];
-            $memberinfo['radiostation'] = $row['radiostation'];
-            $memberinfo['sponsor'] = $row['sponsor'];
-            $memberinfo['mute'] = $row['mute'];
-            $memberinfo['subscribedate'] = $row['subscribedate'];
-            $memberinfo['expiredate'] = $row['expiredate']; 
-            $memberinfo['today'] = $row['today'];
-            $memberinfo['favorite'] = $row['favorite'];
-            $memberinfo['ownermoderatorflag']='N';
-            $memberinfo['showmembers'] = $row['showmembers'];
-            
-            if($providerid == $row['owner'] || 
-               $providerid == $row['moderator'] || 
-               $_SESSION['superadmin']=='Y' ){
-                $memberinfo['showmembers'] = "Y";
-                $memberinfo['ownermoderatorflag']='Y';
-            }
-            if($row['adminonly']==''){
-                $memberinfo['adminonly']='N';
-            }
-            if($row['profileflag']=='Y'){
-                $row['member']='Y';
-                NewProfileRoomMember($roomid, $row['owner'], $providerid);
-            }
-            
-        }
-    }
-    return (object) $memberinfo;
-    
-}
-
-
-/****************************************************************
- * 
- * 
- * 
- * 
- * 
- * 
- */
-
-function DisplayNewPost($readonly, $providerid, $roomid, $handle )
-{
-    global $menu_newtopic;
     
     $owner = false;
     $roomanonymous = '';
     $adminroom = '';
     $roomtip = "";
-    
-    if($readonly == 'Y'){
-        return "";
-    }
-    
     if( intval($roomid) > 0 ){
         $result = pdo_query("1","
                   select owner from statusroom 
@@ -1844,19 +1796,8 @@ function DisplayNewPost($readonly, $providerid, $roomid, $handle )
     $add = "";
     if(($adminroom!='Y' && $roomid !='All') || $providerid==690001027){
         $add =  "       
-                <center>
-                <input class='newroompost makecommenttop mainfont' data-shareid='' readonly=readonly placeholder='$menu_newtopic' style='cursor:pointer;background-color:white;height:35px;width:95%;min-width:50%;max-width:95%;padding:5px' />
-                </center>
+                        <input class='makecommenttop mainfont' data-shareid='' readonly=readonly placeholder='New Topic - Comment, links, photo, video' style='cursor:pointer;height:30px;background-color:white;width:310px;min-width:50%;max-width:90%;padding:5px' />
                 ";
-        if($_SESSION['superadmin']=='Y'){
-            
-            $add =  "       
-                    <center>
-                    <input class='newroompost makecommenttop mainfont' data-shareid='' readonly=readonly placeholder='$menu_newtopic' style='cursor:pointer;background-color:white;' />
-                    </center>
-                    ";
-            
-        }
     }
 
         if( $_SESSION['roomuser']=='1' && $roomid == 'All'){
@@ -1950,6 +1891,83 @@ function DisplayNewPost($readonly, $providerid, $roomid, $handle )
  * 
  */
 
+function MemberCheck($providerid, $roomid)
+{
+    if($providerid==''){
+        $providerid ='0';
+    }
+    $room = array();
+    $room['roomid'] = "All";
+    $room['roomforsql'] = "";
+    $room['roomhtml'] = "";
+    $room['owner'] = "";
+    $room['ownername'] = "";
+    $room['handle'] = "";
+    $room['anonymous'] = "";
+    $room['member'] = "";
+    $room['private'] = "";
+    $room['adminonly'] = "";
+    $room['roomfiles'] = "";
+    $room['adminroom'] = "";
+    $room['unread'] = "";
+    $room['showmembers']="";
+    $room['moderator']="";
+    
+    if(intval($roomid) > 0){
+        //Find Room Owner
+        $result = pdo_query("1","
+            select statusroom.roomid, roominfo.room, 
+            statusroom.owner, provider.providername as ownername,
+            (select providerid from roommoderator where roommoderator.roomid = statusroom.roomid
+             and roommoderator.providerid = $providerid) as moderator,
+            (select handle from roomhandle where roomhandle.roomid = statusroom.roomid) as handle,
+            roominfo.private, roominfo.anonymousflag, roominfo.adminonly, roominfo.adminroom, roominfo.showmembers,
+            (select 'Y' from statusroom s2 where s2.roomid = statusroom.roomid and s2.providerid = $providerid limit 1 ) as member,
+            (select 
+                DATE_FORMAT(date_add(createdate,INTERVAL $_SESSION[timezoneoffset]*60 MINUTE), '%b %d %a %h:%i %p')  
+                from roomfiles 
+                where roomfiles.roomid = statusroom.roomid 
+                and timestampdiff( DAY, createdate, now() ) < 30
+                order by createdate desc limit 1 
+            ) as roomfiles,
+            ( select 'Y' from statusreads where statusreads.providerid = $providerid
+                and xaccode = 'R' and datediff( now(), actiontime) < 2 and 
+                statusreads.roomid != $roomid limit 1 ) as unread
+            from statusroom 
+            left join roominfo on statusroom.roomid = roominfo.roomid
+            left join provider on statusroom.owner = provider.providerid
+            where statusroom.roomid=$roomid  and statusroom.owner = statusroom.providerid
+                ");
+        if($row = pdo_fetch($result)){
+            $room['roomid'] = $row['roomid'];
+            $room['roomforsql'] = tvalidator("PURIFY",$row['room']);
+            $room['roomhtml'] = htmlentities($row['room'],ENT_QUOTES);
+            $room['owner'] = $row['owner'];
+            $room['moderator'] = $row['moderator'];
+            $room['ownername'] = $row['ownername'];
+            $room['handle'] = $row['handle'];
+            $room['anonymous'] = $row['anonymousflag'];
+            $room['member'] = $row['member'];
+            $room['private'] = $row['private'];
+            $room['adminonly'] = $row['adminonly'];
+            $room['roomfiles'] = $row['roomfiles'];
+            $room['adminroom'] = $row['adminroom'];
+            $room['unread'] = $row['unread'];
+            $room['showmembers'] = $row['showmembers'];
+        }
+    }
+    return (object) $room;
+    
+}
+/****************************************************************
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
+
 function DetermineRoomStage()
 {
     if( $_SESSION['roomuser']!=''){
@@ -1992,9 +2010,6 @@ function DetermineRoomStage()
 
 function LikeButton($providerid, $likes, $shareid, $postid, $roomid, $selectedroomid,$float, $parent, $scrollreference )
 {
-    global $global_icon_heart;
-    global $global_backgroundreverse;
-    
         if($providerid==''){
             return "";
         }
@@ -2009,7 +2024,7 @@ function LikeButton($providerid, $likes, $shareid, $postid, $roomid, $selectedro
             $class = "";
         }
         if($likes !='0') {
-            $likes = " ".$likes;
+            $likes = " +".$likes;
         }
         else {
             $likes = '';
@@ -2020,22 +2035,22 @@ function LikeButton($providerid, $likes, $shareid, $postid, $roomid, $selectedro
                             data-shareid='$shareid' data-postid='$postid'  data-reference='$scrollreference' 
                             data-selectedroomid='$selectedroomid' data-roomid='$roomid' data-mode='L' data-parent='$parent'>
                              <img 
-                             class='icon15'
-                             src='../img/Heart-2_120px.png' 
+                             class='icon20'
+                             src='../img/heart-gray-128.png' 
                              style='top:0px' />
                              $likes</div>
                        ";
         }
-        
         if($likes != ''){
             $likebutton = "
-                         <div class='feedreply divbuttonlike divbuttonlike1 divbuttonlike_unsel roomcontrols tapped smalltext2'  
-                            style='$float;background-color:$global_backgroundreverse;color:black;position:relative;top:-5px'
+                         <div class='feedreply divbuttonlike divbuttonlike1 divbuttonlike_unsel roomcontrols tapped smalltext2 gridstdborder'  style='$float;background-color:white;color:black;position:relative;top:0px'
                             data-shareid='$shareid' data-postid='$postid'    data-reference='$scrollreference'
                             data-selectedroomid='$selectedroomid' data-roomid='$roomid' data-mode='L' data-parent='$parent'>
-                            $global_icon_heart 
-                             $likes
-                          </div>
+                             <img 
+                                class='icon15'
+                                src='../img/heart-orange-128.png' 
+                                style='top:3px;' />
+                             $likes</div>
                        ";
 
         }
@@ -2053,7 +2068,7 @@ function LikeButton($providerid, $likes, $shareid, $postid, $roomid, $selectedro
  * 
  */
 
-function DeleteButton( $parent, $owner, $owner2, $moderator, $providerid, $shareid, $postid, $roomid, $selectedroomid, $float, $scrollreference )
+function DeleteButton( $parent, $owner, $owner2, $providerid, $shareid, $postid, $roomid, $selectedroomid, $float, $scrollreference )
 {
         $superadmin = 'N';
         if(isset($_SESSION['superadmin'])){
@@ -2066,7 +2081,7 @@ function DeleteButton( $parent, $owner, $owner2, $moderator, $providerid, $share
         //if( $parent == 'Y' && $providerid != $owner && $superadmin!='Y' ){
         //    return "";
         //}
-        if(  $providerid != $owner && $providerid !=$owner2 && $providerid!= $moderator && $superadmin!='Y' ){
+        if(  $providerid != $owner && $providerid !=$owner2 && $superadmin!='Y' ){
             return "";
         }
         $classes = "feedreply";
@@ -2081,8 +2096,8 @@ function DeleteButton( $parent, $owner, $owner2, $moderator, $providerid, $share
         }
         $deletebutton =  "
             <img 
-            class='icon15 $classes roomcontrols tapped' 
-            src='../img/Close_120px.png'  style='$margin;$float;opacity:1;'
+            class='icon20 $classes roomcontrols tapped' 
+            src='../img/delete-gray-128.png'  style='$margin;$float;opacity:0.7;'
             title='Delete post'
             data-mode='D' data-postid='$postid' data-shareid='$shareid'  data-roomid='$roomid'  
             data-selectedroomid='$selectedroomid'   
@@ -2140,30 +2155,31 @@ function RoomManageMenu()
  * 
  */
 
-function ShareRoom ( $readonly, $caller, $providerid, $roomid, $style, $showroomtip, $callerflag, $owner )
+function ShareRoom (  $caller, $providerid, $roomid, $style, $showroomtip, $callerflag )
 {
     global $rootserver;
     global $installfolder;
     global $appname;
-    global $global_textcolor;
-    global $iconsource_braxarrowright_common;
-    global $iconsource_braxlink_common;
     
     $owned = "";
-    
-    if($readonly == 'Y'){
-        return "";
-    }
+    $roomtip = "";
     
     if( intval($roomid) == 0) {
         return "";
     }
 
-    $icon2 = "$iconsource_braxlink_common";
+    $icon1 = "$rootserver/img/facebook-blue-128.png";
+    $icon2 = "$rootserver/img/link-square-blue-128.png";
+    $icon3 = "$rootserver/img/share-fb-square-blue-128.png";
+    $icon4 = "$rootserver/img/public-blue-128.png";
+    $icon5 = "$rootserver/img/person-square-blue-128.png";
+    $icon6 = "$rootserver/img/mail-square-blue-128.png";
 
+    $uniqid2 = substr(uniqid(),4,8);
+    $uniqid = uniqid("$uniqid2");
 
     $result = pdo_query("1","
-        select roomhandle.handle, roominfo.external,
+        select roomhandle.handle, 
         roominfo.room, statusroom.owner, roominfo.private
         from statusroom
         left join roomhandle on roomhandle.roomid = statusroom.roomid
@@ -2174,15 +2190,12 @@ function ShareRoom ( $readonly, $caller, $providerid, $roomid, $style, $showroom
         
         $handle = $row['handle'];
         $private = $row['private'];
-        $external = $row['external'];
-        if($row['owner']=="$providerid" || $owner!=''){
+        if($row['owner']=="$providerid"){
             $owned = 'Y';
         }
         $room = str_replace('&amp;','%26',rawurlencode($row['room'])); 
-        
     }  else {
         
-        $external = "";
         $handle = "";
         $owned = "X";
     }
@@ -2192,62 +2205,81 @@ function ShareRoom ( $readonly, $caller, $providerid, $roomid, $style, $showroom
     if(intval($roomid) <= 1){
         return "";
     }
-    /* Note: Actual Links are created in RoomCreateInvite.php */
-
     
-    if( $external=='Y' ){
-            return "
-             <div class='groupinvitecreate roombutton' style='vertical-align:top;display:inline-block;;color:$global_textcolor' data-roomid='$roomid' data-mode=''>
-                 <img  class='icon35' src='$icon2' 
-                     style='display:inline;cursor:pointer;position:relative;top:0px;margin:0;padding:0;text-align:center' />
-                                     <br>
-                                     <span class=smalltext>
-                                     External
-                                     <br>
-                                     Website
-                                     <br>
-                                     <br>
-                                     </span>
-             </div>
-             $style
-            <br><br>
-            <br><br>
-            <span class='smalltext groupinvitelinkgroup'  style='display:none;color:$global_textcolor'>
-                
-                <b>Website URL to Share</b></span><br>
-                <input class='groupinvitelink smalltext' type='text' readonly=readonly value='' 
-                    style='display:none;background-color:white;;height:25px;max-width:80%;width:400px' />
-                <img class='groupinvitelinkgroup groupinvitegotolink' src='$iconsource_braxarrowright_common' style='display:none;position:relative;top:5px;height:20px;width:auto;padding-top:0;padding-right:2px;padding-bottom:0px;' />
-                    
-            </span>
+    $shareopentitle = "Join $row[room] on $appname";
+    //$shareopentitle = str_replace(" ","%20",$shareopentitle);
+    //$sharelink = "$rootserver/prod/roominvite.php?i=$roomid&k=$uniqid";
+    
+    //Public Link
+    $handleshort = substr($row['handle'],1);
+    $sharelink = "$rootserver/prod/roominvite.php?r=$handleshort";
+    if($private == 'Y'){
+        $sharelink = "$rootserver/prod/roominvite.php?i=$roomid&k=$uniqid";
+    }
+    $urlencoded = urlencode($sharelink);
+    $urlencoded .= "&text=".htmlentities(stripslashes($shareopentitle), ENT_QUOTES);
 
-             ";
+
+    if($_SESSION['mobilesize']=='Y') {
+        
+        $fbshare = "braxme://sharefb?u=$urlencoded";
+        //$fbshare_room = "braxme://sharefb?u=$urlencoded_room";
+    } else {
+        
+        $fbshare = "http://www.facebook.com/sharer.php?u=$urlencoded";
+        //$fbshare_room = "http://www.facebook.com/sharer.php?u=$urlencoded_room";
+    }
+    
+    if($showroomtip == '1')
+    {
+        $roomtip = "
+                        <center>
+                        <div style='padding:20px'>
+                                <div class='tipbubble pagetitle3 tapped gridstdborder'  data-roomid='$roomid' style='color:black;background-color:gold;cursor:pointer'>
+                                    Promote your room by tapping on INVITE button in a room and sharing a Group Invite Link
+                                </div>
+                        </div>
+                        <br><br>
+                        </center>
+            ";
         
     }
+    
     if( $private == 'Y' && $owned=='Y' ){
             return "
-             <div class='groupinvitecreate roombutton' style='vertical-align:top;display:inline-block;;color:$global_textcolor' data-roomid='$roomid' data-mode=''>
+             <div class='groupinvitecreate roombutton' style='vertical-align:top;display:inline-block;;color:black' data-roomid='$roomid'>
                  <img  class='icon35' src='$icon2' 
                      style='display:inline;cursor:pointer;position:relative;top:0px;margin:0;padding:0;text-align:center' />
                                      <br>
                                      <span class=smalltext>
-                                     External
-                                     <br>
-                                     Room
+                                     Group
                                      <br>
                                      Invite
-                                     <br>
+                                     <br>Link<br>
                                      </span>
              </div>
              $style
+             <div class='friendinvite tooltip tapped roombutton' 
+                 data-caller='room'
+                 style='vertical-align:top;display:inline-block;background-color:transparent;white-space:nowrap;color:black' 
+                 id='friendlist' title='Invite via Email or Text' data-roomid='$roomid'>
+                 <img class='icon35' src='$icon5' 
+                     style='display:inline;cursor:pointer;position:relative;top:0px;margin:0;padding:0;text-align:center;' />
+                                     <br>
+                                     <span class=smalltext>
+                                     Individual
+                                     <br>Room<br>
+                                     Invite<br>
+                                     </span>
+             </div>
+
+            $style
             <br><br>
+            $roomtip
             <br><br>
-            <span class='smalltext groupinvitelinkgroup'  style='display:none;color:$global_textcolor'>
-                
-                <b>Room Invite URL to Share (48 Hour Lifespan)</b></span><br>
-                <input class='groupinvitelink smalltext' type='text' readonly=readonly value='' 
-                    style='display:none;background-color:white;;height:25px;max-width:80%;width:400px' />
-                <img class='groupinvitelinkgroup groupinvitegotolink' src='$iconsource_braxarrowright_common' style='display:none;position:relative;top:5px;height:20px;width:auto;padding-top:0;padding-right:2px;padding-bottom:0px;' />
+            <span class='smalltext groupinvitelinkgroup'  style='display:none;color:black'><b>Group Invite URL to Share (48 Hour Lifespan)</b></span><br>
+                <input class=groupinvitelink type='text' readonly=readonly value='$sharelink' style='display:none;background-color:white;font-size:12px;height:15px;max-width:80%;width:400px' />
+                    <img class='groupinvitelinkgroup groupinvitegotolink' src='../img/arrow-stem-circle-right-128.png' style='display:none;position:relative;top:5px;height:20px;width:auto;padding-top:0;padding-right:2px;padding-bottom:0px;' />
                     
             </span>
 
@@ -2256,61 +2288,89 @@ function ShareRoom ( $readonly, $caller, $providerid, $roomid, $style, $showroom
     }
     if( $private === 'Y' && $owned!=='Y' ){
             return "
-             <div class='roombutton' style='vertical-align:top;display:inline-block;;opacity:0.2;color:$global_textcolor' data-roomid=''>
+             <div class='roombutton' style='vertical-align:top;display:inline-block;;opacity:0.2;color:black' data-roomid='$roomid'>
                  <img  class='icon35 forowner'    src='$icon2' 
                      style='display:inline;cursor:pointer;position:relative;top:0px;margin:0;padding:0;text-align:center' />
                                      <br>
                                      <span class=smalltext>
-                                     Room
+                                     Group
                                      <br>
                                      Invite
                                      <br>Link<br>
                                      </span>
              </div>
              $style
+             <div class='roombutton forowner tooltip tapped' 
+                 data-caller='room'
+                 style='vertical-align:top;display:inline-block;background-color:transparent;white-space:nowrap;opacity:0.2;color:black' 
+                 id='friendlist' title='Invite via Email or Text' data-roomid='$roomid'>
+                 <img class='icon35' src='$icon5' 
+                     style='display:inline;cursor:pointer;position:relative;top:0px;margin:0;padding:0;text-align:center;' />
+                                     <br>
+                                     <span class=smalltext  style='color:black' >
+                                     Individual
+                                     <br>Room<br>
+                                     Invite<br>
+                                     </span>
+             </div>
+             $style
+                 
             <br><br>
              ";
         
     }
+    $shareopentitle = "Join $row[room] on $appname";
+    //$shareopentitle = str_replace(" ","%20",$shareopentitle);
+    $urlencoded = urlencode($sharelink);
+    $urlencoded .= "&text=".htmlentities(stripslashes($shareopentitle), ENT_QUOTES);
+    
+    $roomlink = "$rootserver/blog/$handleshort";
+    $urlencoded_room = urlencode("$roomlink&k=$uniqid");
+    $urlencoded_room .= "&text=".htmlentities(stripslashes($row['room']), ENT_QUOTES);
     
 
+    if($_SESSION['mobilesize']=='Y'){
+        $fbshare = "braxme://sharefb?u=$urlencoded";
+        $fbshare_room = "braxme://sharefb?u=$urlencoded_room";
+    } else {
+        $fbshare = "http://www.facebook.com/sharer.php?u=$urlencoded";
+        $fbshare_room = "http://www.facebook.com/sharer.php?u=$urlencoded_room";
+    }
         $returntext = "
-        <div class='groupinvitecreate' style='vertical-align:top;display:inline-block;height:90px;width:70px;color:$global_textcolor' data-roomid='$roomid'  data-mode=''>
+        <div class='groupinvitecreate' style='vertical-align:top;display:inline-block;height:90px;width:70px;color:black' data-roomid='$roomid'>
             <img class='icon35' src='$icon2' style='display:inline;cursor:pointer;position:relative;top:0px;width:auto;margin:0;padding:0;text-align:center' />
                                 <br>
                                 <span class=smalltext>
-                                In-App
+                                Group
                                 <br>
                                 Invite
-                                <br>
+                                <br>Link<br>
                                 </span>
         </div>
         $style
-        <div class='groupinvitecreate' style='vertical-align:top;display:inline-block;height:90px;width:70px;color:$global_textcolor' data-roomid='$roomid'  data-mode='S'>
-            <img class='icon35' src='$icon2' style='display:inline;cursor:pointer;position:relative;top:0px;width:auto;margin:0;padding:0;text-align:center' />
+        <div class='friendinvite tooltip tapped roombutton' 
+            data-caller='room'
+            style='vertical-align:top;display:inline-block;background-color:transparent;white-space:nowrap;color:black' 
+            id='friendlist' title='Invite via Email or Text' data-roomid='$roomid'>
+            <img class='icon35' src='$icon5' 
+                style='display:inline;cursor:pointer;position:relative;top:0px;margin:0;padding:0;text-align:center;' />
                                 <br>
                                 <span class=smalltext>
-                                External
-                                <br>
-                                Signup
-                                <br>
-                                Link
-                                <br>
+                                Invidivual
+                                <br>Room<br>
+                                Invite<br>
                                 </span>
         </div>
+        
         $style
             ";
 
         
         $returntext .= "
-            <br><br>
-            <span class='smalltext groupinvitelinkgroup'  style='display:none;color:$global_textcolor'>
-                <b>Invite URL to Share</b></span><br>
-                <input class='smalltext groupinvitelink' type='text' readonly=readonly value='' 
-                    style='display:none;background-color:white;height:25px;max-width:80%;width:300px' />
-                <img class='groupinvitelinkgroup groupinvitegotolink' src='$iconsource_braxarrowright_common' 
-                    style='display:none;position:relative;top:5px;height:20px;width:auto;padding-top:0;padding-right:2px;padding-bottom:0px;' />
-                <br>
+            <br>
+            <span class='smalltext groupinvitelinkgroup'  style='display:none;color:black'><b>Group Invite URL to Share</b></span><br>
+                <input class=groupinvitelink type='text' readonly=readonly value='$sharelink' style='display:none;background-color:white;font-size:12px;height:15px;max-width:80%;width:300px' />
+                <img class='groupinvitelinkgroup groupinvitegotolink' src='../img/arrow-stem-circle-right-128.png' style='display:none;position:relative;top:5px;height:20px;width:auto;padding-top:0;padding-right:2px;padding-bottom:0px;' />
             </span>
         ";
         return $returntext;
@@ -2327,55 +2387,19 @@ function ShareRoom ( $readonly, $caller, $providerid, $roomid, $style, $showroom
  */
 
         
-function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, $incomment, $title, 
-        $inphoto, $album, $invideo, $inlink, $style, $parent, $mainwidth, $statuswidth2, 
-        $videotitle, $articleid, $page, $readonly, $blockee, $blocker )
+function FormatComment( $postid, $providerid, $roomid, $encoding, $incomment, $inphoto, $invideo, $inlink, $style, $parent, $mainwidth, $statuswidth2, $videotitle, $articleid )
 {
     global $rootserver;
     global $installfolder;
-    global $global_activetextcolor;
-    global $global_textcolor;
-    global $global_titlebar_color;
-    global $global_background;
-    global $menu_edit;
-    global $menu_more;
-    global $menu_save;
-    global $menu_cancel;
-    
-    if($blocker!='' || $blockee!=''){
-        $comment = "";
-        if($blockee!=''){
-            $comment = "
-                <div style='color:black;word-wrap:break-word;padding-left:20px;padding-right:20px;padding-top:20px;$style'>
-                  (Blocked Content)
-                </div>
-                ";
-        }
-        $comment .= "";
-        return $comment;
-    }
-    
-    
-    
     //$mainwidth = "540px";
     //$statuswidth2 = "460px";
-    $dontshortenflag = false;
     $cleanPostid = str_replace(".",'',$postid );
     
-    if($readonly == 'Y'){
-        $dontshortenflag = true;
-    }
-    
-    //Temporary during testing
-    //if($_SESSION['superadmin']!='Y'){
-    //    if($album!=''){
-    //        $inphoto = '';
-    //    }
-    //    
-    //}
     
     $owner = false;
-    if( //$_SESSION['superadmin']=='Y' && 
+    
+    /*
+    if( $_SESSION['superadmin']=='Y' && 
         $providerid == $_SESSION['pid'] && 
         $inlink =='' && 
         $inphoto =='' && 
@@ -2383,29 +2407,18 @@ function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, 
         $incomment!=''){
         $owner = true;
     }
-    $page = "0";
-    
+     * 
+     */
+
     $decryptedpost = DecryptPost( $incomment, $encoding, $providerid, "");
-    if( strstr($decryptedpost,"slideshow ")!==false &&
-        strstr($decryptedpost,"img src=")!==false            
-      ){
-        $owner = false;
-        $dontshortenflag = true;
-    }
-    if( strstr($decryptedpost,"videoplayer.php")!==false &&
-        ( strstr($decryptedpost,"bytz.io")!==false || 
-          strstr($decryptedpost,"brax.me")!==false  )
-      ){
-        $owner = false;
-        $dontshortenflag = true;
-    }
+    
 
     $comment = '';
     if($inphoto!='') {
         
         if( $encoding !='SPA1.0' && $encoding!='BASE64'){
             
-            $photo = HttpsWrapper(DecryptPost($inphoto,$encoding,"$providerid",""));
+            $photo = DecryptPost($inphoto,$encoding,"$providerid","");
             
         } else {
             
@@ -2415,7 +2428,6 @@ function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, 
         if($parent == 'Y'){
             
             $maxwidth = $mainwidth;
-            //$maxwidth = "100%";
             /*
             if($maxwidth == '100%'){
             
@@ -2424,80 +2436,30 @@ function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, 
             }
              * 
              */
+            $maxwidth = "100%";
             
         } else {
             
             $maxwidth = $statuswidth2;
         }
-
-        $photolink = RootServerReplace(WrapPhoto($photo));
-        
-
-        //slideshow
-        if($album!=''){
-            
-            $slideshowclass = 'slideshow';
-            $slideshowalbum = "data-album='$album' ";
-            $slideshowstyle = 'cursor:pointer;max-height:300px;';
+        if(IsEmoji($photo)){
             
             $comment = "
-                <div class='roomphoto $slideshowclass' data-providerid='$providerid' $slideshowalbum src='$photolink'  
-                    style='height:300px;max-width:100%;$slideshowstyle;overflow:hidden;background-color:$global_background;text-align:center'
-                >
-                    <div class='pagetitle3' style='width:100%;background-color:$global_background;color:$global_textcolor;margin:0;padding:5px;text-align:center'>
-                        Tap for Slide Show
-                    </div>
-                    <img class='roomphoto' src='$photolink'  
-                        style='max-width:100%;height:auto;max-height:100%;
-                        background-color:white;
-                        margin:auto' />
-                </div>
-                ";
-
-            if($parent !=='Y'){
-
-                $comment = "
-                    <div class='roomphoto $slideshowclass' data-providerid='$providerid' $slideshowalbum src='$photolink'  
-                        style='height:300px;max-width:100%;$slideshowstyle;margin-right:10px;margin-bottom:20px;overflow:hidden'
-                    >
-                        <img class='' src='$photolink' 
-                            style='height:auto;width:auto;max-width:100%;max-height:100%;
-                            background-color:white;'
-                        />
-                    </div>
-                    <br><br>";
-            }
-            
-
+                <img class='emoji_img' src='$photo' style='margin:5px' />";
         } else {
             
+            $photolink = WrapPhoto($photo);
             $comment = "
-                <img class='roomphoto expandphoto'  src='$photolink'  
-                    style='height:auto;width:100%;max-height:600px;overflow:hidden;
-                    background-color:white;
-                    margin:auto' />
-                ";
-
-            if($parent !=='Y'){
-
-                $comment = "
-                    <img class='roomphoto expandphoto'  src='$photolink'  
-                        style='height:auto;width:100%;max-height:600px;margin-right:10px;margin-bottom:20px;overflow:hidden;
-                        background-color:white;'
-                    />
-                    <br><br>";
-            }
-            
-        }
-
-
+                <img class='roomphoto expandphoto' src='$photolink' 
+                style='max-width:$maxwidth;height:auto;background-color:white' /><br>";
      
+        }
 
     }
     if( $invideo!=''){
         
         if( $encoding!='SPA1.0' && $encoding!='BASE64'){
-            $video = HttpsWrapper(DecryptPost($invideo, $encoding, "$providerid",""));
+            $video = DecryptPost($invideo, $encoding, "$providerid","");
         } else {
             $video = $invideo;
         }
@@ -2516,31 +2478,10 @@ function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, 
         $tmp = html_entity_decode( $decryptedpost, ENT_QUOTES);
         //$tmp = $decryptedpost;
         if($tmp!=''){
-            $tmp = RootServerReplace(WrapLinks($tmp) );
-            $tmp = LinkToBrowser($tmp);
-            if($callerstyle == '2'){
-                $comment .= "
-                             <div style='color:$global_textcolor;word-wrap:break-word;
-                                padding-left:30px;padding-right:20px;padding-top:10px;$style'>
-                            ";
-                $tmp = str_replace(" class='roomposttitle'"," class='pagetitle2' style='color:$global_textcolor'",$tmp);
-                
-            }
-            if($callerstyle == '3'){
-                $comment .= "
-                             <div style='color:black;word-wrap:break-word;
-                                padding-left:30px;padding-right:20px;padding-top:10px;$style'>
-                            ";
-                
-            }
-            
-            if($parent == 'Y' && $callerstyle == ''){
-                if($comment == "" ){
-                    $comment .= "<br>";
-                }
+            $tmp = WrapLinks($tmp);
+            if($parent == 'Y'){
                 $comment .= "<div style='color:black;padding:0px'>
-                             <div style='color:black;word-wrap:break-word;
-                                padding-left:30px;padding-right:20px;padding-top:20px;$style'>
+                             <div style='color:black;word-wrap:break-word;padding:20px;$style'>
                             ";
             }
             //$tmp = wordwrap($tmp,30,"<br />", true);
@@ -2552,27 +2493,12 @@ function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, 
 
             $more = "";
             if(strlen($tmp)>1){
-                
-                if($callerstyle ==''){
-                    $more = "<span class='showmore tapped' style='color:$global_activetextcolor' >
-                            ... <img class='icon15' src='../img/Arrow-Right-in-Circle_120px.png' style='top:3px' /> $menu_more
+                $more = "<span class='showmore tapped' >
+                            ... <img class='icon15' src='../img/arrow-circle-right-gray-128.png' style='top:3px' /> More
                          </span>";
-                    if($owner){
-                        $more = "<span class='showmore tapped' style='color:$global_activetextcolor' >
-                                     <img class='icon15' src='../img/Arrow-Right-in-Circle_120px.png' style='top:3px' /> $menu_edit
-                                 </span>";
-
-                    } 
-                } else {
-                    $more = "";
-                    if($callerstyle =='2'){
-                        $dontshortenflag = true;
-                        $more = "...";
-                    }
-                }
             }
             //$more = "";
-            if( strlen($testshort)<= 300 || $dontshortenflag ){
+            if( strlen($testshort)<= 300 ){
                 //$short = substr(strip_tags($tmp),0,300);
                 $short = $tmp;
                 if(!$owner){
@@ -2587,33 +2513,13 @@ function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, 
 
             $tmp = preg_replace('{(<br>)+$}i', '', $tmp); //from end
             if($owner){
-                $short = $tmp;
-                
                 $tmp2 = str_replace("<br>","&#10;",$tmp);
-                //Convert Span RoompostTitle to <title>
-                $tmp2 = str_replace(" class='roomposttitle'","",$tmp2);
-                $tmp2 = str_replace("span","title",$tmp2);
-                //Remove <a> Tags
-                $tmp2 = UndoLinks($tmp2);
-                $tmp2 = strip_tags($tmp2,"<title>");
-                if($parent == 'Y' && strpos($tmp2,"<title>")===false){
-                    $tmp2 = "<title></title>".chr(10).chr(10).$tmp2;
-                }
-                
-                
+                $tmp2 = strip_tags($tmp2,"<span><a>");
                 $commentlong = "
                             <span class='commentlong' style='display:none'>
-                                <textarea id='roomedit-$cleanPostid' class='mainfont' style='width:100%;height:300px'>$tmp2</textarea>
-                                <br><br>
-                                <div class='feededitpost tapped' style='display:inline-block;cursor:pointer' 
-                                    data-roomid='$roomid' data-postid='$postid' 
-                                     data-postidclean='$cleanPostid' data-page='$page' >
-                                    <img class='icon15' src='../img/arrow-circle-right-gray-128.png' style='top:3px' /> $menu_save
-                                </div>
-                                <div class='feed tapped' style='display:inline-block;cursor:pointer' 
-                                    data-roomid='$roomid' data-postid='$postid' 
-                                     data-postidclean='$cleanPostid' data-page='$page' >
-                                    <img class='icon15' src='../img/arrow-circle-right-gray-128.png' style='top:3px' /> $menu_cancel
+                                <textarea id='$cleanPostid' class='mainfont' style='width:100%;height:300px'>$tmp2</textarea>
+                                <div class='feededitpost tapped' style='cursor:pointer' data-roomid='$roomid' data-postid='$postid' data-postidclean='$cleanPostid'  >
+                                    <img class='icon15' src='../img/arrow-circle-right-gray-128.png' style='top:3px' /> Save Changes
                                 </div>
                             </span>$more 
                 ";
@@ -2628,7 +2534,7 @@ function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, 
             if($tmp!=''){
                 $comment .= "<span class='maincomment'>
                                <span class='commentshort' >
-                                $short
+                                    $short
                                </span>
                                $commentlong
                                
@@ -2658,7 +2564,7 @@ function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, 
                 $comment .= "
                             <br><br>
                             <div class='rssview mainfont' data-articleid='$articleid' 
-                                style='color:$global_activetextcolor;cursor:pointer'>
+                                style='color:steelblue;cursor:pointer'>
                                 View Full Article
                             </div>
                             <br>
@@ -2668,7 +2574,7 @@ function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, 
                             "
                             <div class='roomsharepost mainfont' data-articleid='$articleid' 
                                 data-roomid='$roomid' data-mode=''
-                                style='color:$global_activetextcolor;cursor:pointer'>
+                                style='color:steelblue;cursor:pointer'>
                                 Share
                             </div>
                             <br>
@@ -2676,11 +2582,8 @@ function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, 
                 }
             }
             
-            if($parent == 'Y' && $callerstyle==''){
+            if($parent == 'Y'){
                 $comment .= "</div></div>";
-            }
-            if($callerstyle=='2'){
-                $comment .= "</div>";
             }
         }
         
@@ -2695,11 +2598,6 @@ function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, 
 
 
 }
-
-
-
-
-
 
 /****************************************************************
  * 
@@ -2728,10 +2626,9 @@ function IsHttps($url)
  * 
  */
 
-function RoomPosterInfo( $roomid, $providerid, $avatarurl, $adminroom, $private, $anonymous, $roomanonymous, $name, $name2, $alias, $handle, $blockee, $blocker, $medal )
+function RoomPosterInfo( $roomid, $providerid, $avatarurl, $adminroom, $private, $anonymous, $roomanonymous, $name, $name2, $alias, $handle )
 {
         global $rootserver;
-        global $appname;
         
         $poster = array();
 
@@ -2752,74 +2649,21 @@ function RoomPosterInfo( $roomid, $providerid, $avatarurl, $adminroom, $private,
         if( ($adminroom == 'Y' && intval($providerid)==690001027) ||
             ($roomid == 1 && intval($providerid)==690001027) 
             ){
-            $poster['name'] ="$appname Admin";
+            $poster['name'] ='Brax.Me Admin';
             $poster['avatar']="$rootserver/img/admin.png";
         }
-        $poster['medal']=$medal;
         if($anonymous =='Y' || $roomanonymous=='Y'){
             $poster['name'] ='Anonymous';
             //$poster['avatar']="$rootserver/img/faceless.png";
             //if($poster['avatar'] == "$rootserver/img/faceless.png"){
                 $poster['avatar'] = "$rootserver/img/egg-blue.png";
             $poster['nochat']='Y';
-            $poster['medal'] = "";
             //}
         }
-        if($poster['avatar'] == "$rootserver/img/faceless.png" || $poster['avatar']==''){
-            $poster['avatar'] = "$rootserver/img/egg-blue.png";
-        }
-        if($poster['name']==''){
-            $poster['name'] ='Feed';
-        }
-        if($blockee!='' || $blocker!=''){
-            $avatarurl = "$rootserver/img/egg-blue.png";
-            $poster['name'] = "Unknown";
-        }
-        
         
         return (object) $poster;
         
 }
-/****************************************************************
- * 
- * 
- * 
- * 
- * 
- * 
- */
-
-
- function ApplySponsor($providerid, $sponsor)
- {
-     if(intval($providerid)==0 || $sponsor == ''){
-         return;
-     }
-     $result = pdo_query("1","
-         select priority from sponsor where sponsor = '$sponsor' 
-         ");
-     if( $row = pdo_fetch($result)){
-         $priority = $row['priority'];
-
-         //Always apply sponsor
-        if($priority == 1){
-            pdo_query("1","
-                 update provider set sponsor = '$sponsor' 
-                 where providerid = $providerid 
-                ");
-        } else 
-        if($priority == 2){
-            //Do not override existing sponsor
-            pdo_query("1","
-                 update provider set sponsor = '$sponsor' 
-                 where sponsor = '' and providerid = $providerid 
-                ");
-        } else {
-            
-        }
-     }
-     
- }
 
 /****************************************************************
  * 
@@ -2832,8 +2676,6 @@ function RoomPosterInfo( $roomid, $providerid, $avatarurl, $adminroom, $private,
 
 function WrapLinks($text)
 {
-    global $installfolder;
-    global $rootserver;
     //return $text;
     $malwareflag = false;
     $html = new simple_html_dom();
@@ -2849,10 +2691,7 @@ function WrapLinks($text)
         }
         if(isset($link->href) && substr( strtolower($link->href),0,6 )!="https:"){
             //$link->href = 'https://bytz.io/prod/wrap.php?u=' . htmlentities($link->href);
-            $link->href = "$rootserver/$installfolder/wrap.php?u=" . $link->href;
-        }
-        if(@tvalidator("PURIFY",$_SESSION['mobiletype'])=='A' || @tvalidator("PURIFY",$_SESSION['mobiletype'])=='I'){
-            $link->target = "_blank";
+            $link->href = 'https://bytz.io/prod/wrap.php?u=' . $link->href;
         }
     }
     $text = $html->save();
@@ -2864,26 +2703,6 @@ function WrapLinks($text)
     
     return $text;
 }    
-function UndoLinks($text)
-{
-    
-    $html = new simple_html_dom();
-
-    // load the entire string containing everything user entered here
-
-    $return = $html->load($text);
-    $links = $html->find('a');
-
-    foreach ($links as $link){ 
-        $href = $link->href;
-        $link->outertext = $href;
-    }
-    $text = $html->save();
-    
-    
-    return $text;
-}    
-
 /****************************************************************
  * 
  * 
@@ -2895,8 +2714,6 @@ function UndoLinks($text)
 
 function WrapPhoto($text)
 {
-    global $rootserver;
-    global $installfolder;
     //return $text;
     $html = new simple_html_dom();
 
@@ -2904,16 +2721,11 @@ function WrapPhoto($text)
 
     $return = $html->load($text);
     $links = $html->find('a');
-    
-    
+
     foreach ($links as $link){
         if( isset($link->href) && 
             substr( strtolower($link->href),0,6 )!="https:"){
-                $shortlink = $link->href;
-                if(substr( strtolower($link->href),0,7 )!=="http://"){
-                    $shortlink = substr($link->href,7);
-                }
-            $link->href = "$rootserver/$installfolder/wrapphoto.php?u=$text" . $shortlink;
+            $link->href = "$rootserver/$installfolder/wrapphoto.php?u=$text" . $link->href;
         }
     }
     $text = $html->save();
@@ -2965,9 +2777,6 @@ function CleanImage($text)
 
 function SafeUrl($url)
 {
-    return true;
-    
-    //Deprecated by Google so no longer used. Need a local version in V4 API of Safebrowsing
 
     $apikey = "AIzaSyDd_Y3cZI4MRmEFA4vnqzlfoKEM8LTBWjs";
     $encoded_url = urlencode($url);
@@ -2997,17 +2806,7 @@ function SafeUrl($url)
     function removeEmoji2($text)
     {
         
-        return preg_replace('/([0-9#][\x{20E3}])|[\x{00ae}\x{00a9}\x{203C}\x{2047}\x{2048}\x{2049}\x{3030}\x{303D}\x{2139}\x{2122}\x{3297}\x{3299}][\x{FE00}-\x{FEFF}]?|[\x{2190}-\x{21FF}][\x{FE00}-\x{FEFF}]?|[\x{2300}-\x{23FF}][\x{FE00}-\x{FEFF}]?|[\x{2460}-\x{24FF}][\x{FE00}-\x{FEFF}]?|[\x{25A0}-\x{25FF}][\x{FE00}-\x{FEFF}]?|[\x{2600}-\x{27BF}][\x{FE00}-\x{FEFF}]?|[\x{2900}-\x{297F}][\x{FE00}-\x{FEFF}]?|[\x{2B00}-\x{2BF0}][\x{FE00}-\x{FEFF}]?|[\x{1F000}-\x{1FFFF}][\x{FE00}-\x{FEFF}]?/u', '', $text);
-        
-    }
-    function LinkToBrowser($source)
-    {
-        //return $source;
-        if($_SESSION['mobiletype']=='I'){
-            return str_replace("_blank","_self",$source);
-        } else {
-            return $source;
-        }
+        return preg_replace('/([0-9#][\x{20E3}])|[\x{00ae}\x{00a9}\x{203C}\x{2047}\x{2048}\x{2049}\x{3030}\x{303D}\x{2139}\x{2122}\x{3297}\x{3299}][\x{FE00}-\x{FEFF}]?|[\x{2190}-\x{21FF}][\x{FE00}-\x{FEFF}]?|[\x{2300}-\x{23FF}][\x{FE00}-\x{FEFF}]?|[\x{2460}-\x{24FF}][\x{FE00}-\x{FEFF}]?|[\x{25A0}-\x{25FF}][\x{FE00}-\x{FEFF}]?|[\x{2600}-\x{27BF}][\x{FE00}-\x{FEFF}]?|[\x{2900}-\x{297F}][\x{FE00}-\x{FEFF}]?|[\x{2B00}-\x{2BF0}][\x{FE00}-\x{FEFF}]?|[\x{1F000}-\x{1F6FF}][\x{FE00}-\x{FEFF}]?/u', '', $text);
         
     }
 ?>

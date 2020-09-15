@@ -30,7 +30,7 @@ require ("aws.php");
         and notificationstatus = '1'
         )
         ");
-    while( $row = do_mysqli_fetch("1",$result))
+    while( $row = pdo_fetch($result))
     {
         NotifyRoomMembers( $row['roomid'], $row['roomname'], $row['eventdate2'], $row['eventname'], $row['notificationstatus'] );
         do_mysqli_query("1"," 
@@ -52,7 +52,7 @@ require ("aws.php");
         )
         and notificationstatus = ''
         ");
-    while( $row = do_mysqli_fetch("1",$result))
+    while( $row = pdo_fetch($result))
     {
         NotifyRoomMembers( $row['roomid'], $row['roomname'], '', $row['eventname'], $row['notificationstatus'] );
         do_mysqli_query("1"," 
@@ -87,7 +87,7 @@ function NotifyRoomMembers( $roomid, $roomname, $eventdate, $eventname, $notific
  
     }
         
-    while( $row = do_mysqli_fetch("1",$result))
+    while( $row = pdo_fetch($result))
     {
         
         GenerateNotification( 

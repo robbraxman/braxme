@@ -1,18 +1,18 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 require ("sendmail.php");
 
 $providerid = @tvalidator("PURIFY",$_SESSION['pid']);
 if($providerid == ''){
     exit();
 }
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
                 select replyemail, providername from provider where 
                 providerid = $providerid and 
                 active='Y' ");
     
-    if ($row = do_mysqli_fetch("1",$result)) {
+    if ($row = pdo_fetch($result)) {
         SendSignUpEmail( $providerid, $row['providername'], $row['replyemail'] );
         echo "Sent Email";
     }
@@ -25,7 +25,7 @@ if($providerid == ''){
         global $installfolder;
         
         $signupverificationkey = uniqid("", true);
-        do_mysqli_query("1", 
+        pdo_query("1", 
                 "insert into verification (type, providerid, verificationkey, loginid, email, createdate ) values (".
                 " 'ACCOUNT', $providerid, '$signupverificationkey', 'admin', '$replyemail', now() ) "
                 );

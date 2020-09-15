@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("htmlhead.inc.php");
 
 $_SESSION['returnurl']="<a href='login.php'>Login to your Acccount</a>";
@@ -48,10 +48,10 @@ $forgotcall = "$rootserver/$installfolder/forgotemail.php";
 $forgotmode = "One-Time-Use Password Request";
 $forgotsig = "";
 
-$result = do_mysqli_query("1"," 
+$result = pdo_query("1"," 
         select * from notifytokens where token='$apn$gcm' and status='Y'
         ");
-if( $row = do_mysqli_fetch("1",$result) ){
+if( $row = pdo_fetch($result) ){
     $validmobiletoken = true;
     $forgotsig = session_id();
 }

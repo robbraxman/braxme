@@ -1,16 +1,16 @@
 <?php
-require_once("config.php");
-require_once("crypt.inc.php");
+require_once("config-pdo.php");
+require_once("crypt-pdo.inc.php");
 require_once("notify.inc.php");
 require_once("chat.inc.php");
 
     function CheckValidHandle($handle, $roomid)
     {
         $dup = false;
-        $result = do_mysqli_query("1","
-            select * from roomhandle where roomid != $roomid and handle='$handle'
-        ");
-        while($row = do_mysqli_fetch("1",$result)){
+        $result = pdo_query("1","
+            select * from roomhandle where roomid != ? and handle=?
+        ",array($roomid,$handle));
+        while($row = pdo_fetch($result)){
             $dup = true;
         }
         return $dup;
@@ -19,12 +19,13 @@ require_once("chat.inc.php");
     function DeleteRoom( $roomid )
     {
     
-        do_mysqli_query("1","delete from statusroom where roomid = $roomid");
-        do_mysqli_query("1","delete from roomhandle where roomid = $roomid");
-        do_mysqli_query("1","delete from statuspost where roomid = $roomid");
-        do_mysqli_query("1","delete from statusreads where roomid = $roomid");
-        do_mysqli_query("1","delete from roominfo where roomid = $roomid");
-        do_mysqli_query("1","delete from roommderator where roomid = $roomid");
+        pdo_query("1","delete from statusroom where roomid = ?",array($roomid));
+        pdo_query("1","delete from roomhandle where roomid = ?",array($roomid));
+        pdo_query("1","delete from statuspost where roomid = ?",array($roomid));
+        pdo_query("1","delete from statusreads where roomid = ?",array($roomid));
+        pdo_query("1","delete from roominfo where roomid = ?",array($roomid));
+        pdo_query("1","delete from roommoderator where roomid = ?",array($roomid));
+
         return;
     }
     
@@ -33,105 +34,105 @@ require_once("chat.inc.php");
     function DeleteMember( $roomid, $providerid, $friendproviderid )
     {
         //Delete from statusroom if member\ is inactive
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             delete from statusroom 
-            where roomid=$roomid and 
-            owner=$providerid and
+            where roomid=? and 
+            owner=? and
             providerid not in (select providerid from provider where
             statusroom.providerid = provider.providerid and active='Y')
-            ");
+            ",array($roomid,$providerid));
 
-        $result = do_mysqli_query("1","
-            select count(*) as total from statusroom where roomid=$roomid  
-            ");
-        $row = do_mysqli_fetch("1",$result);
+        $result = pdo_query("1","
+            select count(*) as total from statusroom where roomid=?
+            ",array($roomid));
+        $row = pdo_fetch($result);
         $membercount = $row['total'];
         
         if($membercount > 1){
         
             //delete user but not owner
-            do_mysqli_query("1","
+            pdo_query("1","
                 delete from statusroom 
-                where roomid=$roomid and 
-                providerid = $friendproviderid and providerid!=owner
+                where roomid=? and 
+                providerid = ? and providerid!=owner
                 and 
-                ( owner = $providerid 
+                ( owner = ? 
                   or
                   roomid in
-                    (select roomid from roommoderator r2 where r2.roomid=$roomid and r2.providerid =$providerid)
+                    (select roomid from roommoderator r2 where r2.roomid=$roomid and r2.providerid =?)
                   or
-                  providerid = $providerid
-                )
-                ");
+                  providerid = ?
+                )",array($roomid,$friendproviderid,$providerid,$roomid,$providerid,$providerid)
+                );
         } else {
             
             //delete user even of owner
-            do_mysqli_query("1","
-                delete from statusroom where roomid=$roomid and 
-                providerid = $friendproviderid 
+            pdo_query("1","
+                delete from statusroom where roomid=? and 
+                providerid = ? 
                 and 
-                ( owner = $providerid 
+                ( owner = ?
                   or
                   roomid in
-                    (select roomid from roommoderator r2 where roomid=$roomid and providerid =$providerid)
-                )
-                ");
+                    (select roomid from roommoderator r2 where roomid=? and providerid =?)
+                )",array($roomid,$friendproviderid, $providerid, $roomid,$providerid)
+                );
         }
         
-        $result = do_mysqli_query("1","
-            select count(*) as total from statusroom where roomid=$roomid  
-            ");
-        $row = do_mysqli_fetch("1",$result);
+        $result = pdo_query("1","
+            select count(*) as total from statusroom where roomid=? 
+            ",array($roomid));
+        $row = pdo_fetch($result);
         $membercount = $row['total'];
         
         
         if( $membercount == 0) //no more users so delete room and its contents
         {
-            do_mysqli_query("1","
-                delete from statusroom where roomid=$roomid and owner=$providerid 
-                ");
-            do_mysqli_query("1","
-                delete from roominfo where roomid=$roomid  
-                ");
-            do_mysqli_query("1","
-                delete from roomhandle where roomid=$roomid  
-                ");
-            $result = do_mysqli_query("1","
-                delete from statuspost where roomid=$roomid and providerid=$providerid 
-                ");
-            $result = do_mysqli_query("1","
-                delete from statusreads where roomid=$roomid and providerid=$providerid 
-                ");
-            $result = do_mysqli_query("1","
-                delete from credentials where roomid=$roomid
-                ");
-            $result = do_mysqli_query("1","
-                delete from credentialrequest where roomid=$roomid 
-                ");
-            $result = do_mysqli_query("1","
-                delete from events where roomid=$roomid 
-                ");
-            $result = do_mysqli_query("1","
-                delete from tasks where roomid=$roomid
-                ");
-            $result = do_mysqli_query("1","
-                delete from tasksaction where roomid=$roomid 
-                ");
-            $result = do_mysqli_query("1","
-                delete from roomwebstyle where roomid=$roomid 
-                ");
-            $result = do_mysqli_query("1","
-                delete from roomfiles where roomid=$roomid 
-                ");
-            $result = do_mysqli_query("1","
-                delete from roomfilefolders where roomid=$roomid 
-                ");
-            $result = do_mysqli_query("1","
-                delete from roominvite where roomid=$roomid 
-                ");
-            $result = do_mysqli_query("1","
-                delete from roommoderator where roomid=$roomid 
-                ");
+            pdo_query("1","
+                delete from statusroom where roomid=? and owner=? 
+                ",array($roomid,$providerid));
+            pdo_query("1","
+                delete from roominfo where roomid=? 
+                ",array($roomid));
+            pdo_query("1","
+                delete from roomhandle where roomid=?
+                ",array($roomid));
+            $result = pdo_query("1","
+                delete from statuspost where roomid=? and providerid=? 
+                ",array($roomid,$providerid));
+            $result = pdo_query("1","
+                delete from statusreads where roomid=? and providerid=? 
+                ",array($roomid,$providerid));
+            $result = pdo_query("1","
+                delete from credentials where roomid=?
+                ",array($roomid));
+            $result = pdo_query("1","
+                delete from credentialrequest where roomid=?
+                ",array($roomid));
+            $result = pdo_query("1","
+                delete from events where roomid=?
+                ",array($roomid));
+            $result = pdo_query("1","
+                delete from tasks where roomid=?
+                ",array($roomid));
+            $result = pdo_query("1","
+                delete from tasksaction where roomid=?
+                ",array($roomid));
+            $result = pdo_query("1","
+                delete from roomwebstyle where roomid=?
+                ",array($roomid));
+            $result = pdo_query("1","
+                delete from roomfiles where roomid=?
+                ",array($roomid));
+            $result = pdo_query("1","
+                delete from roomfilefolders where roomid=?
+                ",array($roomid));
+            $result = pdo_query("1","
+                delete from roominvite where roomid=? 
+                ",array($roomid));
+            $result = pdo_query("1","
+                delete from roommoderator where roomid=?
+                ",array($roomid));
             
         }
         DeletefromGroup($providerid, $friendproviderid, $roomid );
@@ -141,15 +142,15 @@ require_once("chat.inc.php");
         //
         //Delete old posts of this user
         /*
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select providerid from statusroom where roomid=$roomid and providerid=$friendproviderid
             ");
-        if(!$row = do_mysqli_fetch("1",$result)){
+        if(!$row = pdo_fetch($result)){
         
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 delete from statuspost where roomid=$roomid and providerid=$friendproviderid 
                 ");
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 delete from statusreads where roomid=$roomid and providerid=$friendproviderid 
                 ");
             
@@ -167,44 +168,44 @@ require_once("chat.inc.php");
         }
         
     
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select owner from statusroom 
-            where statusroom.roomid = $roomid and statusroom.owner = statusroom.providerid
-            ");
-        if( $row = do_mysqli_fetch("1",$result)){
+            where statusroom.roomid = ? and statusroom.owner = statusroom.providerid
+            ",array($roomid));
+        if( $row = pdo_fetch($result)){
             $owner = $row['owner'];
             
             $providerid = $owner;
             
-            $result = do_mysqli_query("1","
-                select * from blocked where blocker = $owner and blockee = $friendproviderid "
-                );
-            if( $row = do_mysqli_fetch("1",$result)){
+            $result = pdo_query("1","
+                select * from blocked where blocker = ? and blockee = ? "
+                ,array($owner,$friendproviderid));
+            if( $row = pdo_fetch($result)){
                 return false;
             }        
             
-            $result = do_mysqli_query("1","
-                select * from blocked where blocker = $friendproviderid and blockee = $owner "
-                );
-            if( $row = do_mysqli_fetch("1",$result)){
+            $result = pdo_query("1","
+                select * from blocked where blocker = ? and blockee = ? "
+                ,array($friendproviderid, $owner));
+            if( $row = pdo_fetch($result)){
                 return false;
             }        
             
         
             
             //Check If already a member
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 select providerid from statusroom 
-                where statusroom.roomid = $roomid and 
-                statusroom.providerid = $friendproviderid
-                ");
+                where statusroom.roomid = ? and 
+                statusroom.providerid = ?
+                ",array($roomid,$friendproviderid));
             //if not a member
-            if( !$row = do_mysqli_fetch("1",$result)){
+            if( !$row = pdo_fetch($result)){
             
-                do_mysqli_query("1","
+                pdo_query("1","
                     insert into statusroom ( roomid, owner, providerid, status, createdate, creatorid ) values
-                    ( $roomid,$owner, $friendproviderid,'Y',now(),$providerid )
-                    ");
+                    ( ?,?, ?,'Y',now(),? )
+                    ",array($roomid,$owner,$friendproviderid,$providerid));
 
                 AddtoGroup($providerid, $friendproviderid, $roomid );
                 AddtoChat($providerid, $friendproviderid, $roomid );
@@ -228,32 +229,32 @@ require_once("chat.inc.php");
     function AddMemberRoomChain($providerid, $friendproviderid, $parentroomid )
     {
         //Get Room Handle
-        $result = do_mysqli_query("1","
-            select handle from roomhandle where roomid = $parentroomid
-            ");
-        if( $row = do_mysqli_fetch("1",$result)){
+        $result = pdo_query("1","
+            select handle from roomhandle where roomid = ?
+            ",array($parentroomid));
+        if( $row = pdo_fetch($result)){
             $handle = $row['handle'];
 
             //Check for Chain
-            $result = do_mysqli_query("1","
-                select roomid from roominfo where parentroom = '$handle' and roomid in 
-                (select roomid from statusroom where owner = providerid and providerid = $providerid and statusroom.roomid = roominfo.roomid )
-                ");
-            while( $row = do_mysqli_fetch("1",$result)){
+            $result = pdo_query("1","
+                select roomid from roominfo where parentroom = ? and roomid in 
+                (select roomid from statusroom where owner = providerid and providerid = ? and statusroom.roomid = roominfo.roomid )
+                ",array($handle,$providerid));
+            while( $row = pdo_fetch($result)){
                 
                 $roomid = $row['roomid'];
 
-                $result2 = do_mysqli_query("1","
+                $result2 = pdo_query("1","
                     select owner from statusroom 
-                    where statusroom.roomid = $roomid and statusroom.owner = statusroom.providerid
-                    ");
-                if( $row2 = do_mysqli_fetch("1",$result2)){
+                    where statusroom.roomid = ? and statusroom.owner = statusroom.providerid
+                    ",array($roomid));
+                if( $row2 = pdo_fetch($result2)){
                     $owner = $row2['owner'];
 
-                    do_mysqli_query("1","
+                    pdo_query("1","
                         insert into statusroom ( roomid, owner, providerid, status, createdate, creatorid ) values
-                        ( $roomid,$owner, $friendproviderid,'Y',now(),$providerid )
-                        ");
+                        ( ?,?, ?,'Y',now(),? )
+                        ",array($roomid,$owner,$friendproviderid,$providerid));
 
                 }
                 AddtoGroup($owner, $friendproviderid, $roomid );
@@ -271,32 +272,32 @@ require_once("chat.inc.php");
     function AddMemberRoomChain2($providerid, $friendproviderid, $parentroomid )
     {
         //Get Room Handle
-        $result = do_mysqli_query("1","
-            select handle from roomhandle where roomid = $parentroomid
-            ");
-        if( $row = do_mysqli_fetch("1",$result)){
+        $result = pdo_query("1","
+            select handle from roomhandle where roomid = ?
+            ",array($parentroomid));
+        if( $row = pdo_fetch($result)){
             $handle = $row['handle'];
 
             //Check for Chain
-            $result = do_mysqli_query("1","
-                select roomid from roominfo where parentroom = '$handle' and roomid in 
-                (select roomid from statusroom where owner = providerid and providerid = $providerid and statusroom.roomid = roominfo.roomid )
-                ");
-            while( $row = do_mysqli_fetch("1",$result)){
+            $result = pdo_query("1","
+                select roomid from roominfo where parentroom = ? and roomid in 
+                (select roomid from statusroom where owner = providerid and providerid = ? and statusroom.roomid = roominfo.roomid )
+                ",array($handle,$providerid));
+            while( $row = pdo_fetch($result)){
                 
                 $roomid = $row['roomid'];
 
-                $result2 = do_mysqli_query("1","
+                $result2 = pdo_query("1","
                     select owner from statusroom 
-                    where statusroom.roomid = $roomid and statusroom.owner = statusroom.providerid
-                    ");
-                if( $row2 = do_mysqli_fetch("1",$result2)){
+                    where statusroom.roomid = ? and statusroom.owner = statusroom.providerid
+                    ",array($roomid));
+                if( $row2 = pdo_fetch($result2)){
                     $owner = $row2['owner'];
 
-                    do_mysqli_query("1","
+                    pdo_query("1","
                         insert into statusroom ( roomid, owner, providerid, status, createdate, creatorid ) values
-                        ( $roomid,$owner, $friendproviderid,'Y',now(),$providerid )
-                        ");
+                        ( ?,?, ?,'Y',now(),? )
+                        ",array($roomid,$owner,$friendproviderid,$providerid));
 
                 }
                 AddtoChat($owner, $friendproviderid, $roomid );
@@ -311,31 +312,31 @@ require_once("chat.inc.php");
     function AddMemberCommunityLink($providerid, $friendproviderid, $parentroomid )
     {
         //Get Room Handle
-        $result = do_mysqli_query("1","
-            select handle from roomhandle where roomid = $parentroomid
-            ");
-        if( $row = do_mysqli_fetch("1",$result)){
+        $result = pdo_query("1","
+            select handle from roomhandle where roomid = ?
+            ",array($parentroomid));
+        if( $row = pdo_fetch($result)){
             $handle = $row['handle'];
 
             //Check for Community Link Chain
-            $result = do_mysqli_query("1","
-                select roomid from roominfo where communitylink = '$handle'
-                ");
-            while( $row = do_mysqli_fetch("1",$result)){
+            $result = pdo_query("1","
+                select roomid from roominfo where communitylink = ?
+                ",array($handle));
+            while( $row = pdo_fetch($result)){
                 
                 $roomid = $row['roomid'];
 
-                $result2 = do_mysqli_query("1","
+                $result2 = pdo_query("1","
                     select owner from statusroom 
-                    where statusroom.roomid = $roomid and statusroom.owner = statusroom.providerid
-                    ");
-                if( $row2 = do_mysqli_fetch("1",$result2)){
+                    where statusroom.roomid = ? and statusroom.owner = statusroom.providerid
+                    ",array($roomid));
+                if( $row2 = pdo_fetch($result2)){
                     $owner = $row2['owner'];
 
-                    do_mysqli_query("1","
+                    pdo_query("1","
                         insert into statusroom ( roomid, owner, providerid, status, createdate, creatorid ) values
-                        ( $roomid,$owner, $friendproviderid,'Y',now(),$providerid )
-                        ");
+                        ( ?,?, ?,'Y',now(),? )
+                        ",array($roomid,$owner,$friendproviderid,$providerid));
 
                 }
                 AddtoGroup($owner, $friendproviderid, $roomid );
@@ -353,13 +354,13 @@ require_once("chat.inc.php");
     function RoomAutoChat($roomid, $providerid )
     {
         //Check if AUTOCHATUSER is populated for Sponsor
-        $result = do_mysqli_query("1"," 
+        $result = pdo_query("1"," 
                 select providername, providerid, handle 
                 from provider where handle in 
-                (select autochatuser from roominfo where roomid=$roomid and (autochatuser!='' and autochatuser is not null)  and external='Y' )
+                (select autochatuser from roominfo where roomid=? and (autochatuser!='' and autochatuser is not null)  and external='Y' )
                 and active='Y'
-                ");
-        if(!$row = do_mysqli_fetch("1",$result)){
+                ",array($roomid));
+        if(!$row = pdo_fetch($result)){
             return;
         }
         $autochatuserid = $row['providerid'];
@@ -367,10 +368,10 @@ require_once("chat.inc.php");
         
         
         $welcome = 'Welcome!';
-        $result = do_mysqli_query("1"," 
-                select autochatmsg from roominfo where roomid=$roomid and (autochatmsg is not null and autochatmsg!='')
-                ");
-        if($row = do_mysqli_fetch("1",$result)){
+        $result = pdo_query("1"," 
+                select autochatmsg from roominfo where roomid=? and (autochatmsg is not null and autochatmsg!='')
+                ",array($roomid));
+        if($row = pdo_fetch($result)){
             $welcome = $row['autochatmsg'];
         }
         
@@ -380,43 +381,43 @@ require_once("chat.inc.php");
             return;
         }
         
-        do_mysqli_query("1",
+        pdo_query("1",
             "
                 insert into chatmembers ( chatid, providerid, status, lastmessage, lastread, lastactive, techsupport, mute, broadcaster)
                 values
-                ( $chatid, $autochatuserid, 'Y', now(), now(), now(), null, null, null )
-            ");
+                ( ?, ?, 'Y', now(), now(), now(), null, null, null )
+            ",array($chatid,$autochatuserid));
         
-        do_mysqli_query("1",
+        pdo_query("1",
             "
                 insert into chatmembers ( chatid, providerid, status, lastmessage, lastread, lastactive, techsupport, mute, broadcaster)
                 values
-                ( $chatid, $providerid,     'Y', now(), now(), now(), null, null, null )
-            ");
+                ( ?, ?,     'Y', now(), now(), now(), null, null, null )
+            ",array($chatid,$providerid));
 
         $message = $welcome;
         $encode = EncryptChat ($message,"$chatid","" );
         $encodeshort = EncryptChat ("You have a message.","$chatid","" );
 
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 insert into chatmessage ( chatid, providerid, message, msgdate, encoding, status)
                 values
-                ( $chatid, $autochatuserid, \"$encode\", now(), '$_SESSION[responseencoding]', 'Y' );
-            ");
-        $result = do_mysqli_query("1",
+                ( ?, ?, \"$encode\", now(), '$_SESSION[responseencoding]', 'Y' );
+            ",array($chatid,$autochatuserid));
+        $result = pdo_query("1",
             "
-            update chatmembers set lastmessage=now(), lastread=now() where providerid= $autochatuserid and chatid=$chatid and status='Y'
-            ");
-        $result = do_mysqli_query("1",
+            update chatmembers set lastmessage=now(), lastread=now() where providerid= ? and chatid=? and status='Y'
+            ",array($autochatuserid,$chatid));
+        $result = pdo_query("1",
             "
-            update chatmaster set lastmessage=now() where chatid=$chatid 
-            ");
+            update chatmaster set lastmessage=now() where chatid=?
+            ",array($chatid));
         
         //Mark access for new users so notifications are received
-        $result = do_mysqli_query("1"," 
-                update provider set lastaccess=now() where providerid = $providerid
-                ");
+        $result = pdo_query("1"," 
+                update provider set lastaccess=now() where providerid = ?
+                ",array($providerid));
         
         ChatNotification($autochatuserid, $chatid, $encodeshort, $_SESSION['responseencoding'], "" );
         //echo "
@@ -433,22 +434,22 @@ require_once("chat.inc.php");
             return false;
         }
     
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select chatspawned.chatid 
             from chatspawned 
             left join chatmaster on chatspawned.chatid = chatmaster.chatid
-            where chatspawned.roomid = $roomid
+            where chatspawned.roomid = ?
             and chatmaster.lastmessage is not null
             and chatmaster.status='Y'
-            ");
-        while( $row = do_mysqli_fetch("1",$result)){
+            ",array($roomid));
+        while( $row = pdo_fetch($result)){
             
-            do_mysqli_query("1","
+            pdo_query("1","
                 insert into chatmembers 
                 ( chatid, providerid, status, lastactive, lastmessage, lastread, techsupport, mute )
                 values
-                ( $row[chatid], $friendproviderid,'Y', 0, 0, '20000101', 'N','')
-                ");
+                ( ?, ?,'Y', 0, 0, '20000101', 'N','')
+                ",array($row['chatid'],$friendproviderid));
         }
         
         return true;
@@ -461,25 +462,25 @@ require_once("chat.inc.php");
             return false;
         }
     
-        $result = do_mysqli_query("1","
-            select formid from roomforms where roomid = $roomid
-            ");
-        while( $row = do_mysqli_fetch("1",$result)){
+        $result = pdo_query("1","
+            select formid from roomforms where roomid = ?
+            ",array($roomid));
+        while( $row = pdo_fetch($result)){
             
-            do_mysqli_query("1"," 
-            update credentialformrequest set status='Y' where providerid = $friendproviderid and formid=$row[formid] and status='N' 
-                ");
+            pdo_query("1"," 
+            update credentialformrequest set status='Y' where providerid = ? and formid=? and status='N' 
+                ",array($friendproviderid,$row['formid']) );
             
-            do_mysqli_query("1","
+            pdo_query("1","
                 insert into credentialformtrigger
                 (providerid, formid, created, status ) values 
-                ($friendproviderid,  $row[formid], now(),'N')
-                ");
-            do_mysqli_query("1","
+                (?,  ?, now(),'N')
+                ",array($friendproviderid,$row['formid']) );
+            pdo_query("1","
                 insert into credentialformrequest
                 (providerid, requestor, formid, created, status ) values 
-                ($friendproviderid, $providerid, $row[formid], now(),'N')
-                ");
+                (?, ?, ?, now(),'N')
+                ",array($friendproviderid,$providerid,$row['formid']) );
             
         }
         
@@ -494,20 +495,20 @@ require_once("chat.inc.php");
             return false;
         }
     
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select chatspawned.chatid 
             from chatspawned 
             left join chatmaster on chatspawned.chatid = chatmaster.chatid
-            where chatspawned.roomid = $roomid
+            where chatspawned.roomid = ?
             and chatmaster.lastmessage is not null
             and chatmaster.status='Y'
-            ");
-        while( $row = do_mysqli_fetch("1",$result)){
+            ",array($roomid));
+        while( $row = pdo_fetch($result)){
             
-            do_mysqli_query("1","
+            pdo_query("1","
                 delete from chatmembers 
-                where chatid=$row[chatid] and providerid =$friendproviderid
-                ");
+                where chatid=? and providerid =?
+                ",array($row['chatid'],$friendproviderid));
         }
         
         return true;
@@ -524,15 +525,15 @@ require_once("chat.inc.php");
         
     
         //LogDebug($providerid,"$providerid $friendproviderid $roomid");
-        $result = do_mysqli_query("1","
-            select groupid from groups where creator = $providerid and roomid = $roomid
-            ");
-        if( $row = do_mysqli_fetch("1",$result)){
+        $result = pdo_query("1","
+            select groupid from groups where creator = ? and roomid = ?
+            ",array($providerid,$roomid));
+        if( $row = pdo_fetch($result)){
             //LogDebug($providerid,"$providerid $row[groupid] $friendproviderid $roomid");
-            do_mysqli_query("1","
+            pdo_query("1","
                 insert into groupmembers ( groupid, providerid, createdate ) 
-                select $row[groupid], $friendproviderid, now()
-                ");
+                select ?, ?, now()
+                ",array($row['groupid'],$friendproviderid));
         }
         
         return true;
@@ -545,14 +546,14 @@ require_once("chat.inc.php");
             return false;
         }
     
-        $result = do_mysqli_query("1","
-            select groupid from groups where roomid = $roomid
-            ");
-        if( $row = do_mysqli_fetch("1",$result)){
+        $result = pdo_query("1","
+            select groupid from groups where roomid = ?
+            ",array($roomid));
+        if( $row = pdo_fetch($result)){
             
-            do_mysqli_query("1","
-                delete from groupmembers where groupid = $row[groupid] and providerid = $friendproviderid 
-                ");
+            pdo_query("1","
+                delete from groupmembers where groupid = ? and providerid = ? 
+                ",array($row['groupid'],$friendproviderid));
         }
         
         return true;
@@ -563,21 +564,21 @@ require_once("chat.inc.php");
     function CopyMembersToRoom($providerid, $sourceroomid, $roomid )
     {
     
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select owner, statusroom.providerid, roominfo.room from statusroom 
             left join roominfo on statusroom.roomid = roominfo.roomid
-            where statusroom.roomid = $sourceroomid 
-            ");
+            where statusroom.roomid = ?
+            ",array($sourceroomid));
         
-        while( $row = do_mysqli_fetch("1",$result)){
+        while( $row = pdo_fetch($result)){
             $owner = $row['owner'];
             $room =stripslashes($row['room']);
             $roomForSql = tvalidator("PURIFY",stripslashes($room));
             
-            do_mysqli_query("1","
+            pdo_query("1","
                 insert ignore into statusroom ( roomid, owner, providerid, status, createdate, creatorid ) values
-                ( $roomid,$providerid, $row[providerid],'Y',now(),$row[owner] )
-                ");
+                ( ?,?, ?,'Y',now(),? )
+                ",array($roomid,$providerid,$row['providerid'],$row['owner']));
             AddtoChat($providerid, $row[providerid], $roomid );
             
         }
@@ -593,19 +594,19 @@ require_once("chat.inc.php");
     function MakeModerator( $roomid, $friendproviderid )
     {
     
-            $result = do_mysqli_query("1","
-                select providerid from roommoderator where providerid=$friendproviderid and roomid=$roomid 
-            ");
-            if($row = do_mysqli_fetch("1",$result)){
-                $result = do_mysqli_query("1","
-                    delete from roommoderator where providerid=$friendproviderid and roomid=$roomid
-                ");
+            $result = pdo_query("1","
+                select providerid from roommoderator where providerid=? and roomid=?
+            ",array($friendproviderid,$roomid));
+            if($row = pdo_fetch($result)){
+                $result = pdo_query("1","
+                    delete from roommoderator where providerid=? and roomid=?
+                ",array($friendproviderid,$roomid));
                 
             } else {
         
-                $result = do_mysqli_query("1","
-                    insert into roommoderator (providerid, roomid) values ( $friendproviderid, $roomid )
-                ");
+                $result = pdo_query("1","
+                    insert into roommoderator (providerid, roomid) values ( ?, ? )
+                ",array($friendproviderid,$roomid));
             }
             return;
         
@@ -629,6 +630,7 @@ require_once("chat.inc.php");
         global $global_background;
         global $global_titlebar_color;
         global $enterpriseapp;
+        global $menu_room;
         
         if($_SESSION['store']=='N' && $store == 'Y'){
             $store = 'N';
@@ -663,8 +665,8 @@ require_once("chat.inc.php");
         }
 
         if($mode == 'N'){
-            $result = do_mysqli_query("1","select sponsor, roomhashtag from sponsor where creator=$providerid ");
-            if($row = do_mysqli_fetch("1",$result)){
+            $result = pdo_query("1","select sponsor, roomhashtag from sponsor where creator=? ",array($providerid));
+            if($row = pdo_fetch($result)){
                 $parent = $row['roomhashtag'];
             }
         }
@@ -926,41 +928,41 @@ require_once("chat.inc.php");
         */
         $selectgroup = "";
         if($groupid!=''){
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 select groups.groupname, groups.groupid 
-                from groups where groupid = $groupid
-                    ");
+                from groups where groupid = ?
+                    ",array($groupid));
             $selectgroupoptions = "<option value=''>No Community Limitation</option>";
-            while($row = do_mysqli_fetch("1",$result)){
+            while($row = pdo_fetch($result)){
                 $selectgroup .= "<option value='$row[groupid]'>$row[groupname]</option>";
             }
         }
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select groups.groupname, groups.groupid 
             from groups
             left join groupmembers on groups.groupid = groupmembers.groupid
-            where groupmembers.providerid = $providerid
-                ");
+            where groupmembers.providerid = ?
+                ",array($providerid));
         $selectgroupoptions = "<option value=''>- No Group Limitation -</option>";
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             $selectgroupoptions .= "<option value='$row[groupid]'>$row[groupname]</option>";
         }
         
         $selectcommunity = "";
         if($communitylink!=''){
-            $result = do_mysqli_query("1","
-                select roomhandle.handle from roomhandle where community='Y' and roomhandle='$communitylink'
-                    ");
+            $result = pdo_query("1","
+                select roomhandle.handle from roomhandle where community='Y' and roomhandle=?
+                    ",array($communitylink));
             $selectgroupoptions = "<option value=''>No Community Link</option>";
-            while($row = do_mysqli_fetch("1",$result)){
+            while($row = do_fetch($result)){
                 $selectcommunity .= "<option value='$row[handle]'>$row[handle]</option>";
             }
         }
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
                 select roomhandle.handle from roomhandle where community='Y' 
                 ");
         $selectcommunityoptions = "<option value=''>- No Community Link -</option>";
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             $selectcommunityoptions .= "<option value='$row[handle]'>$row[handle]</option>";
         }
         
@@ -990,7 +992,7 @@ require_once("chat.inc.php");
         $sponsortext = "";
         $broadcasttext = "";
         $parenttext = "
-                    Parent Room #Hashtag<br>
+                    Parent #Hashtag<br>
                     <input id='roomparent' name='roomparent' placeholder='#ParentRoom' type='text' size=20 maxlength=250 value='$parent' style='max-width:400px;width:70%'>
                         <br>
                         <span class='smalltext'>Take members from this Room</span>
@@ -1075,7 +1077,7 @@ require_once("chat.inc.php");
                             id='roomchange' data-room='$roomHtml' data-roomid='$roomid' data-mode='$roommode' data-caller='$caller'
                             style='background-color:$global_titlebar_color;color:white'
                             >
-                            Save Room Settings
+                            Save Settings
                         </div>
                         &nbsp;&nbsp;
                         <span class='nonmobile'>
@@ -1083,20 +1085,20 @@ require_once("chat.inc.php");
                             id='roomchange' data-room='$roomHtml' data-roomid='$roomid' data-mode='DR' data-caller='$caller'
                             style='background-color:$global_titlebar_color;color:white'
                             >
-                            Delete Room
+                            Delete $menu_room
                         </div>
                         </span>
                         
                         <br><br>
                         <hr>
                         <div class='pagetitle2a' style='color:$global_textcolor;'>
-                            <b>Room Identification</b> 
+                            <b>$menu_room Identification</b> 
                         </div>
                         <br>
-                        Room Name<br>
+                        Name<br>
                         <input id='newroomname' name='room' placeholder='Room Name' type='text' size=20 maxlength=30 value='$roomHtml' style='max-width:400px;width:70%'>
                         <br><br>
-                        Description of Room<br>
+                        Description<br>
                         <input id='roomdesc' name='roomdesc' placeholder='Room Description' type='text' size=20 value='$roomdesc' style='max-width:400px;width:70%'>
                         <br><br>
                         <!--
@@ -1111,7 +1113,7 @@ require_once("chat.inc.php");
                             style='background:url(../img/hash.png) no-repeat scroll;background-size:20px 20px;padding-left:20px;width:222px;background-color:ivory'/>
                         <br><div class='smalltext' style='margin-top:5px;color:$global_textcolor'>$wizardmessage</div><br><br>
                         
-                        Room Photo<br>
+                        Photo<br>
                         <input id='photourl' class='smalltext' name='photourl' placeholder='Select a Photo' type='text' size=20 value='$photourl' readonly=readonly style='background-color:whitesmoke;max-width:400px;width:70%'>
                         <br>
                         <span class='photoselect'
@@ -1134,7 +1136,7 @@ require_once("chat.inc.php");
                                 <b>Public Website Settings</b>
                             </div>
                             <br>
-                            <b>Make Room a Public Website?</b><br>
+                            <b>Make into a Public Website?</b><br>
                                 $roomexternaltext
                                 <br><br>
 
@@ -1142,11 +1144,11 @@ require_once("chat.inc.php");
                                 
                                 <span class=smalltext>
                                     <b>WEBSITE INFO:</b>
-                                    This enables the following external room link:<br><br>
+                                    This enables the following external link:<br><br>
                                     <b>http://hashtag.brax.me</b> 
                                     <br><br>
-                                    If enabled, the room settings will be changed to OPEN, NON-DISCOVERABLE, OWNER-POSTING only.
-                                    The room will not be visible to others inside the app.
+                                    If enabled, the settings will be changed to OPEN, NON-DISCOVERABLE, OWNER-POSTING only.
+                                    It will not be visible to others inside the app.
                                     <br><br>
                                     Websites are not accessible by users within the app.
                                 </span>
@@ -1247,14 +1249,14 @@ require_once("chat.inc.php");
                             $privatetext
                             <br><br><br>
 
-                            <b>Show Members List within Room?</b><br>
+                            <b>Show Members List?</b><br>
                             $showmemberstext
                             <br><br><br>
 
 
                             <hr>
                             <div class='pagetitle2a' style='color:$global_textcolor;'>
-                                <b>Room Preferences</b> <span class='smalltext' style='color:gray'>(Optional)</span>
+                                <b>Preferences</b> <span class='smalltext' style='color:gray'>(Optional)</span>
                             </div>
                             <br>
 
@@ -1273,7 +1275,7 @@ require_once("chat.inc.php");
                             <br><br><br>
                             <hr>
                             <div class='pagetitle2a' style='color:$global_textcolor;'>
-                                <b>Room Discovery by Users</b> 
+                                <b>Discovery by Users</b> 
                                 <br><br>
                             </div>
                             <b>Will be Listed and Discoverable to All App Users?</b><br>
@@ -1366,7 +1368,7 @@ require_once("chat.inc.php");
 
                             $copymemberstext
                                 
-                            Room Style<br>
+                            Viewing Style<br>
                             <select id='roomstyle' name='roomstyle'  style='width:250px'>
                                 $selectroomstyle
                                 <option value='std'>Standard</option>
@@ -1383,7 +1385,7 @@ require_once("chat.inc.php");
 
                             <span class=smalltext>
                                 <b>Tip:</b>
-                                Discoverable Rooms are open to all and are subject to age-appropriate 
+                                If set as discoverable, it will be open to all and are subject to age-appropriate 
                                 content moderation and other content restrictions as specified
                                 under the Terms of Use. Content or materials of any kind (text, graphics,
                                 images, photographs, sounds, etc.) that in our reasonable judgment may be 
@@ -1392,15 +1394,15 @@ require_once("chat.inc.php");
                                 obscene, pornographic, hate oriented, or defamatory will be
                                 removed from open access (removed from Discover Rooms).
                                 <br><br>
-                                You can promote non-discoverable rooms outside of the app using Group Invite Links as
+                                You can promote non-discoverable areas outside of the app using Group Invite Links as
                                 well as through private invites.
                                 <br><br>
-                                Rooms shall not be established for unlawful purposes and will be subject to reporting 
+                                This space shall not be established for unlawful purposes and will be subject to reporting 
                                 to law enforcement and immediate shut down.
 
                                 <br><br>
-                                Although room content is encrypted, please note that the description
-                                of the room as defined here is visible internally to us.
+                                Although the content here is encrypted, please note that the description
+                                of the space as defined here is visible internally to us.
                             </span>
                             <br><br><br>
 
@@ -1419,7 +1421,7 @@ require_once("chat.inc.php");
                                     <br><br>
                                 </div>
                             <br>
-                                Join Room #hashtag from Website <br>
+                                Join  #hashtag from Website <br>
                                 <input id='roominvitehandle' class='smalltext' name='roominvitehandle' placeholder='hashtag' type='text' size=20 value='$roominvitehandle' 
                                     style='background:url(../img/hash.png) no-repeat scroll;background-size:20px 20px;padding-left:20px;width:222px;background-color:ivory'/>
                                 <br><br>
@@ -1447,9 +1449,9 @@ require_once("chat.inc.php");
         if( $mode == 'N' || $mode == 'E'){
         
 
-            $modedesc = "Room Properties";
+            $modedesc = "$menu_manageroomedit";
             if( $mode == 'N'){
-                $modedesc = "Create a New Room";
+                $modedesc = "$menu_manageroomcreate";
             }
         }
         
@@ -1460,7 +1462,7 @@ require_once("chat.inc.php");
             $roomtip = "
                         <div style='width:80%;padding:0;margin:0;max-width:500px'>
                             <div class='tipbubble pagetitle2a gridstdborder' style='color:white;background-color:$backgroundcolor'>
-                            CREATE YOUR FIRST ROOM
+                            $menu_manageroomcreate
                             <br><span class='pagetitle3' style='color:white'>Rooms can be private or have open membership</span>
                             </div>
                         </div>
@@ -1483,34 +1485,34 @@ require_once("chat.inc.php");
     {
             
         
-            $result = do_mysqli_query("1","
-                select val1 from parms where parmkey='$parmkey' and parmcode='$parmcode' 
-                ");
-            if( $row = do_mysqli_fetch("1",$result)){
+            $result = pdo_query("1","
+                select val1 from parms where parmkey=? and parmcode=? 
+                ",array($parmkey,$parmcode));
+            if( $row = pdo_fetch($result)){
                 $val1 =intval($row['val1']);
             } else {
                 
                 $maxval = 100;
                 if($parmkey =='ROOM') {
-                    $result = do_mysqli_query("1","
+                    $result = pdo_query("1","
                         select max(roomid)+1 as maxval from roominfo
                         ");
-                    if( $row = do_mysqli_fetch("1",$result)){
+                    if( $row = pdo_fetch($result)){
                     
                         $maxval =intval($row['maxval']);
                     }
                 }
                 
-                $result = do_mysqli_query("1","
+                $result = pdo_query("1","
                     insert into parms (parmkey, parmcode, val1, val2 ) values 
-                    ('$parmkey','$parmcode', $maxval, 0 )
-                ");
+                    (?,?, ?, 0 )
+                ",array($parmkey,$parmcode,$maxval));
                 $val1 = $maxroomid;
      
             }
-            $result = do_mysqli_query("1","
-                update parms set val1=val1+1 where parmkey='$parmkey' and parmcode='$parmcode'
-            ");
+            $result = pdo_query("1","
+                update parms set val1=val1+1 where parmkey=? and parmcode=?
+            ",array($parmkey,$parmcode));
             $val1++;
             
             return $val1;
@@ -1619,18 +1621,18 @@ require_once("chat.inc.php");
         $age = intval($minage);
         $childsort = intval($childsort);
         
-        $result = do_mysqli_query("1","
-            select rank from roomhandle where roomid = $roomid 
-        ");
-        $row = do_mysqli_fetch("1",$result);
+        $result = pdo_query("1","
+            select rank from roomhandle where roomid = ?
+        ",array($roomid));
+        $row = pdo_fetch($result);
         $rank = intval($row['rank']);
         
-        $result = do_mysqli_query("1","
-            delete from roomhandle where roomid = $roomid 
-        ");
-        $result = do_mysqli_query("1","
-            insert ignore into roominfo (roomid ) values ($roomid)
-        ");
+        $result = pdo_query("1","
+            delete from roomhandle where roomid = ?
+        ",array($roomid));
+        $result = pdo_query("1","
+            insert ignore into roominfo (roomid ) values (?)
+        ",array($roomid));
         
         //$analytics64 = base64_encode(html_entity_decode($analytics));
         $analytics64 = base64_encode($analytics);
@@ -1642,51 +1644,67 @@ require_once("chat.inc.php");
             $roomstyle = 'std';
         }
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             update roominfo
-            set room = '$nameclean', roomdesc='$roomdesc', photourl='$photourl', photourl2='$photourl2',
-            anonymousflag='$roomanonymous', external='$roomexternal', organization='$organizationclean',
-            private='$private',contactexchange='N',adminonly='$adminonly',
-            notifications='$notifications',showmembers='$showmembers', soundalert='$soundalert',
-            sharephotoflag='$sharephotoflag',rsscategory='$rsscategory', groupid= $groupid,
-            rsssource='$rsssource', rsssourceid='', radiostation='$radiostation', sponsor='$sponsor', 
-            parentroom='$parent', childsort=$childsort, profileflag='$profileflag', 
-            roominvitehandle='$roominvitehandle', webcolorscheme='$webcolorscheme', webtextcolor ='$webtextcolor',
-            webpublishprofile='$webpublishprofile', webflags='$webflags', searchengine='$searchengine', 
-            analytics='$analytics64', subscriptiondays=$subscriptiondaysvalue, subscription=$subscriptionvalue,subscriptionusd=$subscriptionusdvalue, 
-            wallpaper='$wallpaper', autochatuser='$autochatuser', autochatmsg='$autochatmsg', 
-            communitylink = '$communitylink', store = '$store', roomstyle='$roomstyle'
+            set room = ?, roomdesc=?, photourl=?, photourl2=?,
+            anonymousflag=?, external=?, organization=?,
+            private=?,contactexchange='N',adminonly=?,
+            notifications=?',showmembers=?, soundalert=?,
+            sharephotoflag=?,rsscategory=?, groupid=?,
+            rsssource=?', rsssourceid='', radiostation=?, sponsor=?, 
+            parentroom=?, childsort=?, profileflag=?, 
+            roominvitehandle=?, webcolorscheme=?, webtextcolor =?,
+            webpublishprofile=?, webflags=?, searchengine=?, 
+            analytics=?, subscriptiondays=?, subscription=?,subscriptionusd=?, 
+            wallpaper=?, autochatuser=?, autochatmsg=?, 
+            communitylink = ?, store = ?, roomstyle=?
            
-            where roomid = $roomid
-        ");
+            where roomid = ?
+        ",array(
+            $nameclean,$roomdesc,$photourl,$photourl2,
+            $roomanonymous,$roomexternal,$organizationclean,
+            $private,$adminonly,
+            $notifications,$showmembers,$soundalert,
+            $sharephotoflag,$rsscategory,$groupid,
+            $rsssource,$radiostation,$sponsor, 
+            $parent,$childsort,$profileflag, 
+            $roominvitehandle,$webcolorscheme, $webtextcolor,
+            $webpublishprofile,$webflags,$searchengine, 
+            $analytics64,$subscriptiondaysvalue, $subscriptionvalue,$subscriptionusdvalue, 
+            $wallpaper,$autochatuser,$autochatmsg, 
+            $communitylink,$store,$roomstyle,$roomid
+        )
+        );
         
         
         if( $handle != '' && $handle!='#')
         {
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 insert into roomhandle 
                 (roomid, handle, name, public, roomdesc, tags, category, community ) 
                 values 
-                ($roomid, '$handle', '$nameclean', '$discover', '$roomdesc', '$tagsclean', '$category','$community' ) 
-            ");
+                (?,?,?,?,?,?,?,? ) 
+            ",array($roomid, $handle, $nameclean, $discover, $roomdesc, $tagsclean, $category,$community ) 
+            );
         }
         if($rsssource!=''){
             CreateRssSource($roomid, $rsssource);
         } else {
-            $result = do_mysqli_query("1","
-                update roominfo set rsstimestamp = 0 where roomid = $roomid
-            ");
+            $result = pdo_query("1","
+                update roominfo set rsstimestamp = 0 where roomid = ?
+            ",array($roomid));
             
         }
 
         //Don't allow reversal of this setting. If anonymous once, past posts will remain anonymous
         if($roomanonymous == 'Y'){
-            do_mysqli_query("1","update statusposts set anonymous = 'Y' where roomid = $roomid ");
+            pdo_query("1","update statusposts set anonymous = 'Y' where roomid = ? ",array($roomid));
         }
         
         if($parent!=='' || $copymembers!==''){
-            $result = do_mysqli_query("1","select roomid, (select owner from statusroom where statusroom.roomid = $roomid and statusroom.owner = statusroom.providerid) as providerid from roomhandle where handle='$copymembers' ");
-            if($row = do_mysqli_fetch("1",$result)){
+            $result = pdo_query("1","select roomid, (select owner from statusroom where statusroom.roomid = ? and statusroom.owner = statusroom.providerid) as "
+                    . "    providerid from roomhandle where handle=? ",array($roomid),$copymembers);
+            if($row = pdo_fetch($result)){
                 $sourceroomid = $row['roomid'];
                 CopyMembersToRoom($row[providerid], $sourceroomid, $roomid);
             }
@@ -1721,14 +1739,14 @@ require_once("chat.inc.php");
             <div class='pagetitle2'  style='color:$global_textcolor;text-align:center;margin:auto;vertical-align:top'>
                   ";
         
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 select distinct roominfo.room, statusroom.roomid, roominfo.photourl,
                 roominfo.private, roominfo.external, roomhandle.public, roominfo.rsscategory
                 from statusroom 
                 left join roominfo on roominfo.roomid = statusroom.roomid
                 left join roomhandle on roomhandle.roomid = statusroom.roomid
                 where (
-                    statusroom.owner=$providerid 
+                    statusroom.owner=?
                    )
                 and roominfo.room!=''
                 and roomhandle.community = 'Y'
@@ -1736,13 +1754,13 @@ require_once("chat.inc.php");
 
 
                 order by roominfo.room asc
-            ");
+            ",array($providerid));
     //                statusroom.owner=$providerid or
     //                statusroom.roomid in (select roomid from roommoderator where providerid = $providerid )
 
 
             $i=0;
-            while($row = do_mysqli_fetch("1",$result)){
+            while($row = pdo_fetch($result)){
 
                 if($i==0){
                     $select .= "<div class='pagetitle2a' style='color:$global_textcolor;margin:auto'>Communities</div>";
@@ -1802,14 +1820,14 @@ require_once("chat.inc.php");
         if($_SESSION['enterprise']=='Y'){
             
 
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 select distinct roominfo.room, statusroom.roomid, roominfo.photourl,
                 roominfo.private, roominfo.external, roomhandle.public, roominfo.rsscategory
                 from statusroom 
                 left join roominfo on roominfo.roomid = statusroom.roomid
                 left join roomhandle on roomhandle.roomid = statusroom.roomid
                 where (
-                    statusroom.owner=$providerid 
+                    statusroom.owner=?
                    )
                 and roominfo.room!=''
                 and roominfo.profileflag!='Y'
@@ -1818,13 +1836,13 @@ require_once("chat.inc.php");
 
 
                 order by roominfo.room asc
-            ");
+            ",array($providerid));
     //                statusroom.owner=$providerid or
     //                statusroom.roomid in (select roomid from roommoderator where providerid = $providerid )
 
 
             $i=0;
-            while($row = do_mysqli_fetch("1",$result)){
+            while($row = pdo_fetch($result)){
 
                 if($i==0){
                     $select .= "<div class='pagetitle2a' style='color:$global_textcolor;margin:auto'>Websites</div>";
@@ -1881,14 +1899,14 @@ require_once("chat.inc.php");
             $select .= "<br><br><br>";
         }
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select distinct roominfo.room, statusroom.roomid, roominfo.photourl,
             roominfo.private, roominfo.external, roomhandle.public, roominfo.rsscategory
             from statusroom 
             left join roominfo on roominfo.roomid = statusroom.roomid
             left join roomhandle on roomhandle.roomid = statusroom.roomid
             where (
-                statusroom.owner=$providerid 
+                statusroom.owner=? 
                )
             and roominfo.room!=''
             and roominfo.profileflag!='Y'
@@ -1898,12 +1916,12 @@ require_once("chat.inc.php");
             
             
             order by roominfo.room asc
-        ");
+        ",array($providerid));
 //                statusroom.owner=$providerid or
 //                statusroom.roomid in (select roomid from roommoderator where providerid = $providerid )
     
         $i2 = 0;
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
         
 
             if($i2==0){
@@ -1977,38 +1995,38 @@ require_once("chat.inc.php");
     {
         $sourceid = "";
         //Check to see if source already exists
-        $result = do_mysqli_query("news","
-                select id, url, status from rss_sources where url = '$rss' 
-            ");
-        if($row = do_mysqli_fetch("news",$result)){
+        $result = pdo_query("news","
+                select id, url, status from rss_sources where url = ?
+            ",array($rss));
+        if($row = pdo_fetch($result)){
             if( $row['status']=='Active'){
                 $sourceid = $row['id'];
             }
             
         } else {
             
-            $result = do_mysqli_query("news","
+            $result = pdo_query("news","
                 insert into rss_sources 
                 (type, name, site_url, url, last_crawled, last_updated, crawl_interval,
                 link_type, status, article_status, favicon, keywords, featured,
                 altimg_url, diocese )
                 values
-                ('','Room Feed','$rss', '$rss', 0, 0, 0, 'Yes','Active', 'Published','','', 
+                ('','Room Feed',?, ?, 0, 0, 0, 'Yes','Active', 'Published','','', 
                     null, null, null )
-            ");
-            $result = do_mysqli_query("news","
-                select id, url from rss_sources where url = '$rss' 
-                ");
-            if($row = do_mysqli_fetch("news",$result)){
+            ",array($rss,$rss));
+            $result = pdo_query("news","
+                select id, url from rss_sources where url = '?' 
+                ",array($rss));
+            if($row = pdo_fetch($result)){
                 $sourceid = $row['id'];
             }
             
         }
         
             
-        $result = do_mysqli_query("1","
-            update roominfo set rsssourceid = '$sourceid', rsstimestamp = 0 where roomid = $roomid and rsssourceid != '$sourceid'
-            ");
+        $result = pdo_query("1","
+            update roominfo set rsssourceid = ?, rsstimestamp = 0 where roomid = ? and rsssourceid != ?
+            ",array($sourceid,$roomid,$sourceid));
             
         return $sourceid;
     }
@@ -2019,7 +2037,7 @@ require_once("chat.inc.php");
         global $iconsource_braxmedal_common;
         global $global_textcolor;
         
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 select provider.replyemail, providername as name, provider.providerid,
                 avatarurl, roominfo.room, statusroom.roomid, provider.handle, 
@@ -2031,12 +2049,12 @@ require_once("chat.inc.php");
                     and roommoderator.roomid = statusroom.roomid
                 where 
                 provider.active='Y'
-                and statusroom.roomid=$roomid
-                and (provider.providername like '%$filter%' or provider.handle like '%$filter%')
+                and statusroom.roomid=?
+                and (provider.providername like ? or provider.handle like ?)
                 order by providername limit 500
-             ");
+             ",array($roomid,"%".$filter."%","%".$filter."%"));
 
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
         
             $avatar = $row['avatarurl'];
             if($avatar == "$rootserver/img/faceless.png"){
@@ -2162,7 +2180,7 @@ require_once("chat.inc.php");
             return (object) $roomdata;
         }
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select roomhandle.handle, roominfo.room, roominfo.roomdesc, roomhandle.tags, roomhandle.public, 
             roomhandle.community, roominfo.communitylink, roomhandle.minage, roominfo.photourl, roominfo.photourl2, roomhandle.category, roominfo.organization,
             roominfo.anonymousflag, roominfo.private, roominfo.contactexchange, roominfo.adminonly,
@@ -2178,10 +2196,10 @@ require_once("chat.inc.php");
             from roominfo 
             left join statusroom on statusroom.roomid = roominfo.roomid and statusroom.owner = statusroom.providerid
             left join roomhandle on roomhandle.roomid = roominfo.roomid
-            where roominfo.roomid=$roomid 
-            ");
+            where roominfo.roomid=?
+            ",array($roomid));
 
-        if( $row = do_mysqli_fetch("1",$result)){
+        if( $row = pdo_fetch($result)){
 
             $roomdata['IsOwner'] = false;
             if($row['owner']==$providerid ){
@@ -2269,10 +2287,10 @@ require_once("chat.inc.php");
             
             if( $row['rsssourceid']!=''){
                 
-                $result = do_mysqli_query("news","
+                $result = pdo_query("news","
                     select failreason from rss_sources where id = $row[rsssourceid] 
                 ");
-                if($row = do_mysqli_fetch("news",$result)){
+                if($row = pdo_fetch($result)){
                     if($row['failreason']!=''){
                         $roomdata['failreason'] = "Feed Error: ".$row['failreason'];
                     }
@@ -2286,10 +2304,10 @@ require_once("chat.inc.php");
     {
         $roomid = GetNewID( "ROOM", "ID" );
             
-            do_mysqli_query("1","
+            pdo_query("1","
                 insert into statusroom ( roomid, owner, providerid, status, createdate, creatorid ) values
-                ( $roomid,$providerid, $providerid, '', now(), $providerid )
-                ");
+                ( ?,?, ?, '', now(), ? )
+                ",array($roomid,$providerid,$providerid,$providerid));
             
             $private = 'Y';
             $handle = "";
@@ -2349,25 +2367,25 @@ require_once("chat.inc.php");
                     $analytics, $subscriptiondays, $subscription, $subscriptionusd, $wallpaper, $autochatuser, $autochatmsg, 
                     $community, $communitylink, $store, $roomstyle  );
             
-            do_mysqli_query("1","update provider set profileroomid = $roomid where providerid=$providerid ");
+            pdo_query("1","update provider set profileroomid = ? where providerid=? ",array($roomid,$providerid));
             
             return $roomid;
     }
     function NewProfileRoomMember($roomid, $owner, $memberid)
     {
-            do_mysqli_query("1","
+            pdo_query("1","
                 insert ignore into statusroom ( roomid, owner, providerid, status, createdate, creatorid ) values
-                ( $roomid,$owner, $memberid, '', now(), $memberid )
-                ");
+                ( ?,?, ?, '', now(), ? )
+                ",array($roomid,$owner,$memberid,$memberid));
     }
     function FindProfileRoom($providerid, $viewerid)
     {
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select roomid from roominfo where profileflag ='Y' and profileflag is not null 
             and roomid in (select roomid from statusroom 
-            where providerid = $providerid and providerid = owner) ");
+            where providerid = ? and providerid = owner) ",array($providerid));
         
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
             
             $vieweraction = "feed";
             $roomid = $row['roomid'];

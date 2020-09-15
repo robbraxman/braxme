@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("htmlhead.inc.php");
 
 $safegreen = "<img src='../img/safe-green-128.png' title='HIPAA Safe - Fully Encrypted Communication' style='height:16px;width:auto;padding-top:0;padding-right:2px;padding-bottom:0px;' />";

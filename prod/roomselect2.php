@@ -1,6 +1,6 @@
 <?php
 require("room.inc.php");
-require_once("crypt.inc.php");
+require_once("crypt-pdo.inc.php");
 require_once("lib_autolink.php");
 
 
@@ -38,7 +38,7 @@ require_once("lib_autolink.php");
 
     
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
             select roominfo.room, statuspost.parent, roominfo.subscription,
             provider.avatarurl, roominfo.profileflag,
@@ -125,7 +125,7 @@ require_once("lib_autolink.php");
 
     
     $postcount = 0;
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         $postid = $row['postid'];
         $postdate = InternationalizeDate($row['postdate']);
         if($postcount == 0){
@@ -138,7 +138,7 @@ require_once("lib_autolink.php");
             }
             
             echo "
-                <div class='mainfont roomselect' data-mode='MYROOMS' style='float:right;cursor:pointer;margin-right:20px;color:$global_activetextcolor;'>$menu_myrooms</div>
+                <div class='mainfont roomselect' data-mode='MYROOMS' style='float:right;cursor:pointer;margin-right:20px;color:$global_activetextcolor;'>$menu_rooms</div>
                 ";
             
             echo "

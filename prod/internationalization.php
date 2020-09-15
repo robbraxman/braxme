@@ -1,5 +1,5 @@
 <?php
-require_once("config.php");
+require_once("config-pdo.php");
 
 if(!isset($_SESSION['language'])){
     $_SESSION['language']='';
@@ -18,6 +18,7 @@ if($_SESSION['language']==''){
     $menu_people = 'People';
     $menu_settings = 'Settings';
     $menu_activity = 'Activity';
+    $menu_store = 'Store';
     $menu_logout = 'Logout';
     $menu_restart = 'Restart';
     $menu_myprofileandfiles = 'My Profile, Photos, and Files';
@@ -125,7 +126,7 @@ if($_SESSION['language']==''){
     $menu_join = 'Join';
     $menu_existingaccount = 'Already have an account?';
     $menu_or = 'or';
-    $menu_e2ekey = 'E2E Secret Passkey - Optional';
+    $menu_e2ekey = 'Chat Secret Passkey - Optional';
     $menu_friends = "Friends";
     $menu_friendadd = "Add Friend";
     $menu_frienddelete = "Remove Friend";

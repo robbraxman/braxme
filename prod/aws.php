@@ -3,8 +3,8 @@ require ("$_SERVER[DOCUMENT_ROOT]"."/libs/amazon/aws-autoloader.php");
 use Aws\Common\Aws;
 
 // Create the AWS service builder, providing the path to the config file
-//$aws = Aws::factory("localsettings/aws-config.php");
-$aws = Aws::factory("$_SERVER[DOCUMENT_ROOT]"."/prod/localsettings/secure/aws-config.php");
+//$aws = Aws::factory("localsettings/aws-config-pdo.php");
+$aws = Aws::factory("$_SERVER[DOCUMENT_ROOT]"."/prod/localsettings/secure/aws-config-pdo.php");
 $s3Client = $aws->get('s3');
 $s3Client->setRegion('us-west-2');
 $s3Client->registerStreamWrapper();

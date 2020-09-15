@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("htmlhead.inc.php");
 $providerid = @tvalidator("PURIFY",$_POST['pid']);
 $url = @tvalidator("PURIFY",$_POST['url']);

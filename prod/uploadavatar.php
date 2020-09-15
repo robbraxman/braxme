@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once("config.php");
-require_once("crypt.inc.php");
+require_once("config-pdo.php");
+require_once("crypt-pdo.inc.php");
 require_once("room.inc.php");
 
 require ("photouploadprocpg.inc.php");
@@ -41,7 +41,7 @@ $upload_hdr = 'photolib';
         exit();
     
     SaveLastFunction($providerid,"A", "");
-    do_mysqli_query("1","update provider set avatarurl='$rootserver/$installfolder/sharedirect.php?a=$img' where providerid=$providerid ");
+    pdo_query("1","update provider set avatarurl='$rootserver/$installfolder/sharedirect.php?a=$img' where providerid=$providerid ");
             
         
     //ReturnToMessageEntry();

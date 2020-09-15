@@ -1,5 +1,5 @@
 <?php
-require_once("prod/config.php");
+require_once("prod/config-pdo.php");
 $file = tvalidator("PURIFY",@$_GET['f']);
 $randomid = uniqid();
 ?>

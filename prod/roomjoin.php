@@ -1,7 +1,7 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("roommanage.inc.php");
 
 
@@ -17,20 +17,20 @@ require_once("roommanage.inc.php");
     $inviteid = @tvalidator("PURIFY",$_POST['inviteid']);
     
     
-    //$result = do_mysqli_query("1",
+    //$result = pdo_query("1",
     //    "
     //    update provider set newbie='N' where providerid = $providerid and newbie='Y'
     //    ");
     
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
             "select roomid, timestampdiff(HOUR, now(), expires) as diff from roominvite where inviteid = '$inviteid'
             "
             );
     $diffval = -1;
     //$diffval = 0;
     
-    if($row = do_mysqli_fetch("1",$result)){
+    if($row = pdo_fetch($result)){
     
         $roomid = $row['roomid'];
         $diffval = $row['diff'];
@@ -87,7 +87,7 @@ require_once("roommanage.inc.php");
         }
 
         
-        $result = do_mysqli_query("1"," 
+        $result = pdo_query("1"," 
             select statusroom.roomid, roominfo.private, roominfo.room, 
             roominfo.groupid, provider.handle, roominfo.external, roominfo.featured,
             (select 'Y' from groupmembers where providerid =$providerid and groupmembers.groupid = roominfo.groupid ) as groupmember,
@@ -102,7 +102,7 @@ require_once("roommanage.inc.php");
                    ");
             
         
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
 
             
             if($row['blockee']!=''){
@@ -339,13 +339,13 @@ function ConfigureSponsor($mode, $providerid, $hashtag)
         return;
     }
 
-    $result = do_mysqli_query("1","select partitioned, industry from sponsor where sponsor='$hashtag' ");
-    if($row = do_mysqli_fetch("1",$result)){
+    $result = pdo_query("1","select partitioned, industry from sponsor where sponsor='$hashtag' ");
+    if($row = pdo_fetch($result)){
         if($row['partitioned']=='Y'){
             /*
              * we will not partition you if you are open
              * 
-            do_mysqli_query("1"," 
+            pdo_query("1"," 
                 update provider set roomdiscovery = 'N' 
                 where providerid = $providerid ");
             $_SESSION['roomdiscovery']='N';
@@ -353,7 +353,7 @@ function ConfigureSponsor($mode, $providerid, $hashtag)
              */
 
         }
-        do_mysqli_query("1"," 
+        pdo_query("1"," 
             update provider set industry = '$row[industry]' 
             where providerid = $providerid ");
 

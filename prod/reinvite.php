@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 require ("SmsInterface.inc");
 require ("sendmail.php");
 
@@ -12,7 +12,7 @@ $category = $argv[1];
     if( $category == '')
     {
         //Exclude Tech Writers
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select distinct roominfo.room, invites.providerid, invites.name, invites.email, provider.providername, invites.roomid, invites.chatid from invites
             left join provider on provider.providerid = invites.providerid
             left join statusroom on invites.roomid = statusroom.roomid and statusroom.owner = statusroom.providerid
@@ -26,7 +26,7 @@ $category = $argv[1];
     if( $category == 'C')
     {
         //Exclude Tech Writers
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
              select distinct invites.providerid, invites.name, invites.email, provider.replyemail, provider.companyname, 
              provider.providername, provider.alias, invites.roomid, invites.chatid from invites
              left join provider on 
@@ -37,7 +37,7 @@ $category = $argv[1];
              ");   
     }
     
-     while( $row = do_mysqli_fetch("1",$result))
+     while( $row = pdo_fetch($result))
      {
         $providerid = $row['providerid'];
         $providername = $row['providername'];
@@ -70,14 +70,14 @@ $category = $argv[1];
         {
             if( $invitetype == 'R')
             {
-                do_mysqli_query("1","
+                pdo_query("1","
                     update invites set retries=retries+1 where providerid=$providerid and
                         email='$inviteemail' and roomid=$roomid
                         ");
             }
             if( $invitetype == 'C')
             {
-                do_mysqli_query("1","
+                pdo_query("1","
                     update invites set retries=retries+1 where providerid=$providerid and
                         email='$inviteemail' and chatid=$chatid
                         ");
@@ -93,7 +93,7 @@ $category = $argv[1];
         }
         if($err == true)
         {
-            do_mysqli_query("1","
+            pdo_query("1","
                 update invites set retries=99999 where providerid=$providerid and
                     email='$inviteemail' and roomid=$roomid
                     ");
@@ -117,12 +117,12 @@ $category = $argv[1];
         $invitenameEncode = urlencode($invitename);
         $invitationUrl = "$rootserver/$installfolder/invite.php?invite=$inviteemail&name=$invitenameEncode";
        
-        $result2 = do_mysqli_query("1","
+        $result2 = pdo_query("1","
             select * from provider where replyemail='$inviteemail' and active='Y' limit 1
             ");
         
         //User Never Signed Up
-        if(!$row2 = do_mysqli_fetch("1",$result2))
+        if(!$row2 = pdo_fetch($result))
         {
         
             if( $invitetype == 'R')

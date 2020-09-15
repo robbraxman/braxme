@@ -1,9 +1,9 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("internationalization.php");
-require_once("crypt.inc.php");
+require_once("crypt-pdo.inc.php");
 require_once("notify.inc.php");
 
 
@@ -20,54 +20,54 @@ require_once("notify.inc.php");
     }
 
     $profileroomid='';
-    $result = do_mysqli_query("1","select profileroomid from provider where providerid = $friendproviderid ");
-    if($row = do_mysqli_fetch("1",$result)){
+    $result = pdo_query("1","select profileroomid from provider where providerid = $friendproviderid ");
+    if($row = pdo_fetch($result)){
         $profileroomid = $row['profileroomid'];
     }
     
     if( $mode == 'D'){
-        do_mysqli_query("1","delete from friends where providerid = $providerid and friendid = $friendproviderid ");
+        pdo_query("1","delete from friends where providerid = $providerid and friendid = $friendproviderid ");
         $mode = "";
     }    
     if( $mode == 'A'){
-        do_mysqli_query("1","delete from friends where providerid = $providerid and friendid = $friendproviderid ");
-        do_mysqli_query("1","insert into friends (providerid, friendid, level ) values ($providerid, $friendproviderid, '$friendlevel' ) " );
+        pdo_query("1","delete from friends where providerid = $providerid and friendid = $friendproviderid ");
+        pdo_query("1","insert into friends (providerid, friendid, level ) values ($providerid, $friendproviderid, '$friendlevel' ) " );
         $mode = "";
     }    
     if( $mode == 'XBAN'){
-        $result = do_mysqli_query("1","update provider p2 set banid = null where providerid = $friendproviderid and banid not in (select banid from provider p1 where providerid!=$friendproviderid and  p1.banid = p2.banid) ");
+        $result = pdo_query("1","update provider p2 set banid = null where providerid = $friendproviderid and banid not in (select banid from provider p1 where providerid!=$friendproviderid and  p1.banid = p2.banid) ");
         $banid = '';
     }
     if( $mode == 'BAN'){
-        $result = do_mysqli_query("1","select banid, iphash, iphash2, handle from provider where providerid = $friendproviderid ");
+        $result = pdo_query("1","select banid, iphash, iphash2, handle from provider where providerid = $friendproviderid ");
         $banid = '';
         $iphash = '';
         $handle = '';
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
             $banid = $row['banid'];
             $iphash = $row['iphash'];
             $iphash2 = $row['iphash2'];
             $handle = $row['handle'];
         }
-        $result = do_mysqli_query("1","select banid from ban where banid='$banid' and chatid = $chatid ");
-        if($row = do_mysqli_fetch("1",$result)){
+        $result = pdo_query("1","select banid from ban where banid='$banid' and chatid = $chatid ");
+        if($row = pdo_fetch($result)){
             //Already banned - unban
-            do_mysqli_query("1","delete from ban where banid = '$banid' and chatid = $chatid ");
+            pdo_query("1","delete from ban where banid = '$banid' and chatid = $chatid ");
             exit();
         }
         if($iphash == ''){
             $iphash = $handle;
-            do_mysqli_query("1","update provider set iphash = handle where providerid = $friendproviderid ");
+            pdo_query("1","update provider set iphash = handle where providerid = $friendproviderid ");
         }
         $banid = $iphash2;
         if($banid == ''){
             $banid = $iphash;
         }
         
-        do_mysqli_query("1","delete from ban where banid = '$banid' and chatid = $chatid ");
-        do_mysqli_query("1","update provider set banid = iphash where iphash = '$iphash' ");
-        do_mysqli_query("1","update provider set banid = iphash2 where iphash2 = '$iphash2' and iphash2!='' ");
-        do_mysqli_query("1","insert into ban (banid, chatid ) values ('$banid', $chatid ) " );
+        pdo_query("1","delete from ban where banid = '$banid' and chatid = $chatid ");
+        pdo_query("1","update provider set banid = iphash where iphash = '$iphash' ");
+        pdo_query("1","update provider set banid = iphash2 where iphash2 = '$iphash2' and iphash2!='' ");
+        pdo_query("1","insert into ban (banid, chatid ) values ('$banid', $chatid ) " );
         $mode = "";
     }    
     if( $mode == 'AF'){
@@ -76,8 +76,8 @@ require_once("notify.inc.php");
         } else {
             $friendlevel = '';
         }
-        do_mysqli_query("1","delete from followers where providerid = $friendproviderid and followerid = $providerid ");
-        do_mysqli_query("1","insert into followers (providerid, followerid, level,followdate ) values ($friendproviderid, $providerid,'$friendlevel',now() ) " );
+        pdo_query("1","delete from followers where providerid = $friendproviderid and followerid = $providerid ");
+        pdo_query("1","insert into followers (providerid, followerid, level,followdate ) values ($friendproviderid, $providerid,'$friendlevel',now() ) " );
         $mode = "";
         
         GenerateNotificationV2( 
@@ -90,7 +90,7 @@ require_once("notify.inc.php");
         
     }    
     if( $mode == 'UF'){
-        do_mysqli_query("1","delete from followers where providerid = $friendproviderid and followerid = $providerid ");
+        pdo_query("1","delete from followers where providerid = $friendproviderid and followerid = $providerid ");
         $mode = "";
     }    
     

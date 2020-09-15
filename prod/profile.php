@@ -2,10 +2,10 @@
 session_cache_expire(10);
 session_start();
 require("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 require("password.inc.php");
 require_once("admin.inc.php");
-require_once("crypt.inc.php");
+require_once("crypt-pdo.inc.php");
 require_once("internationalization.php");
 require("htmlhead.inc.php");
 
@@ -299,7 +299,7 @@ $(document).ready( function()
             
             if($('#notificationflags7').is(':checked')){
             } else {
-                notificationflags += 'S';
+                notificationflags += 'B';
             }
             
             if($('#notificationflags8').is(':checked')){
@@ -334,7 +334,7 @@ $(document).ready( function()
     $expiredate = "";
     $bandwidthplan = "";
     $subscriptiontext = "";
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
             SELECT date_format(msgplan.dateend,'%m/%d/%Y') as expiredate, 
             date_add( msgplan.dateend, INTERVAL -365 DAY) as datestart,
             timestampdiff(DAY, now(), msgplan.dateend )+1 as expiredays, 
@@ -345,7 +345,7 @@ $(document).ready( function()
             order by dateend desc limit 1
     ");
     $startdate = '1900-01-01';
-    if($row = do_mysqli_fetch("1",$result)){
+    if($row = pdo_fetch($result)){
         $expiredays = $row['expiredays'];
         $expiredate = InternationalizeDate($row['expiredate']);
         $startdate = $row['datestart'];
@@ -386,26 +386,26 @@ $(document).ready( function()
     }
     $filesize = 0;
     $bandwidth = 0;
-    $result3 = do_mysqli_query("1","select round(sum(filesize)/1000000000,2) as filesize from filelib 
+    $result3 = pdo_query("1","select round(sum(filesize)/1000000000,2) as filesize from filelib 
             where providerid = $providerid ");
-    if($row3 = do_mysqli_fetch("3",$result3)){
+    if($row3 = pdo_fetch($result3)){
         $filesize = $row3['filesize'];
     }
 
-    $result = do_mysqli_query("1","select round(sum(views*filesize)/1000000000,2) as bandwidth from fileviews 
+    $result = pdo_query("1","select round(sum(views*filesize)/1000000000,2) as bandwidth from fileviews 
             where providerid = $providerid and viewdate >= '$startdate' ");
-    if($row3 = do_mysqli_fetch("1",$result)){
+    if($row3 = pdo_fetch($result)){
         $bandwidth = $row3['bandwidth'];
     }
 
     $bytzvpn = '';
     //BYTZ VPN Subscription info
-    $result3 = do_mysqli_query("1"," 
+    $result3 = pdo_query("1"," 
         select username, password, datediff( date_add(startdate, interval 1 year), now() ) as expiredays, ip 
         from bytzvpn where providerid = $providerid and status='Y' 
         order by startdate desc limit 1
         ");
-    if($row3 = do_mysqli_fetch("3",$result3)){
+    if($row3 = pdo_fetch($result3)){
         $bytzvpnusername= $row3['username'];
         $bytzvpnpassword = $row3['password'];
         $bytzvpnexpiredays = $row3['expiredays'];
@@ -421,18 +421,17 @@ $(document).ready( function()
                 <br>
                 Username: $bytzvpnusername<br>
                 Password: $bytzvpnpassword<br>
-                Private Key Password: whatthezuck<br>
                 $bytzbraxwifi
             </div>
             <br><br>";
     }
 
     
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
             select auth_hash from staff where loginid = '$_SESSION[loginid]' and providerid = $providerid 
                 ");
       
-    $row = do_mysqli_fetch("1",$result);
+    $row = pdo_fetch($result);
     if(!$row) {
          echo "SQL Error";
     }
@@ -440,7 +439,7 @@ $(document).ready( function()
     
     
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
             "SELECT provider.providerid, provider.providername, provider.name2, provider.companyname, provider.handle, age," .
             "(select sms from sms where provider.providerid = sms.providerid ) as smsencrypted, ".
             "(select encoding from sms where provider.providerid = sms.providerid ) as smsencoding, ".
@@ -463,7 +462,7 @@ $(document).ready( function()
 
   
       
-    $row = do_mysqli_fetch("1",$result);
+    $row = pdo_fetch($result);
     if(!$row) {
          echo "SQL Error";
     }
@@ -807,6 +806,10 @@ if($_SESSION['enterprise']=='Y' || $_SESSION['superadmin']=='Y' ){
                 echo "<label for='notificationflags7'>SecureNet</label>";
                 echo "<br><br>";
             
+            } else {
+                
+                    echo "<input id=notificationflags7 name=notificationflags7  title='Enable SecureNet Notifications'  type=hidden value='' style='display:hidden'/>";
+                
             }
             
             

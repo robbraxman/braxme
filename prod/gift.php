@@ -1,9 +1,9 @@
 <?php
 session_start();
-include("config.php");
+include("config-pdo.php");
 require("validsession.inc.php");
 require("htmlhead.inc.php");
-require_once("crypt.inc.php");
+require_once("crypt-pdo.inc.php");
 require_once("notify.inc.php");
 
 //$mode = @tvalidator("PURIFY", $_GET['mode'] );
@@ -26,12 +26,12 @@ $mode = @tvalidator("PURIFY", $_POST['mode'] );
             }
             $sendername='';
             $receivername='';
-            $result = do_mysqli_query("1","select providername from provider where providerid=$providerid ");
-            if($row = do_mysqli_fetch("1",$result)){
+            $result = pdo_query("1","select providername from provider where providerid=$providerid ");
+            if($row = pdo_fetch($result)){
                 $sendername = $row['providername'];
             }
-            $result = do_mysqli_query("1","select providername from provider where providerid=$owner ");
-            if($row = do_mysqli_fetch("1",$result)){
+            $result = pdo_query("1","select providername from provider where providerid=$owner ");
+            if($row = pdo_fetch($result)){
                 $receivername = $row['providername'];
             }
             
@@ -43,7 +43,7 @@ $mode = @tvalidator("PURIFY", $_POST['mode'] );
                 $msg = "Thank You!";
             }
             
-            do_mysqli_query("1"," 
+            pdo_query("1"," 
                 insert into gifts 
                 ( xacdate, providerid, method, owner  )
                 values 

@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("config.php");
+include("config-pdo.php");
 
 $share = @tvalidator("PURIFY", $_GET['p'] );
 $view = @tvalidator("PURIFY", $_GET['v'] );
@@ -37,7 +37,7 @@ $bot = BotDetected();
 
     if( $a == 'D')
     {
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             delete from shareposts where shareid='$share' and ip='$ip' and postid='$i'
             ");
 
@@ -50,7 +50,7 @@ $bot = BotDetected();
 
         if( $c !="")
         {
-            do_mysqli_query("1","
+            pdo_query("1","
                 insert into shareposts (shareid, ip, postdate, comment,name, device, email ) values
                 ('$share','$ip',now(), '$c','$n','$d','$e' )
                 ");
@@ -59,7 +59,7 @@ $bot = BotDetected();
     else
     if( $a == "L" )
     {
-        do_mysqli_query("1","
+        pdo_query("1","
             update shares set likes=likes+1 where shareid='$share'
         ");
     }
@@ -76,7 +76,7 @@ if( $view!=='N')
     $displaylink = "";
     if(($page == 1 or $page==0) && $redisplay!='Y' )
     {
-        $result2 = do_mysqli_query("1","
+        $result2 = pdo_query("1","
             update shares set views=views+1 where shareid='$share' 
             ");
     }
@@ -90,10 +90,10 @@ else
 }
 
 
-$result = do_mysqli_query("1","
+$result = pdo_query("1","
         select count(*) as count from shares where shareid='$share'
         ");
-$row = do_mysqli_fetch("1",$result);
+$row = pdo_fetch($result);
 if(intval($row['count']) == 0)
 {
     
@@ -144,7 +144,7 @@ $pageenddisplay = $pagestart+$max;
 //*******************************************************************
 //*******************************************************************
 /*
-$result2 = do_mysqli_query("1","
+$result2 = pdo_query("1","
     select name, ip,comment, postid,
     DATE_FORMAT( postdate, '%Y-%m-%d %H:%i') as postdate,
     DATE_FORMAT( postdate, '%m/%d/%y %h:%i %p') as fpostdate
@@ -156,7 +156,7 @@ $comments = "<table class='comments gridstdborder' style='width:100%;margin:auto
                 Private Comments
                 </td>
              </tr>";
-while( $row2 = do_mysqli_fetch("1",$result2))
+while( $row2 = pdo_fetch($result))
 {
     $action = "&nbsp;&nbsp;&nbsp;<div 
             class='delete' 
@@ -184,7 +184,7 @@ $comments .= "</table>";
 //*******************************************************************
 //*******************************************************************
 //*******************************************************************
-$result = do_mysqli_query("1","
+$result = pdo_query("1","
         select providerid, views, likes, sharetitle, shareopentitle,
         proxyfilename, 'photolib/' as folder,
         sharelocal as album, 
@@ -197,7 +197,7 @@ $result = do_mysqli_query("1","
 
 
 
-if( $row = do_mysqli_fetch("1",$result))
+if( $row = pdo_fetch($result))
 {
     $exposedtitle = $row['shareopentitle'];
     if( $row['sharetitle']=='')
@@ -256,7 +256,7 @@ if( $row = do_mysqli_fetch("1",$result))
 
 }
 
-$result = do_mysqli_query("1","
+$result = pdo_query("1","
         select filename, folder, title, comment
         from photolib where album = '$sharelocal'
         and providerid = $providerid 
@@ -265,7 +265,7 @@ $result = do_mysqli_query("1","
 
 
 $arraycount=0;
-while( $row = do_mysqli_fetch("1",$result))
+while( $row = pdo_fetch($result))
 {
     $filename[$arraycount] = "https://bytz.io/$installfolder/$row[folder]$row[filename]";
     $shareimagelink[$arraycount] = "https://bytz.io/$installfolder/sharedirect.php?p=$row[filename]";
@@ -302,10 +302,10 @@ else
     $paginginfo = "&nbsp; End of Album";
 }
 
-$result2 = do_mysqli_query("1","
+$result2 = pdo_query("1","
            select likes from shares where shareid='$share'
         ");
-$row2 = do_mysqli_fetch("1",$result2);
+$row2 = pdo_fetch($result);
 $likes = $row2['likes'];
 
 //**************************************************
@@ -350,13 +350,13 @@ $likes = $row2['likes'];
                 </tr>
             ";
 
-    $result2 = do_mysqli_query("1","
+    $result2 = pdo_query("1","
         select name, ip,comment, postid,
         DATE_FORMAT( postdate, '%Y-%m-%d %H:%i') as postdate,
         DATE_FORMAT( postdate, '%m/%d/%y %h:%i %p') as fpostdate
         from shareposts where shareid='$share' order by postdate asc
     ");
-    while( $row2 = do_mysqli_fetch("1",$result2))
+    while( $row2 = pdo_fetch($result))
     {
         $action = "&nbsp;&nbsp;&nbsp;<div 
                 class='delete' 
@@ -600,14 +600,14 @@ if( $view == 'N')
         ";
                     
     
-    $result =  do_mysqli_query("1","
+    $result =  pdo_query("1","
         select ip, device, views, 
         DATE_FORMAT( lastread, '%m/%d/%y %h:%i %p') as lastread
         from sharereads where shareid='$share'
         ");
     
     
-    while($row= do_mysqli_fetch("1",$result))
+    while($row= pdo_fetch($result))
     {
         echo "
             <tr>

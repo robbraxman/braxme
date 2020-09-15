@@ -1,8 +1,8 @@
 <?php
 session_start();
 ini_set("max_file_uploads","100");
-require_once("config.php");
-require("crypt.inc.php");
+require_once("config-pdo.php");
+require("crypt-pdo.inc.php");
 $_SESSION[returnurl]="<a href='$rootserver/$installfolder/login.php'>Login</a>";
 require("password.inc.php");
 
@@ -264,11 +264,11 @@ $today = date("M-d-y",time()+$_SESSION[timezone]*60*60);
 
                 <option value='Upload-<?=$today?>' selected='selected'>Upload-<?=$today?></option>";
                 <?php
-                $result = do_mysqli_query("1","
+                $result = pdo_query("1","
                     select distinct album from photolib where providerid = $providerid 
                         and album!='' and album not like '* Public%' and album!='All' order by album asc
                     ");
-                while( $row = do_mysqli_fetch("1",$result))
+                while( $row = pdo_fetch($result))
                 {
                     echo "
                 <option value='$row[album]'>$row[album]</option>        

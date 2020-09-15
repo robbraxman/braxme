@@ -1,6 +1,6 @@
 <?php
 session_start();
-require("config.php");
+require("config-pdo.php");
 require("sidebar.inc.php");
 
 

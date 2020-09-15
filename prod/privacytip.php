@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once("validsession.inc.php");
-require( "config.php");
+require( "config-pdo.php");
 require( "htmlhead.inc.php")
 
 ?>
@@ -28,9 +28,9 @@ require( "htmlhead.inc.php")
                     attempts to change your password. But unlike other companies that do 2-factor authentication 
                     we treat your mobile number as privately as a password.
                     <br><br>
-                    <strong>Private vs. Open Rooms</strong> <br /><br />
-                    Rooms you join may be labeled as 'Private' or 'Open Membership' 
-                    rooms. This is clearly stated at the top of each room. This means anyone can join as 
+                    <strong>Private vs. Open Blogs</strong> <br /><br />
+                    Blogs you join may be labeled as 'Private' or 'Open Membership' 
+                    blog rooms. This is clearly stated at the top of each room. This means anyone can join as 
                     long as they are <?=$appname?> subscriber. Be aware of where you are posting.
                     <br><br>
                     <strong>Meta Data</strong> <br /><br />
@@ -43,7 +43,7 @@ require( "htmlhead.inc.php")
                         <li>File Names and File Descriptions in My Files</li>
                         <li>Album Names in My Photos</li>
                         <li>Manually entered Contacts</li>
-                        <li>Room Names and Hashtags</li>
+                        <li>Blog Names and Hashtags</li>
                         <li>Timestamps of General Activity</li>
                     </ul>
                     Thus, use caution with these data items. You can always change these at any time.
@@ -59,9 +59,9 @@ require( "htmlhead.inc.php")
                     If a conversation in chat has been completed, it is a good idea to delete the conversation. 
                     Once deleted, it can never be restored and encryption keys will disappear.
                     <br><br>
-                    <strong>Room Posts</strong> <br /><br />
-                    You can always delete any of your room posts at any time. Also, if a Room is deleted, 
-                    or if you leave a room the 
+                    <strong>Blog Posts</strong> <br /><br />
+                    You can always delete any of your blog posts at any time. Also, if a blog is deleted, 
+                    or if you leave a blog the 
                     posts are likewise permanently deleted.
                     <br><br>
                     <strong>Non-Searchable Content</strong> <br /><br />

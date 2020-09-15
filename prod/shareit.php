@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("config.php");
+include("config-pdo.php");
 
 $share = @tvalidator("PURIFY", $_POST['share'] );
 $shareHtml = htmlentities(stripslashes($share),ENT_QUOTES);
@@ -19,11 +19,11 @@ $mode = rtrim(@tvalidator("PURIFY", $_POST['mode'] ));
 
 $stdproxy='T4AZ543daed3439067.08655546';
 $stdproxylink = "$rootserver/$installfolder/sharedirect.php?p=690001027_543daed31155c_1.png";
-$result = do_mysqli_query("1", "
+$result = pdo_query("1", "
         select filename, alias from photolib where filename in (select filename from
         photoproxy where providerid=$providerid )
         ");
-if($row = do_mysqli_fetch("1",$result))
+if($row = pdo_fetch($result))
 {
     $stdproxy = "$row[alias]";
     $stdproxylink = "$rootserver/$installfolder/sharedirect.php?p=$row[filename]";
@@ -41,10 +41,10 @@ if($mode == "")
         $shareimagelink = "https://bytz.io/$installfolder/sharedirect.php?p=$share";
         $shareimageopen = "https://bytz.io/$installfolder/sharedirect.php?p=$share";
 
-        $result = do_mysqli_query("1", "
+        $result = pdo_query("1", "
             select filename, title, alias, public from photolib where filename='$share' 
                 ");
-        if($row = do_mysqli_fetch("1",$result))
+        if($row = pdo_fetch($result))
         {
             $privatetitle = $row['title'];
             $proxy = $row['alias'];
@@ -66,7 +66,7 @@ if($mode == "")
         
         $sharetext = "<br>Album: $share<br>";
         $shareimagelink = $iconlock;
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select filename, alias, folder, title
             from photolib where 
             ( album = '$shareForSql' and providerid = $providerid and public!='Y' )
@@ -75,7 +75,7 @@ if($mode == "")
 
         
         
-        if( $row = do_mysqli_fetch("1",$result))
+        if( $row = pdo_fetch($result))
         {
             $shareimageopen = "https://bytz.io/$installfolder/sharedirect.php?p=$row[filename]";
             //$shareimagelink = $iconlock;
@@ -89,10 +89,10 @@ if($mode == "")
         $sharefilename = "";
     }
 }
-$result2 = do_mysqli_query("1","
+$result2 = pdo_query("1","
     select proxy from provider where providerid=$providerid
     ");
-if( $row2 = do_mysqli_fetch("1",$result2))
+if( $row2 = pdo_fetch($result))
 {
     $proxyflag = $row2['proxy'];
     if( $proxyflag=='Y')

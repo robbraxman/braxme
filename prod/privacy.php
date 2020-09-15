@@ -1,7 +1,7 @@
 <?php
 session_start();
 header('X-Frame-Options: SAMEORIGIN');
-require( "config.php");
+require( "config-pdo.php");
 require( "htmlhead.inc.php");
 
 $i = @tvalidator("PURIFY",$_GET['i']);

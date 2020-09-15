@@ -3,12 +3,13 @@ session_start();
 header('X-Frame-Options: SAMEORIGIN');
 header('X-Content-Type: nosniff');
 //header('X-XSS-Protection: 1; mode=block');
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("password.inc.php");
 
 require_once("internationalization.php");
 require_once("htmlhead.inc.php");
 require('colorscheme.php');
+require_once("accountcheck.inc.php");
 require_once("startup.inc.php");
 
 

@@ -1,7 +1,7 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("room.inc.php");
 
     $providerid = tvalidator("PURIFY",$_POST['providerid']);
@@ -16,22 +16,22 @@ require_once("room.inc.php");
     if( $mode == 'D')
     {
         //Delete from statusroom if owner is inactive
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             delete from statusroom where roomid=$roomid and owner=$providerid and
             providerid not in (select providerid from provider where
             statusroom.providerid = provider.providerid and active='Y')
             ");
 
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select count(*) as total from statusroom where roomid=$roomid  
             ");
-        $row = do_mysqli_fetch("1",$result);
+        $row = pdo_fetch($result);
         $membercount = $row['total'];
         
         if($membercount > 1)
         {
             //delete user but not owner
-            do_mysqli_query("1","
+            pdo_query("1","
                 delete from statusroom where roomid=$roomid and 
                 providerid = $friendproviderid and providerid!=owner
                 and 
@@ -45,7 +45,7 @@ require_once("room.inc.php");
         else
         {
             //delete user even of owner
-            do_mysqli_query("1","
+            pdo_query("1","
                 delete from statusroom where roomid=$roomid and 
                 providerid = $friendproviderid 
                 and 
@@ -57,58 +57,58 @@ require_once("room.inc.php");
                 ");
         }
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select count(*) as total from statusroom where roomid=$roomid  
             ");
-        $row = do_mysqli_fetch("1",$result);
+        $row = pdo_fetch($result);
         $membercount = $row['total'];
         
         
         if( $membercount == 0) //no more users so delete room and its contents
         {
-            do_mysqli_query("1","
+            pdo_query("1","
                 delete from statusroom where roomid=$roomid and owner=$providerid 
                 ");
-            do_mysqli_query("1","
+            pdo_query("1","
                 delete from roominfo where roomid=$roomid  
                 ");
-            do_mysqli_query("1","
+            pdo_query("1","
                 delete from roomhandle where roomid=$roomid  
                 ");
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 delete from statuspost where roomid=$roomid and providerid=$providerid 
                 ");
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 delete from statusreads where roomid=$roomid and providerid=$providerid 
                 ");
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 delete from credentials where roomid=$roomid
                 ");
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 delete from credentialrequest where roomid=$roomid 
                 ");
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 delete from events where roomid=$roomid 
                 ");
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 delete from tasks where roomid=$roomid
                 ");
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 delete from tasksaction where roomid=$roomid 
                 ");
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 delete from roomwebstyle where roomid=$roomid 
                 ");
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 delete from roomfiles where roomid=$roomid 
                 ");
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 delete from roomfilefolders where roomid=$roomid 
                 ");
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 delete from roominvite where roomid=$roomid 
                 ");
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 delete from roommoderator where roomid=$roomid 
                 ");
             $roomid = 0;
@@ -121,12 +121,12 @@ require_once("room.inc.php");
     if( $mode == 'M')
     {
         
-            do_mysqli_query("1","
+            pdo_query("1","
                 delete from statusroom where roomid='$roomid' and owner!=$providerid and
                 providerid = $friendproviderid and roomid not in (select roomid from publicrooms)
                 ");
         
-            do_mysqli_query("1","
+            pdo_query("1","
                 update invites set status='N' where roomid='$roomid' and email in (select replyemail from 
                 provider where providerid = $providerid )
                 ");
@@ -182,7 +182,7 @@ require_once("room.inc.php");
     }
 //    echo "<table  class='' style='background-color:transparent;border:0;border-collapse:collapse;width:200px;margin:auto'>
 //        ";
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
             select distinct provider.replyemail, provider.providername as name, provider.alias,
             provider.providerid, provider.name2, provider.handle, provider.superadmin,
@@ -199,7 +199,7 @@ require_once("room.inc.php");
     
     $lastroom = "";
     echo "<div style='padding:0;margin-auto;text-align:center'>";
-    while($row = do_mysqli_fetch("1",$result))
+    while($row = pdo_fetch($result))
     {
         if($row['avatarurl'] == "$rootserver/img/faceless.png"){
             $row['avatarurl'] = "$rootserver/img/newbie2.jpg";
@@ -290,7 +290,7 @@ require_once("room.inc.php");
     //******************************************
     
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
             select provider.replyemail, provider.providername as name,  provider.name2,
             provider.providerid, statusroom.owner, 
@@ -320,7 +320,7 @@ require_once("room.inc.php");
     echo "<div style='padding:0;margin-auto;text-align:center'>";
     
     $lastroom = "";
-    while($row = do_mysqli_fetch("1",$result))
+    while($row = pdo_fetch($result))
     {
         if($row['avatarurl'] == "$rootserver/img/faceless.png"){
             $row['avatarurl'] = "$rootserver/img/newbie2.jpg";

@@ -1,8 +1,8 @@
 <?php
 session_start();
 set_time_limit ( 60 );
-require_once("config.php");
-require_once("crypt.inc.php");
+require_once("config-pdo.php");
+require_once("crypt-pdo.inc.php");
 require_once("notify.inc.php");
 require_once("sendmail.php");
 require ("SmsInterface.inc");
@@ -40,13 +40,13 @@ require ("aws.php");
         for($i=0;$i < $maxruns;$i++){
 
 
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 select distinct notification.recipientid
                 from notification
                 where notification.status='N' 
                 order by recipientid
                     ");
-            while( $row = do_mysqli_fetch("1",$result)){
+            while( $row = pdo_fetch($result)){
 
                 NotifyRun($row['recipientid'] );
                 //Don't Let this routine run past 1 minute
@@ -83,7 +83,7 @@ require ("aws.php");
     {
         global $time_start;
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select 
                 notification.providerid, notification.notifydate, notification.status, 
                 notification.notifytype, notification.notifysubtype,
@@ -113,7 +113,7 @@ require ("aws.php");
         $party = new stdClass();
         $lastnotifytype = '';
         $lastroomid = 0;
-        while( $row = do_mysqli_fetch("1",$result)){
+        while( $row = pdo_fetch($result)){
             
             $time_check = microtime(true);
             if( ($time_check - $time_start) > 55 ){
@@ -128,7 +128,7 @@ require ("aws.php");
                $lastroomid == $row['roomid']){
                 
                 //Cancel out other notifications
-                do_mysqli_query("1","update notification set status='Y' 
+                pdo_query("1","update notification set status='Y' 
                         where notifytype in ('RP') and 
                         roomid = $lastroomid and 
                         recipientid=$recipientid and status='N' "
@@ -138,7 +138,7 @@ require ("aws.php");
             }
             //if Followed Only - ignore non followed
             if(strstr($row['notificationflags'],"F")!==false && $row['followed']!=='Y'){
-                do_mysqli_query("1","update notification set notifymethod='F', status='Y' where notifyid = $row[notifyid]");
+                pdo_query("1","update notification set notifymethod='F', status='Y' where notifyid = $row[notifyid]");
                 continue;
             }
 
@@ -196,19 +196,19 @@ require ("aws.php");
             $party->inviteid = "$party->providerid-$party->chatid";
             if($party->chatid > 0 ){
                 
-                $result2 = do_mysqli_query("1","
+                $result2 = pdo_query("1","
                     select owner from chatmaster where chatid=$party->chatid
                     and owner = $party->recipientid
                     ");
-                if($row2 = do_mysqli_fetch("1",$result2)){
+                if($row2 = pdo_fetch($result)){
                     
                     $party->chatowner = true;
                 }
-                $result2 = do_mysqli_query("1","
+                $result2 = pdo_query("1","
                     select inviteid from invites where chatid=$party->chatid
                     and providerid = $party->providerid
                     ");
-                if($row2 = do_mysqli_fetch("1",$result2)){
+                if($row2 = pdo_fetch($result)){
                     
                     $party->inviteid = $row2['inviteid'];
                 }
@@ -227,7 +227,7 @@ require ("aws.php");
             
             if(intval($party->roomid)>0 ){
                 
-                $result2 = do_mysqli_query("1","
+                $result2 = pdo_query("1","
                     select 
                     roominfo.room, roominfo.soundalert, roominfo.anonymousflag
                     from statusroom 
@@ -235,7 +235,7 @@ require ("aws.php");
                     where statusroom.roomid = $party->roomid
                     and statusroom.owner = statusroom.providerid
                     ");
-                if($row2 = do_mysqli_fetch("1",$result2)){
+                if($row2 = pdo_fetch($result)){
                     
                     $party->room = $row2['room'];
                     $party->anonymous = $row2['anonymousflag'];
@@ -289,7 +289,7 @@ require ("aws.php");
             }
 
             //Single Pass Only - Remove regardless of Status
-            do_mysqli_query("1","update notification set notifymethod='$notifymethod', status='Y' where notifyid = $party->notifyid");
+            pdo_query("1","update notification set notifymethod='$notifymethod', status='Y' where notifyid = $party->notifyid");
             //echo "notifyid=$notifyid";
             
             $lastnotifytype = $row['notifytype'];
@@ -309,8 +309,8 @@ require ("aws.php");
             return true;
         }
         
-        $result2 = do_mysqli_query("1","select arn, platform, token from notifytokens where providerid=$party->recipientid and token!='' and arn='' and status='Y' ");
-        while($row2 = do_mysqli_fetch("1",$result2))
+        $result2 = pdo_query("1","select arn, platform, token from notifytokens where providerid=$party->recipientid and token!='' and arn='' and status='Y' ");
+        while($row2 = pdo_fetch($result))
         {   
             //blank ARN so HOLD OFF
             return false;
@@ -335,20 +335,20 @@ require ("aws.php");
         
         //Disabled Notifications by Type
         if($notifytype == 'CP' && $notifysubtype == 'LV' && strstr($notificationflags,"L")!==false){
-            do_mysqli_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid ");
+            pdo_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid ");
             return true;
         }
         if($notifytype == 'CP' && $notifysubtype != 'LV' && strstr($notificationflags,"C")!==false){
-            do_mysqli_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid ");
+            pdo_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid ");
             return true;
         }
         if(($notifytype == 'RP' || $notifytype == 'TK')  && strstr($notificationflags,"R")!==false){
-            do_mysqli_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid ");
+            pdo_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid ");
             return true;
         }
         
         if(($notifytype == 'CI' )  && strstr($notificationflags,"S")!==false){
-            do_mysqli_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid ");
+            pdo_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid ");
             return true;
         }
         
@@ -372,13 +372,13 @@ require ("aws.php");
         }
         
         //Set Limits for Others -- No limit to notification to self
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select timestampdiff( SECOND, notifydate, now() ) as diff, displayed from 
             notification where recipientid = $recipientid and providerid = $providerid
             and notifytype='$notifytype' and recipientid!=providerid
             order by notifydate desc limit 1
                 ");
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
             
             $timelimit = 60 * 5; //5 minutes
             
@@ -419,7 +419,7 @@ require ("aws.php");
         $result = false;
         $success = 0;
         //Users are Mobile - Send 
-        $result2 = do_mysqli_query("1","
+        $result2 = pdo_query("1","
             select notifytokens.arn, notifytokens.platform, notifytokens.token, 
             provider.notificationflags 
             from notifytokens 
@@ -428,7 +428,7 @@ require ("aws.php");
             and provider.active='Y'
             
             ");
-        while($row2 = do_mysqli_fetch("1",$result2)){
+        while($row2 = pdo_fetch($result)){
             
             if( $row2['arn']==''){
                 //arn pending
@@ -475,7 +475,7 @@ require ("aws.php");
             }
             
             //Trigger Refresh
-            do_mysqli_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid  and lastnotified is not null");
+            pdo_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid  and lastnotified is not null");
             
             /*
              * Issue with Chrome Notifications for Future:
@@ -490,21 +490,21 @@ require ("aws.php");
             catch (Exception $err)
             {
                 //echo "SNS Error $err<br>";
-                //do_mysqli_query("1","delete from notifytokens where arn='$arn' and providerid=$recipientid ");
+                //pdo_query("1","delete from notifytokens where arn='$arn' and providerid=$recipientid ");
             }
             
             try {
                 $notifyresult = publishSnsNotification("$arn",$msgjson, $jsonflag);
                 if($notifyresult){
                     $success++;
-                    do_mysqli_query("1","update notifytokens set status='Y', error='OK' where arn='$arn' and providerid=$recipientid ");
+                    pdo_query("1","update notifytokens set status='Y', error='OK' where arn='$arn' and providerid=$recipientid ");
                 }
             }
             catch (Exception $err) {
                 
                 echo "SNS Error $err<br>";
                 $errsql = tvalidator("PURIFY","{$err->getMessage()}");
-                do_mysqli_query("1","update notifytokens set status='E', error='$errsql' where arn='$arn' and providerid=$recipientid ");
+                pdo_query("1","update notifytokens set status='E', error='$errsql' where arn='$arn' and providerid=$recipientid ");
             }
         }
         if($success > 0 ){
@@ -539,13 +539,13 @@ require ("aws.php");
         }
         if(intval($recipientid) > 0)
         {
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 select timestampdiff( SECOND, sentdate, now() ) as diff from 
                 smslog where recipientid = $recipientid and providerid = $providerid
                 and source='$notifytype'
                 order by sentdate desc limit 1
                     ");
-            if($row = do_mysqli_fetch("1",$result))
+            if($row = pdo_fetch($result))
             {
                 //Do not send further texts if the same alert occurred within the last hour
                 if( intval($row['diff'])< $timelimit)
@@ -558,7 +558,7 @@ require ("aws.php");
         $senderid = str_replace(".","",$appname);
         publishSMSNotification( "$senderid", $textmessage, $sms );
         
-        do_mysqli_query("1","insert into smslog (providerid, recipientid, sms, sentdate, source) values ($providerid, $recipientid, '$sms', now(),'$notifytype' )");
+        pdo_query("1","insert into smslog (providerid, recipientid, sms, sentdate, source) values ($providerid, $recipientid, '$sms', now(),'$notifytype' )");
         return true;
     }        
     function EmailNotification( $subject, $message, $party, $mainsend )
@@ -584,14 +584,14 @@ require ("aws.php");
         }
         if(intval($roomid) > 1 && ($notifytype == 'RP' || $notifytype='RL') ){
         
-            $result = do_mysqli_query("1"," 
+            $result = pdo_query("1"," 
                 select *
                 from statusroom where
                 providerid=$providerid and roomid=$roomid
                 and lastemail is not null and
                 timestampdiff(HOUR, lastemail, now() )< 4
             ");
-            if($row = do_mysqli_fetch("1",$result))
+            if($row = pdo_fetch($result))
             {
                 //Do not re-email -- too frequent
                 return true;
@@ -609,7 +609,7 @@ require ("aws.php");
              * don't keep resending. If new chat, no notifications
              * will be found in the last 4 hours so this will be false
              */
-            $result = do_mysqli_query("1"," 
+            $result = pdo_query("1"," 
                 select *
                 from notification where
                 recipientid=$providerid and 
@@ -617,7 +617,7 @@ require ("aws.php");
                 displayed = 'N' and status='Y' and
                 timestampdiff(HOUR, notifydate, now() )< 4
             ");
-            if($row = do_mysqli_fetch("1",$result)){
+            if($row = pdo_fetch($result)){
             
                 //Do not re-email -- too frequent
                 return true;
@@ -627,7 +627,7 @@ require ("aws.php");
              * open the app in the last hour, let's not do emai
              * email is only for those that don't open
              */
-            $result = do_mysqli_query("1"," 
+            $result = pdo_query("1"," 
                 select *
                 from notification where
                 recipientid=$providerid and recipientid!=0 and 
@@ -635,7 +635,7 @@ require ("aws.php");
                 displayed = 'Y' and status='Y' and
                 timestampdiff(MINUTE, notifydate, now() )< 60
             ");
-            if($row = do_mysqli_fetch("1",$result)){
+            if($row = pdo_fetch($result)){
             
                 
                 //Do not re-email -- too frequent
@@ -653,7 +653,7 @@ require ("aws.php");
         {
             if(intval($roomid) > 1 && ($notifytype == 'RP' || $notifytype='RL') ){
             
-                do_mysqli_query("1"," 
+                pdo_query("1"," 
                     update statusroom set lastemail=now() where 
                     providerid=$providerid and roomid=$roomid
                         ");

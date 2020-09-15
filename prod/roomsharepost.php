@@ -1,8 +1,8 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require_once("config.php");
-require_once("crypt.inc.php");
+require_once("config-pdo.php");
+require_once("crypt-pdo.inc.php");
 require_once("room.inc.php");
 
 
@@ -60,7 +60,7 @@ $time2 = microtime(true);
     
     
     
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select 
         distinct roominfo.roomid, 
         roominfo.room, owner,
@@ -97,7 +97,7 @@ $time2 = microtime(true);
     
     $lastroomid = '';
     $lastcategory = 'Unspecified';
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         
         $activecolor = 'gray';
         $public = '';

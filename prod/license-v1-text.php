@@ -1,5 +1,5 @@
 <?php
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("colorscheme.php");
 ?>
 <div style='padding:10%;font-family:helvetica neue,helvetica, arial, san-serif  ;background-color:<?=$global_background?>;color:<?=$global_textcolor?>;margin:auto;max-width:90%'>
@@ -11,7 +11,7 @@ require_once("colorscheme.php");
 if( $i != 'Y'){
 ?>
     <b>Please review the Terms of Use and indicate your agreement or disagreement at the bottom of this document. The
-    terms of use have been changed as of June 19, 2017.</b>
+    terms of use have been changed as of April 20, 2020.</b>
     <br><br>
 <?php
 }
@@ -55,9 +55,9 @@ you can delete a photo and it will be unavailable to all where it was shared.
 links to your stored file for external use if you wish. Note that downloads of your content is subject to the bandwidth and 
 storage limit of your subscription.
 <br><br>
-<b><?=$appname?> Rooms</b> - discussions and photos are private and encrypted and not exposed to non-members of the room. The
-room creator decides which rooms will have open or restricted membership. Subscribers cannot see who is participating in any other 
-<?=$appname?> Room unless they are a member of that room. Rooms are not visible to search engines and robot crawlers.
+<b><?=$appname?> Blog Rooms</b> - discussions and photos are private and encrypted and not exposed to non-members of the room. The
+blog creator decides which blog rooms will have open or restricted membership. Subscribers cannot see who is participating in any other 
+<?=$appname?> Blog Room unless they are a member of that blog room. Blog Rooms are not visible to search engines and robot crawlers.
 <br><br>
 <b><?=$appname?> Chat</b> - If you 'Chat' with any party be assured that your messages are encrypted. You control the lifespan of the 
 conversation. Once you delete the conversation, there will be nothing kept on our end. This is HIPAA compliant.
@@ -96,6 +96,7 @@ Users may block individuals from contacting them by adding them to their block l
 <br><br>
 You will not represent yourself as employees or officials of <?=$appname?> without prior authorization. You will 
 not use the name <?=$appname?> and logos of <?=$appname?> on merchandise without the prior approval of the company.
+You will not use the name 'Rob Braxman','Brax' or use usernames that imply authority within the platform.
 <br><br>
 
 
@@ -144,7 +145,7 @@ if($i != 'Y'){
 ?>
 <br><br>
 <br><br>
-(C) Copyright 2018 <?=$appname?>
+(C) Copyright 2020 <?=$appname?>
 
 
  

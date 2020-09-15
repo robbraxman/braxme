@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once("config.php");
-require_once("crypt.inc.php");
+require_once("config-pdo.php");
+require_once("crypt-pdo.inc.php");
 require_once("room.inc.php");
 require_once("notify.inc.php");
 
@@ -51,17 +51,17 @@ $today = date("M-d-y",time()+$_SESSION['timezone']*60*60);
         $encodeshort = EncryptChat ("Photo Uploaded","$chatid","" );
         
         
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 insert into chatmessage ( chatid, providerid, message, msgdate, encoding, status)
                 values
                 ( $chatid, $providerid, \"$encode\", now(), '$_SESSION[responseencoding]', 'Y' );
             ");
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
             update chatmembers set lastmessage=now(), lastread=now() where providerid= $providerid and chatid=$chatid and status='Y'
             ");
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
             update chatmaster set lastmessage=now() where chatid=$chatid 
             ");
@@ -73,12 +73,12 @@ $today = date("M-d-y",time()+$_SESSION['timezone']*60*60);
     if($lastfunc->lastfunc==='R')
     {
         $roomid = intval($lastfunc->parm1);    
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 select room from statusroom
                 where roomid = $roomid limit 1
             ");
-        if( $row = do_mysqli_fetch("1",$result))
+        if( $row = pdo_fetch($result))
         {
             $roomForSql = addslashes($row['room']);
         }
@@ -87,13 +87,13 @@ $today = date("M-d-y",time()+$_SESSION['timezone']*60*60);
             $imgurl = "$rootserver/$installfolder/sharedirect.php?a=$img";
         }
         
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 select providerid,
                 (select anonymousflag from roominfo where roominfo.roomid = statusroom.roomid ) as anonymousflag
                 from statusroom where roomid = $roomid 
             ");
-        while( $row = do_mysqli_fetch("1",$result))
+        while( $row = pdo_fetch($result))
         {
             $notifytype = 'RP';
             if(intval($roomid) > 0)

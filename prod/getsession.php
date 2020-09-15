@@ -2,7 +2,7 @@
 session_start();
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET');
-require_once("config.php");
+require_once("config-pdo.php");
 require ("SmsInterface.inc");
 require ("crypt.inc");
 require ("sqlcore.inc");
@@ -23,7 +23,7 @@ $result = mysql_query(
 
 if( $result)
 {
-        $row = do_mysqli_fetch("1",$result);       
+        $row = pdo_fetch($result);       
         if ($row) 
         {
                 //Decoding Routines if Applicable

@@ -1,8 +1,8 @@
 <?php
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("sysdown.php");
 
-require_once("crypt.inc.php");
+require_once("crypt-pdo.inc.php");
 require_once("notifyfunc.php");
 require_once("roommanage.inc.php");
 require_once("whitelist.inc.php");
@@ -130,7 +130,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
             $roomstorehandle = tvalidator("PURIFY",$_POST['roomstorehandle']);
             $timezone = tvalidator("PURIFY",$_POST['timezone']);
             if($timezone!=''){
-                do_mysqli_query("1","update provider set timezone='$timezone' where providerid = $pid and timezone is null ");
+                pdo_query("1","update provider set timezone=? where providerid = ? and timezone is null ",array($timezone,$pid));
                 $_SESSION['timezone']=$timezone;
             }
             
@@ -266,25 +266,26 @@ require_once 'authenticator/GoogleAuthenticator.php';
         $_SESSION['fails']=0;
 
         //Password is Valid Now
-        $result = do_mysqli_query("1", 
+        $result = pdo_query("1", 
            " 
             update staff
             set
             lastaccess = now()
-            where providerid=$providerid and loginid='$loginid' 
-            and active='Y'  
-           "     
+            where providerid= ? and loginid= ? 
+            and active='Y'",
+            array($providerid, $loginid)     
+            
           );
         
         //Password is Valid Now
-        $result = do_mysqli_query("1", 
+        $result = pdo_query("1", 
            " 
             update provider
             set
             lastaccess = now()
-            where providerid=$providerid  
-            and active='Y'  
-           "     
+            where providerid=?  
+            and active='Y'  ",
+           array($providerid)
           );
         
 
@@ -308,19 +309,20 @@ require_once 'authenticator/GoogleAuthenticator.php';
         
         $password_valid = false;
         $enterprise = @$_SESSION['enterprise'];
-        $result = do_mysqli_query("1", 
+        $result = pdo_query("1", 
            " 
             select adminright, staffname, pwd_ver, pwd_hash, fails, onetimeflag, auth_hash, encoding
             from staff 
-            where providerid=$providerid and loginid='$loginid' 
+            where providerid=? and loginid=? 
             and pwd_ver = 3 
-            and active='Y' 
-           "     
+            and active='Y' ",
+           array($providerid, $loginid)     
+            
           );
         if(!$result){
             return false;
         }
-        if( $row = do_mysqli_fetch("1",$result)){
+        if( $row = pdo_fetch($result)){
 
             $_SESSION['admin'] = $row['adminright'];
             $_SESSION['staffname'] = $row['staffname'];
@@ -361,16 +363,16 @@ require_once 'authenticator/GoogleAuthenticator.php';
                     $random_pwd = session_id();
                     $random_pwd_hash = password_hash("$random_pwd", PASSWORD_DEFAULT);
 
-                    $result = do_mysqli_query("1", 
+                    $result = pdo_query("1", 
                        " 
                         update staff
                         set
                         pwd_ver = 3,
-                        pwd_hash = '$random_pwd_hash',
+                        pwd_hash = ?,
                         onetimeflag = ''
-                        where providerid=$providerid and loginid='$loginid' 
-                        and active='Y'  
-                       "     
+                        where providerid=? and loginid=?
+                        and active='Y'  ",
+                       array($random_pwd_hash,$providerid,$loginid)
                       );
                 }
                 
@@ -389,10 +391,10 @@ require_once 'authenticator/GoogleAuthenticator.php';
             $_SESSION['staff'] = "$staffname";
         }
 
-        $result = do_mysqli_query("1", "
+        $result = pdo_query("1", "
             update staff set fails = 0 where 
-            providerid=$providerid and loginid='$loginid'
-            " 
+            providerid=? and loginid=?
+            ", array($providerid, $loginid)
             );
 
         //Fingerprint Without IP
@@ -405,10 +407,11 @@ require_once 'authenticator/GoogleAuthenticator.php';
         $ipsource = $ip;
 
         //Simplified Browser Fingerprint to catch trolls
-        $result = do_mysqli_query("1"," 
-            update provider set iphash='$iphash',iphash2 ='$iphash2',ipsource='$ipsource', timezone='$timezone'
-             where providerid = $providerid
-            ");
+        $result = pdo_query("1"," 
+            update provider set iphash=?,iphash2 =?,ipsource=?, timezone=?
+             where providerid = ?",
+             array($iphash,$iphash2,$ipsource,$timezone,$providerid)
+            );
 
         GetTimeoutPin($providerid);
         
@@ -431,16 +434,16 @@ require_once 'authenticator/GoogleAuthenticator.php';
         $_SESSION['pid']='';
         
 
-        $result = do_mysqli_query("1", 
+        $result = pdo_query("1", 
            " 
             select fails, auth_hash
             from staff 
-            where providerid=$providerid and loginid='$loginid' 
+            where providerid=? and loginid=? 
             and pwd_ver = 3 
             and active='Y' 
-           "     
+           ", array($providerid, $loginid)     
           );
-        if( $row = do_mysqli_fetch("1",$result)){
+        if( $row = pdo_fetch("1",$result)){
             
             if($row['fails']>10) {
                FailsError( $providerid, $row['fails'], $row['auth_hash'] );
@@ -482,9 +485,9 @@ require_once 'authenticator/GoogleAuthenticator.php';
         echo "</body></html>";
         
         //Increment Fails
-        $result = do_mysqli_query("1", "
-            update staff set fails = fails+1 where providerid=$providerid and loginid='$loginid' 
-            ");
+        $result = pdo_query("1", "
+            update staff set fails = fails+1 where providerid=? and loginid=? 
+            ",array($providerid, $loginid));
 
         exit();
     }
@@ -506,20 +509,20 @@ require_once 'authenticator/GoogleAuthenticator.php';
         
         if( $providerid[0]=="@" && strlen($providerid)>1 ){
         
-            $result = do_mysqli_query("1", 
-               "select providerid from provider where handle = '$providerid' and handle!='@' and active='Y'  "
+            $result = pdo_query("1", 
+               "select providerid from provider where handle = ? and handle!='@' and active='Y'  ",array($providerid)
               );
-            if ($row = do_mysqli_fetch("1",$result)){ 
+            if ($row = pdo_fetch($result)){ 
             
                 $providerid = $row['providerid'];
             }
         } else
         if( strpos( (string) $providerid,"@")!==false ){
         
-            $result = do_mysqli_query("1", 
-               "select providerid from provider where replyemail = '$providerid' and replyemail!='@' and active='Y'  "
+            $result = pdo_query("1", 
+               "select providerid from provider where replyemail = ? and replyemail!='@' and active='Y'  ",array($providerid)
               );
-            if ($row = do_mysqli_fetch("1",$result)){
+            if ($row = pdo_fetch($result)){
             
                 $providerid = $row['providerid'];
             }
@@ -592,16 +595,16 @@ require_once 'authenticator/GoogleAuthenticator.php';
                         "simply click on the 'Forgot Password?' link to reset to a\r\n".
                         " temporary password";
 
-                $result = do_mysqli_query("1","select replyemail from provider where providerid=$providerid");
-                if($row = do_mysqli_fetch("1",$result)){
+                $result = pdo_query("1","select replyemail from provider where providerid=?",array($providerid));
+                if($row = pdo_fetch($result)){
                     $email = $row['replyemail'];
                 }                
                 
                 if($auth_hash == ''){
-                    do_mysqli_query("1", " 
-                        update staff set fails = fails-1 where providerid=$providerid 
-                        and loginid='$loginid' 
-                        " );
+                    pdo_query("1", " 
+                        update staff set fails = fails-1 where providerid=?
+                        and loginid=? 
+                        ",array($providerid, $loginid ) );
                 } 
                 
                 if(strstr($email,".account@brax.me")!==false){
@@ -652,16 +655,17 @@ require_once 'authenticator/GoogleAuthenticator.php';
         
         GetSentKeys($providerid);
         
-        $result = do_mysqli_query("1","
-               select adminright from staff where loginid='$loginid' and providerid = $providerid 
-            ");
-        if ($row = do_mysqli_fetch("1",$result)){ 
+        $result = pdo_query("1","
+               select adminright from staff where loginid=? and providerid = ? ",
+                array($loginid, $providerid)
+            );
+        if ($row = pdo_fetch("1",$result)){ 
             $_SESSION['admin'] = $row['adminright'];
         }
                    
         
         
-        $result = do_mysqli_query("1", 
+        $result = pdo_query("1", 
             "
                select provider.verified, provider.superadmin, 
                provider.techsupport, provider.cookies_sender, provider.inactivitytimeout, 
@@ -686,19 +690,20 @@ require_once 'authenticator/GoogleAuthenticator.php';
                newbie, joinedvia, provider.allowiot, provider.hardenter
                from provider 
                left join timeout on provider.providerid = timeout.providerid
-               where provider.providerid = $providerid and provider.active='Y' "
+               where provider.providerid = ? and provider.active='Y' ",
+                array($providerid)
             );
-        if ($row = do_mysqli_fetch("1",$result)){ 
+        if ($row = pdo_fetch("1",$result)){ 
         
             if($row['active']=='N'){
             
                 exit();
             }
             
-            do_mysqli_query("1","
+            pdo_query("1","
                 insert ignore into alertrefresh ( deviceid, providerid, lastnotified ) 
-                values ( '$_SESSION[deviceid]', $providerid, null );
-                    ");
+                values ( ?, ?, null );
+                    ", array($_SESSION[deviceid],$providerid));
             
             $_SESSION['companyname']='';
             if($row['companyname']!=''){
@@ -888,7 +893,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
             $_SESSION['sponsor']='';
             $_SESSION['sponsorname']='';
             $_SESSION['sponsorcolorscheme']='';
-            do_mysqli_query("1","update provider set sponsor='' where providerid = $providerid");
+            pdo_query("1","update provider set sponsor='' where providerid = ?",array($providerid));
             
         }
         
@@ -903,17 +908,17 @@ require_once 'authenticator/GoogleAuthenticator.php';
          * 
          ******************************************/
 
-        $result = do_mysqli_query("1", "
+        $result = pdo_query("1", "
             select name, hostname, 
             username, password, smtp_username, smtp_password, 
             options, port, encoding, 
             hostnamesmtp, portsmtp, optionssmtp, email, mailname, contactlist
             from
-            imap where providerid = $providerid order by item asc
-            ");
+            imap where providerid = ? order by item asc
+            ",array($providerid));
         $i = 0;
         $_SESSION['imapcount']=0;
-        while( $row = do_mysqli_fetch("1",$result)){
+        while( $row = pdo_fetch($result)){
         
             $_SESSION['imap_host'][$i] = "{".$row['hostname'].":".$row['port'].$row['options']."}";
             $_SESSION['imap_host_srv'][$i] = "{".$row['hostname']."}";
@@ -961,12 +966,12 @@ require_once 'authenticator/GoogleAuthenticator.php';
             $_SESSION['newuser'] = "0";
         }
 
-        $result = do_mysqli_query("1", "
+        $result = pdo_query("1", "
             select name, hostnamesmtp, portsmtp, optionssmtp, 
             username, mailname, email, password, smtp_username, smtp_password, name, encoding
-            from imap where providerid = $providerid and defaultsmtp='Y' order by item asc
-            ");
-        if( $row = do_mysqli_fetch("1",$result)){
+            from imap where providerid = ? and defaultsmtp='Y' order by item asc
+            ",array($providerid));
+        if( $row = pdo_fetch($result)){
         
             $_SESSION['smtp_name'] = "$row[name]";
             $_SESSION['smtp_host'] = "$row[hostnamesmtp]";
@@ -995,13 +1000,13 @@ require_once 'authenticator/GoogleAuthenticator.php';
 
         } else {
         
-            $result = do_mysqli_query("1", "
+            $result = pdo_query("1", "
                 select name, hostnamesmtp, portsmtp, optionssmtp, 
                 username, password, smtp_username, smtp_password, 
                 mailname, email, name, encoding
-                from imap where providerid = $providerid and hostnamesmtp!='' order by item asc
-                ");
-            if( $row = do_mysqli_fetch("1",$result)){
+                from imap where providerid = ? and hostnamesmtp!='' order by item asc
+                ",array($providerid));
+            if( $row = pdo_fetch( $result)){
             
                 $_SESSION['smtp_name'] = "$row[name]";
                 $_SESSION['smtp_host'] = "$row[hostnamesmtp]";
@@ -1037,9 +1042,9 @@ function InitializeLanguage($providerid)
 {
     $language = strtolower(tvalidator("PURIFY",$_POST['language']));
     if($language!=''){
-        $result = do_mysqli_query("1", "
-            update provider set language='$language' where providerid = $providerid
-            ");
+        $result = pdo_query("1", "
+            update provider set language=? where providerid = ?
+            ",array($language, $providerid));
     }
     
 }
@@ -1053,21 +1058,21 @@ function AddLoginToRoom($providerid, $roomhandle, $roomstorehandle)
     }
     //echo "Add Login to room $roomhandle";
     //exit();
-    $result = do_mysqli_query("1", "
+    $result = pdo_query("1", "
         select roomid, 
         ( select owner from statusroom where statusroom.roomid = roomhandle.roomid and 
           statusroom.owner = statusroom.providerid ) as owner 
         from roomhandle where handle='#$roomhandle'
         ");
-    if( $row = do_mysqli_fetch("1",$result)){
+    if( $row = pdo_fetch($result)){
         $roomid = $row['roomid'];
         $owner = $row['owner'];
         AddMember(0, $providerid, $roomid );
     }
-    $result = do_mysqli_query("1", "
-        select profileroomid from provider where providerid = $providerid 
-        ");
-    if( $row = do_mysqli_fetch("1",$result)){
+    $result = pdo_query("1", "
+        select profileroomid from provider where providerid = ?
+        ",array($providerid));
+    if( $row = pdo_fetch($result)){
         if($roomstorehandle == ''){
             $lastfunc = 'U';
         } else {

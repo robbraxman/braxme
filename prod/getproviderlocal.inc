@@ -1,9 +1,9 @@
 <?php
 //session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 
-$result = do_mysqli_query("1", "select newmsgurl from provider where providerid = $_SESSION[pid] ");
-$row = do_mysqli_fetch("1",$result);
+$result = pdo_query("1", "select newmsgurl from provider where providerid = $_SESSION[pid] ");
+$row = pdo_fetch($result);
 $_SESSION['newmsgurl'] = $row['newmsgurl'];
 
 if( $_SESSION['newmsgurl']=='')

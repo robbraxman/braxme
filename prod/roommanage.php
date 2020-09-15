@@ -2,7 +2,7 @@
 session_start();
 require("validsession.inc.php");
 require_once("nohost.php");
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("room.inc.php");
 require_once("roommanage.inc.php");
 require_once("internationalization.php");
@@ -163,10 +163,10 @@ require_once("internationalization.php");
     }
     if( $mode == 'A'){
     
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select providername, replyemail from provider where providerid=$providerid
             ");
-        if( $row = do_mysqli_fetch("1",$result)){
+        if( $row = pdo_fetch($result)){
         
             $ownername =$row['providername'];
             $owneremail =$row['replyemail'];
@@ -182,10 +182,10 @@ require_once("internationalization.php");
 
             $roomid = 0;
             //Find if the Room already exists
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 select roomid from statusroom where room='$roomForSql' and owner=$providerid
                 ");
-            if( $row = do_mysqli_fetch("1",$result)){
+            if( $row = pdo_fetch($result)){
             
                 $roomid = intval($row['roomid']);
             }
@@ -197,11 +197,11 @@ require_once("internationalization.php");
         /* Let's Error out if Room exists
         else
         {
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 select room from statusroom where roomid=$roomid and owner=$providerid
                 ");
 
-            if( $row = do_mysqli_fetch("1",$result))
+            if( $row = pdo_fetch($result))
             {
                 $room = $row[room];
                 $roomForSql = tvalidator("PURIFY",$room);
@@ -215,21 +215,21 @@ require_once("internationalization.php");
         if( $room!='' && $roomid > 0){
         
             
-            do_mysqli_query("1","
+            pdo_query("1","
                 insert into statusroom ( roomid, owner, providerid, status, createdate, creatorid ) values
                 ( $roomid,$providerid, $providerid, '', now(), $providerid )
                 ");
             if( $friendproviderid!=''){
             
-                $result = do_mysqli_query("1","
+                $result = pdo_query("1","
                     select providername, replyemail from provider where providerid=$friendproviderid
                     ");
-                if( $row = do_mysqli_fetch("1",$result)){
+                if( $row = pdo_fetch($result)){
                 
                     $friendemail =$row['replyemail'];
                 }
 
-                do_mysqli_query("1","
+                pdo_query("1","
                     insert into statusroom ( roomid, owner, providerid, status, createdate, creatorid ) values
                     ( $roomid,$providerid, $friendproviderid, '',now(),$providerid )
                     ");
@@ -268,12 +268,12 @@ require_once("internationalization.php");
             
 
             /*
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 update statusroom set room='$roomForSql' where roomid = $roomid 
             ");
              * 
              */
-            //$result = do_mysqli_query("1","
+            //$result = pdo_query("1","
             //    update statuspost set room='$roomForSql' where roomid = $roomid 
             //");
             
@@ -311,22 +311,22 @@ require_once("internationalization.php");
     
     if( $mode == '' && intval($roomid)==0){
     
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select providername, replyemail from provider where providerid=$providerid
             ");
-        if( $row = do_mysqli_fetch("1",$result)){
+        if( $row = pdo_fetch($result)){
         
             $ownername =$row['providername'];
             $owneremail =$row['replyemail'];
         }
 
         //Find if the Room already exists
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select roomid from statusroom where (room='$roomForSql' and room!='') and owner=$providerid
             ");
         
         $roomid = 0;
-        if( $row = do_mysqli_fetch("1",$result)){
+        if( $row = pdo_fetch($result)){
         
             $roomid = intval($row['roomid']);
         }
@@ -334,14 +334,14 @@ require_once("internationalization.php");
         
             if( $room!=''){
             
-                $result = do_mysqli_query("1","
+                $result = pdo_query("1","
                     select max(roomid)+1 as roomid from roominfo
                     ");
-                if( $row = do_mysqli_fetch("1",$result)){
+                if( $row = pdo_fetch($result)){
                 
                     $roomid =intval($row['roomid']);
                 }
-                do_mysqli_query("1","
+                pdo_query("1","
                     insert into statusroom ( roomid, room, owner, providerid, status, createdate, creatorid ) values
                     ( $roomid, '$roomForSql',$providerid, $providerid,'', now(), $providerid )
                     ");
@@ -382,10 +382,10 @@ require_once("internationalization.php");
     }
     echo "
                 <span class='roomcontent'>
-                    <div class='gridnoborder' 
-                        style='background-color:$global_titlebar_color;color:white;padding-left:20px;padding-right:20px;padding-bottom:3px;margin:0;' >
-                        <img class='$action mainbutton icon20' src='../img/Arrow-Left-in-Circle-White_120px.png' 
+                    <div class='$action mainbutton gridnoborder' 
                         data-providerid='$providerid' data-roomid='$_SESSION[profileroomid]' data-caller='none'
+                        style='cursor:pointer;background-color:$global_titlebar_color;color:white;padding-left:20px;padding-right:20px;padding-bottom:3px;margin:0;' >
+                        <img class='icon20' src='../img/Arrow-Left-in-Circle-White_120px.png' 
                         />
                         &nbsp;
                         <span style='opacity:.5'>
@@ -638,7 +638,7 @@ require_once("internationalization.php");
                     <div class='roomedit tapped'
                          id='roomedit' data-room='' data-roomid='' data-mode='N'
                          style='color:$global_activetextcolor;cursor:pointer;display:inline'>
-                         Create a New Room
+                         $menu_manageroomscreate
                     </div>
                     <br><br>
                     $select
@@ -679,12 +679,12 @@ require_once("internationalization.php");
         echo "
                             <br>
                             <span class='feed pagetitle3' data-mode='' data-roomid='$roomid' data-caller='$caller' style='cursor:pointer'>
-                                <span style='color:$global_activetextcolor'>View Room</span>
+                                <span style='color:$global_activetextcolor'>$menu_manageroomsview</span>
                                     <br>
                             </span>
                             <br>
                             <span class='friends pagetitle3' data-mode='E' data-roomid='$roomid' data-room='$room1' data-caller='$caller' style='cursor:pointer'>
-                                <span style='color:$global_activetextcolor'>Edit Room Properties</span>
+                                <span style='color:$global_activetextcolor'>$menu_manageroomsedit</span>
                                     <br>
                             </span>
         ";

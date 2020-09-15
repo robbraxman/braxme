@@ -1,7 +1,7 @@
 <?php
 session_start();
 //$inviteid = uniqid('',true);
-require_once("config.php");
+require_once("config-pdo.php");
 $_SESSION[returnurl]="<a href='index.htm'>Login</a>";
 
 require_once("htmlhead.inc.php");
@@ -14,22 +14,22 @@ $invitename = tvalidator("PURIFY",$_GET['n']);
 $invitesms = tvalidator("PURIFY",$_POST['s']);
 
 $providerid = 0;
-$result = do_mysqli_query("1", "select max(val1)+1 as maxid from parms where parmkey='SUBSCRIBER' AND PARMCODE='ID' ");
-if( $row = do_mysqli_fetch("1",$result))
+$result = pdo_query("1", "select max(val1)+1 as maxid from parms where parmkey='SUBSCRIBER' AND PARMCODE='ID' ");
+if( $row = pdo_fetch($result))
 {
     $providerid =$row['maxid'];
 }
 
 
-$result = do_mysqli_query("1", "select max(providerid)+1 as providerid from provider ");
-if( $row = do_mysqli_fetch("1",$result))
+$result = pdo_query("1", "select max(providerid)+1 as providerid from provider ");
+if( $row = pdo_fetch($result))
 {
     $highid = $row['providerid'];
 }
 
 if( $providerid == 0 )
 {
-    $result = do_mysqli_query("1", "insert into parms (parmkey, parmcode, val1, val2 ) values ('SUBSCRIBER','ID', $highid, 0 )");
+    $result = pdo_query("1", "insert into parms (parmkey, parmcode, val1, val2 ) values ('SUBSCRIBER','ID', $highid, 0 )");
 }
 
 if( $highid > $providerid)
@@ -37,9 +37,9 @@ if( $highid > $providerid)
     $providerid = $highid;
 }
 
-$result = do_mysqli_query("1", "update parms set val1 = $providerid where parmkey='SUBSCRIBER' and parmcode='ID' ");
+$result = pdo_query("1", "update parms set val1 = $providerid where parmkey='SUBSCRIBER' and parmcode='ID' ");
 
-$result = do_mysqli_query("1", "
+$result = pdo_query("1", "
         select providername, companyname from provider where providerid =
         ( select providerid from invites where email='$email' 
             and status='Y' 
@@ -48,7 +48,7 @@ $result = do_mysqli_query("1", "
         ) 
         and active='Y'
         ");
-if( $row = do_mysqli_fetch("1",$result))
+if( $row = pdo_fetch($result))
 {
     $inviter = $row['providername'];
     if($row['companyname']!='')

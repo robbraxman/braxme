@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("room.inc.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
@@ -71,7 +71,7 @@ require_once("room.inc.php");
     </center>
                 
 <?php
-$result = do_mysqli_query("1","
+$result = pdo_query("1","
         select date_format(date_add(eventdate,INTERVAL $_SESSION[timezoneoffset] HOUR),'%b %d, %y %a %h:%i%p') as eventdate2, eventtime,
         eventname, eventdesc, eventid, eventdate,
         events.providerid, provider.providername, provider.name2 from 
@@ -81,7 +81,7 @@ $result = do_mysqli_query("1","
         and eventdate > now()
         order by eventdate asc 
         ");
-while($row = do_mysqli_fetch("1",$result)){
+while($row = pdo_fetch($result)){
 
     echo "
         <div class='mainfont gridstdborder'

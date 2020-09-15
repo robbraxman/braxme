@@ -1,7 +1,7 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("room.inc.php");
 require_once("roommanage.inc.php");
 require_once("internationalization.php");
@@ -87,7 +87,7 @@ require_once("internationalization.php");
     }
 //    echo "<table  class='' style='background-color:transparent;border:0;border-collapse:collapse;width:200px;margin:auto'>
 //        ";
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
             select distinct provider.replyemail, provider.providername as name, provider.alias,
             provider.providerid, provider.name2, provider.handle, provider.superadmin,
@@ -123,7 +123,7 @@ require_once("internationalization.php");
     echo "<input class='inputline showhidden dataentry' id='roommemberfilter' type='text' value='$filter' size=30 placeholder='$menu_find $menu_handle' style='width:250px' /> ";
     echo "<img class='showhiddenarea roommembers icon25'  src='../img/Refresh_120px.png' style='display:none' data-roomid='$roomid' data-caller='$caller' /><br> ";
     echo "<br>";
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
     
         if($row['avatarurl'] == "$rootserver/img/faceless.png"){
             $row['avatarurl'] = "$rootserver/img/newbie2.jpg";
@@ -247,7 +247,7 @@ require_once("internationalization.php");
  
     //******************************************
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
             select provider.replyemail, provider.providername as name,  provider.name2,
             provider.providerid, statusroom.owner, roominfo.private,
@@ -288,7 +288,7 @@ require_once("internationalization.php");
     echo "<div style='padding:0;margin-auto;text-align:center'>";
     
     $lastroom = "";
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
     
         if($row['avatarurl'] == "$rootserver/img/faceless.png"){
             $row['avatarurl'] = "$rootserver/img/newbie2.jpg";

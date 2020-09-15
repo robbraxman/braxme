@@ -1,5 +1,5 @@
 <?php
-require_once("config.php");
+require_once("config-pdo.php");
 require("aws.php");
 
 function ProcessUpload( $providerid, $encoding, $subject, $album, $upload_hdr, $uploadtype )
@@ -130,7 +130,7 @@ function ProcessUpload( $providerid, $encoding, $subject, $album, $upload_hdr, $
 
                                             $alias = uniqid("T4AZ", true);
 
-                                            $result = do_mysqli_query("1", 
+                                            $result = pdo_query("1", 
                                                     "
                                                         insert into photolib
                                                         ( providerid, album, filename, folder, filesize, filetype, title, createdate, alias, owner )
@@ -141,7 +141,7 @@ function ProcessUpload( $providerid, $encoding, $subject, $album, $upload_hdr, $
 
                                             if( $uploadtype == "A"){
                                             
-                                                    $result = do_mysqli_query("1", 
+                                                    $result = pdo_query("1", 
                                                             "
                                                                 update provider set avatarurl = '$rootserver/$installfolder/sharedirect.php?p=$attachmentfilename' where
                                                                 providerid = $providerid
@@ -163,7 +163,7 @@ function ProcessUpload( $providerid, $encoding, $subject, $album, $upload_hdr, $
                                         $_SESSION[attachmentfilename]= "$_SESSION[sessionid]_".$UploadNo."_$filename";
                                         echo("<br>File uploaded successfully. - <a href='". $upload_dir.$upload_hdr.$filename."' target='_blank'>".$filename."</a><br>"); 
 
-                                        $result = do_mysqli_query("1", 
+                                        $result = pdo_query("1", 
                                                 "insert into attachments ( sessionid, item, attachfilename, providerid, encoding ) ". 
                                                 " values ( '$_SESSION[sessionid]', $UploadNo, '$_SESSION[attachmentfilename]', $providerid, '$encoding' )"
                                          );

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require("config.php");
+require("config-pdo.php");
 $checkbox = '';//"<img src='../img/checkbox-green-128.png' style='height:25px;position:relative;top:5px' />";
 $braxrooms = "<img src='../img/braxroom-square.png' style='position:relative;top:5px;height:30px;width:auto;padding-top:0;padding-right:2px;padding-bottom:0px;' />";
 ?>

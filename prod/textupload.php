@@ -1,6 +1,6 @@
 <?php
 require_once("validsession.inc.php");
-require_once("crypt.inc.php");
+require_once("crypt-pdo.inc.php");
 require_once("notify.inc.php");
 
      //Brax.ME
@@ -96,7 +96,7 @@ require_once("notify.inc.php");
                 return; 
             }
                     
-            $result = do_mysqli_query("1", 
+            $result = pdo_query("1", 
                     "
                         insert into filelib
                         ( providerid, filename, origfilename, folder, folderid, 
@@ -110,7 +110,7 @@ require_once("notify.inc.php");
             
             braxmecleanup($upload_dir."/");
             
-            do_mysqli_query("1","
+            pdo_query("1","
                 insert into roomfiles (roomid, providerid, filename, folderid, createdate, downloads)
                 values
                 ($roomid, $providerid, '$aws_filename',0, now(), 0 )
@@ -148,7 +148,7 @@ require_once("notify.inc.php");
                 return; 
             }
                     
-            $result = do_mysqli_query("1", 
+            $result = pdo_query("1", 
                     "  update filelib set filesize = $fsize, fileencoding = '$fileencoding'
                        where filename = '$aws_filename'
                      "
@@ -168,14 +168,14 @@ require_once("notify.inc.php");
         {
             //No Encryption Currently
             $filename_encrypted = $filename;
-            $result = do_mysqli_query("1", 
+            $result = pdo_query("1", 
                     "
                         select * from filelib 
                         where providerid = $providerid and origfilename = '$filename_encrypted' and status='Y'
                         and folderid = $folderid
                      "
              );
-            if(!$row = do_mysqli_fetch("1",$result)){
+            if(!$row = pdo_fetch($result)){
                 $matched = false;
                 return $filename;
             }

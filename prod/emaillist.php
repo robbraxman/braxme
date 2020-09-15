@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
     $providerid = @tvalidator("PURIFY",$_POST['providerid']);
@@ -24,7 +24,7 @@ require_once("config.php");
         {
             foreach( $_SESSION['imap_name'] as $imapname)
             {
-                $result2 = do_mysqli_query("2","
+                $result2 = pdo_query("2","
                         select * from imap_msgqueue 
                         left join imap_xacqueue on imap_msgqueue.providerid = imap_xacqueue.providerid and
                         imap_msgqueue.uid = imap_xacqueue.uid and imap_msgqueue.imapbox = imap_xacqueue.imapbox and
@@ -34,7 +34,7 @@ require_once("config.php");
                         and imap_msgqueue.folder='INBOX' and imap_msgqueue.syncflag!='U'
                         ");
                 $alert = "";
-                if($row2 = do_mysqli_fetch("2",$result2))
+                if($row2 = pdo_fetch($result2))
                 {
                     $alert = "&nbsp;".$flag;
                 }

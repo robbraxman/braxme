@@ -1,25 +1,25 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 $verificationcode = @tvalidator("PURIFY",$_REQUEST['i']);
 
 
 
-$result = do_mysqli_query("1", 
+$result = pdo_query("1", 
       "select providerid, email from verification where verificationkey='$verificationcode' "
        );
-if(!$row = do_mysqli_fetch("1",$result))
+if(!$row = pdo_fetch($result))
 {
     exit();
 }
 $verifiedemail = $row['email'];
 
-$result = do_mysqli_query("1", 
+$result = pdo_query("1", 
       "update provider set verified='Y', verifiedemail='$verifiedemail' where providerid in ".
       "(select providerid from verification where type='ACCOUNT' ".
       "and verificationkey= '$verificationcode') "
        );
-$result = do_mysqli_query("1", 
+$result = pdo_query("1", 
       "update verification set verifieddate = now() 
        where verificationkey= '$verificationcode' and verifieddate is null "
        );

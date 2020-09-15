@@ -1,10 +1,10 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 //require_once ("SmsInterface.inc");
 require_once("sendmail.php");
 require_once("notifyfunc.php");
-require_once("crypt.inc.php");
+require_once("crypt-pdo.inc.php");
 require_once("aws.php");
 
 /*
@@ -27,13 +27,13 @@ require_once("aws.php");
     
     if( strpos( (string) $providerid,"@")!==false ){
     
-        $result = do_mysqli_query("1", 
+        $result = pdo_query("1", 
            "select providerid, verified, replyemail, handle from 
             provider where (
             replyemail = '$providerid' or handle='$providerid') 
             and active='Y'  "
           );
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
             $providerid = $row['providerid'];
             $replyemail = $row['replyemail'];
             $handle = $row['handle'];
@@ -63,13 +63,13 @@ require_once("aws.php");
         $loginid = "admin";
     }
     
-    $result = do_mysqli_query("1", 
+    $result = pdo_query("1", 
             "
              select count(*) as count from forgotlog where datediff(createdate, now())= 0
              and ip = '$ip' 
             "
           );
-    if($row = do_mysqli_fetch("1",$result) ){
+    if($row = pdo_fetch($result) ){
         if( intval($row['count'])  > 500 ){
             echo "Daily Limit of Forgot Password Utility Reached";
             exit();
@@ -77,7 +77,7 @@ require_once("aws.php");
     }
     
     $smssent = false;
-    $result = do_mysqli_query("1", "
+    $result = pdo_query("1", "
         select providerid, 
         (select sms from sms where provider.providerid = sms.providerid ) as smsencrypted,
         (select encoding from sms where provider.providerid = sms.providerid ) as smsencoding
@@ -85,7 +85,7 @@ require_once("aws.php");
       ");
 
 
-    if ($row = do_mysqli_fetch("1",$result)){
+    if ($row = pdo_fetch($result)){
 
         $sms = "";
         if($row['smsencrypted']!=''){
@@ -112,7 +112,7 @@ require_once("aws.php");
     }
 
     
-    $result = do_mysqli_query("1", 
+    $result = pdo_query("1", 
             
             "SELECT staff.email, provider.verified, sms.sms
                 from staff 
@@ -126,7 +126,7 @@ require_once("aws.php");
             "
     );
     
-    if ($row = do_mysqli_fetch("1",$result)){
+    if ($row = pdo_fetch($result)){
     
             
                 
@@ -195,7 +195,7 @@ require_once("aws.php");
         
         publishSMSNotification( "BraxMe", $message, $sms );
         
-        do_mysqli_query("1","insert into smslog (providerid, recipientid, sms, sentdate, source) values ($providerid, $providerid '$sms', now(),'$notifytype' )");
+        pdo_query("1","insert into smslog (providerid, recipientid, sms, sentdate, source) values ($providerid, $providerid '$sms', now(),'$notifytype' )");
         return true;
     }        
 ?>

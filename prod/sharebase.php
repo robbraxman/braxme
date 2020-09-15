@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("config.php");
+include("config-pdo.php");
 require("aws.php");
 
 /*
@@ -16,11 +16,11 @@ if(isset($_GET['n'])) {
 }
 
 
-$result = do_mysqli_query("1","
+$result = pdo_query("1","
         select sharelocal, providerid from shares where shareid = '$share' 
         ");
 
-if( !$row = do_mysqli_fetch("1",$result))
+if( !$row = pdo_fetch($result))
 {
     $filename = "../img/lock.png";
     if ($fd = fopen ($filename, "rb"))
@@ -37,19 +37,19 @@ $providerid = $row['providerid'];
 
 if( $n== "")
 {
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
             select filename, folder from photolib where filename= '$sharelocal'
             ");
 }
 if( $n!= "")
 {
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
             select filename, folder  from photolib where album = '$sharelocal' and providerid=$providerid
             order by filename desc limit $n, 1
             ");
 }
 
-if( !$row = do_mysqli_fetch("1",$result))
+if( !$row = pdo_fetch($result))
 {
     $filename = "../img/lock.png";
     if ($fd = fopen ($filename, "rb"))

@@ -2,8 +2,8 @@
 session_start();
 set_time_limit ( 30 );
 require("validsession.inc.php");
-require_once("config.php");
-require_once("crypt.inc.php");
+require_once("config-pdo.php");
+require_once("crypt-pdo.inc.php");
 include("lib_autolink.php");
 require_once("room.inc.php");    
 require_once("roomuserview.php");
@@ -353,7 +353,7 @@ require_once("roomuserview.php");
     
 
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
             select statuspost.anonymous, statuspost.encoding, statuspost.postid, 
             statuspost.pin, statuspost.locked,
@@ -390,7 +390,7 @@ require_once("roomuserview.php");
     
     
     $postcount = 0;
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         
         $postcount++;
         $cleanPostid = str_replace(".","",$row['postid']);
@@ -609,12 +609,12 @@ require_once("roomuserview.php");
                         ";
             }
             
-            $result2 = do_mysqli_query("1",
+            $result2 = pdo_query("1",
                 "
                     select count(*) as commenttotal from
                     statuspost where parent!='Y' and shareid='$row[shareid]'
                 ");
-            $row2 = do_mysqli_fetch("1",$result2);
+            $row2 = pdo_fetch($result);
             $commentitems = $row2['commenttotal'];
 
             /**********
@@ -741,7 +741,7 @@ function LastComment( $owner, $adminroom, $shareid, $handle, $providerid, $roomi
         $commentshow = "<span class='pagetitle3'><b>...</b></span><br><br>";
     }
         
-    $result2 = do_mysqli_query("1",
+    $result2 = pdo_query("1",
          
         "
             select anonymous, encoding, postid, providername, comment, link, photo, video, videotitle,
@@ -775,7 +775,7 @@ function LastComment( $owner, $adminroom, $shareid, $handle, $providerid, $roomi
         );
             
     $i = 0;
-    while($row2 = do_mysqli_fetch("1",$result2)){
+    while($row2 = pdo_fetch($result)){
 
         $comment = "";
         if($row2['blockee']!=''){
@@ -1361,12 +1361,12 @@ function GetChildLinks($parentroomhandle, $parentroomid, $handle )
         $childlinks .= $child;
     }
     
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select roominfo.room, roominfo.roomid, roomhandle.handle from roominfo 
         left join roomhandle on roominfo.roomid = roomhandle.roomid
         where parentroom='$handle' order by roominfo.childsort desc, roominfo.room asc
     ");
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         $room = $row['room'];
         $roomhandle = $row['handle'];
         $roomid = $row['roomid'];

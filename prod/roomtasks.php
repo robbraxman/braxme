@@ -1,7 +1,7 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
     $providerid = tvalidator("PURIFY",$_POST['providerid']);
@@ -75,7 +75,7 @@ require_once("config.php");
         {
             if($eventid == '')
             {
-                $result = do_mysqli_query("1"," 
+                $result = pdo_query("1"," 
                 insert into tasks (roomid, eventname, eventdesc, eventdate, eventtime, eventassign,  priority, providerid, createdate, status, notificationstatus )
                 values
                     ($roomid,'$eventname', '$eventdesc', date_add('$eventdate $eventtime',INTERVAL ($_SESSION[timezoneoffset])*(-1) HOUR), '$eventtime', '$eventassign','$priority',$providerid, now(), 'Y','' )
@@ -83,7 +83,7 @@ require_once("config.php");
             }
             else 
             {
-                $result = do_mysqli_query("1"," 
+                $result = pdo_query("1"," 
                 update tasks set eventname = '$eventname', eventassign='$eventassign', priority='$priority',
                     eventdate=date_add('$eventdate $eventtime',INTERVAL ($_SESSION[timezoneoffset])*(-1) HOUR), eventtime='$eventtime', eventdesc='$eventdesc' 
                     where eventid = $eventid and providerid = $providerid and roomid=$roomid
@@ -95,14 +95,14 @@ require_once("config.php");
     }
     if( $mode == 'D')
     {
-        $result = do_mysqli_query("1"," 
+        $result = pdo_query("1"," 
             delete from tasks where eventid = $eventid and providerid = $providerid and roomid=$roomid
                    ");
         $mode = '';
     }
     if( $mode == 'F')
     {
-        $result = do_mysqli_query("1"," 
+        $result = pdo_query("1"," 
             insert into tasksaction (eventid, roomid, donebyid, donecode, donedate ) values
             ( $eventid, $roomid, $providerid,'Done', now() )
                    ");
@@ -110,7 +110,7 @@ require_once("config.php");
     }
     if( $mode == 'U')
     {
-        $result = do_mysqli_query("1"," 
+        $result = pdo_query("1"," 
             delete from tasksaction where eventid = $eventid and donebyid = $providerid and roomid=$roomid
                    ");
         $mode = '';
@@ -130,13 +130,13 @@ require_once("config.php");
         }
         if($mode == 'E'){
             $action = 'Edit';
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 select date_format(date_add(eventdate,INTERVAL $_SESSION[timezoneoffset] HOUR),'%Y-%m-%d') as eventdate, 
                        date_format(date_add(eventdate,INTERVAL $_SESSION[timezoneoffset] HOUR),'%k:%i') as eventtime, 
                        eventname, eventdesc, eventassign, priority
                 from tasks where roomid=$roomid and eventid=$eventid and providerid=$providerid
                     ");
-            if($row=do_mysqli_fetch("1",$result)){
+            if($row=pdo_fetch($result)){
                 $eventdate = "$row[eventdate]";
                 $eventtime = "$row[eventtime]";
                 $eventname = "$row[eventname]";
@@ -265,7 +265,7 @@ require_once("config.php");
     </div>
                 
 <?php
-$result = do_mysqli_query("1","
+$result = pdo_query("1","
         select 
         date_format(date_add(eventdate,INTERVAL $_SESSION[timezoneoffset] HOUR),'%b %d, %y %a %h:%i%p') as eventdate, 
         date_format(date_add(tasks.createdate,INTERVAL $_SESSION[timezoneoffset] HOUR),'%b %d, %y %a %h:%i%p') as createdate, 
@@ -281,7 +281,7 @@ $result = do_mysqli_query("1","
         ");
 
 
-while($row = do_mysqli_fetch("1",$result)){
+while($row = pdo_fetch($result)){
     
     $delete = "";
     $edit = "";
@@ -323,7 +323,7 @@ while($row = do_mysqli_fetch("1",$result)){
             Undo</div>
             ";
         
-    $result2 = do_mysqli_query("1","
+    $result2 = pdo_query("1","
         select providername, name2, 
         date_format(tasksaction.donedate,'%b %d, %Y') as donedate,
         donedate as donedate2, 
@@ -333,7 +333,7 @@ while($row = do_mysqli_fetch("1",$result)){
         where tasksaction.eventid=$row[eventid] and tasksaction.roomid=$row[roomid]
         order by donedate2 desc
         ");
-    while($row2 = do_mysqli_fetch("1",$result2))
+    while($row2 = pdo_fetch($result))
     {
         $check = "";
         if($row2['donecode']=='Done')

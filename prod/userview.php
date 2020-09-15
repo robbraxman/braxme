@@ -1,7 +1,7 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 require("roommanage.inc.php");
 $providerid = @tvalidator("PURIFY",$_SESSION['pid']);
 $userid = @tvalidator("PURIFY",$_POST['userid']);
@@ -11,7 +11,7 @@ $source = "";
 if($caller == ''){
     $caller = 'leave';
 }
-    $result = do_mysqli_query("1"," 
+    $result = pdo_query("1"," 
             select providername, avatarurl, replyemail, handle, publishprofile, publish,
             blocked1.blockee, blocked2.blocker
             from provider 
@@ -20,7 +20,7 @@ if($caller == ''){
             where providerid = $userid 
                 ");
     $providername = "Unknown";
-    if($row = do_mysqli_fetch("1",$result)){
+    if($row = pdo_fetch($result)){
         $providername = $row['providername'];
         $avatarurl = $row['avatarurl'];
         if($row['handle']!=''){
@@ -172,11 +172,11 @@ function ShowMyRooms($providerid, $watcherid, $caller)
     $roomlinks = "";
     $roomid = "";
     $watcheraction = "feed";
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select roomid from roominfo where profileflag ='Y' and profileflag is not null 
         and roomid in (select roomid from statusroom 
         where providerid = $providerid and providerid = owner) ");
-    if($row = do_mysqli_fetch("1",$result)){
+    if($row = pdo_fetch($result)){
         $roomid = $row['roomid'];
         if($providerid != $watcherid){
             NewProfileRoomMember($roomid, $providerid, $watcherid);
@@ -205,7 +205,7 @@ function ShowMyRooms($providerid, $watcherid, $caller)
     $roomlinks .= $child;
     }
     
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select roomhandle.handle, statusroom.roomid, roominfo.room, 
         roominfo.photourl, roominfo.profileflag, roomhandle.public, roominfo.groupid
         from statusroom 
@@ -224,7 +224,7 @@ function ShowMyRooms($providerid, $watcherid, $caller)
         and statusroom.roomid > 1
         order by roominfo.profileflag desc, roominfo.lastactive desc, roominfo.room asc
     ");
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         $room = $row['room'];
         $roomhandle = $row['handle'];
         $roomid = $row['roomid'];
@@ -268,7 +268,7 @@ function ShowMyPrivateRooms($providerid, $watcherid, $caller)
     $roomlinks = "";
     $watcheraction = "feed";
     
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select roomhandle.handle, statusroom.roomid, roominfo.room, 
         roominfo.photourl, roominfo.profileflag from statusroom 
         left join  roominfo on statusroom.roomid = roominfo.roomid
@@ -284,7 +284,7 @@ function ShowMyPrivateRooms($providerid, $watcherid, $caller)
         and statusroom.roomid > 1
         order by roominfo.profileflag desc, roominfo.room asc
     ");
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         $room = $row['room'];
         $roomhandle = $row['handle'];
         $roomid = $row['roomid'];

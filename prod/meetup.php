@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
     $providerid = @tvalidator("PURIFY",$_POST['providerid']);
@@ -14,12 +14,12 @@ require_once("config.php");
         
         $appidentity= FormatHandle( $appname, $appidentity );
         
-        do_mysqli_query("1"," 
+        pdo_query("1"," 
             delete from appmeetup where replyemail = '$_SESSION[replyemail]' and
                 appname = '$appname' and appidentity='$appidentity'
                 ");
         
-        do_mysqli_query("1"," 
+        pdo_query("1"," 
             insert ignore into appmeetup 
             ( replyemail, appname, appidentity, greeting, status, reqdate )
             values
@@ -38,12 +38,12 @@ require_once("config.php");
         
         $appidentity= FormatHandle( $appname, $appidentity );
         
-        do_mysqli_query("1"," 
+        pdo_query("1"," 
             delete from appidentity where replyemail = '$_SESSION[replyemail]' and
                 appname = '$appname' and appidentity='$appidentity'
                 ");
         
-        $result = do_mysqli_query("1"," 
+        $result = pdo_query("1"," 
             insert into appidentity 
             ( replyemail, appname, appidentity, status )
             values
@@ -91,7 +91,7 @@ require_once("config.php");
         $appname = @tvalidator("PURIFY",$_POST['appname']);
         $appidentity = @tvalidator("PURIFY",$_POST['appidentity']);
         
-        do_mysqli_query("1"," 
+        pdo_query("1"," 
             delete from appidentity where replyemail = '$_SESSION[replyemail]' and
                 appname = '$appname' and appidentity='$appidentity'
                 ");
@@ -102,7 +102,7 @@ require_once("config.php");
         $appname = @tvalidator("PURIFY",$_POST['appname']);
         $appidentity = @tvalidator("PURIFY",$_POST['appidentity']);
         
-        do_mysqli_query("1"," 
+        pdo_query("1"," 
             delete from appmeetup where replyemail = '$_SESSION[replyemail]' and
                 appname = '$appname' and appidentity='$appidentity'
                 ");
@@ -113,17 +113,17 @@ require_once("config.php");
         //$targetid = @tvalidator("PURIFY",$_POST['targetid']);
         $id = @tvalidator("PURIFY",$_POST['id']);
         
-        do_mysqli_query("1"," 
+        pdo_query("1"," 
             update appmeetup set status='N' where id = $id
                 ");
         
         //Add to My Contact List
-        $result = do_mysqli_query("1"," 
+        $result = pdo_query("1"," 
             select providerid, providername, alias, handle, replyemail from provider where replyemail =
             (select replyemail from appmeetup where id =$id )
             and active = 'Y'
                 ");
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
             $targetid = $row['providerid'];
             $name = $row['providername'];
             if($row['alias']!=''){
@@ -139,7 +139,7 @@ require_once("config.php");
             }
             if($email!='' || $handle!='')
             {
-                do_mysqli_query("1","
+                pdo_query("1","
                     insert ignore into contacts (providerid, contactname, email, sms, handle, friend, imapbox, source,createdate )
                     values ( $providerid, '$name', '$email', '', '$handle', 'Y', null, 'Z', now() )
                         ");
@@ -147,11 +147,11 @@ require_once("config.php");
         }
         
         //Add Me to their contact list
-        $result = do_mysqli_query("1"," 
+        $result = pdo_query("1"," 
             select providername, alias, handle, replyemail from
             provider where providerid = $providerid
                 ");
-        if($row = do_mysqli_fetch("1",$result))
+        if($row = pdo_fetch($result))
         {
             $name = $row['providername'];
             if($row['alias']!=''){
@@ -167,7 +167,7 @@ require_once("config.php");
             }
             if($email!='' || $handle!='')
             {
-                do_mysqli_query("1","
+                pdo_query("1","
                     insert ignore into contacts (providerid, contactname, email, sms, handle, friend, imapbox, source )
                     values ( $targetid, '$name', '$email', '', '$handle', 'Y', null, 'Z' )
                         ");
@@ -182,7 +182,7 @@ require_once("config.php");
         //$targetid = @tvalidator("PURIFY",$_POST['targetid']);
         $id = @tvalidator("PURIFY",$_POST['id']);
         
-        do_mysqli_query("1"," 
+        pdo_query("1"," 
             update appmeetup set status='X' where id = $id
                 ");
         $mode = '';
@@ -245,12 +245,12 @@ require_once("config.php");
 
 
     //<div class='divbutton3 divbutton_unsel textsend'>SMS Poke - Hey, Testing Only!</div>
-   $result = do_mysqli_query("1",
+   $result = pdo_query("1",
    "
        select appname, appidentity from appidentity where replyemail = '$_SESSION[replyemail]'
    ");
    $appidentities = "";
-   while($row = do_mysqli_fetch("1",$result))
+   while($row = pdo_fetch($result))
    {
        if($appidentities!=''){
            $appidentities .= "";
@@ -298,7 +298,7 @@ require_once("config.php");
                 You can initiate chat by tapping on the accepted contact.
             </div>
             ";
-   $result = do_mysqli_query("1",
+   $result = pdo_query("1",
     
         "
         select 
@@ -328,7 +328,7 @@ require_once("config.php");
     
     $i1 = 0;
     $count = 0;
-    while($row = do_mysqli_fetch("1",$result))
+    while($row = pdo_fetch($result))
     {
         $header = false;
         if($count == 0)
@@ -456,12 +456,12 @@ require_once("config.php");
     * If you have two discussions going, it may become difficult to switch back and forth
     * 
     */
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select appname, appidentity from appmeetup where replyemail = '$_SESSION[replyemail]'
             and status in ('Y','X')
             ");
     $count = 0;
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         if($count == 0){
             $list .= "
                 <br>
@@ -528,7 +528,7 @@ require_once("config.php");
     * Recent Requests
     * 
     */
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select 
         DATE_FORMAT(date_add(appmeetup.reqdate, interval (-7)*(60) MINUTE), '%b %d %h:%i%p') as reqdate, 
         provider.providername, provider.alias, provider.avatarurl, provider.companyname,
@@ -552,7 +552,7 @@ require_once("config.php");
         order by appmeetup.reqdate desc
             ");
     $count = 0;
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         if($count == 0){
             $list .= "
                 <br>

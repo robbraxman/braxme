@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("room.inc.php");
 require_once("sidebar.inc.php");
 require_once("internationalization.php");
@@ -128,7 +128,7 @@ require("nohost.php");
 
             if($innerheight!='' && $innerwidth!=''){
                 
-                do_mysqli_query("1"," 
+                pdo_query("1"," 
                     update provider set 
                     deviceheight=$innerheight, 
                     devicewidth= $innerwidth,  
@@ -202,12 +202,12 @@ require("nohost.php");
 
         
         
-        $result2 = do_mysqli_query("1","
+        $result2 = pdo_query("1","
                 select roomdiscovery, joinedvia, lasttip,
                 (select 'Y' from statusroom where roomid=12802 and statusroom.providerid = provider.providerid ) as braxtips 
                 from provider where providerid = $providerid
                 ");
-        if( $row2 = do_mysqli_fetch("1",$result2)){
+        if( $row2 = pdo_fetch($result)){
             //$logo = "Sponsored by<br><img src='../img/dteenergy-logo.png' style='height:80px;max-width:80%'/>";
             $braxtips = $row2['braxtips'];
             $roomdiscovery = $row2['roomdiscovery'];
@@ -242,10 +242,10 @@ require("nohost.php");
         
         if(strtolower($_SESSION['sponsor'])!=''){
             
-            $result2 = do_mysqli_query("1","
+            $result2 = pdo_query("1","
                     select logo, boxcolor, partitioned, roomid, roomhashtag, format,
                     live  from sponsor where sponsor = '$_SESSION[sponsor]' ");
-            if( $row2 = do_mysqli_fetch("1",$result2)){
+            if( $row2 = pdo_fetch($result)){
                 //$logo = "Sponsored by<br><img src='../img/dteenergy-logo.png' style='height:80px;max-width:80%'/>";
                 $boxcolor = "$row2[boxcolor]";      
                 $homeroomid = $row2['roomid'];
@@ -709,6 +709,7 @@ require("nohost.php");
             global $icon_braxidentity;
             global $icon_braxmenu;
             global $icon_braxsecurity;
+            global $icon_braxstore;
             
 
             $braxdoctor =    "<img class='icon30' src='../img/brax-doctor-round-white-128.png'  />";
@@ -725,6 +726,7 @@ require("nohost.php");
             $braxsettings =   $icon_braxsettings;
             $braxidentity =   $icon_braxidentity;
             $braxsecurity =   $icon_braxsecurity;
+            $braxstore = $icon_braxstore;
             $bold = true;
 
             global $customsite;
@@ -737,6 +739,7 @@ require("nohost.php");
             global $menu_settings;
             global $menu_myfiles;
             global $menu_myphotos;
+            global $menu_store;
             global $alertlive;
             global $alertchat;
             global $alertroom;
@@ -798,9 +801,12 @@ require("nohost.php");
                 }
 
             }
-            
-            
             $sidemenu .= "<br><br>";
+            if($_SESSION['sponsor']==''){
+                $sidemenu .= MenuItem( "S", $braxstore, "$menu_store", "", "userstore mainbutton", "data-owner='690001027'", 1, $bold );
+            } 
+            
+            
 
             $sidemenu .= MenuItem( "S", $braxsettings, "$menu_settings", "", "settingsbutton", "", 2, false );
             
@@ -819,6 +825,8 @@ function SetProfileReminder($providerid, $preformat, $postformat)
     global $menu_trending;
     global $installfolder;
     global $customsite;
+    
+    $list = "";
     
     
     if($_SESSION['avatarurl']!=="$prodserver/img/faceless.png" && $_SESSION['avatarurl']!==""  

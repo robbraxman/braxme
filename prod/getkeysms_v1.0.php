@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 require ("SmsInterface.inc");
 
 require_once("htmlhead.inc");
@@ -27,8 +27,8 @@ require_once("language.inc");
 
         
 
-    $result = do_mysqli_query("1", "SELECT active, announcement from service where msglevel='STATUS' ");
-    if ($row = do_mysqli_fetch("1",$result)) 
+    $result = pdo_query("1", "SELECT active, announcement from service where msglevel='STATUS' ");
+    if ($row = pdo_fetch($result)) 
     {
         if($row[active]=='N')
         {
@@ -40,7 +40,7 @@ require_once("language.inc");
     }
     
     
-    $result = do_mysqli_query("1", 
+    $result = pdo_query("1", 
             "SELECT msgto.responsehash, msgto.encoding2, provider.providername, provider.providerid, msgto.recipientsms, msgto.recipientemail, msgto.recipientname, " .
             "msgmain.replysms, msgmain.replyemail, msgmain.sessionthread, msgmain.patientname, msgmain.patientmrno, msgto.recipientid, provider.allowkeydownload  " .
             "from msgto ".
@@ -50,7 +50,7 @@ require_once("language.inc");
     
     //echo "Original Session ID=$_POST[sessionid]  ResponseText='$_POST[responsetext]'<br>";
     
-    if ($row = do_mysqli_fetch("1",$result)) 
+    if ($row = pdo_fetch($result)) 
     {
         $_SESSION[StdSmsMsg] = "";
         
@@ -59,7 +59,7 @@ require_once("language.inc");
         $ReplytoPhone =  $row[recipientsms];
         
         
-        $result = do_mysqli_query("1", 
+        $result = pdo_query("1", 
           "update provider set " .
           "msgcountin=msgcountin+1, " .
           "msgcountlife=msgcountlife+1 " .
@@ -87,7 +87,7 @@ require_once("language.inc");
                     $si = new SmsInterface (false, false);
                     $si->addMessage ( $row[recipientsms], $_SESSION["message"]);
 
-                    if (!$si->connect (testaccount ,welcome1, true, false))
+                    if (!$si->connect (MaddisonCross003 ,welcome1, true, false))
                         echo "failed. Could not contact server.\n";
                     elseif (!$si->sendMessages ()) {
                         echo "failed. Could not send message to server.\n";

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("sendmail.php");
 require_once("notifyfunc.php");
 
@@ -19,11 +19,11 @@ require_once("notifyfunc.php");
     $verified = "";
     //if( strpos( (string) $providerid,"@")!==false ){
     
-        $result = do_mysqli_query("1", 
+        $result = pdo_query("1", 
            "select providerid, verified, replyemail, handle from provider where (providerid=$providerid or replyemail = '$providerid' or handle='$providerid') and active='Y'  "
           );
         
-        if ($row = do_mysqli_fetch("1",$result)) {
+        if ($row = pdo_fetch($result)) {
         
             $providerid = $row['providerid'];
             $verified = $row['verified'];
@@ -50,7 +50,7 @@ require_once("notifyfunc.php");
     }
 
     
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
             SELECT staff.email, provider.verified 
             from staff 
             left join provider on staff.providerid = provider.providerid
@@ -58,7 +58,7 @@ require_once("notifyfunc.php");
             ");
     
 
-    if ($row = do_mysqli_fetch("1",$result)) {
+    if ($row = pdo_fetch($result)) {
     
             if( $row['email'] == ''){
             
@@ -69,7 +69,7 @@ require_once("notifyfunc.php");
             $verified = $row['verified'];
             $pwd_hash = password_hash("$_SESSION[temporarypassword]", PASSWORD_DEFAULT);
             
-            $result = do_mysqli_query("1",
+            $result = pdo_query("1",
                     "
                         update staff set 
                         pwd_ver = 3,
@@ -79,14 +79,14 @@ require_once("notifyfunc.php");
                         where providerid= $providerid and loginid = '$loginid'
                     "
                 );
-            do_mysqli_query("1", 
+            pdo_query("1", 
                 "insert into forgotlog (email,loginid, createdate, status, ip, temppassword) values 
                  ('$providerid','$loginid', now(), 'Y','$ip','$_SESSION[temporarypassword]'
                      ) 
                 "
               );
             
-            //$result = do_mysqli_query("1",
+            //$result = pdo_query("1",
             //        "update forgotlog  set temppassword='$_SESSION[temporarypassword]' where email='$row[email]' and createdate >= date_add(date(now()),INTERVAL -1 DAY)  "
             //    );
             

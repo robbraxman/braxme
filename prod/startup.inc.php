@@ -1,7 +1,7 @@
 <?php
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("room.inc.php");
-require_once("crypt.inc.php");
+require_once("crypt-pdo.inc.php");
 require_once("notify.inc.php");
 require_once("roommanage.inc.php");
 require_once("advertising.inc.php");
@@ -27,7 +27,7 @@ require_once("advertising.inc.php");
     if( $_SESSION['source']=='app' || $_SESSION['source']=='android'){
     
         $source = 'Y';
-        do_mysqli_query("1","update provider set mobile='$source' where providerid=$_SESSION[pid] ");
+        pdo_query("1","update provider set mobile=? where providerid=? ",array($source,$_SESSION['pid']));
     }
 
     $timezone = @tvalidator("PURIFY", $_POST['timezone']);
@@ -43,7 +43,7 @@ require_once("advertising.inc.php");
     $useragent=@tvalidator("PURIFY",$_POST['useragent']);
     if( $useragent!='' ){ 
     
-        do_mysqli_query("1","update provider set useragent='$useragent' where providerid=$_SESSION[pid] ");
+        pdo_query("1","update provider set useragent=? where providerid=? ",array($useragent,$_SESSION['pid']));
     }
 
     $profileobj = FindProfileRoom($providerid, $providerid);
@@ -67,31 +67,31 @@ require_once("advertising.inc.php");
         //Add myself to Room based on Invite
     
         
-        do_mysqli_query("1","
+        pdo_query("1","
             insert into statusroom (providerid, roomid, room, owner, createdate, creatorid )
 
-            select distinct $providerid as providerid, invites.roomid, roominfo.room, statusroom.owner, 
+            select distinct ? as providerid, invites.roomid, roominfo.room, statusroom.owner, 
                  now(), invites.providerid from invites
             left join statusroom on invites.roomid = statusroom.roomid
             and statusroom.owner = invites.providerid
             left join roominfo on invites.roomid = roominfo.roomid
             where invites.email in 
-            (select replyemail from provider where providerid=$providerid)
+            (select replyemail from provider where providerid=?)
             and invites.status = 'Y' and invites.roomid > 0 
             and invites.roomid not in (select roomid from statusroom
-            where providerid=$providerid)
+            where providerid=?)
 
-            ");
+            ",array($provider,$providerid,$providerid));
         
           
          
         //Automatically Connect to Chat Session from Invite
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select chatid, providerid 
             from invites 
             where exists 
             (select *
-                from provider where providerid = $providerid
+                from provider where providerid = ?
                 and 
                 (
                     (provider.replyemail= invites.email and invites.email!='')
@@ -105,27 +105,27 @@ require_once("advertising.inc.php");
             ) 
             and status='Y' and chatid in (
                 select chatid from chatmaster where invites.chatid = chatmaster.chatid and status='Y' )
-            ");
+            ",array($providerid));
         
-        while( $row = do_mysqli_fetch("1",$result) ){
+        while( $row = pdo_fetch($result) ){
         
             $invitechatid = $row['chatid'];
             $inviteownerid = "$row[providerid]";
             
             //Automatically Connect to Chat Session from Invite
-            do_mysqli_query("1","
+            pdo_query("1","
                 insert into chatmembers 
                 ( chatid, providerid, status, lastactive, techsupport ) 
                 values 
-                ( $invitechatid, $providerid, 'Y', now(), '' )
-                ");
+                ( ?, ?, 'Y', now(), '' )
+                ",array($invitechatid,$providerid));
             
             $encodeshort = EncryptChat("Please read your chat message",$invitechatid, "");
             ChatNotificationRequest($inviteownerid, $invitechatid, $encodeshort, $_SESSION['responseencoding'],'');
             
         }    
         //Remove prior Chat Invites
-        do_mysqli_query("1","
+        pdo_query("1","
             delete from invites where chatid > 0 and exists (
                 select * from provider where
                 (
@@ -133,9 +133,9 @@ require_once("advertising.inc.php");
                     or
                     (provider.handle = invites.handle and invites.handle!='')
                 )
-                and provider.providerid = $providerid
+                and provider.providerid = ?
             )
-            ");
+            ",array($providerid));
 
     
         //Figure Out User Level of Use
@@ -149,7 +149,7 @@ require_once("advertising.inc.php");
         
         //Automatically Share Room Contacts
         /*
-        do_mysqli_query("1","
+        pdo_query("1","
                     insert into batchrequest ( providerid, requestdate, requesttype, status ) 
                     values ($providerid, now(), 'SHARECONTACTSROOM', 'N' )
 
@@ -206,21 +206,21 @@ require_once("advertising.inc.php");
         //$arn = createSnsPlatformEndpoint( $apn, $gcm );
         if($token!=''){
         
-            @do_mysqli_query("1"," 
-                delete from notifytokens where token = '$token' and providerid= $providerid and status='E' and app='$appname'
-                    ");
-            @do_mysqli_query("1"," 
+            @pdo_query("1"," 
+                delete from notifytokens where token = ? and providerid= ? and status='E' and app=?
+                    ",array($token,$providerid,$appname));
+            @pdo_query("1"," 
                 insert into notifytokens 
                 (providerid, token, platform, registered, status, arn, app) values
-                ($providerid, '$token', '$platform',now(), 'Y','','$appname')
-                    ");
-            @do_mysqli_query("1"," 
-                update notifytokens set registered=now() where providerid=$providerid and token='$token'  and app='$appname'
-                    ");
+                (?, ?, ?,now(), 'Y','',?)
+                    ",array($providerid,$token,$platform,$appname));
+            @pdo_query("1"," 
+                update notifytokens set registered=now() where providerid=? and token=? and app=?
+                    ",array($providerid,$token, $appname));
 
-            @do_mysqli_query("1"," 
-                delete from notifytokens where token = '$token' and providerid != $providerid  and app='$appname'
-                    ");
+            @pdo_query("1"," 
+                delete from notifytokens where token = ? and providerid != ?  and app=?
+                    ",array($token,$providerid,$appname));
             
         }
 
@@ -366,7 +366,7 @@ require_once("advertising.inc.php");
                             
                 if($_SESSION['roomdiscovery']!='N' || $_SESSION['enterprise']=='Y'){
 
-                    $settingsmenu .= SettingsMenuButton("Rob Braxman Store", "userstore mainbutton", "","data-roomid='' data-owner='690001027'  ","" , $buttonbackgroundcolor2, $buttoncolor2);
+                    //$settingsmenu .= SettingsMenuButton("Rob Braxman Store", "userstore mainbutton", "","data-roomid='' data-owner='690001027'  ","" , $buttonbackgroundcolor2, $buttoncolor2);
                     $settingsmenu .= SettingsMenuButton("$menu_manageupgrade", "userstore mainbutton", "","data-roomid='' data-owner='0'  ","" , $buttonbackgroundcolor2, $buttoncolor2);
                     $settingsmenu .= "<hr style='border:1px solid  $global_separator_color'>";
                     
@@ -461,6 +461,7 @@ require_once("advertising.inc.php");
         
         if($_SESSION['superadmin']=='Y' && !$customsite){
 
+            $settingsmenu .= SettingsMenuButton("Manage VPN", "vpnlist mainbutton", "","data-providerid='$_SESSION[pid]'","" , $buttonbackgroundcolor3, $buttoncolor3);
             $settingsmenu .= SettingsMenuButton("Test Zone", "pinentry mainbutton", "","data-providerid='$_SESSION[pid]'","" , $buttonbackgroundcolor3, $buttoncolor3);
             $settingsmenu .= SettingsMenuButton("Test Zone Restream", "restreambutton mainbutton", "","","" , $buttonbackgroundcolor3, $buttoncolor3);
             $settingsmenu .= SettingsMenuButton("Test Link", "testlink mainbutton", "","","" , $buttonbackgroundcolor3, $buttoncolor3);

@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("config.php");
+include("config-pdo.php");
 include("validsession.inc.php");
 
 $share = @tvalidator("PURIFY", $_GET[p] );

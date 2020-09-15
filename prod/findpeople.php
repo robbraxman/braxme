@@ -1,7 +1,7 @@
 <?php
 session_start();
 require("nohost.php");
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("internationalization.php");
 
 if(ServerTimeOutCheck()){
@@ -24,10 +24,10 @@ require("validsession.inc.php");
     
     SaveLastFunction($_SESSION['pid'],"W", 0);
 
-    $result = do_mysqli_query("1","select enterpriselist, partitioned from sponsor where sponsor='$_SESSION[sponsor]' ");
+    $result = pdo_query("1","select enterpriselist, partitioned from sponsor where sponsor='$_SESSION[sponsor]' ");
     $enterprise = $_SESSION['enterprise'];
     $partitioned = "";
-    if($row = do_mysqli_fetch("1",$result)){
+    if($row = pdo_fetch($result)){
         //$enterprise = $row['roomdiscovery'];
         $partitioned = $row['partitioned'];
     }
@@ -116,19 +116,19 @@ require("validsession.inc.php");
     function Buttons($mode)
     {
         $roomdiscovery = "Y";
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
                    select roomdiscovery from provider where providerid = $_SESSION[pid]
                        ");
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
             $roomdiscovery = $row['roomdiscovery'];
         }
 
         $community = "";
         $enterprise = "";
         $partitioned = "";
-        $result = do_mysqli_query("1","select enterpriselist, communitylist, partitioned
+        $result = pdo_query("1","select enterpriselist, communitylist, partitioned
                    from sponsor where sponsor='$_SESSION[sponsor]' ");
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
             $enterprise = $row['enterpriselist'];
             $community = $row['communitylist'];
             $partitioned = $row['partitioned'];
@@ -474,7 +474,7 @@ require("validsession.inc.php");
         }
         
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select 
             provider.providername, provider.alias, provider.avatarurl, provider.companyname,
             provider.providerid, provider.handle, publishprofile, replyemail, provider.profileroomid,
@@ -521,7 +521,7 @@ require("validsession.inc.php");
             return $list;
         } 
         $joined = "";
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             
             if($count == 0){
                 $list .= $listheader;
@@ -652,7 +652,7 @@ require("validsession.inc.php");
             $order = " order by provider.providername limit 50";
         }
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select 
             provider.providername, provider.alias, provider.avatarurl, provider.companyname,
             provider.providerid, provider.handle, provider.publishprofile, provider.replyemail,
@@ -694,7 +694,7 @@ require("validsession.inc.php");
                  */
         
         $count = 0;
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             
             if($count == 0){
                 
@@ -825,7 +825,7 @@ require("validsession.inc.php");
             $order = " order by provider.providername limit 500";
         }
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select 
             provider.providername, provider.alias, provider.avatarurl, provider.companyname,
             provider.providerid, provider.handle, provider.publishprofile, provider.replyemail,
@@ -855,7 +855,7 @@ require("validsession.inc.php");
         
         
         $count = 0;
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             
             if($count == 0){
 
@@ -956,7 +956,7 @@ require("validsession.inc.php");
             return "";
         }
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select 
             provider.providername, provider.alias, provider.avatarurl, provider.companyname,
             provider.providerid, provider.handle, provider.publishprofile, provider.replyemail,
@@ -978,7 +978,7 @@ require("validsession.inc.php");
             order by provider.score desc, provider.createdate desc limit 200
                 ");
         $count = 0;
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             
             $count++;
             $id = $row['handle'];
@@ -1095,7 +1095,7 @@ require("validsession.inc.php");
             return "";
         }
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select 
             provider.providername, provider.alias, provider.avatarurl, provider.companyname,
             provider.providerid, provider.handle, provider.publishprofile, provider.replyemail,
@@ -1111,7 +1111,7 @@ require("validsession.inc.php");
             order by provider.providername asc limit 1000
                 ");
         $count = 0;
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             
             $count++;
             $id = $row['handle'];
@@ -1233,7 +1233,7 @@ require("validsession.inc.php");
             return "";
         }
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select 
             provider.providername, provider.alias, provider.avatarurl, provider.companyname,
             provider.providerid, provider.handle, provider.publishprofile, provider.replyemail,
@@ -1249,7 +1249,7 @@ require("validsession.inc.php");
             order by provider.providername asc limit 1000
                 ");
         $count = 0;
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             
             $count++;
             $id = $row['handle'];
@@ -1367,7 +1367,7 @@ require("validsession.inc.php");
             return "";
         }
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select 
             provider.providername, provider.alias, provider.avatarurl, provider.companyname,
             provider.providerid, provider.handle, provider.publishprofile, provider.replyemail,
@@ -1381,7 +1381,7 @@ require("validsession.inc.php");
             order by provider.lastaccess desc limit 1000
                 ");
         $count = 0;
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             
             $count++;
             $id = $row['handle'];
@@ -1486,7 +1486,7 @@ require("validsession.inc.php");
             return "";
         }
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select 
             provider.providername, provider.alias, provider.avatarurl, provider.companyname,
             provider.providerid, provider.handle, provider.publishprofile, provider.replyemail,
@@ -1498,7 +1498,7 @@ require("validsession.inc.php");
             order by provider.createdate desc limit 200
                 ");
         $count = 0;
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             
             $count++;
             $id = $row['handle'];
@@ -1616,7 +1616,7 @@ require("validsession.inc.php");
     $list =  "<h1>Blocked List</h1>";
     $list .=  "<table class='smalltext' style='font-size:12px;color:$global_textcolor'>";
     
-    $result = do_mysqli_query("1", "
+    $result = pdo_query("1", "
             select 
             provider.providername as blockedname, provider.createdate,
             (select providername from provider where blocked.blocker = provider.providerid) as blockername,
@@ -1628,7 +1628,7 @@ require("validsession.inc.php");
         ");
 
     
-    while ($row = do_mysqli_fetch("1",$result)) 
+    while ($row = pdo_fetch($result)) 
     {
         
         $rownum=$rownum+1;

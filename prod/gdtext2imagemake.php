@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 require("aws.php");
 //*********************************************
 //*********************************************
@@ -201,7 +201,7 @@ if( $save=='Y')
     imagedestroy($im);
     if(file_exists($upload_dir.$filename)){
         //Save to File
-        $result = do_mysqli_query("1", 
+        $result = pdo_query("1", 
                 "
                     insert into photolib
                     ( providerid, album, filename, folder, filesize, filetype, title, createdate, alias, public, owner, comment )

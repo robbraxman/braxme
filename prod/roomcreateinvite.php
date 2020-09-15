@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
     $providerid = tvalidator("PURIFY",$_POST['providerid']);
@@ -17,10 +17,10 @@ require_once("config.php");
         $roomid = tvalidator("PURIFY",$_POST['roomid']);
     }
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "select private, external from roominfo where roomid=$roomid "
         );
-    if($row = do_mysqli_fetch("1",$result)){
+    if($row = pdo_fetch($result)){
     
         $private = $row['private'];
         $external = $row['external'];
@@ -30,10 +30,10 @@ require_once("config.php");
     $uniqid2 = substr(uniqid(),4,8);
     $uniqid = str_replace('=','',base64_encode("$uniqid2"));
 
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "select handle from roomhandle where roomid=$roomid "
         );
-    if($row = do_mysqli_fetch("1",$result)){
+    if($row = pdo_fetch($result)){
     
         $handle = $row['handle'];
         $handleshort = substr($row['handle'],1);
@@ -54,7 +54,7 @@ require_once("config.php");
     if($private == 'Y'){
     
         $sharelink = "$rootserver/j/$uniqid";
-        do_mysqli_query("1"," 
+        pdo_query("1"," 
             insert into roominvite (roomid, inviteid, expires, status )
             values ($roomid, '$uniqid', date_add(now(),INTERVAL 2 DAY), 'Y')
               ");

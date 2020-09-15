@@ -478,6 +478,17 @@ function CreateChatMessage( $providerid, $chatid, $passkey, $message, $messagesh
             }
             ChatNotificationRequest($providerid, $chatid, $encodeshort, $_SESSION['responseencoding'],$subtype);
         } 
+        /*
+         * This is the original and it is wrong because it's updating V even if not current broadcast
+        if( $streaming ){
+            pdo_query("1"," 
+               update broadcastlog set chatcount=chatcount+1 
+               where chatid=$chatid and providerid =$providerid
+               and mode ='V'
+            ");
+        }
+         * 
+         */
         if( $streaming ){
             pdo_query("1"," 
                update broadcastlog set chatcount=chatcount+1 

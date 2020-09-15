@@ -9,7 +9,7 @@ require_once("localsettings.php");
 //*********************************************************************************
     $result = do_mysqli_query("1", 
        "select encoding from cryptkeys where keyid = 'NEWENCODING' and passphrase='' ");
-    if( $row = do_mysqli_fetch("1",$result))
+    if( $row = pdo_fetch($result))
     {
         $currentencoding = $row['encoding'];
     }
@@ -805,7 +805,7 @@ function SetSaveStreamFilter( $fp ){
         $result = do_mysqli_query("1","
             select providerid from keysend where passkey='' and chatid=$chatid and senderid = $senderid
                 ");
-        while($row = do_mysqli_fetch("1",$result) ){
+        while($row = pdo_fetch($result) ){
             $recipientid = $row['providerid'];
             $passkeyNew64 = EncryptE2EPasskey($passkey,$recipientid);        
             
@@ -851,7 +851,7 @@ function SetSaveStreamFilter( $fp ){
         $result = do_mysqli_query("1","
             select providerid from chatmembers where chatid = $chatid   ");
         
-        while($row = do_mysqli_fetch("1",$result) ){
+        while($row = pdo_fetch($result) ){
             
             $senderid = $row['providerid'];
             
@@ -878,7 +878,7 @@ function SetSaveStreamFilter( $fp ){
             select chatid, passkey from keysend where providerid = $providerid and passkey!=''
             "
         );
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             
             echo "<script>localStorage.setItem('chat-$row[chatid]', '$row[passkey]'); </script>";
             do_mysqli_query("1","delete from keysend where providerid=$providerid and chatid=$row[chatid]");
@@ -896,7 +896,7 @@ function SetSaveStreamFilter( $fp ){
             select passkey, senderid from keysend where providerid = $providerid and chatid= $chatid and passkey!=''
             "
         );
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
             $passkey =  DecryptE2EPasskey($row['passkey'], $providerid);
             return $passkey;
             

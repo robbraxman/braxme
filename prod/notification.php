@@ -1,7 +1,7 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 
 $providerid = $_SESSION['pid'];
 $mode = @tvalidator("PURIFY",$_POST['mode']);
@@ -23,7 +23,7 @@ $mode = @tvalidator("PURIFY",$_POST['mode']);
         <div style='text-align:center;margin:auto;width:100%'>
 <?php
 
-$result = do_mysqli_query("1","
+$result = pdo_query("1","
             select 
             DATE_FORMAT(date_add(notification.notifydate,INTERVAL $_SESSION[timezoneoffset]*60 MINUTE), '%b %d %a %h:%i %p') as notifydate2, 
             notifydate, notification.notifytype, notification.roomid, 
@@ -40,7 +40,7 @@ $result = do_mysqli_query("1","
 $i1 = 0;
 $lastnotifytype = '';
 $lastid = '';
-while($row = do_mysqli_fetch("1",$result))
+while($row = pdo_fetch($result))
 {
     if($row['notifytype']=='RP'){
         $notifytype = 'Room Activity';

@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("password.inc.php");
 require_once("aws.php");
 require_once("imageproc.inc");
@@ -73,18 +73,18 @@ require_once("internationalization.php");
         //Currently undefined
         $parentfolder = ""; 
         
-        do_mysqli_query("1","
+        pdo_query("1","
             insert into filefolders (providerid, foldername, parentfolder, parentfolderid) values
             ($providerid, '--temp--','$parentfolder',0)
             ");
         
         $result = 
-        do_mysqli_query("1","
+        pdo_query("1","
             select folderid from filefolders where providerid=$providerid and foldername='--temp--'
                 ");
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
         
-            do_mysqli_query("1","
+            pdo_query("1","
                 update filefolders set foldername='$selectedfolder' where providerid=$providerid
                     and folderid = $row[folderid]
                     ");
@@ -101,11 +101,11 @@ require_once("internationalization.php");
     //Delete Folders
     if($mode=='DF' && $selectedfolder!=''){
     
-        do_mysqli_query("1","
+        pdo_query("1","
             delete from filefolders where providerid=$providerid and folderid=$selectedfolderid
             ");
         
-        do_mysqli_query("1","
+        pdo_query("1","
             update filelib set status='N', folder='', folderid = 0 where providerid=$providerid and folderid=$selectedfolderid
             ");
         //$statusMessage = "Folder $selectedfolder deleted ($selectedfolderid)<br>";
@@ -128,11 +128,11 @@ require_once("internationalization.php");
     $_SESSION['filefolderid']=0;
     if(intval($selectedfolderid)!=0){
     
-        $result = do_mysqli_query("1","  
+        $result = pdo_query("1","  
             select foldername from filefolders where providerid=$providerid 
                 and folderid = $selectedfolderid
                 ");
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
             $selectedfolder = $row['foldername'];
             
         }
@@ -144,19 +144,19 @@ require_once("internationalization.php");
     if( $mode == 'SF'){
     
         $origfolder = "";
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 select folder, folderid from filelib where
                     filename='$filename' and providerid = $providerid and status='Y'
             ");
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
         
             $origfolder = $row['folder'];
             $origfolderid = $row['folderid'];
         }
         
         
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 update filelib set folder='$selectedfolder', folderid=$selectedfolderid where
                     filename='$filename' and providerid = $providerid
@@ -197,7 +197,7 @@ require_once("internationalization.php");
     if($mode=='D' && $filename!=''){
     
         
-        do_mysqli_query("1","
+        pdo_query("1","
             update filelib set status='N' where providerid=$providerid and filename='$filename' and status='Y'
             ");
         
@@ -212,7 +212,7 @@ require_once("internationalization.php");
     if($mode=='PIN' && $filename!=''){
     
         
-        do_mysqli_query("1","
+        pdo_query("1","
             update filelib set pin='Y' where providerid=$providerid and filename='$filename' and status='Y'
             ");
         
@@ -223,7 +223,7 @@ require_once("internationalization.php");
     if($mode=='UNPIN' && $filename!=''){
     
         
-        do_mysqli_query("1","
+        pdo_query("1","
             update filelib set pin='' where providerid=$providerid and filename='$filename' and status='Y'
             ");
         
@@ -237,13 +237,13 @@ require_once("internationalization.php");
     //Sent to EMAIL ADDRESS
     if( $mode == 'E'){
     
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 select  providerid, providername from provider 
                 where (replyemail = '$targetemail' or (handle = '$targetemail' and handle!='' ) )  and active='Y'
             ");
         
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
             $targetproviderid = $row['providerid'];
             $targetname = $row['providername'];
         } else {
@@ -251,14 +251,14 @@ require_once("internationalization.php");
             exit();
         }
         
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 select  filename, origfilename, title, folder, filesize, 
                         filetype, title, createdate, alias, encoding 
                 from filelib where filename='$filename' and providerid= $providerid and status='Y'
             ");
         
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
             $alias = uniqid("T4AZ", true);
             $unique_id = uniqid();
             
@@ -269,7 +269,7 @@ require_once("internationalization.php");
             
             if(copyAWSObject( $uploadfilename, $filename )){
             
-                do_mysqli_query("1",
+                pdo_query("1",
                     "
                         insert into filelib
                         ( providerid, filename, origfilename, folder, filesize, 
@@ -308,11 +308,11 @@ require_once("internationalization.php");
             //saveAWSObject($filename, "$workingfolder$newfilename");
             
             $encoding = "PLAINTEXT";
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 select fileencoding, filetype from filelib 
                     where providerid=$providerid and filename='$filename'
                     ");
-            if($row = do_mysqli_fetch("1",$result)){
+            if($row = pdo_fetch($result)){
                 $encoding = $row['fileencoding'];
                 $ext = $row['filetype'];
             }
@@ -328,7 +328,7 @@ require_once("internationalization.php");
             putAWSObject($newfilename, "$workingfolder$newfilename");
 
 
-            do_mysqli_query("1","
+            pdo_query("1","
                 update filelib set filename='$newfilename' 
                     where providerid=$providerid and filename='$filename'
                     ");
@@ -372,7 +372,7 @@ require_once("internationalization.php");
         $origfilename_encrypted = EncryptTextCustomEncode( $origfilename,"PLAINTEXT","$filename" );
         
         $title = EncryptTextCustomEncode(@tvalidator("PURIFY",$_POST['title']),"PLAINTEXT", "$filename");
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 update filelib set origfilename='$origfilename_encrypted', title='$title', encoding='PLAINTEXT', folder='$selectedfolder' where
                     filename='$filename' and providerid = $providerid
@@ -386,7 +386,7 @@ require_once("internationalization.php");
     
         $statusMessage = "File external link changed<br>";
         $alias = uniqid("T4AZ", true);
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 update filelib set alias='$alias' where
                     filename='$filename' and providerid = $providerid
@@ -565,7 +565,7 @@ require_once("internationalization.php");
     **********************************************************/
     if($mode == 'CF'){
         
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 select origfilename, filename, folder, folderid, alias, views, filetype, filesize, title,
                 date_format( date_add(createdate,INTERVAL ($_SESSION[timezoneoffset])*60 MINUTE),'%m/%d/%y %h:%i%p') as createdate,
@@ -575,7 +575,7 @@ require_once("internationalization.php");
             "
             );
         
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
         
             $encoding = $row['encoding'];
             $origfilename = DecryptText($row['origfilename'], $encoding, $row['filename'] );
@@ -729,14 +729,14 @@ require_once("internationalization.php");
     
     /* change Encryption */
     /*
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
             select origfilename, filename, title, encoding
             from filelib 
             
         ");
     
-    while($row = do_mysqli_fetch("1",$result))
+    while($row = pdo_fetch($result))
     {
         $encoding = $row['encoding'];
         $origfilename = DecryptText($row['origfilename'], $encoding, $row['filename'] );
@@ -748,7 +748,7 @@ require_once("internationalization.php");
         $temp = nl2br( stripslashes($title));
         $newtitle = base64_encode( $temp );
         
-        do_mysqli_query("1","update filelib set origfilename = '$origfilename', title='$title', encoding='PLAINTEXT' 
+        pdo_query("1","update filelib set origfilename = '$origfilename', title='$title', encoding='PLAINTEXT' 
             where filename ='$row[filename]' 
                 ");
     }
@@ -777,7 +777,7 @@ require_once("internationalization.php");
     if($filtername==''){
         $limit = " limit $pagestart, $max";
     }
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
             select origfilename, filename, folder, folderid, alias, 
             views, filetype, filesize, title, pin,
@@ -839,7 +839,7 @@ require_once("internationalization.php");
     
     $count = 0;
     
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         
         $createdate = InternationalizeDate($row['createdate']);
     
@@ -970,21 +970,21 @@ require_once("internationalization.php");
 
         echo "</div>";
 
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
             select sum(filesize) as totalsize, count(*) as filecount
             from filelib where providerid = $providerid 
         ");
-    $row = do_mysqli_fetch("1",$result);
+    $row = pdo_fetch($result);
     $totalsize = round($row['totalsize']/1000000,1);
     $filecount = $row['filecount'];
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
             select sum(filesize*views) as bandwidth
             from fileviews where providerid = $providerid 
         ");
-    $row = do_mysqli_fetch("1",$result);
+    $row = pdo_fetch($result);
     
     $bandwidth = round($row['bandwidth']/1000000000,1);
     
@@ -1143,7 +1143,7 @@ function ShowFile( $displayOnly, $providerid, $mode, $filename, $altfilename, $t
     $shareserver = "$prodserver";
     //}
     
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 select origfilename, filename, folder, alias, views, filetype, filesize, title,
                 date_format( date_add(createdate,INTERVAL ($_SESSION[timezoneoffset])*60 MINUTE),'%b %d, %Y %h:%i%p') as createdate,
@@ -1153,7 +1153,7 @@ function ShowFile( $displayOnly, $providerid, $mode, $filename, $altfilename, $t
             "
             );
         
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
         
             $filesize = $row['filesize'];
             $encoding = $row['encoding'];
@@ -1166,7 +1166,7 @@ function ShowFile( $displayOnly, $providerid, $mode, $filename, $altfilename, $t
             $alias = rawurlencode(htmlentities($row['alias'],ENT_QUOTES));
             $origfilenameDisplay = DecryptText($row['origfilename'], $encoding, $row['filename'] );
             $origfilename = rawurlencode(htmlentities(DecryptText($origfilenameDisplay, $encoding, $row['filename']),ENT_QUOTES)); 
-            $download = "$shareserver/$installfolder/doc.php?p=$alias&f=$origfilename";
+            $download = "$shareserver/f/$origfilename/$alias";
             $title = DecryptText($row['title'], $encoding, $row['filename'] );
             $title2 = str_replace(" ","-",$title);
             $title2 = rawurlencode($title2);
@@ -1767,7 +1767,7 @@ function CreateFolderList( $providerid, $mode, $selectedfolder, $selectedfolderi
         $foldermode = 'SF';
         $selectedfolderid = 0;
     }
-    $result2 = do_mysqli_query("1","
+    $result2 = pdo_query("1","
         select distinct foldername, folderid from filefolders where providerid = $providerid 
             and parentfolderid=$selectedfolderid
             order by foldername asc
@@ -1833,7 +1833,7 @@ function CreateFolderList( $providerid, $mode, $selectedfolder, $selectedfolderi
     $foldercount = 0;
     
 
-    while( $row2 = do_mysqli_fetch("1",$result2))
+    while( $row2 = pdo_fetch($result2))
     {
         $foldername_short = substr($row2['foldername'],0,15);
         if(strlen($row2['foldername'])>15){
@@ -2281,7 +2281,7 @@ function duplicateNameCorrection($providerid, $AWSfilename, $origfilename ) {
         
             //No Encryption Currently
             $filename_encrypted = $filename;
-            $result = do_mysqli_query("1", 
+            $result = pdo_query("1", 
                     "
                         select * from filelib 
                         where providerid = $providerid and 
@@ -2289,7 +2289,7 @@ function duplicateNameCorrection($providerid, $AWSfilename, $origfilename ) {
                         and filename!='$AWSfilename'
                      "
              );
-            if(!$row = do_mysqli_fetch("1",$result)){
+            if(!$row = pdo_fetch($result)){
                 $matched = false;
                 return $filename;
             }

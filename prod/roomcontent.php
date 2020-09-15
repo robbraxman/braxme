@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once("config.php");
-require("crypt.inc.php");
+require_once("config-pdo.php");
+require("crypt-pdo.inc.php");
 require("aws.php");
 
     
@@ -26,8 +26,8 @@ require("aws.php");
     $timezoneoffset = @tvalidator("PURIFY",$_POST['timezoneoffset']);
     
     
-    $result = do_mysqli_query("1","select room from statusroom where roomid=$roomid and owner=providerid limit 1");
-    while( $row = do_mysqli_fetch("1",$result))
+    $result = pdo_query("1","select room from statusroom where roomid=$roomid and owner=providerid limit 1");
+    while( $row = pdo_fetch($result))
     {
         $room = $row['room'];
     }
@@ -69,7 +69,7 @@ require("aws.php");
     if($subset=='music')
     {
     
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 select origfilename, filename, folder, alias, views, filetype, filesize, title,
                 date_format( date_add(createdate,INTERVAL ($timezoneoffset)*60 MINUTE),'%b %d, %y %h:%i%p') as createdate,
@@ -91,7 +91,7 @@ require("aws.php");
                         </script>
         ";
 
-        while($row = do_mysqli_fetch("1",$result))
+        while($row = pdo_fetch($result))
         {
             $encoding = $row['encoding'];
             $origfilename = DecryptText($row['origfilename'], $encoding, $row['filename'] );
@@ -163,7 +163,7 @@ require("aws.php");
     if($subset=='photos')
     {
     
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 select origfilename, filename, folder, alias, views, filetype, filesize, title,
                 date_format( date_add(createdate,INTERVAL ($timezoneoffset)*60 MINUTE),'%b %d, %y %h:%i%p') as createdate,
@@ -177,7 +177,7 @@ require("aws.php");
 
         echo "<div style='padding:0;margin:auto;text-align:center;background-color:$backgroundcolor'>";
     
-        while($row = do_mysqli_fetch("1",$result))
+        while($row = pdo_fetch($result))
         {
             $encoding = $row['encoding'];
             $origfilename = DecryptText($row['origfilename'], $encoding, $row['filename'] );
@@ -237,7 +237,7 @@ require("aws.php");
     if($subset=='files')
     {
     
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 select origfilename, filename, folder, alias, views, filetype, filesize, title,
                 date_format( date_add(createdate,INTERVAL ($timezoneoffset)*60 MINUTE),'%b %d, %y %h:%i%p') as createdate,
@@ -251,7 +251,7 @@ require("aws.php");
 
         echo "<div style='padding:0;margin:auto;text-align:center;background-color:$backgroundcolor'>";
     
-        while($row = do_mysqli_fetch("1",$result))
+        while($row = pdo_fetch($result))
         {
             $encoding = $row['encoding'];
             $origfilename = DecryptText($row['origfilename'], $encoding, $row['filename'] );

@@ -1,10 +1,10 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 
 
         
-$result = do_mysqli_query("1",
+$result = pdo_query("1",
 
     "select providername from provider where providerid = $_SESSION[pid]  "
 );
@@ -14,7 +14,7 @@ if( $row )
     $name1 = "$row[0]";
    echo "$row[0]";
 }
-$result = do_mysqli_query("1",
+$result = pdo_query("1",
 
     "select staffname from staff where providerid = $_SESSION[pid] and loginid='$_SESSION[loginid]' "
 );

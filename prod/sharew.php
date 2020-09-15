@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("config.php");
+include("config-pdo.php");
 
 $share = @tvalidator("PURIFY", $_GET['p'] );
 $view = @tvalidator("PURIFY", $_GET['v'] );
@@ -11,7 +11,7 @@ $sharelink = "$rootserver/$installfolder/sharew.php?p=$share";
 if( $view!=='N')
 {
     $displaylink = "";
-    $result2 = do_mysqli_query("1","
+    $result2 = pdo_query("1","
         update shares set views=views+1 where shareid='$share' 
         ");
 }
@@ -24,11 +24,11 @@ else
 }
 
 
-$result = do_mysqli_query("1","
+$result = pdo_query("1","
         select providerid, sharelocal from shares
         where shareid='$share'
             ");
-if( $row = do_mysqli_fetch("1",$result))
+if( $row = pdo_fetch($result))
 {
     $providerid = $row['providerid'];
     $collection = $row['sharelocal'];
@@ -39,19 +39,19 @@ else
 }
 
 
-$result = do_mysqli_query("1","
+$result = pdo_query("1","
         select avatarurl from provider where providerid= $providerid
             ");
-if($row = do_mysqli_fetch("1",$result))
+if($row = pdo_fetch($result))
     $avatarurl = $row['avatarurl'];
 
 
-$result = do_mysqli_query("1","
+$result = pdo_query("1","
         select url, album, url1, seq, description from sharecollection
         where providerid = $providerid and collection='$collection'
             ");
 
-while( $row = do_mysqli_fetch("1",$result))
+while( $row = pdo_fetch($result))
 {
     $album[$row[seq]] = "$row[album]";
     $url1[$row[seq]] = "$row[url1]";
@@ -209,7 +209,7 @@ if( $view == 'N')
         ";
                     
     
-    $result =  do_mysqli_query("1","
+    $result =  pdo_query("1","
         select ip, device, views, 
         DATE_FORMAT( lastread, '%m/%d/%y %h:%i %p') as lastread
         from sharereads where shareid in
@@ -218,7 +218,7 @@ if( $view == 'N')
         ");
     
     
-    while($row= do_mysqli_fetch("1",$result))
+    while($row= pdo_fetch($result))
     {
         echo "
             <tr>

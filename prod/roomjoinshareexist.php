@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 
 $roomid = intval(@tvalidator("PURIFY",$_POST['roomid']));
 $handle = @tvalidator("PURIFY",$_POST['roomhandle']);
@@ -20,7 +20,7 @@ $providerid = "";
         $password = tvalidator("PURIFY",$_POST['password']);
 
         //validate user
-        $result = do_mysqli_query("1", 
+        $result = pdo_query("1", 
            " select providerid, pwd_ver, pwd_hash from staff where providerid in 
                 (    
                     select providerid from provider where active='Y' and
@@ -28,7 +28,7 @@ $providerid = "";
                 )
                 and active='Y' 
             ");
-        if( $row = do_mysqli_fetch("1",$result)){
+        if( $row = pdo_fetch($result)){
 
             $providerid = $row['providerid'];
             if($row['pwd_ver']>=3){
@@ -48,10 +48,10 @@ $providerid = "";
     
     if($handle!=''){
     
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
         select roomid from roomhandle where handle='$handle' 
         ");
-        if($row = do_mysqli_fetch("1",$result))
+        if($row = pdo_fetch($result))
         {
             $roomid = $row['roomid'];
         }
@@ -66,10 +66,10 @@ $providerid = "";
     
     
 
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select roomid, room, owner from statusroom where owner=providerid and roomid=$roomid
         ");
-    if( $row = do_mysqli_fetch("1",$result))
+    if( $row = pdo_fetch($result))
     {
         //$inviteroomname='';
         $inviteroom = $row['roomid'];
@@ -78,7 +78,7 @@ $providerid = "";
         
         
 
-    do_mysqli_query("1","
+    pdo_query("1","
         insert into statusroom ( roomid, owner, providerid,status, createdate, creatorid ) values
         ( $roomid, $owner, $providerid,'Y',now(),$providerid )
         ");

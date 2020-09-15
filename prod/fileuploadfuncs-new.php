@@ -93,7 +93,7 @@
                 }
             }
                     
-            $result = do_mysqli_query("1", 
+            $result = pdo_query("1", 
                     "
                         insert into filelib
                         ( providerid, filename, origfilename, folder, folderid, 
@@ -150,7 +150,7 @@
                 $filesize = filesize( $upload_dir."medium/".$origfilename );
 
 
-                $result = do_mysqli_query("1", 
+                $result = pdo_query("1", 
                         "
                             insert into photolib
                             ( providerid, album, filename, folder, filesize, filetype, title, createdate, alias, owner )
@@ -209,7 +209,7 @@
             $filesize = filesize( $upload_dir."medium/".$origfilename );
 
 
-            $result = do_mysqli_query("1", 
+            $result = pdo_query("1", 
                     "
                         insert into photolib
                         ( providerid, album, filename, folder, filesize, filetype, title, createdate, alias, owner, f_filename )
@@ -266,14 +266,14 @@
         {
             //No Encryption Currently
             $filename_encrypted = $filename;
-            $result = do_mysqli_query("1", 
+            $result = pdo_query("1", 
                     "
                         select * from filelib 
                         where providerid = $providerid and origfilename = '$filename_encrypted' and status='Y'
                         and folderid = $folderid
                      "
              );
-            if(!$row = do_mysqli_fetch("1",$result)){
+            if(!$row = pdo_fetch($result)){
                 $matched = false;
                 return $filename;
             }

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("password.inc.php");
 require("aws.php");
 
@@ -35,7 +35,7 @@ require("aws.php");
     if($mode=='D')
     {
         
-        do_mysqli_query("1","
+        pdo_query("1","
             delete from filelib where providerid=$providerid and filename='$filename' and status='Y'
             ");
         
@@ -125,15 +125,15 @@ require("aws.php");
          <table  class='gridstdborder' style='background-color:white;border-collapse:collapse'>
          ";
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
             select sum(filesize) as totalsize
             from filelib where providerid = $providerid and status='Y'
         ");
-    $row = do_mysqli_fetch("1",$result);
+    $row = pdo_fetch($result);
     $totalsize = round($row[totalsize]/1000000,1);
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
             select origfilename, filename, folder, alias, views, filetype, filesize, title,
             date_format( date_add(createdate,INTERVAL $_SESSION[timezoneoffset] HOUR),'%m/%d/%y %h:%i %p') as createdate,
@@ -166,7 +166,7 @@ require("aws.php");
         ";
     
     
-    while($row = do_mysqli_fetch("1",$result))
+    while($row = pdo_fetch($result))
     {
         $filename = "$rootserver/$installfolder/$row[folder]$row[filename]";
         $createdate = $row[createdate];

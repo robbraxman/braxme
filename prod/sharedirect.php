@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("config.php");
+include("config-pdo.php");
 require('aws.php');
 
 $alias = '';
@@ -22,17 +22,17 @@ if($share!=''){
 
 if( $alias == '')
 {
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
             select filename, folder, title, comment, views, likes, filetype, filesize, public from photolib where filename='$share'
             ");
 }
 else
 {
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
             select filename, folder, title, comment, views, likes, filetype, filesize, public from photolib where alias='$alias'
             ");
 }
-if( !$row = do_mysqli_fetch("1",$result))
+if( !$row = pdo_fetch($result))
 {
 
     $filename = "$rootserver/img/expired.jpg";

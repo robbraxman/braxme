@@ -2,8 +2,8 @@
 session_start();
 require("validsession.inc.php");
 ini_set("max_file_uploads","100");
-require_once("config.php");
-require("crypt.inc.php");
+require_once("config-pdo.php");
+require("crypt-pdo.inc.php");
 $_SESSION['returnurl']="<a href='$rootserver/$installfolder/login.php'>Login</a>";
 require("password.inc.php");
 

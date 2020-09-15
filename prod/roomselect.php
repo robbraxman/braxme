@@ -1,7 +1,7 @@
 <?php
 session_start();
 require("nohost.php");
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("internationalization.php");
 require_once("roomselect.inc.php");
 
@@ -24,11 +24,11 @@ require("validsession.inc.php");
     
     SaveLastFunction($providerid,"R", 0);
 
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select roomdiscovery, sponsor, roomfeed from provider where providerid = $providerid 
         ");
     $roomdiscovery = '';
-    if($row = do_mysqli_fetch("1",$result)){
+    if($row = pdo_fetch($result)){
         $roomdiscovery = $row['roomdiscovery'];
         $sponsor = $row['sponsor'];
         $roomfeed = $row['roomfeed'];
@@ -39,11 +39,11 @@ require("validsession.inc.php");
         }
     }
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
         update notification set displayed = 'Y' where notifytype='RP' and displayed!='Y' and recipientid=$providerid
         ");
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
         update alertrefresh set lastnotified = null where providerid=$providerid and deviceid = '$_SESSION[deviceid]'
         ");

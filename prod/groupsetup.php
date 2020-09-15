@@ -2,7 +2,7 @@
 session_start();
 
 require("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("room.inc.php");
 require_once("groupmanage.inc.php");
 require_once("internationalization.php");
@@ -78,10 +78,10 @@ require_once("internationalization.php");
 
             $groupid = 0;
             //Find if the Room already exists
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 select groupid from groups where groupname='$groupnameForSql' and creator=$providerid
                 ");
-            if( $row = do_mysqli_fetch("1",$result)){
+            if( $row = pdo_fetch($result)){
             
                 $groupid = intval($row['groupid']);
             }
@@ -94,7 +94,7 @@ require_once("internationalization.php");
         if( $groupname!='' && $groupid > 0){
         
             
-            do_mysqli_query("1","
+            pdo_query("1","
                 insert into groups ( groupid, groupname, creator, createdate ) values
                 ( $groupid, '$groupnameForSql',$providerid, now() )
                 ");
@@ -334,8 +334,8 @@ require_once("internationalization.php");
 
     if(intval($groupid)==0){
         echo "<div style='color:$global_textcolor;background-color:$global_background;text-align:center;margin:auto'><br><br>";
-        $result = do_mysqli_query("1","select groupname from groups where groupid in (select groupid from groupmembers where providerid = $providerid ) ");
-        while($row = do_mysqli_fetch("1",$result)){
+        $result = pdo_query("1","select groupname from groups where groupid in (select groupid from groupmembers where providerid = $providerid ) ");
+        while($row = pdo_fetch($result)){
             echo "Member of $row[groupname]<br>";
         }
         echo "</div><br><br><br><br>";

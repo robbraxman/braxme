@@ -53,7 +53,7 @@ require ("../aws.php");
             where notification.status='N' 
             $notifyfilter
                 ");
-        while( $row = do_mysqli_fetch("1",$result))
+        while( $row = pdo_fetch($result))
         {
             
             NotifyRun($row['recipientid']);
@@ -111,7 +111,7 @@ require ("../aws.php");
         $party = new stdClass();
         $lastnotifytype = '';
         $lastroomid = 0;
-        while( $row = do_mysqli_fetch("1",$result))
+        while( $row = pdo_fetch($result))
         {
             //Same Room  Notification so eliminate dups
             if($row['notifytype'] == 'RP' &&
@@ -163,7 +163,7 @@ require ("../aws.php");
             if(intval($party->roomid)>0 )
             {
                 $result2 = do_mysqli_query("1","select room from statusroom where roomid = $party->roomid");
-                if($row2 = do_mysqli_fetch("1",$result2))
+                if($row2 = pdo_fetch($result))
                 {
                     $party->room = $row2['room'];
                 }
@@ -220,7 +220,7 @@ require ("../aws.php");
     {
         
         $result2 = do_mysqli_query("1","select arn, platform, token from notifytokens where providerid=$recipientid and token!='' and arn='' and status='Y' ");
-        while($row2 = do_mysqli_fetch("1",$result2))
+        while($row2 = pdo_fetch($result))
         {   
             //blank ARN so HOLD OFF
             return false;
@@ -262,7 +262,7 @@ require ("../aws.php");
             and provider.active='Y'
             
             ");
-        while($row2 = do_mysqli_fetch("1",$result2))
+        while($row2 = pdo_fetch($result))
         {
             if( $row2['arn']=='')
             {
@@ -364,7 +364,7 @@ require ("../aws.php");
                 and lastemail is not null and
                 timestampdiff(HOUR, lastemail, now() )< 4
             ");
-            if($row = do_mysqli_fetch("1",$result))
+            if($row = pdo_fetch($result))
             {
                 //Do not re-email -- too frequent
                 return true;

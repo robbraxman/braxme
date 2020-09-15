@@ -1,7 +1,7 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 
 $providerid = $_SESSION['pid'];
 $lasttip = intval($_SESSION['lasttip']);
@@ -15,7 +15,7 @@ SaveLastTip( "$nexttip",$providerid);
 
 function SaveLastTip($tip, $providerid)
 {
-    do_mysqli_query("1","update provider set lasttip=$tip where providerid=$providerid");
+    pdo_query("1","update provider set lasttip=$tip where providerid=$providerid");
 }
 
 ?>

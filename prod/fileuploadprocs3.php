@@ -1,7 +1,7 @@
 <?php
 session_start();
 $_SESSION['returnurl']="<a href='login.php'>Login</a>";
-require_once("config.php");
+require_once("config-pdo.php");
 require ("password.inc.php");
 require ("fileuploadprocs3.inc.php");
 require ("htmlhead.inc.php");   

@@ -227,6 +227,7 @@ $time1 = microtime(true);
         
     
    $result = pdo_query("1",
+    
         "
         select 
         DATE_FORMAT(date_add(chatmaster.created, 
@@ -274,11 +275,7 @@ $time1 = microtime(true);
         left join provider on chatmaster.owner = provider.providerid
         where chatmaster.status='Y' and chatmaster.chatid in 
         (select chatid from chatmembers 
-<<<<<<< HEAD
         where providerid = ? and status='Y' )
-=======
-        where providerid = $providerid and status='Y' )
->>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
         and (select count(*) from chatmessage where chatmaster.chatid = chatmessage.chatid) > 0
         $findfilter
         $livefilter

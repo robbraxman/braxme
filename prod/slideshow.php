@@ -1,7 +1,7 @@
 <?php
 session_start();
 header('X-Frame-Options: SAMEORIGIN');
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("aws.php");
 
 $providerid = @tvalidator("PURIFY",$_GET['pid']);
@@ -45,10 +45,10 @@ if($album!='' && $album[0]=='*'){
 }
 $slideseconds = "8000"; //milliseconds
 $sort = "order by createdate asc";
-$result = do_mysqli_query("1","
+$result = pdo_query("1","
         select sortorder, slideseconds from slideshowpref where providerid = $providerid
         ");
-if($row = do_mysqli_fetch("1",$result)){
+if($row = pdo_fetch($result)){
     if($row['sortorder']=='asc'){
         $sort = "order by createdate desc";
     }
@@ -57,7 +57,7 @@ if($row = do_mysqli_fetch("1",$result)){
         $slideseconds = 8000; //milliseconds
     }
 }
-$result = do_mysqli_query("1","
+$result = pdo_query("1","
         select filename, title, comment
         from photolib where
         providerid=$providerid and album='$album'
@@ -65,7 +65,7 @@ $result = do_mysqli_query("1","
         ");
 $count = 0;
 $showbulletnavigator = "2";
-while($row = do_mysqli_fetch("1",$result)){
+while($row = pdo_fetch($result)){
     $filename = getAWSObjectUrlShortTerm($row['filename']);
     
     $image_slides .= "

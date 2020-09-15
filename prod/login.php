@@ -3,7 +3,7 @@ session_start();
 header('X-Frame-Options: SAMEORIGIN');
 header('X-Content-Type: nosniff');
 header('X-XSS-Protection: 1; mode=block');
-require_once("config.php");
+require_once("config-pdo.php");
 
 //session_unset();
 //session_destroy();

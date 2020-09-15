@@ -1,7 +1,7 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require("config.php");
+require("config-pdo.php");
 $checkbox = '';//"<img src='../img/checkbox-green-128.png' style='height:25px;position:relative;top:5px' />";
 ?>
  

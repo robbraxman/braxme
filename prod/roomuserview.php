@@ -17,7 +17,8 @@ function MyProfileOutput(
         $privacymessage,
         $caller,
         $gift,
-        $profileroomid
+        $profileroomid,
+        $medal
         )
 {
 
@@ -30,9 +31,11 @@ function MyProfileOutput(
     global $installfolder;
     global $iconsource_braxarrowright_common;
     global $iconsource_braxgift_common;
+    global $appname;
     
     global $menu_gift;
     global $menu_thanks;
+    global $iconsource_braxcheck_common;
 
     $technotes = "";
     if($_SESSION['superadmin']=='Y'){
@@ -85,7 +88,12 @@ function MyProfileOutput(
                 </span><br><br>";
     }
  
-    
+    if($medal == 1){
+       $medalstatus = "<span class='mainfont' style='color:$global_profiletext_color;;margin:auto;vertical-align:top;;padding-right:30px;padding-top:10px;;margin:0'>
+                            <img class='icon15' src='$iconsource_braxcheck_common' /> Trusted $appname Resource<br><br></span>";
+       
+        
+    }
     
     $avatar = ShowMyAvatar($avatarurl, $providerid, $roomowner, $caller);
     $score = ShowMyScore( $roomowner);
@@ -120,6 +128,7 @@ function MyProfileOutput(
                     $buttons
                 </span>
                 $donate
+                $medalstatus
                 $publishprofile
                 $privacymessage
                 <br>
@@ -143,16 +152,17 @@ function ShowMyProfile($providerid, $roomowner, $caller, $profileflag)
     if($profileflag!='Y'){
         return "";
     }
-    $result = do_mysqli_query("1"," 
+    $result = pdo_query("1"," 
             select providername, avatarurl, replyemail, handle, publishprofile, publish, gift,
-            blocked1.blockee, blocked2.blocker, provider.profileroomid
+            blocked1.blockee, blocked2.blocker, provider.profileroomid, medal
             from provider 
             left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = $providerid
             left join blocked blocked2 on blocked2.blocker = provider.providerid and blocked2.blockee = $providerid
             where providerid = $roomowner 
                 ");
     $providername = "Unknown";
-    if($row = do_mysqli_fetch("1",$result)){
+    if($row = pdo_fetch($result)){
+        $medal = $row['medal'];
         $providername = $row['providername'];
         $avatarurl = $row['avatarurl'];
         
@@ -219,7 +229,8 @@ function ShowMyProfile($providerid, $roomowner, $caller, $profileflag)
         $privacymessage,
         $caller,
         $gift,
-        $profileroomid
+        $profileroomid,
+        $medal
         );
     
     
@@ -235,8 +246,8 @@ function ShowMyPhotos($providerid, $watcherid, $caller)
     if($_SESSION['superadmin']!='Y'){
     //    return "";
     }
-    $result = do_mysqli_query("1","select * from photolibshare where providerid = $providerid  limit 1");
-    if($row = do_mysqli_fetch("1",$result)){
+    $result = pdo_query("1","select * from photolibshare where providerid = $providerid  limit 1");
+    if($row = pdo_fetch($result)){
         return "
                             <div class='photolibshare rounded' data-userid='$providerid' style='width:250px;cursor:pointer;padding-left:10px;background-color:$global_titlebar_color;color:white'>
                                 <img class='icon30' src='../img/braxphoto-white.png'>
@@ -267,7 +278,7 @@ function ShowMyRooms($providerid, $watcherid, $caller)
     $watcheraction = "feed";
     
     
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select roomhandle.handle, statusroom.roomid, roominfo.room, 
         roominfo.photourl, roominfo.profileflag, roomhandle.public, roominfo.groupid
         from statusroom 
@@ -288,7 +299,7 @@ function ShowMyRooms($providerid, $watcherid, $caller)
         and statusroom.roomid > 1
         order by roominfo.profileflag desc, roominfo.lastactive desc, roominfo.room asc
     ");
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         $room = $row['room'];
         $roomhandle = $row['handle'];
         $roomid = $row['roomid'];
@@ -333,7 +344,7 @@ function ShowMyPrivateRooms($providerid, $watcherid, $caller)
     $roomlinks = "";
     $watcheraction = "feed";
     
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select roomhandle.handle, statusroom.roomid, roominfo.room, 
         roominfo.photourl, roominfo.profileflag from statusroom 
         left join  roominfo on statusroom.roomid = roominfo.roomid
@@ -349,7 +360,7 @@ function ShowMyPrivateRooms($providerid, $watcherid, $caller)
         and statusroom.roomid > 1
         order by roominfo.profileflag desc, roominfo.room asc
     ");
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         $room = $row['room'];
         $roomhandle = $row['handle'];
         $roomid = $row['roomid'];
@@ -635,7 +646,7 @@ function ShowMyAvatar($avatarurl, $providerid, $roomowner, $caller)
 }
 function IsThereExistingChat($providerid, $recipientid )
 {
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select chatid, keyhash from chatmaster 
         where 
         chatid in
@@ -646,7 +657,7 @@ function IsThereExistingChat($providerid, $recipientid )
             and chatmaster.chatid = chatmembers.chatid )
         and (select count(*) from chatmembers where chatmaster.chatid = chatmembers.chatid) = 2
             ");
-    if($row = do_mysqli_fetch("1",$result)){
+    if($row = pdo_fetch($result)){
         $array['chatid'] = $row['chatid'];
         $array['keyhash'] = $row['keyhash'];
         return (object) $array;
@@ -663,18 +674,18 @@ function ShowMyScore( $providerid)
     $score1 = 0;
     $score2 = 0;
     
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         SELECT score from provider
         where providerid = $providerid 
     ");
-    if($row = do_mysqli_fetch("1",$result)){
+    if($row = pdo_fetch($result)){
         $score1 += intval($row['score']);
     }
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         SELECT count(*) as score from gifts
         where owner = $providerid 
     ");
-    if($row = do_mysqli_fetch("1",$result)){
+    if($row = pdo_fetch($result)){
         $score2 += intval($row['score']);
     }
     $scoretext = "";
@@ -705,11 +716,11 @@ function ShowMyFollowers( $providerid)
     $followers = 0;
     $followertext = '';
     
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         SELECT count(*) as count from followers
         where providerid = $providerid 
     ");
-    if($row = do_mysqli_fetch("1",$result)){
+    if($row = pdo_fetch($result)){
         $followers += intval($row['count']);
     }
     if($followers > 0){
@@ -731,14 +742,14 @@ function ShowFollowing( $roomowner, $providerid )
     
     $following = '';
     
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         SELECT * 
         from followers
         left join provider on followers.followerid =provider.providerid
         where followers.providerid = $roomowner  and followers.followerid=$providerid
         and provider.active = 'Y'
     ");
-    if($row = do_mysqli_fetch("1",$result)){
+    if($row = pdo_fetch($result)){
         $following = "<br><div class='smalltext managefriends' data-friendid='$roomowner' data-mode='UF' style='cursor:pointer;border-radius:5px;text-align:center;background-color:white;color:black;padding-top:5px;padding-bottom:5px;padding-left:20px;padding-right:20px;margin-top:5px'>Following</div>";
     }
     
@@ -757,10 +768,11 @@ function GetTechNotes( $otherid  )
     }
     //return "";
     $technotes = "<div class='smalltext' style='padding:10px'>";
-    $result = do_mysqli_query("1","   
+    $result = pdo_query("1","   
         select useragent, deviceheight, devicewidth, pixelratio, industry, enterprise, notifications, notificationflags,
             providername, name2, alias, replyemail, handle, createdate, devicecode, sponsor, roomdiscovery, colorscheme, language,
             accountstatus, iphash, iphash2, ipsource, joinedvia, timezone, store, web, roomcreator, broadcaster, publish,
+            allowiot, active, verified,
             (select count(*) from provider p2 where p2.iphash2 = provider.iphash2 and active='Y') as multi,
             (select count(*) from photolib where photolib.providerid = provider.providerid) as photocount,
             (select count(*) from chatmessage where chatmessage.providerid = provider.providerid) as chatcount,
@@ -770,21 +782,52 @@ function GetTechNotes( $otherid  )
             ");
             //(select count(*) from chatmessage where chatmessage.providerid = provider.providerid) as chatcount,
             //(select count(*) from statuspost where statuspost.providerid = provider.providerid) as roomcount
-    if($row = do_mysqli_fetch("1",$result)){
-        $technotes .= "Name $row[providername] - $otherid <br>";
+    
+    
+    if($row = pdo_fetch($result)){
+        $handle = substr($row['handle'],1);
+        $technotes .= "Name $row[providername] - $otherid  Active: $row[active]<br>";
+        $technotes .= "Handle $row[handle]<br>";
         $technotes .= "Name2 $row[name2]<br>";
         $technotes .= "Publish Profile $row[publish]<br>";
         $technotes .= "Room=$row[roomcreator] Web=$row[web] Store=$row[store]<br>";
         $technotes .= "Alias $row[alias]<br>";
-        $technotes .= "Handle $row[handle]<br>";
-        $technotes .= "Email $row[replyemail]<br>";
-        
-        $result2 = do_mysqli_query("1","   
-            select username, password, startdate, ip from bytzvpn where providerid = $otherid and status='Y'
-            ");
-        while($row2 = do_mysqli_fetch("1",$result2)){
-            $technotes .= "BytzVPN $row2[username] / $row2[password] ($row2[startdate]) $row2[ip]<br>";
+        $technotes .= "Email $row[replyemail] ";
+        if($row['verified']=='Y'){
+            $technotes .= "(Verified)";
+        } else {
+            $technotes .= "(Not Verified)";
+            
         }
+        $technotes .= "<br>";
+        
+        
+        $result2 = pdo_query("1","   
+            select accountid, username, password, startdate, ip from bytzvpn where providerid = $otherid and status='Y'
+            ");
+        if($row2 = pdo_fetch($result)){
+            $technotes .= "BytzVPN $row2[username] / $row2[password] ($row2[startdate]) $row2[ip]<br>";
+            $technotes .= "<br><div class='vpnmanage divbutton4' data-accountid='$row2[accountid]' data-mode='E' >Edit VPN Account</div><br><br>";
+        } else {
+            $technotes .= "<br><div class='vpnmanage divbutton4' data-accountid='' data-name='$row[providername]' data-username='$handle' data-providerid=$otherid data-mode='A' >Create VPN Account</div><br><br>";
+            
+        }
+        
+        $i = 0;
+        $result2 = pdo_query("1","   
+            select xacdate, item_name, payment_status, payment_amount,payer_email,paypalname,tracking,shipstatus, city, state, country from paypalipn where buyer = $otherid order by xacdate desc
+            ");
+        while($row2 = pdo_fetch($result)){
+            if($i==0){
+                $technotes .= "STORE TRANSACTIONS<br>-----------------------<br>";
+            }
+            $i++;
+            $technotes .= "$row2[xacdate] / $row2[item_name] ($row2[payment_status]) $row2[payment_amount] Status: $row2[shipstatus]<br> ................................ $row2[payer_email] $row2[paypalname] $row2[tracking]<br>$row2[city], $row2[state] $row2[country]<br>";
+        } 
+        if($i>0){
+        $technotes .= "-----------------------<br><br>";
+        }
+        
         
         $technotes .= "Color $row[colorscheme]<br>";
         $technotes .= "Language $row[language]<br>";
@@ -805,22 +848,40 @@ function GetTechNotes( $otherid  )
         $technotes .= "ChatCount/RoomCount $row[chatcount]/<br>";
         //$technotes .= "ChatCount/RoomCount $row[chatcount]/$row[roomcount]<br>";
         $technotes .= "Sponsor $row[sponsor]/ SocialMedia $row[roomdiscovery]<br>";
+        $technotes .= "AllowIOT $row[allowiot]<br>";
+        
+        $result2 = pdo_query("1","   
+            select distinct module from iotdata where handle = '$row[handle]'
+            ");
+        while($row2 = pdo_fetch($result)){
+            $technotes .= "-- IOT $row2[module] - ";
+            
+            $result3 = pdo_query("1","   
+                select checkin from iotdevices where handle = '$row[handle]' and module='$row2[module]'
+                order by checkin desc limit 1
+                ");
+            if($row3 = pdo_fetch($result3)){
+                $technotes .= $row3['checkin']."<br>";
+            }
+            
+        }
         $technotes .= "<br><br>";
         
-        $result2 = do_mysqli_query("1","   
+        $result2 = pdo_query("1","   
             select providername, handle, createdate, lastaccess from provider where iphash2 = '$row[iphash2]' and '$row[iphash2]'!='' and active='Y'
             ");
-        while($row2 = do_mysqli_fetch("1",$result2)){
+        while($row2 = pdo_fetch($result)){
             $technotes .= "$row2[providername] $row2[handle] $row2[createdate] $row2[lastaccess]<br>";
         }
         $technotes .= "<br><br>";
 
         
-        $result = do_mysqli_query("1","   
+        
+        $result = pdo_query("1","   
             select platform, arn, token, registered, status, error from notifytokens where providerid = $otherid 
                 and status!='E' order by registered desc limit 5
             ");
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             $gcm = '';
             $apn = '';
             $shorttoken = substr($row['token'],0,10);
@@ -836,7 +897,7 @@ function GetTechNotes( $otherid  )
             $technotes .= $test;
         }
         $technotes .= "<br><br>";
-        $result = do_mysqli_query("1","   
+        $result = pdo_query("1","   
             select roomhandle.handle, roominfo.room, roominfo.external, roomhandle.public, roominfo.roominvitehandle,
             roominfo.autochatuser, roominfo.parentroom,
             (select count(*) from statusroom where roominfo.roomid = statusroom.roomid ) as membercount
@@ -850,7 +911,7 @@ function GetTechNotes( $otherid  )
              order by external desc
             ");
         $technotes .= "<div class='smalltext'>Rooms<br>";
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             $public = '';
             if($row['public']=='Y'){
                 $public = 'discoverable';
@@ -864,16 +925,16 @@ function GetTechNotes( $otherid  )
             $technotes .= $log;
         }
         
-        $result = do_mysqli_query("1","   
+        $result = pdo_query("1","   
             select periscopestreamkey, youtubestreamkey, twitchstreamkey from restream where providerid =  $otherid         
             ");
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
             $technotes .= "<b>Restream</b><br>";
             $technotes .= "Periscope=".$row['periscopestreamkey']." Youtube=".$row['youtubestreamkey']." Twitch=".$row['twitchstreamkey'].
             "<br><br>";
         }
         
-        $result = do_mysqli_query("1","   
+        $result = pdo_query("1","   
             select notification.notifydate, notification.notifytype, notification.status, notification.providerid,
             chatmaster.title, chatmaster.encoding, chatmaster.chatid, provider.providername as sender
             from notification 
@@ -882,7 +943,7 @@ function GetTechNotes( $otherid  )
             where recipientid =  $otherid order by notifydate desc limit 100        
             ");
         $technotes .= "<div class='smalltext2'>Notifications<br>";
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             $title = htmlentities( DecryptText( $row['title'], $row['encoding'],$row['chatid'] ),ENT_QUOTES);            
             //$title = base64_decode($row['title']);
             $notificationlog = "<br>$row[notifydate] $row[status] - $row[notifytype] - Sender $row[providerid] [$title] $row[sender]";
@@ -922,8 +983,8 @@ function ShowMyStore($owner)
         //return "";
     }
     $store = '';
-    $result = do_mysqli_query("1","select store from provider where providerid = $owner ");
-    if($row = do_mysqli_fetch("1",$result)){
+    $result = pdo_query("1","select store from provider where providerid = $owner ");
+    if($row = pdo_fetch($result)){
         $store = $row['store'];
     }
     if($store != 'Y'){
@@ -931,14 +992,14 @@ function ShowMyStore($owner)
     }
     
     $roomid = '';
-    $result = do_mysqli_query("1","select handle from roomhandle where roomid in 
+    $result = pdo_query("1","select handle from roomhandle where roomid in 
                 ( SELECT roomid FROM braxproduction.roominfo where store='Y' and external = 'Y' and roomid in 
                   ( select roomid from statusroom where owner = $owner and owner = providerid ) 
                 )
             ");
     
     $handle = '';
-    if($row = do_mysqli_fetch("1",$result)){
+    if($row = pdo_fetch($result)){
         $handle = substr($row['handle'],1);
     }
     

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("htmlhead-open.inc.php");
 ?>
 <BODY class="loginbody" style="text-align:center;position:relative;width:100%;background-color:#666666; color:white;
@@ -24,7 +24,7 @@ require_once("htmlhead-open.inc.php");
 <?php
 
     
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
             select roomhandle.handle, roomhandle.roomdesc, roomhandle.roomid, roomhandle.name
             from roomhandle 
             where public = 'Y' and
@@ -32,7 +32,7 @@ require_once("htmlhead-open.inc.php");
             order by rank desc, handle asc limit 500
             ");
     
-    while($row = do_mysqli_fetch("1",$result))
+    while($row = pdo_fetch($result))
     {
         $handleshort = substr($row['handle'],1);
         echo "

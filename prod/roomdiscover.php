@@ -1,7 +1,7 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("internationalization.php");
 require_once("roomselect.inc.php");
 
@@ -195,11 +195,11 @@ require_once("roomselect.inc.php");
     */
     
     /*****************************/
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select roomdiscovery, sponsor from provider where providerid = $providerid 
         ");
     $roomdiscovery = '';
-    if($row = do_mysqli_fetch("1",$result)){
+    if($row = pdo_fetch($result)){
         $roomdiscovery = $row['roomdiscovery'];
         $sponsor = $row['sponsor'];
         if($sponsor == ''){
@@ -226,7 +226,7 @@ require_once("roomselect.inc.php");
             $agequery = " and category not in ('Adult') ";
         }
 
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
                 select distinct category from roomhandle 
                 where public = 'Y' and category not in ('Private')
                 $agequery
@@ -244,7 +244,7 @@ require_once("roomselect.inc.php");
                         </div>
                   </div>
                   ";
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
 
 
 
@@ -289,7 +289,7 @@ require_once("roomselect.inc.php");
     //if($roomdiscovery == 'Y' || $sponsor == ''){
     if($roomdiscovery == 'Y'){
     
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select roomhandle.handle, roomhandle.roomdesc, roomhandle.roomid, 
             roomhandle.name, roomhandle.category,
             (select 'Y' from statusroom where providerid=$providerid and 
@@ -316,7 +316,7 @@ require_once("roomselect.inc.php");
         
     } else {
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select roomhandle.handle, roomhandle.roomdesc, roomhandle.roomid, 
             roomhandle.name, roomhandle.category,
             (select 'Y' from statusroom where providerid=$providerid and 
@@ -348,7 +348,7 @@ require_once("roomselect.inc.php");
     
     $lastcategory = "";
     $i1 = 0;
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         if( $row['existing']=='Y'){
             continue;
         }
@@ -460,7 +460,7 @@ require_once("roomselect.inc.php");
     
     if($roomdiscovery == 'Y'){
     
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             
             select roomhandle.handle, roomhandle.roomdesc, roomhandle.roomid, roomhandle.name, roomhandle.category,
             (select 'Y' from statusroom where providerid=$providerid and statusroom.roomid = roomhandle.roomid ) as existing,
@@ -483,7 +483,7 @@ require_once("roomselect.inc.php");
         
     } else {
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select roomhandle.handle, roomhandle.roomdesc, roomhandle.roomid, roomhandle.name, roomhandle.category,
             (select 'Y' from statusroom where providerid=$providerid and statusroom.roomid = roomhandle.roomid ) as existing,
              datediff( now(), roominfo.lastactive) as active,
@@ -512,7 +512,7 @@ require_once("roomselect.inc.php");
     
     $lastcategory = "";
     $i1 = 0;
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         if($row['existing']=='Y' && $_SESSION['superadmin']!='Y'){
             //continue;
         }

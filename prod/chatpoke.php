@@ -14,7 +14,7 @@ require ("SmsInterface.inc");
         provider where
         providerid = ?
             ",array($providerid));
-    if($row = do_mysqli_fetch("1",$result))
+    if($row = pdo_fetch($result))
     {
         $providername = $row[providername];
         $replyemail = $row[replyemail];

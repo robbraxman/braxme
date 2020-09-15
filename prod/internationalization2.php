@@ -1,5 +1,5 @@
 <?php
-require_once("config.php");
+require_once("config-pdo.php");
 
 if($_SESSION['language']==''){
     $_SESSION['language']='english';

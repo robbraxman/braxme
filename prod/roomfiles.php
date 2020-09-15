@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("password.inc.php");
 require_once("aws.php");
 require_once("internationalization.php");
@@ -27,8 +27,8 @@ require_once("internationalization.php");
 
     //echo "selected folder = $roomfolderid";
     
-    $result = do_mysqli_query("1","select room, owner from statusroom where roomid=$roomid and owner=providerid limit 1");
-    while( $row = do_mysqli_fetch("1",$result))
+    $result = pdo_query("1","select room, owner from statusroom where roomid=$roomid and owner=providerid limit 1");
+    while( $row = pdo_fetch($result))
     {
         $room = $row['room'];
         $roomowner = $row['owner'];
@@ -42,18 +42,18 @@ require_once("internationalization.php");
         }
 
         
-        do_mysqli_query("1","
+        pdo_query("1","
             insert into roomfilefolders (roomid, providerid, foldername, parentfolderid, createdate) values
             ($roomid, $providerid, '--temp--',0, now() )
             ");
         
         $result = 
-        do_mysqli_query("1","
+        pdo_query("1","
             select folderid from roomfilefolders where roomid=$roomid and foldername='--temp--'
                 ");
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
         
-            do_mysqli_query("1","
+            pdo_query("1","
                 update roomfilefolders set foldername='$selectedfolder' where roomid=$roomid
                     and folderid = $row[folderid]
                     ");
@@ -68,7 +68,7 @@ require_once("internationalization.php");
     }    
     if($mode == 'DF')
     {
-        do_mysqli_query("1","
+        pdo_query("1","
             delete from roomfilefolders where roomid=$roomid and providerid=$providerid and folderid=$selectedfolderid
                 ");
         
@@ -82,7 +82,7 @@ require_once("internationalization.php");
     {
         
         
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 update roomfiles set folderid=$selectedfolderid where
                     filename='$filename' and roomid=$roomid and providerid = $providerid
@@ -97,8 +97,8 @@ require_once("internationalization.php");
     if($mode == 'S')
     {
         $selectedfolderid = $roomfolderid;
-        $result = do_mysqli_query("1","select foldername from roomfilefolders where folderid=$roomfolderid ");
-        if($row = do_mysqli_fetch("1",$result)){
+        $result = pdo_query("1","select foldername from roomfilefolders where folderid=$roomfolderid ");
+        if($row = pdo_fetch($result)){
             $selectedfolder = $row['foldername'];
         }
         
@@ -111,7 +111,7 @@ require_once("internationalization.php");
         //exit();
         foreach($filenamelist as $filename){
             //var_dump( $filename )."<br>";
-            do_mysqli_query("1","
+            pdo_query("1","
                 insert into roomfiles (roomid, providerid, filename, folderid, createdate, downloads)
                 values
                 ($roomid, $providerid, '$filename',$selectedfolderid, now(), 0 )
@@ -121,14 +121,14 @@ require_once("internationalization.php");
 
         $mode = "";
         
-        do_mysqli_query("1"," 
+        pdo_query("1"," 
             update statusroom set lastaccess = now()
             where roomid = $roomid
         ");
     }
     if($mode == 'D')
     {
-        do_mysqli_query("1","
+        pdo_query("1","
             delete from roomfiles where roomid=$roomid and 
             providerid=$providerid and filename='$filename' and
             folderid = $selectedfolderid
@@ -170,7 +170,7 @@ require_once("internationalization.php");
     if($mode=='D' && $filename!='')
     {
         
-        do_mysqli_query("1","
+        pdo_query("1","
             delete from filelib where providerid=$providerid and filename='$filename' and status='Y'
             ");
         
@@ -180,25 +180,25 @@ require_once("internationalization.php");
     }
 
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
             select count(*) as total
             from filelib where 
             filename in (select filename from roomfiles where roomid=$roomid )
             and filetype!='mp3' and status='Y'
         ");
-    if($row = do_mysqli_fetch("1",$result))
+    if($row = pdo_fetch($result))
     {
         $nonmusictotal = $row['total'];
     }
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
             select count(*) as total
             from filelib where 
             filename in (select filename from roomfiles where roomid=$roomid )
             and filetype='mp3' and status='Y'
         ");
-    if($row = do_mysqli_fetch("1",$result))
+    if($row = pdo_fetch($result))
     {
         $musictotal = $row['total'];
     }
@@ -241,7 +241,7 @@ require_once("internationalization.php");
     }
     else
     {
-        $doclibtitle = "<div class='pagetitle2' style='padding-left:20px;padding-right:20px'><span class='smalltext'></span><b>Room Files</b></div>";
+        $doclibtitle = "<div class='pagetitle2' style='padding-left:20px;padding-right:20px'><span class='smalltext'></span><b>$menu_roomfiles</b></div>";
     }
     $uploadfile = "uploadfile";
     
@@ -250,11 +250,12 @@ require_once("internationalization.php");
         <div style='
          background-color:white;color:black;
          '>
-                <div class='gridnoborder' 
-                    style='background-color:$global_titlebar_color;color:white;padding-left:20px;padding-right:20px;padding-bottom:3px;margin:0;' >
-                    <img class='feed icon20' src='../img/Arrow-Left-in-Circle-White_120px.png' data-roomid=$roomid />                        
+                <div class='feed gridnoborder' 
+                     data-roomid=$roomid 
+                     style='cursor:pointer;background-color:$global_titlebar_color;color:white;padding-left:20px;padding-right:20px;padding-bottom:3px;margin:0;' >
+                    <img class='icon20' src='../img/Arrow-Left-in-Circle-White_120px.png'/>                        
                         &nbsp;&nbsp;
-                    <span class='pagetitle2a' style='color:white'>Room Files</span> 
+                    <span class='pagetitle2a' style='color:white'>$menu_roomfiles</span> 
                 </div>
                 &nbsp;
                 &nbsp;
@@ -388,7 +389,7 @@ require_once("internationalization.php");
     if($filtername==''){
         $limit = " limit $pagestart, $max";
     }
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
             select filelib.origfilename, filelib.filename, filelib.folder, 
             filelib.alias, filelib.views, filelib.filetype, filelib.filesize, filelib.title,
@@ -421,7 +422,7 @@ require_once("internationalization.php");
     //    ";
     
     $count=0;
-    while($row = do_mysqli_fetch("1",$result))
+    while($row = pdo_fetch($result))
     {
         $count++;
         $encoding = $row['encoding'];
@@ -624,7 +625,7 @@ function CreateFolderList( $roomid, $mode, $selectedfolder, $selectedfolderid, $
         $foldermode = 'SF';
         $selectedfolderid = 0;
     }
-    $result2 = do_mysqli_query("1","
+    $result2 = pdo_query("1","
         select distinct foldername, folderid from roomfilefolders where roomid = $roomid 
             and parentfolderid=$selectedfolderid
             order by foldername asc
@@ -705,7 +706,7 @@ function CreateFolderList( $roomid, $mode, $selectedfolder, $selectedfolderid, $
         </div> 
             ";
     $foldercount = 0;
-    while( $row2 = do_mysqli_fetch("1",$result2)){
+    while( $row2 = pdo_fetch($result)){
     
         $foldername_short = substr($row2['foldername'],0,15);
         if(strlen($row2['foldername'])>15){

@@ -1,6 +1,6 @@
 <?php
-require_once("config.php");
-require_once("crypt.inc.php");
+require_once("config-pdo.php");
+require_once("crypt-pdo.inc.php");
 require_once("aws.php");
 
 function ProcessUpload( $providerid, $encoding, $uploadtype )
@@ -70,7 +70,7 @@ function ProcessUpload( $providerid, $encoding, $uploadtype )
             //}
             
 
-            $result = do_mysqli_query("1", 
+            $result = pdo_query("1", 
                     "
                         insert into filelib
                         ( providerid, filename, origfilename, folder, filesize, filetype, title, createdate, alias, encoding, fileencoding, status )

@@ -1,7 +1,7 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
     $providerid = tvalidator("PURIFY",$_POST['providerid']);
@@ -24,43 +24,43 @@ require_once("config.php");
     //$braxsocial = "<img src='../img/braxroom-square.png' style='position:relative;top:3px;height:25px;width:auto;padding-top:0;padding-right:2px;padding-bottom:0px;' />";
     if( $mode == 'S')
     {
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             delete from roomwebstyle where roomid=$roomid
                 ");
         
         //Data
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             insert into roomwebstyle (roomid, seq, stylekey, styledata ) values
             ($roomid,1,'backgroundcolor', '$backgroundcolor')
                 ");
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             insert into roomwebstyle (roomid, seq, stylekey, styledata ) values
             ($roomid,2,'title', '$title')
                 ");
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             insert into roomwebstyle (roomid, seq, stylekey, styledata ) values
             ($roomid,3,'subtitle', '$subtitle')
                 ");
         
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             insert into roomwebstyle (roomid, seq, stylekey, styledata ) values
             ($roomid,4,'footer', '$footer')
                 ");
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             insert into roomwebstyle (roomid, seq, stylekey, styledata ) values
             ($roomid,5,'analytics', '$analytics')
                 ");
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             insert into roomwebstyle (roomid, seq, stylekey, styledata ) values
             ($roomid,6,'subtitle2', '$subtitle2')
                 ");
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             insert into roomwebstyle (roomid, seq, stylekey, styledata ) values
             ($roomid,7,'color', '$color')
                 ");
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             insert into roomwebstyle (roomid, seq, stylekey, styledata ) values
             ($roomid,8,'trimcolor', '$trimcolor')
                 ");
@@ -89,11 +89,11 @@ require_once("config.php");
     /*******************************************************/
     /*******************************************************/
     /*******************************************************/
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select styledata, stylekey, seq 
         from roomwebstyle where roomid=$roomid order by seq asc
             ");
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         if($row['stylekey']=='backgroundcolor')
         {
             $backgroundcolor = $row['styledata'];

@@ -1,8 +1,8 @@
 <?php
 session_start();
 //require("validsession.inc.php");
-require_once("config.php");
-require_once("crypt.inc.php");
+require_once("config-pdo.php");
+require_once("crypt-pdo.inc.php");
 
 require_once("room.inc.php");
 
@@ -85,17 +85,17 @@ $upload_hdr = "upload-zone/files";
         $encode = EncryptChat ($message,"$chatid","" );
         $encodeshort = EncryptChat ("Photo Taken","$chatid","" );
         
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 insert into chatmessage ( chatid, providerid, message, msgdate, encoding, status)
                 values
                 ( $chatid, $providerid, \"$encode\", now(), '$_SESSION[responseencoding]', 'Y' );
             ");
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
             update chatmembers set lastmessage=now(), lastread=now() where providerid= $providerid and chatid=$chatid and status='Y'
             ");
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
             update chatmaster set lastmessage=now() where chatid=$chatid 
             ");
@@ -111,12 +111,12 @@ $upload_hdr = "upload-zone/files";
         
         
         $roomid = intval($lastfunc->parm1);    
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 select room from statusroom
                 where roomid = $roomid limit 1
             ");
-        if( $row = do_mysqli_fetch("1",$result)){
+        if( $row = pdo_fetch($result)){
         
             $roomForSql = addslashes($row['room']);
         }
@@ -125,13 +125,13 @@ $upload_hdr = "upload-zone/files";
             $imgurl = "$rootserver/$installfolder/sharedirect.php?a=$img";
         }
         
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 select providerid,
                 (select anonymousflag from roominfo where roominfo.roomid = statusroom.roomid ) as anonymousflag
                 from statusroom where roomid = $roomid 
             ");
-        while( $row = do_mysqli_fetch("1",$result)){
+        while( $row = pdo_fetch($result)){
         
             $notifytype = 'RP';
             if(intval($roomid) > 0){
@@ -163,7 +163,7 @@ $upload_hdr = "upload-zone/files";
         if( $img!=''){
         
             $imgurl = "$rootserver/$installfolder/sharedirect.php?a=$img";
-            do_mysqli_query("1","update provider set avatarurl='$imgurl', lastactive=now() where providerid=$providerid ");
+            pdo_query("1","update provider set avatarurl='$imgurl', lastactive=now() where providerid=$providerid ");
         }
         
         SaveLastFunction($providerid,"A", "");

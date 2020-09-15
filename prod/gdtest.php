@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 
 $text = tvalidator("PURIFY", $_GET[t] );
 $x = explode("\\r\\n",$text);

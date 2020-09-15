@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("config.php");
+include("config-pdo.php");
 require("aws.php");
 
 $share = @tvalidator("PURIFY", $_GET['p'] );
@@ -11,16 +11,16 @@ header("Content-Type: application/octet-stream");
 
 if( $alias == ''){
 
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
             select filename, filetype, folder, title, comment, views, likes from photolib where filename='$share' and (providerid=$_SESSION[pid] or providerid=0 )
             ");
 } else {
     
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
             select filename, filetype, folder, title, comment, views, likes from photolib where alias='$alias' and providerid=$_SESSION[pid] 
             ");
 }
-if( !$row = do_mysqli_fetch("1",$result)){
+if( !$row = pdo_fetch($result)){
 
     header("Content-Disposition: filename='expired.jpg'");
 

@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("config.php");
+include("config-pdo.php");
 
 $share = @tvalidator("PURIFY", $_GET[p] );
 $alias = @tvalidator("PURIFY", $_GET[a] );

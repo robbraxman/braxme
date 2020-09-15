@@ -1,11 +1,11 @@
 <?php
 session_start();
-require_once("config.php");
-require_once("crypt.inc.php");
+require_once("config-pdo.php");
+require_once("crypt-pdo.inc.php");
 require_once("room.inc.php");
 
 
-$result = do_mysqli_query("1","
+$result = pdo_query("1","
            select 
            statuspost.shareid, statuspost.comment, statuspost.encoding, 
            statuspost.providerid, statuspost.owner,
@@ -20,7 +20,7 @@ $result = do_mysqli_query("1","
            ");
 
 $count = 1;
-while($row = do_mysqli_fetch("1",$result)){
+while($row = pdo_fetch($result)){
     
     $shareid = $row['shareid'];
     $decryptedpost = DecryptPost( $row['comment'], $row['encoding'], $row['owner'], "");
@@ -52,13 +52,13 @@ while($row = do_mysqli_fetch("1",$result)){
         continue;
     }
         
-    //do_mysqli_query("1","update statuspost set title = '$title' where shareid = '$shareid' and parent = 'Y'    ");
+    //pdo_query("1","update statuspost set title = '$title' where shareid = '$shareid' and parent = 'Y'    ");
     echo "<br><b>$count $row[providername] $title</b><br>";
     $count++;
     if($count > 1000){
         exit();
     }
-    do_mysqli_query("1","update statuspost set title='$title' where shareid='$shareid' and parent='Y' ");
+    pdo_query("1","update statuspost set title='$title' where shareid='$shareid' and parent='Y' ");
 }
 
 ?>

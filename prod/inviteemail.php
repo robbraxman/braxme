@@ -1,7 +1,7 @@
 <?php
 session_start();
 //$inviteid = uniqid('',true);
-require_once("config.php");
+require_once("config-pdo.php");
 
 require_once("htmlhead.inc.php");
 
@@ -21,22 +21,22 @@ $apn = @tvalidator("PURIFY",$_POST['apn']);
 
 
 $providerid = 0;
-$result = do_mysqli_query("1", "select max(val1)+1 as maxid from parms where parmkey='SUBSCRIBER' AND PARMCODE='ID' ");
-if( $row = do_mysqli_fetch("1",$result))
+$result = pdo_query("1", "select max(val1)+1 as maxid from parms where parmkey='SUBSCRIBER' AND PARMCODE='ID' ");
+if( $row = pdo_fetch($result))
 {
     $providerid =$row['maxid'];
 }
 
 
-$result = do_mysqli_query("1", "select max(providerid)+1 as providerid from provider ");
-if( $row = do_mysqli_fetch("1",$result))
+$result = pdo_query("1", "select max(providerid)+1 as providerid from provider ");
+if( $row = pdo_fetch($result))
 {
     $highid = $row['providerid'];
 }
 
 if( $providerid == 0 )
 {
-    $result = do_mysqli_query("1", "insert into parms (parmkey, parmcode, val1, val2 ) values ('SUBSCRIBER','ID', $highid, 0 )");
+    $result = pdo_query("1", "insert into parms (parmkey, parmcode, val1, val2 ) values ('SUBSCRIBER','ID', $highid, 0 )");
 }
 
 if( $highid > $providerid)
@@ -44,7 +44,7 @@ if( $highid > $providerid)
     $providerid = $highid;
 }
 
-$result = do_mysqli_query("1", "update parms set val1 = $providerid where parmkey='SUBSCRIBER' and parmcode='ID' ");
+$result = pdo_query("1", "update parms set val1 = $providerid where parmkey='SUBSCRIBER' and parmcode='ID' ");
 
 
 $mobileflag='';
@@ -56,7 +56,7 @@ if($landing == '')
 {
     $landing = 'Unk';
 }
-do_mysqli_query("1","insert into landing (createdate, landingcode, mobile, target ) values (now(), '$landing','$mobileflag','signup' ) ");
+pdo_query("1","insert into landing (createdate, landingcode, mobile, target ) values (now(), '$landing','$mobileflag','signup' ) ");
 
 
 ?>

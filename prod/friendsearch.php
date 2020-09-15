@@ -1,7 +1,7 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
     $providerid = @tvalidator("PURIFY",$_POST['providerid']);
@@ -63,7 +63,7 @@ require_once("config.php");
         $notincluded = "";
     }
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
        "
         select distinct 
                 provider.providerid, provider.providername, 
@@ -81,7 +81,7 @@ require_once("config.php");
     
     echo "<div class='pagetitle3' style='padding:20px;color:$global_textcolor'><b>Contacts</b></div>";
         
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
     
         if($row['avatarurl'] == "$rootserver/img/faceless.png"){
             $row['avatarurl'] = "$rootserver/img/egg-blue.png";

@@ -287,7 +287,7 @@ require('colorscheme.php');
             $providerid = 0;
         }
         $event = tvalidator("PURIFY",$event);
-        do_mysqli_query("1","insert into debuglog (providerid, logdate, event ) values ($providerid, now(), '$event' ) ");
+        pdo_query("1","insert into debuglog (providerid, logdate, event ) values ($providerid, now(), '$event' ) ");
 
     }
     function InternetTooSlow()

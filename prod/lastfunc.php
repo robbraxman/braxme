@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once("config.php");
-require_once("crypt.inc.php");
+require_once("config-pdo.php");
+require_once("crypt-pdo.inc.php");
 
 $providerid = @tvalidator("PURIFY",$_SESSION['pid']);
 $mode = @tvalidator("PURIFY",$_POST['mode']);
@@ -62,7 +62,7 @@ function InlineNotification( $lastfunc, $parm1, $providerid )
     
     //Get the LATEST Notification
     
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select 
             notification.providerid, notification.notifydate, notification.status, 
             notification.notifytype, notification.email, 
@@ -75,20 +75,20 @@ function InlineNotification( $lastfunc, $parm1, $providerid )
         from notification 
         left join provider on notification.providerid = provider.providerid
         where notification.status = 'Y' and notification.displayed!='Y'
-        and notification.recipientid = $providerid 
-        and (notification.providerid != $providerid or notification.notifytype!='CP')
+        and notification.recipientid = ? 
+        and (notification.providerid != ? or notification.notifytype!='CP')
         and notification.notifytype in ('CP','RP','EN')
         order by notification.notifydate desc limit 1
-            ");
+            ",array($providerid,$providerid));
     $payload = "";
     $total = "";
     $soundalert = "";
-    while( $row = do_mysqli_fetch("1",$result))
+    while( $row = pdo_fetch($result))
     {
-        $result2 = do_mysqli_query("1", "
+        $result2 = pdo_query("1", "
                 select count(*) as total from notification where displayed='N'
-                and recipientid=$providerid  ");
-        $row2 = do_mysqli_fetch("1",$result2);
+                and recipientid=?  ",array($providerid));
+        $row2 = pdo_fetch($result2);
         $total = "($row2[total] new)";
         
         $notifyid = $row['notifyid'];
@@ -116,8 +116,6 @@ function InlineNotification( $lastfunc, $parm1, $providerid )
                         Chat $providername -
                         ".DecryptChat( "$row[payload]", "$row[encoding]","$chatid","")."</div>";
             }
-            //Do not pop same type of notification over and over
-            //@do_mysqli_query("1", "update notification set displayed='Y' where recipientid=$providerid  and chatid = $chatid ");
         }
         if( $notifytype === 'RP')
         {
@@ -126,8 +124,8 @@ function InlineNotification( $lastfunc, $parm1, $providerid )
             //Alert only if not in Rooms or if in a different room
             if( $lastfunc !=='R' || ($lastfunc == 'R' && $roomid != intval($parm1)))
             {
-                $result = do_mysqli_query("1","select room from statusroom where roomid=$roomid and providerid=$providerid");
-                $row = do_mysqli_fetch("1",$result);
+                $result = pdo_query("1","select room from statusroom where roomid=? and providerid=?",array($roomid,$providerid));
+                $row = pdo_fetch($result);
                 $room = "$row[room]";
                 //No alert if already in Chat
                 $payload .= "
@@ -136,7 +134,6 @@ function InlineNotification( $lastfunc, $parm1, $providerid )
                         $room
                     </div>
                         ";
-                //@do_mysqli_query("1", "update notification set displayed='Y' where recipientid=$providerid  and roomid = $roomid ");
             }
         }
         if( $notifytype === 'EN')
@@ -146,9 +143,9 @@ function InlineNotification( $lastfunc, $parm1, $providerid )
                     Secure Email: $providername
                 </div>
                     ";
-            //@do_mysqli_query("1", "update notification set displayed='Y' where recipientid=$providerid  and notifyid = $notifyid ");
+            //@pdo_query("1", "update notification set displayed='Y' where recipientid=$providerid  and notifyid = $notifyid ");
         }
-        @do_mysqli_query("1", "update notification set displayed='Y' where recipientid=$providerid and displayed !='Y' ");
+        @pdo_query("1", "update notification set displayed='Y' where recipientid=$providerid and displayed !='Y' ");
     }
     $arr['notification'] = FormattedPayload($payload, $total, $soundalert);
     $arr['soundalert'] = $soundalert;

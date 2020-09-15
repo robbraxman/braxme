@@ -19,7 +19,7 @@ if($chatid > 0){
          chatid = $chatid and mode='B' order by broadcastid desc limit 1
         "
         );
-    if($row = do_mysqli_fetch("1",$result)){
+    if($row = pdo_fetch($result)){
 
         pdo_query("1",
             "

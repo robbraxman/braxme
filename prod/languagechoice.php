@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("config.php");
+include("config-pdo.php");
 include("internationalization.php");
 
 $language = @tvalidator("PURIFY", strtolower($_POST['language']) );
@@ -8,12 +8,12 @@ $mode = @tvalidator("PURIFY", $_POST['mode'] );
 $providerid = @tvalidator("PURIFY", $_POST['providerid'] );
 
 if($mode == 'S'){
-    do_mysqli_query("1","update provider set language='$language' where providerid = $providerid");
+    pdo_query("1","update provider set language='$language' where providerid = $providerid");
     exit();
 }
 if($mode == ''){
-    $result = do_mysqli_query("1","select language from  provider  where providerid = $providerid");
-    if($row = do_mysqli_fetch("1",$result)){
+    $result = pdo_query("1","select language from  provider  where providerid = $providerid");
+    if($row = pdo_fetch($result)){
         $language = $row['language'];
         if($language == ''){
             $language = 'english';

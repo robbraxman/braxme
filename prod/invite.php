@@ -5,7 +5,7 @@ header('X-Content-Type: nosniff');
 header('X-XSS-Protection: 1; mode=block');
 
 //$inviteid = uniqid('',true);
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("htmlhead.inc.php");
 
 $deviceid = uniqid();
@@ -51,13 +51,13 @@ $invitername = "";
 $inviteid = @tvalidator("PURIFY",$_REQUEST['i']);
 if($inviteid!=''){
     
-    $result = do_mysqli_query("1", "
+    $result = pdo_query("1", "
             select * from invites 
             left join provider on invites.providerid = provider.providerid
             where
             inviteid = '$inviteid' 
             ");
-    if( $row = do_mysqli_fetch("1",$result)){
+    if( $row = pdo_fetch($result)){
     
         $invitename =$row['name'];
         $inviteemail =$row['email'];
@@ -85,7 +85,7 @@ if($landing == '')
 {
     $landing = 'Unk';
 }
-//do_mysqli_query("1","insert into landing (createdate, landingcode, mobile, target ) values (now(), '$landing','$mobileflag','signup' ) ");
+//pdo_query("1","insert into landing (createdate, landingcode, mobile, target ) values (now(), '$landing','$mobileflag','signup' ) ");
 
 $appstorehide = "";
 if($version!='' && $version!='000'){

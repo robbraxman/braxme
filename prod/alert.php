@@ -1,7 +1,7 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 
 $replyflag = tvalidator("PURIFY",$_POST['replyflag']);
 $createtime = tvalidator("PURIFY",$_POST['createtime']);

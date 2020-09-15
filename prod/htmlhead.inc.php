@@ -1,5 +1,5 @@
 <?php
-require_once("config.php");
+require_once("config-pdo.php");
 $randomid = uniqid();
 
 
@@ -38,9 +38,9 @@ echo "<script src='$rootserver/libs/alertify.js-0.3.10/src/alertify.js'></script
 echo "<script src='$rootserver/$installfolder/passwordcheck.js?$randomid'></script>\r\n";
 
 
-echo "<link rel='stylesheet' href='$rootserver/libs/jquery-1.11.1/jquery-ui.css'>";
-echo "<script src='$rootserver/libs/jquery-1.11.1/jquery.min.js' ></script>";
-echo "<script src='$rootserver/libs/jquery-1.11.1/jquery-ui.js' ></script>";
+echo "<link rel='stylesheet' href='$rootserver/libs/jquery-1.12.1/jquery-ui.css'>";
+echo "<script src='$rootserver/libs/jquery-1.12.1/jquery.min.js' ></script>";
+echo "<script src='$rootserver/libs/jquery-1.12.1/jquery-ui.js' ></script>";
 
 
 //echo "<link rel='styleSheet' href='$rootserver/$installfolder/app.css' type='text/css'/>\r\n";

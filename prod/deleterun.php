@@ -24,7 +24,7 @@ $path = "/var/www/html/$installfolder/upload";
 
 //echo "Test = $path";
 
-while( $row = do_mysqli_fetch("1",$result))
+while( $row = pdo_fetch($result))
 {
     echo "$fullpath";
     $fullPath = $path."/".$row['attachfilename'];
@@ -142,7 +142,7 @@ $result = pdo_query("1", "
     and chatmaster.lifespan > 0 and chatmaster.lifespan is not null
  
 ");
-while( $row = do_mysqli_fetch("1",$result))
+while( $row = pdo_fetch($result))
 {
     //  delete from chatmessage where chatid = $row[chatid]
     pdo_query("1", "

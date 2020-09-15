@@ -1,5 +1,5 @@
     <?php
-require_once("config.php");
+require_once("config-pdo.php");
 
 function ProcessUpload( $providerid, $encoding )
 {
@@ -124,7 +124,7 @@ function ProcessUpload( $providerid, $encoding )
                                         else
                                             echo("<br>File uploaded successfully. - <a href='". $upload_dir.$upload_hdr.$filename."' target='_blank'>".$filename."</a><br>"); 
 
-                                        $result = do_mysqli_query("1", 
+                                        $result = pdo_query("1", 
                                                 "insert into attachments ( sessionid, item, attachfilename, origfilename, providerid, encoding, filesize, filetype ) ". 
                                                 " values ( '$_SESSION[sessionid]', $UploadNo, '$_SESSION[attachmentfilename]', '$origfilename', $providerid, '$encoding', $fsize, '$filenameext' )"
                                          );
@@ -145,7 +145,7 @@ function ProcessUpload( $providerid, $encoding )
                                     $_SESSION[attachmentfilename]= "$_SESSION[sessionid]_".$UploadNo."_$filename";
                                     echo("<br>File uploaded successfully. - <a href='". $upload_dir.$upload_hdr.$filename."' target='_blank'>".$filename."</a><br>"); 
                                     
-                                    $result = do_mysqli_query("1", 
+                                    $result = pdo_query("1", 
                                             "insert into attachments ( sessionid, item, attachfilename, providerid, encoding ) ". 
                                             " values ( '$_SESSION[sessionid]', $UploadNo, '$_SESSION[attachmentfilename]', $providerid, '$encoding' )"
                                      );

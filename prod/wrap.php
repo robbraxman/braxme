@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 
 $url = @tvalidator("PURIFY",$_GET['u']);
 if(substr(strtolower($url),0,7)!=='http://' ){

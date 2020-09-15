@@ -3,33 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/libs/Mediabuffer-master/LICENSE</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/roommanage.inc.php</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/advertising.inc.php</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/findpeople.php</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/console.js</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/libs/crawler-detect-master/LICENSE</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/libs/amazon/LICENSE.md</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/chatalert.php</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/libs/README-md-libs</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/sidebar-v2.php</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/meetup.php</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/notifyweb.js</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/startup.inc.php</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/console1.php</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/localsettings/cryptofunc.inc.php</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/notify.js</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/localsettings/localsettings.php</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/chatsend.php</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/chatsend.inc.php</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/README.md</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/libs/Slides-SlidesJS-3/README.textile</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/libs/audio/LICENSE</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/console.php</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/profile.php</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/libs/Mediabuffer-master/README.md</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/console0.js</file>
-            <file>file:/home/linux/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/signupfunc.php</file>
+            <file>file:/F:/NetbeansProjects/Brax.Me-Open-Source/prod/chatalert.php</file>
+            <file>file:/F:/NetbeansProjects/Brax.Me-Open-Source/prod/config.php</file>
+            <file>file:/F:/NetbeansProjects/Brax.Me-Open-Source/prod/chatlist.php</file>
+            <file>file:/F:/NetbeansProjects/Brax.Me-Open-Source/prod/chatsend.inc.php</file>
+            <file>file:/F:/NetbeansProjects/Brax.Me-Open-Source/prod/chatsend.php</file>
+            <file>file:/F:/NetbeansProjects/Brax.Me-Open-Source/prod/config-pdo.php</file>
+            <file>file:/F:/NetbeansProjects/Brax.Me-Open-Source/prod/forgot.php</file>
         </group>
     </open-files>
 </project-private>

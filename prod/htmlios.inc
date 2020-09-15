@@ -1,5 +1,5 @@
 <?php
-require_once("config.php");
+require_once("config-pdo.php");
 
 echo "<!DOCTYPE html>\r\n";
 echo "<html>\r\n";

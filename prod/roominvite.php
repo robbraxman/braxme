@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("config.php");
+include("config-pdo.php");
 $logged_in_user = false;
 if(@$_SESSION['pid']!=''){
     
@@ -48,14 +48,14 @@ if($k !==''){
     $title = "You're Invited to a Private Group";
     $subtitle = "A privacy enhanced social group on the $appname platform";
     $share = '';
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
             "select roomid, timestampdiff(HOUR, now(), expires) as diff from roominvite where inviteid = '$k'
             "
             );
     $diffval = -1;
     //$diffval = 0;
     
-    if($row = do_mysqli_fetch("1",$result)){
+    if($row = pdo_fetch($result)){
     
         $i = $row['roomid'];
         $roomid = $row['roomid'];
@@ -82,12 +82,12 @@ if($k !==''){
 if($r !==''){
     
     $ownername='';
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select providername from provider where
         providerid in (select owner from statusroom where roomid in
            (select roomid from roomhandle where handle='#$r') and owner = providerid )
             ");
-    if($row = do_mysqli_fetch("1",$result)){
+    if($row = pdo_fetch($result)){
         $ownername = ucfirst($row['providername']);
     }
 
@@ -123,7 +123,7 @@ if($portal == 'Y'){
     $privateQuery = " and roominfo.groupid is null and roominfo.private = 'N' ";
 }
 
-$result = do_mysqli_query("1","
+$result = pdo_query("1","
     select statusroom.roomid, roomhandle.handle, roomhandle.roomdesc,
            roominfo.photourl, roominfo.private, roominfo.groupid, 
            roominfo.sponsor, provider.enterprise, roominfo.external,
@@ -144,7 +144,7 @@ $result = do_mysqli_query("1","
         ");
 
 
-if( !$row = do_mysqli_fetch("1",$result)){
+if( !$row = pdo_fetch($result)){
 
     
     echo "<!DOCTYPE html>
@@ -230,7 +230,7 @@ if($row['photourl2']!=''){
 
 
 
-do_mysqli_query("1","insert into landing (createdate, landingcode, mobile, target) values (now(), '$share', 'X','share' ) ");
+pdo_query("1","insert into landing (createdate, landingcode, mobile, target) values (now(), '$share', 'X','share' ) ");
 
 $shareopentitle = "Invitation to $appname";
 $sharelink = "$rootserver/$installfolder/roominvite.php?i=$i&r=$r";

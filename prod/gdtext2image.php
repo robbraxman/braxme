@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 
 $text = base64_decode(tvalidator("PURIFY", isset( $_REQUEST["t"] ) ? $_REQUEST["t"] : ""  ));
 $c = tvalidator("PURIFY", isset( $_REQUEST["c"] ) ? $_REQUEST["c"] : ""  );

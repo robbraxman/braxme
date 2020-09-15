@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("sendmail.php");
 
 $_SESSION[returnurl]="<a href='login.php'>Login</a>";
@@ -24,11 +24,11 @@ $loginid = tvalidator("PURIFY",$_POST['loginid']);
     }
 
     
-    $result = do_mysqli_query("1", 
+    $result = pdo_query("1", 
             "SELECT email from staff where providerid = $providerid and loginid = '$loginid'  "
             );
     
-    if ($row = do_mysqli_fetch("1",$result)) 
+    if ($row = pdo_fetch($result)) 
     {
             if( $row[email] == '')
             {
@@ -38,7 +38,7 @@ $loginid = tvalidator("PURIFY",$_POST['loginid']);
             }
             
             $pwd_hash = password_hash("$_SESSION[temporarypassword]",PASSWORD_DEFAULT);
-            $result = do_mysqli_query("1",
+            $result = pdo_query("1",
                     "update staff set 
                      pwd_ver = 3,
                      pwd_hash = '$pwd_hash',

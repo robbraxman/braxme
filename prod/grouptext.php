@@ -1,18 +1,18 @@
 <?php
 session_start();
 require_once("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 
     $mode = @tvalidator("PURIFY",$_POST['mode']);
     $roomid = tvalidator("PURIFY",$_POST['roomid']);
     if( $mode == '2')
     {
         $fieldselect = "";
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
                 select credentialname from credentialrequest where providerid = $_SESSION[pid]
                 and roomid = $roomid order by seq
                 ");
-        while($row = do_mysqli_fetch("1",$result))
+        while($row = pdo_fetch($result))
         {
             if($fieldselect!='')
             {
@@ -25,13 +25,13 @@ require_once("config.php");
     }
 
     $selectroom = "<select class='grouptextroom' id='grouptextroomid' name='textroomid'  style='width:250px'>";
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
             select distinct room, roomid, 
             (select count(*) from statusroom s2 where s2.roomid = statusroom.roomid ) as count,
             (select count(*) from csvtemp where csvtemp.roomid = statusroom.roomid ) as countsms
             from statusroom where owner = $_SESSION[pid] order by room
             ");
-    while($row = do_mysqli_fetch("1",$result))
+    while($row = pdo_fetch($result))
     {
         $roomname = htmlentities($row['room']);
         $selectroom .= "<option value='$row[roomid]'>$roomname ($row[count]/$row[countsms])</option>";

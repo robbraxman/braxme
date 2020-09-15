@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("config.php");
+include("config-pdo.php");
 require("validsession.inc.php");
 require("htmlhead.inc.php");
 require("roommanage.inc.php");
@@ -33,13 +33,13 @@ $roomid = @tvalidator("PURIFY", $_GET['roomid'] );
         
             $days = 0;
             $interval = "";
-            $result = do_mysqli_query("1"," 
+            $result = pdo_query("1"," 
                 select statusroom.owner, roominfo.subscription, roominfo.subscriptiondays
                 from roominfo
                 left join statusroom on roominfo.roomid = statusroom.roomid and statusroom.owner = statusroom.providerid
                 where roominfo.roomid=$roomid and statusroom.owner = statusroom.providerid
                 ");
-            if($row = do_mysqli_fetch("1",$result)){
+            if($row = pdo_fetch($result)){
                 $ownerid = $row['owner'];
                 $tokens = $row['subscription'];
                 $days = $row['subscriptiondays'];
@@ -70,12 +70,12 @@ $roomid = @tvalidator("PURIFY", $_GET['roomid'] );
             
             $sendername='';
             $receivername='';
-            $result = do_mysqli_query("1","select providername from provider where providerid=$providerid ");
-            if($row = do_mysqli_fetch("1",$result)){
+            $result = pdo_query("1","select providername from provider where providerid=$providerid ");
+            if($row = pdo_fetch($result)){
                 $sendername = $row['providername'];
             }
-            $result = do_mysqli_query("1","select providername from provider where providerid=$owner ");
-            if($row = do_mysqli_fetch("1",$result)){
+            $result = pdo_query("1","select providername from provider where providerid=$owner ");
+            if($row = pdo_fetch($result)){
                 $receivername = $row['providername'];
             }
             
@@ -84,17 +84,17 @@ $roomid = @tvalidator("PURIFY", $_GET['roomid'] );
             $tokenbalance = 0;
             $tokensspent = 0;
             $tokensavailable = 0;
-            $result = do_mysqli_query("1"," 
+            $result = pdo_query("1"," 
                 select sum(tokens) as tokensspent from tokens where providerid = $providerid and DC='C' 
                 ");
-            if($row = do_mysqli_fetch("1",$result)){
+            if($row = pdo_fetch($result)){
                 $tokensspent = $row['tokensspent'];
             }
             
-            $result = do_mysqli_query("1"," 
+            $result = pdo_query("1"," 
                 select sum(tokens) as tokensavailable from tokens where providerid = $providerid and dc='D' and method!='TEST'
                 ");
-            if($row = do_mysqli_fetch("1",$result)){
+            if($row = pdo_fetch($result)){
                 $tokensavailable = $row['tokensavailable'];
             }
             
@@ -109,7 +109,7 @@ $roomid = @tvalidator("PURIFY", $_GET['roomid'] );
                 
             }
         
-            do_mysqli_query("1"," 
+            pdo_query("1"," 
                 insert into tokens 
                 ( xacdate, providerid, tokens, roomid, owner, method, dc  )
                 values 
@@ -120,11 +120,11 @@ $roomid = @tvalidator("PURIFY", $_GET['roomid'] );
             AddMember($ownerid, $providerid, $roomid );
             
             
-            do_mysqli_query("1"," 
+            pdo_query("1"," 
                 update statusroom set subscribedate=now() where roomid = $roomid and providerid = $providerid
                 ");
             if($interval!=''){
-                do_mysqli_query("1"," 
+                pdo_query("1"," 
                 update statusroom set expiredate=date_add(now(),$interval) where roomid = $roomid and providerid = $providerid
                 ");
             }

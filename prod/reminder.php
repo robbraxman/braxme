@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 require ("SmsInterface.inc");
 require ("sendmail.php");
 
@@ -9,7 +9,7 @@ if($batchruns!='Y')
 
 
     //Flag old Alerts as DONE
-    do_mysqli_query("1","update alerts set status='Y' ");
+    pdo_query("1","update alerts set status='Y' ");
 
     /******
      * 
@@ -17,7 +17,7 @@ if($batchruns!='Y')
      *  CHAT ALERTS
      * 
      */
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
             select chatmembers.providerid,
             chatmessage.msgdate
             from chatmembers 
@@ -25,10 +25,10 @@ if($batchruns!='Y')
             where lastread < msgdate
             and datediff( curdate(), msgdate)<3
         ");
-    while( $row = do_mysqli_fetch("1",$result))
+    while( $row = pdo_fetch($result))
     {
         $providerid = $row['providerid'];
-        $result2 = do_mysqli_query("1","
+        $result2 = pdo_query("1","
             insert into alerts (providerid, alerttype, alertdate, status )
             values
             ($providerid, 'Chat', now(), 'N' )
@@ -41,15 +41,15 @@ if($batchruns!='Y')
      * 
      
         
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
          "
          select providerid from textmsg where  
          (readtime < createdate or readtime is null) and reply='Y'
          "
      );
-    if($row = do_mysqli_fetch("1",$result))
+    if($row = pdo_fetch($result))
     {
-        $result2 = do_mysqli_query("1","
+        $result2 = pdo_query("1","
             insert into alerts (providerid, alerttype, alertdate, status )
             values
             ($row[providerid], 'Text', now(), 'N' )
@@ -65,7 +65,7 @@ if($batchruns!='Y')
      * 
      */
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
             SELECT owner, providerid FROM statusroom  where
             roomid in
@@ -79,10 +79,10 @@ if($batchruns!='Y')
               and datediff( now(), statuspost.postdate ) <= 3
              )
          ");    
-    if($row = do_mysqli_fetch("1",$result))
+    if($row = pdo_fetch($result))
     {
         $providerid = $row['providerid'];
-        $result2 = do_mysqli_query("1","
+        $result2 = pdo_query("1","
             insert into alerts (providerid, alerttype, alertdate, status )
             values
             ($providerid, 'Rooms', now(), 'N' )
@@ -98,7 +98,7 @@ if($batchruns!='Y')
      * 
      */
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
             SELECT distinct statusroom.providerid, providername, roomid FROM statusroom  
             left join provider on statusroom.providerid = provider.providerid
@@ -109,10 +109,10 @@ if($batchruns!='Y')
             createdate > curdate()  and creatorid!=providerid 
             )
          ");    
-    if($row = do_mysqli_fetch("1",$result))
+    if($row = pdo_fetch($result))
     {
         $providerid = $row['providerid'];
-        $result2 = do_mysqli_query("1","
+        $result2 = pdo_query("1","
             insert into alerts (providerid, alerttype, alertdate, status )
             values
             ($providerid, 'RoomJ', now(), 'N' )
@@ -127,7 +127,7 @@ if($batchruns!='Y')
      */
         
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
      
          "
             select msgto.providerid, msgmain.createtime from msgto
@@ -136,10 +136,10 @@ if($batchruns!='Y')
             and datediff(now(), msgmain.createtime) <=1
          "
      );
-    if($row = do_mysqli_fetch("1",$result))
+    if($row = pdo_fetch($result))
     {
         $providerid = $row['providerid'];
-        $result2 = do_mysqli_query("1","
+        $result2 = pdo_query("1","
             insert into alerts (providerid, alerttype, alertdate, status )
             values
             ($providerid, 'SecureSent', now(), 'N' )
@@ -152,7 +152,7 @@ if($batchruns!='Y')
      * 
      */
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
      
          "
             select msgto.providerid, msgmain.createtime from msgto
@@ -161,10 +161,10 @@ if($batchruns!='Y')
             and datediff(now(), msgmain.createtime) <=1
          "
      );
-    if($row = do_mysqli_fetch("1",$result))
+    if($row = pdo_fetch($result))
     {
         $providerid = $row['providerid'];
-        $result2 = do_mysqli_query("1","
+        $result2 = pdo_query("1","
             insert into alerts (providerid, alerttype, alertdate, status )
             values
             ($providerid, 'SecureInbox', now(), 'N' )
@@ -173,7 +173,7 @@ if($batchruns!='Y')
     
     
     
-     $result = do_mysqli_query("1","
+     $result = pdo_query("1","
          select distinct alerts.providerid, providername, replyemail from alerts
          left join provider on 
             provider.providerid = alerts.providerid
@@ -181,7 +181,7 @@ if($batchruns!='Y')
             and provider.replyemail in (select email from verification 
             where verification.email = provider.replyemail and verifieddate is not null)
          ");   
-     while( $row = do_mysqli_fetch("1",$result))
+     while( $row = pdo_fetch($result))
      {
          $providerid = $row['providerid'];
          $providername = $row['providername'];
@@ -194,10 +194,10 @@ if($batchruns!='Y')
          $securesentalert = "";
          $secureinboxalert = "";
          
-         $result2 = do_mysqli_query("1","
+         $result2 = pdo_query("1","
             select alerttype from alerts where providerid=$providerid and status='N'
             ");   
-         while( $row2 = do_mysqli_fetch("1",$result2))
+         while( $row2 = pdo_fetch($result))
          {
              if( $row2['alerttype']=='Chat')
                  $chatalert = 'Y';
@@ -228,8 +228,8 @@ if($batchruns!='Y')
         global $rootserver;
         global $installfolder;
             
-        $result = do_mysqli_query("1","select * from notifytokens where providerid=$providerid and arn!='' ");
-        if( ($row = do_mysqli_fetch("1",$result) ) )
+        $result = pdo_query("1","select * from notifytokens where providerid=$providerid and arn!='' ");
+        if( ($row = pdo_fetch($result) ) )
         {
             //No email notifications if device notifications are available
             return;

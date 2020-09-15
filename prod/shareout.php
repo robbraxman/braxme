@@ -1,6 +1,6 @@
 <?php 
 session_start();
-include("config.php");
+include("config-pdo.php");
 
 $share = tvalidator("PURIFY", $_POST['share'] );
 $shareHtml = htmlentities(stripslashes($share),ENT_QUOTES);
@@ -24,7 +24,7 @@ if( $mode == 'P' )
     {
         $proxydefault = 'N';
     }
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
             "update provider set proxy = '$proxydefault' where providerid= $providerid "
             );
     exit();
@@ -51,20 +51,20 @@ if( $mode == 'P' )
         //$sharedirectopen = "$rootserver/$installfolder/sharedirect.php?p=$share";
     }
     
-    $result = do_mysqli_query("1", "
+    $result = pdo_query("1", "
         select filename from photolib where alias='$proxy' 
             ");
-    if($row = do_mysqli_fetch("1",$result))
+    if($row = pdo_fetch($result))
     {
         $sharedirectopen = "https://bytz.io/prod/sharedirect.php?p=$row[filename]";
         $proxyfilename = $row[filename];
         
-        $result = do_mysqli_query("1", "
+        $result = pdo_query("1", "
             delete from photoproxy where providerid=$providerid
             ");
         
         
-        $result = do_mysqli_query("1", "
+        $result = pdo_query("1", "
             insert into photoproxy (providerid, filename, folder, section ) values ($providerid, '$proxyfilename','','')
             ");
         
@@ -82,7 +82,7 @@ if( $mode == 'P' )
         $expire = "1095";
 
     
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
             insert into shares 
             (setid, providerid, sharedate, sharetype, sharelocal, 
             shareid, shareto, shareexpire, sharetitle, shareopentitle, platform, 

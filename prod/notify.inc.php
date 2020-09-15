@@ -17,21 +17,21 @@ function CSVText(
     }
     
         $messagesql = tvalidator("PURIFY",$message);
-        do_mysqli_query("1"," 
+        pdo_query("1"," 
             insert into csvtext (ownerid, message, sms, uploaded, status, error )
-            values ($senderid, '$messagesql','$phone',now(), 'N','' )
-                ");
+            values (?, ?,?,now(), 'N','' )
+                ",$senderid, $messagesql,$phone);
         
 }
 function BatchSendText()
 {
         $encoding = $_SESSION['responseencoding'];
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select id, ownerid, message, sms from csvtext where status='N'
             limit 100
             ");
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             
             $payload = EncryptChat ($row['message'],"0","" );
             $payloadsms = EncryptChat ($row['message'],"0","" );
@@ -44,7 +44,7 @@ function BatchSendText()
             $payload, $payloadsms,
             $encoding, "", $row['sms'] );
             
-            do_mysqli_query("1","update csvtext set status='Y' where id=$row[id] and status='N' ");
+            pdo_query("1","update csvtext set status='Y' where id=$row[id] and status='N' ");
         }
         
 }
@@ -77,10 +77,10 @@ function GenerateNotificationSms(
     $soundalert = '0';
     if( intval($roomid)>1  ){
     
-        $result = do_mysqli_query("1"," 
-            select notifications, soundalert from roominfo where roomid=$roomid 
-            ");
-        if( $row = do_mysqli_fetch("1",$result)){
+        $result = pdo_query("1"," 
+            select notifications, soundalert from roominfo where roomid=?
+            ",array($roomid));
+        if( $row = pdo_fetch($result)){
         
             if($row['notifications']!='Y' ){
             
@@ -91,18 +91,18 @@ function GenerateNotificationSms(
         
     }
     
-    do_mysqli_query("1"," 
+    pdo_query("1"," 
         insert into notification (
         providerid, notifydate, status, notifytype, notifysubtype,
         name, email, sms, 
         recipientid, mobile, roomid, chatid, payload, payloadsms, 
         encoding, displayed, soundalert,reference ) values (
-        $senderid, now(), 'N', '$notifytype',null,
-        '$name','$email','$sms',
-        0, 'N', $roomid, null, 
-        $payloadsms_quoted, $payloadsms_quoted, $encoding_quoted, 'N','$soundalert',''
+        ?, now(), 'N', ?,null,
+        ?,?,?,
+        0, 'N', ?, null, 
+        ?,?,?, 'N',?,''
         )
-    ");
+    ",array($senderid,$notifytype,$name,$email,$sms,$roomid,$payloadsms_quoted,$payloadsms_quoted,$encoding_quoted,$soundalert));
 
 }
 
@@ -119,10 +119,10 @@ function ChatNotificationRequest($providerid, $chatid, $encodeshort, $encoding, 
     $anonymous = '';
     $notificationflags = "";
     
-    $result = do_mysqli_query("1","
-        select notificationflags from provider where providerid = $providerid
-    ");
-    if($row = do_mysqli_fetch("1",$result)){
+    $result = pdo_query("1","
+        select notificationflags from provider where providerid = ?
+    ",array($providerid));
+    if($row = pdo_fetch($result)){
         if(strpos("$row[notificationflags]","M")!==FALSE){
             $encodeshort = "Message";
             $encoding = "PLAINTEXT";
@@ -131,8 +131,8 @@ function ChatNotificationRequest($providerid, $chatid, $encodeshort, $encoding, 
     
     //Photo upload
     if($subtype == 'P'){
-        $result = do_mysqli_query("1","select radiostation from chatmaster where chatid=$chatid and radiostation='Y");
-        if( $row = do_mysqli_fetch("1",$result)){
+        $result = pdo_query("1","select radiostation from chatmaster where chatid=? and radiostation='Y",array($chatid));
+        if( $row = pdo_fetch($result)){
             return;
         }
         $subtype='';
@@ -140,25 +140,29 @@ function ChatNotificationRequest($providerid, $chatid, $encodeshort, $encoding, 
 
     //Community Check - if this a room spawned chat - limit notifications
     if($subtype == ''){
-        $result = do_mysqli_query("1",
-                "select roomid from chatmaster where chatid=$chatid "
-                . "and roomid is not null and roomid > 0  ");
-        if( $row = do_mysqli_fetch("1",$result)){
+        $result = pdo_query("1",
+                "select roomid from chatmaster where chatid=? "
+                . "and roomid is not null and roomid > 0  ",array($chatid));
+        if( $row = pdo_fetch($result)){
             $subtype='CY';
         }
     }
     
-    do_mysqli_query("1","
+    pdo_query("1","
         insert into notifyrequest 
         ( requestdate, status, providerid, 
             chatid, encodeshort, encoding, 
             roomid, subtype, postid, shareid, anonymous ) 
             values
         (
-          now(),'N',$providerid, $chatid, '$encodeshort', '$encoding', 
-              $roomid, '$subtype', '$postid', '$shareid','$anonymous' 
+          now(),'N',?, ?, ?, ?, 
+              ?, ?, ?, ?,? 
         )
-    ");
+    ",array(
+          $providerid, $chatid, $encodeshort, $encoding, 
+          $roomid, $subtype, $postid, $shareid,$anonymous 
+        
+    ));
     
     
 }
@@ -173,40 +177,40 @@ function ChatNotification($providerid, $chatid, $encodeshort, $encoding, $subtyp
     
     //Live Notifications
     if($subtype == 'LV' && $chatid !=''){
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
-            delete from notification where chatid = $chatid and
+            delete from notification where chatid = ? and
             notifytype='CP' and notifysubtype = 'LV' and notifyid > 0
-            ");
+            ",array($chatid));
         
     }
     
     
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
         select provider.providerid, provider.replyemail, verified,
         provider.providername, provider.mobile, chatmaster.keyhash,
         provider.notificationflags,
         (select 'Y' from notifymute where providerid = chatmembers.providerid and id = chatmembers.chatid and idtype='C' ) as mute,
-        (select techsupport from chatmembers cm2 where providerid = $providerid
+        (select techsupport from chatmembers cm2 where providerid = ?
             and chatmembers.chatid = cm2.chatid ) as techsupport,
-        (select 'Y' from ban where ban.chatid = chatmaster.chatid and ban.banid in (select banid from provider where providerid = $providerid) ) as banned
+        (select 'Y' from ban where ban.chatid = chatmaster.chatid and ban.banid in (select banid from provider where providerid = ?) ) as banned
         from chatmembers
         left join chatmaster on chatmaster.chatid = chatmembers.chatid
         left join provider on provider.providerid = chatmembers.providerid
-        left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = $providerid
-        left join blocked blocked2 on blocked2.blocker = provider.providerid and blocked2.blockee = $providerid
+        left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = ?
+        left join blocked blocked2 on blocked2.blocker = provider.providerid and blocked2.blockee = ?
         where 
-        chatmembers.providerid != $providerid and
+        chatmembers.providerid != ? and
         
-        chatmembers.chatid=$chatid and (provider.notifications = 'Y' or provider.notifications is null )
+        chatmembers.chatid=? and (provider.notifications = 'Y' or provider.notifications is null )
         and blocked1.blockee is null and blocked2.blocker is null
-        and datediff(curdate(), provider.lastaccess) < 90
+        and datediff(curdate(), provider.lastaccess) < 14
         order by chatmembers.chatid desc           
         
-        ");
-    while($row = do_mysqli_fetch("1",$result)){
+        ",array($providerid, $providerid, $providerid, $providerid,$providerid,chatid));
+    while($row = pdo_fetch($result)){
     
         $notifytype = 'CP';
         if($row['keyhash']!=''){
@@ -271,25 +275,29 @@ function RoomNotificationRequest($providerid, $roomid, $subtype, $shareid, $post
     $encoding = '';
 
     //No notifications for website posts
-    $result = do_mysqli_query("1","
-        select external from roominfo where roomid=$roomid and external='Y'
-        ");
-    if($row = do_mysqli_fetch("1",$result)){
+    $result = pdo_query("1","
+        select external from roominfo where roomid=? and external='Y'
+        ",array($roomid));
+    if($row = pdo_fetch($result)){
         return;
     }
 
     
-    do_mysqli_query("1","
+    pdo_query("1","
         insert into notifyrequest 
         ( requestdate, status, providerid, 
             chatid, encodeshort, encoding, 
             roomid, subtype, postid, shareid, anonymous ) 
             values
         (
-          now(),'N',$providerid, $chatid, '$encodeshort', '$encoding', 
-              $roomid, '$subtype', '$postid', '$shareid','$anonymous' 
+          now(),'N',?, ?, ?, ?, 
+              ?, ?, ?, ?,? 
         )
-    ");
+    ",array(
+          $providerid, $chatid, $encodeshort, $encoding, 
+          $roomid, $subtype, $postid, $shareid,$anonymous 
+        
+    ));
     
     
 }
@@ -306,10 +314,10 @@ function RoomNotification($providerid, $roomid, $subtype, $shareid, $postid, $an
     $soundalert = '0';
     if( intval($roomid)>1  ){
     
-        $result = do_mysqli_query("1"," 
-            select notifications, soundalert from roominfo where roomid=$roomid 
-            ");
-        if( $row = do_mysqli_fetch("1",$result)){
+        $result = pdo_query("1"," 
+            select notifications, soundalert from roominfo where roomid=? 
+            ",array($roomid));
+        if( $row = pdo_fetch($result)){
         
             if($row['notifications']!='Y'){
             
@@ -321,57 +329,60 @@ function RoomNotification($providerid, $roomid, $subtype, $shareid, $postid, $an
     }
     
     if($subtype=='L'){
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
         "
             select provider.providerid,provider.replyemail, provider.verified, provider.providername,
             (select anonymousflag from roominfo where roominfo.roomid = statusroom.roomid ) as anonymousflag
             from statusroom 
             left join provider on statusroom.providerid = provider.providerid
-            left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = $providerid
-            left join blocked blocked2 on blocked2.blocker = provider.providerid and blocked2.blockee = $providerid
-            where statusroom.roomid = $roomid
+            left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = ?
+            left join blocked blocked2 on blocked2.blocker = provider.providerid and blocked2.blockee = ?
+            where statusroom.roomid = ?
             and provider.active = 'Y' and
             ( statusroom.providerid=statusroom.owner or statusroom.providerid in
-                (select providerid from statuspost where postid = '$postid')
+                (select providerid from statuspost where postid = ?)
             )
             and blocked1.blockee is null and blocked2.blocker is null
-            and datediff(curdate(), provider.lastaccess) < 90
+            and datediff(curdate(), provider.lastaccess) < 14
             
-        ");
+        ",array(
+            $providerid, $providerid, $roomid, $postid
+        ));
         $notifytype = 'RL';
     } else {
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
         "
             select statusroom.providerid, provider.replyemail, provider.providername, 
             (select anonymousflag from roominfo where roominfo.roomid = statusroom.roomid ) as anonymousflag
             from statusroom 
             left join provider on statusroom.providerid = provider.providerid
-            left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = $providerid
-            left join blocked blocked2 on blocked2.blocker = provider.providerid and blocked2.blockee = $providerid
-            where statusroom.roomid = $roomid 
-            and statusroom.providerid != $providerid
+            left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = ?
+            left join blocked blocked2 on blocked2.blocker = provider.providerid and blocked2.blockee = ?
+            where statusroom.roomid = ? 
+            and statusroom.providerid != ?
             and provider.active = 'Y' and  (provider.notifications = 'Y' or provider.notifications is null )
             and blocked1.blockee is null and blocked2.blocker is null
             and datediff(curdate(), provider.lastaccess) < 90
-        ");
+        ",array(
+            $providerid, $providerid, $roomid, $providerid
+        ));
         $notifytype = 'RP';
         
     }
     
-
     
-    while( $row = do_mysqli_fetch("1",$result)){
+    while( $row = pdo_fetch($result)){
     
-        do_mysqli_query("1","
+        pdo_query("1","
             insert into statusreads 
             (providerid, shareid, postid, xaccode, actiontime, roomid ) 
-            select provider.providerid, '$shareid', '$postid', 'R', now(), $roomid
+            select provider.providerid, ?, ?, 'R', now(), ?
             from provider
-            where provider.providerid = $row[providerid] and providerid
+            where provider.providerid = ? and providerid
             not in ( select providerid from statusreads 
-            where roomid = $roomid and xaccode='R' and statusreads.providerid = provider.providerid )            
+            where roomid = ? and xaccode='R' and statusreads.providerid = provider.providerid )            
             
-            ");
+            ",array($shareid, $postid, $roomid,$row['providerid'], $roomid));
             $poster = $providerid;
             
         if( $anonymous ==='Y' || $row['anonymousflag'] === 'Y'){
@@ -393,11 +404,11 @@ function RoomNotification($providerid, $roomid, $subtype, $shareid, $postid, $an
 function NotificationRequestLoop()
 {
 
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         update notifyrequest set status = 'P' where status = 'N'
     ");
     
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select requestid,
             requestdate, status, providerid, 
             chatid, encodeshort, encoding, 
@@ -406,9 +417,9 @@ function NotificationRequestLoop()
         where status = 'P' 
         order by requestdate asc
     ");
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         //Mark it so it doesn't get called again
-        do_mysqli_query("1","update notifyrequest set status='Y' where requestid= $row[requestid]");
+        pdo_query("1","update notifyrequest set status='Y' where requestid= $row[requestid]");
         
         //if(ThrottleCheck( $row['chatid'], $row['roomid'], $row['requestid'])){
             
@@ -428,12 +439,12 @@ function ThrottleCheck($chatid, $roomid, $requestid)
 {
     if(intval($chatid) > 0 ){
         return true;
-        $result = do_mysqli_query("1"," 
+        $result = pdo_query("1"," 
             select time_to_sec(timediff( now(), requestdate)) as diff 
-            from notifyrequest where status = 'Y' and chatid = $chatid and requestid!=$requestid
+            from notifyrequest where status = 'Y' and chatid = ? and requestid!=?
             order by requestdate desc limit 1
-            ");
-        if( $row = do_mysqli_fetch("1",$result)){
+            ",array($chatid,$requestid));
+        if( $row = pdo_fetch($result)){
             $diff = $row['diff'];
             //LogDebug( "($diff)", "/$chatid Test");
             if($diff < 60){
@@ -443,13 +454,13 @@ function ThrottleCheck($chatid, $roomid, $requestid)
         }
     }
     if(intval($roomid) > 0 ){
-        $result = do_mysqli_query("1"," 
+        $result = pdo_query("1"," 
             select time_to_sec(timediff( now(), requestdate)) as diff 
-            from notifyrequest where status = 'Y' and roomid = $roomid 
-             and requestid!=$requestid
+            from notifyrequest where status = 'Y' and roomid = ?
+             and requestid!=?
             order by requestdate desc limit 1
-            ");
-        if( $row = do_mysqli_fetch("1",$result)){
+            ",array($roomid,$requestid));
+        if( $row = pdo_fetch($result)){
             $diff = $row['diff'];
             if($diff < 900){
                 return false;
@@ -501,19 +512,21 @@ function GenerateNotification(
     
     if($notifytype == 'TXT' && strlen($sms) >= 10 ){
         
-        do_mysqli_query("1"," 
+        pdo_query("1"," 
             insert into notification (
             providerid, notifydate, status, notifytype, notifysubtype,
             name, email, sms, 
             recipientid, mobile, roomid, chatid, payload, payloadsms, 
             encoding, displayed,soundalert, reference, notifyread ) values (
-            $senderid, now(), 'N', '$notifytype',null,
-            '','','$sms',
+            ?, now(), 'N', ?,null,
+            '','','?',
             0, 'N', null, 0, 
-            $payload_quoted, $payloadsms_quoted, 
-            $encoding_quoted, 'N','','',''
+            ?, ?, 
+            ?, 'N','','',''
             )
-        ");
+        ",array(
+           $senderid, $notifytype,$sms,$payload_quoted,$payloadsms_quoted,$encoding_quoted 
+        ));
         return;
     }
 
@@ -522,10 +535,10 @@ function GenerateNotification(
     if( intval($roomid)>1 && 
       ( substr($notifytype,0,1)=='R' || substr($notifytype,0,1)=='T') ){
     
-        $result = do_mysqli_query("1"," 
-            select notifications, soundalert from roominfo where roomid=$roomid 
-            ");
-        if( $row = do_mysqli_fetch("1",$result)){
+        $result = pdo_query("1"," 
+            select notifications, soundalert from roominfo where roomid=? 
+            ",array($roomid));
+        if( $row = pdo_fetch($result)){
         
             if($row['notifications']!='Y' && $notifytype!='T'){
             
@@ -537,15 +550,15 @@ function GenerateNotification(
     }
     
     
-    $result = do_mysqli_query("1"," 
+    $result = pdo_query("1"," 
         select providerid, mobile, replyemail, verified,
         (select count(*) from notifytokens 
           where provider.providerid = notifytokens.providerid) 
           as tokens 
         from provider
-        where providerid = $recipientid and active='Y' and notifications = 'Y'
-            ");
-        if( $row = do_mysqli_fetch("1",$result)){
+        where providerid = ? and active='Y' and notifications = 'Y'
+            ",array($recipientid));
+        if( $row = pdo_fetch($result)){
         //Existing Member
         
 
@@ -565,41 +578,53 @@ function GenerateNotification(
                 $email = "";
             }
 
-            do_mysqli_query("1"," 
+            pdo_query("1"," 
                 insert into notification (
                 providerid, notifydate, status, notifytype, notifysubtype,
                 name, email, sms, 
                 recipientid, mobile, roomid, chatid, payload, payloadsms, 
                 encoding, displayed,soundalert, reference ) values (
-                $senderid, now(), 'N', '$notifytype',$subtype_quoted,
-                '','$email','',
-                $row[providerid], '$row[mobile]', $roomid, $chatid, 
-                $payload_quoted, $payloadsms_quoted, 
-                $encoding_quoted, '$status','$soundalert','$reference'
+                ?, now(), 'N', ?,?,
+                '',?,'',
+                $row[providerid], '$row[mobile]', ?, ?, 
+                ?, ?, 
+                ?, ?,?,?
                 )
-            ");
+            ",array(
+                $senderid, $notifytype,$subtype_quoted,
+                $email,
+                $roomid, $chatid, 
+                $payload_quoted, $payloadsms_quoted, 
+                $encoding_quoted, $status,$soundalert,$reference
+            ));
         } else {
         //Invited Member
 
-            $result = do_mysqli_query("1"," 
+            $result = pdo_query("1"," 
                 select name, email, sms from invites where chatid=$chatid 
-                ");
-            if( $row = do_mysqli_fetch("1",$result)){
+                ",array($chatid));
+            if( $row = pdo_fetch($result)){
 
-                do_mysqli_query("1"," 
+                pdo_query("1"," 
                     insert into notification (
                     providerid, notifydate, status, notifytype, notifysubtype,
                     name, email, sms, 
                     recipientid, mobile, roomid, chatid, payload, payloadsms, 
                     encoding, displayed,soundalert, reference ) values (
-                    $senderid, now(), 'N', '$notifytype',$subtype_quoted,
+                    ?, now(), 'N', ?,?,
                     '$row[name]','$row[email]','$row[sms]',
-                    0, 'N', null, $chatid, 
-                    $payload_quoted, $payloadsms_quoted, 
-                    $encoding_quoted, 'N','$soundalert',''
+                    0, 'N', null, ?, 
+                    ?, ?, 
+                    ?, 'N',?,''
                     )
-                ");
+            ",array(
+                $senderid, $notifytype,$subtype_quoted,
+                $chatid, 
+                $payload_quoted, $payloadsms_quoted, 
+                $encoding_quoted, $soundalert
 
+            ));
+                
             }
 
         }
@@ -629,35 +654,40 @@ function GenerateNotificationV2(
     
     if($notifytype == 'TXT' && strlen($sms) >= 10 ){
         
-        do_mysqli_query("1"," 
+        pdo_query("1"," 
             insert into notification (
             providerid, notifydate, status, notifytype, notifysubtype,
             name, email, sms, 
             recipientid, mobile, roomid, chatid, payload, payloadsms, 
             encoding, displayed,soundalert, reference, notifyread ) values (
-            $senderid, now(), 'N', '$notifytype',null,
-            '','','$sms',
+            ?, now(), 'N', ?,null,
+            '','',?,
             0, 'N', null, 0, 
-            $payload_quoted, $payloadsms_quoted, 
-            $encoding_quoted, 'N','','',''
+            ?, ?, 
+            ?, 'N','','',''
             )
-        ");
+        ",array(
+            $senderid, $notifytype,
+            $sms,
+            $payload_quoted, $payloadsms_quoted, 
+            $encoding_quoted
+        ));
         return;
     }
 
     
     
     
-    $result = do_mysqli_query("1"," 
+    $result = pdo_query("1"," 
         select providerid, mobile, replyemail, 
         datediff(curdate(), lastaccess) as lastheredays,
         (select count(*) from notifytokens 
           where provider.providerid = notifytokens.providerid) 
           as tokens 
         from provider
-        where providerid = $recipientid and active='Y' and notifications = 'Y'
-            ");
-        if( $row = do_mysqli_fetch("1",$result)){
+        where providerid = ? and active='Y' and notifications = 'Y'
+            ",array($recipientid));
+        if( $row = pdo_fetch($result)){
         //Existing Member
             
             //Don't send a notification to a user that hasn't been back in 30 days
@@ -676,40 +706,53 @@ function GenerateNotificationV2(
 
             }
 
-            do_mysqli_query("1"," 
+            pdo_query("1"," 
                 insert into notification (
                 providerid, notifydate, status, notifytype, notifysubtype,
                 name, email, sms, 
                 recipientid, mobile, roomid, chatid, payload, payloadsms, 
                 encoding, displayed,soundalert, reference ) values (
-                $senderid, now(), 'N', '$notifytype',$subtype_quoted,
-                '','$email','$sms',
-                $row[providerid], '$row[mobile]', $roomid, $chatid, 
-                $payload_quoted, $payloadsms_quoted, 
-                $encoding_quoted, '$status','$soundalert','$reference'
+                ?, now(), 'N', ?,?,
+                '',?,?,
+                $row[providerid], '$row[mobile]', ?, ?, 
+                ?, ?, 
+                ?, ?,?,?
                 )
-            ");
+            ", array(
+                $senderid,$notifytype,$subtype_quoted,
+                $email,$sms,
+                $roomid, $chatid, 
+                $payload_quoted, $payloadsms_quoted, 
+                $encoding_quoted, $status,$soundalert,$reference
+                
+            ));
         } else {
         //Invited Member
 
-            $result = do_mysqli_query("1"," 
-                select name, email, sms from invites where chatid=$chatid 
-                ");
-            if( $row = do_mysqli_fetch("1",$result)){
+            $result = pdo_query("1"," 
+                select name, email, sms from invites where chatid=?
+                ",array($chatid));
+            if( $row = pdo_fetch($result)){
 
-                do_mysqli_query("1"," 
+                pdo_query("1"," 
                     insert into notification (
                     providerid, notifydate, status, notifytype, notifysubtype,
                     name, email, sms, 
                     recipientid, mobile, roomid, chatid, payload, payloadsms, 
                     encoding, displayed,soundalert, reference ) values (
-                    $senderid, now(), 'N', '$notifytype',$subtype_quoted,
+                    ?, now(), 'N', ?,?,
                     '$row[name]','$row[email]','$row[sms]',
-                    0, 'N', null, $chatid, 
-                    $payload_quoted, $payloadsms_quoted, 
-                    $encoding_quoted, 'N','$soundalert',''
+                    0, 'N', null, ?, 
+                    ?, ?, 
+                    ?, 'N',?,''
                     )
-                ");
+                ",array(
+                    $senderid, $notifytype,$subtype_quoted,
+                    $chatid, 
+                    $payload_quoted, $payloadsms_quoted, 
+                    $encoding_quoted, $soundalert
+                    
+                ));
 
             }
 

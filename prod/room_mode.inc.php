@@ -47,12 +47,12 @@
     if( $mode == 'C'){  //Comment Count
     
     
-            $result2 = do_mysqli_query("1",
+            $result2 = pdo_query("1",
                 "
                     select count(*) as commenttotal from
                     statuspost where parent!='Y' and shareid='$shareid'
                 ");
-            $row2 = do_mysqli_fetch("1",$result2);
+            $row2 = pdo_fetch($result);
             $commentitems = $row2['commenttotal'];
             echo "$commentitems Comments";
             exit();

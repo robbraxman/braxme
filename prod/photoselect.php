@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("aws.php");
 require_once("internationalization.php");
 
@@ -31,12 +31,12 @@ require_once("internationalization.php");
     if( $selectedalbum == '' )
     {
         /*
-        $result2 =do_mysqli_query("1","
+        $result2 =pdo_query("1","
             select album from photolib where (providerid = $providerid )
                 and album!='' and album not like '*%'
                 order by createdate desc limit 1
             ");
-        if( $row2 = do_mysqli_fetch("1",$result2))
+        if( $row2 = pdo_fetch($result))
         {
             $selectedalbum = tvalidator("PURIFY",$row2['album']);
             $selectedalbumHtml = htmlentities(stripslashes($row2['album']),ENT_QUOTES);
@@ -53,11 +53,11 @@ require_once("internationalization.php");
     
     
     
-    $result2 =do_mysqli_query("1","
+    $result2 =pdo_query("1","
         select count(*) as count from photolib where providerid = $providerid
             and (album='$selectedalbum' or '' ='$selectedalbum')
         ");
-    $row2 = do_mysqli_fetch("1",$result2);
+    $row2 = pdo_fetch($result);
     $total = $row2['count'];
 
     //*************************************************************
@@ -223,7 +223,7 @@ require_once("internationalization.php");
              <table  class='gridstdborder' style='background-color:white'>
          ";
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
             select filename, alias, folder, album, title, createdate,
             aws_url, aws_expire, datediff(aws_expire, now()) as expire
@@ -238,7 +238,7 @@ require_once("internationalization.php");
     $col=1;
     $items = 0;
     $closed = false;
-    while($row = do_mysqli_fetch("1",$result))
+    while($row = pdo_fetch($result))
     {
         $items+=1;
         //$filename = "$rootserver/$installfolder/$row[folder]$row[filename]";
@@ -246,7 +246,7 @@ require_once("internationalization.php");
         //if($filename == '' || $row['expire'] <= 1 )
         //{
             $filename = getAWSObjectUrlShortTerm($row['filename']);
-            //do_mysqli_query("1","
+            //pdo_query("1","
             //    update photolib set aws_url = '$filename', aws_expire='2036-01-01' where providerid=$providerid and
             //        filename = '$row[filename]'
             //    ");
@@ -338,7 +338,7 @@ function CreateAlbumList( $providerid, $selectedalbum, $selectedalbumHtml, $page
     global $global_background;
     
     $selectedalbumDisplay = DeconvertHTML($selectedalbum);
-    $result2 = do_mysqli_query("1","
+    $result2 = pdo_query("1","
         select distinct public, album from photolib where
             ( ( providerid=$providerid and album!='' and album!='$selectedalbum' ) or public='Y')
             and album not like '* Artist%'
@@ -382,7 +382,7 @@ function CreateAlbumList( $providerid, $selectedalbum, $selectedalbumHtml, $page
     $foldercount = 0;
     
 
-    while( $row2 = do_mysqli_fetch("1",$result2)){
+    while( $row2 = pdo_fetch($result)){
     
         $foldername_short = substr($row2['album'],0,25);
         if(strlen($row2['album'])>25){

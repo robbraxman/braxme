@@ -1,7 +1,7 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 
 $chatid = tvalidator("PURIFY",$_POST['chatid']);
 $mode = tvalidator("PURIFY",$_POST['mode']);

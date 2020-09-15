@@ -1,6 +1,6 @@
 <?php
 require("validsession.inc.php");
-require_once("crypt.inc.php");
+require_once("crypt-pdo.inc.php");
 require_once("notify.inc.php");
      //Brax.ME
     function braxmecleanup($upload_dir) 
@@ -127,7 +127,7 @@ require_once("notify.inc.php");
                 return;
             }
                     
-            $result = do_mysqli_query("1", 
+            $result = pdo_query("1", 
                     "
                         insert into filelib
                         ( providerid, filename, origfilename, folder, folderid, 
@@ -206,7 +206,7 @@ require_once("notify.inc.php");
             $encodedflag = "";
             
                     
-            $result = do_mysqli_query("1", 
+            $result = pdo_query("1", 
                     "
                         insert into filelib
                         ( providerid, filename, origfilename, folder, folderid, 
@@ -301,7 +301,7 @@ require_once("notify.inc.php");
             $filesize = filesize( $upload_dir."medium/".$origfilename );
 
 
-            $result = do_mysqli_query("1", 
+            $result = pdo_query("1", 
                     "
                         insert into photolib
                         ( providerid, album, filename, folder, filesize, filetype, title, createdate, alias, owner, f_filename )
@@ -349,17 +349,17 @@ require_once("notify.inc.php");
 
             }
 
-            $result = do_mysqli_query("1",
+            $result = pdo_query("1",
                 "
                     insert into chatmessage ( chatid, providerid, message, msgdate, encoding, status)
                     values
                     ( $chatid, $providerid, \"$encode\", now(), '$_SESSION[responseencoding]', 'Y' );
                 ");
-            $result = do_mysqli_query("1",
+            $result = pdo_query("1",
                 "
                 update chatmembers set lastmessage=now(), lastread=now() where providerid= $providerid and chatid=$chatid and status='Y'
                 ");
-            $result = do_mysqli_query("1",
+            $result = pdo_query("1",
                 "
                 update chatmaster set lastmessage=now() where chatid=$chatid 
                 ");
@@ -384,7 +384,7 @@ require_once("notify.inc.php");
         if($lastfunc->lastfunc==='X')
         {
             $caseid = intval($lastfunc->parm1);    
-            do_mysqli_query("1","insert into casefiles (caseid, filename, createdate, providerid, downloads, folderid) 
+            pdo_query("1","insert into casefiles (caseid, filename, createdate, providerid, downloads, folderid) 
                 values ($caseid, '$filename', now(), $providerid, 0, $casefolderid ) 
                     ");
             
@@ -403,14 +403,14 @@ require_once("notify.inc.php");
         {
             //No Encryption Currently
             $filename_encrypted = $filename;
-            $result = do_mysqli_query("1", 
+            $result = pdo_query("1", 
                     "
                         select * from filelib 
                         where providerid = $providerid and origfilename = '$filename_encrypted' and status='Y'
                         and folderid = $folderid
                      "
              );
-            if(!$row = do_mysqli_fetch("1",$result)){
+            if(!$row = pdo_fetch($result)){
                 $matched = false;
                 return $filename;
             }

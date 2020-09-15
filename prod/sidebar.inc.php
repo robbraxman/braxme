@@ -1,6 +1,6 @@
 <?php
-require_once("config.php");
-require_once("crypt.inc.php");
+require_once("config-pdo.php");
+require_once("crypt-pdo.inc.php");
 require_once("internationalization.php");
 
 
@@ -16,7 +16,7 @@ require_once("internationalization.php");
         }
 
         $notificationstatus = "";
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
         
             "
             select lastnotified from alertrefresh 
@@ -25,11 +25,11 @@ require_once("internationalization.php");
             and lastnotified is null
             "
         );
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
             
             if($write ){
             
-                do_mysqli_query("1","update alertrefresh set lastnotified = now() where providerid = $providerid and deviceid = '$_SESSION[deviceid]' and lastnotified is null  ");
+                pdo_query("1","update alertrefresh set lastnotified = now() where providerid = $providerid and deviceid = '$_SESSION[deviceid]' and lastnotified is null  ");
             }
         
             $notificationstatus = "Y";
@@ -42,7 +42,7 @@ require_once("internationalization.php");
             return "";
         }
         $notificationstatus = "";
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
         
             "
             select * from notification where recipientid = $providerid and displayed = 'N' and 
@@ -52,7 +52,7 @@ require_once("internationalization.php");
                 limit 1
             "
         );
-        if($row = do_mysqli_fetch("1",$result))
+        if($row = pdo_fetch($result))
         {
             $notificationstatus = "Y";
         }
@@ -64,14 +64,14 @@ require_once("internationalization.php");
             return "";
         }
         $notificationstatus = "";
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
         
             "
             select * from notification where recipientid = $providerid and displayed = 'N' and 
                 notifytype = 'RP' limit 1
             "
         );
-        if($row = do_mysqli_fetch("1",$result))
+        if($row = pdo_fetch($result))
         {
             $notificationstatus = "Y";
         }
@@ -84,7 +84,7 @@ require_once("internationalization.php");
             return "";
         }
         $radiostatus = "";
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
         
             "
             select broadcaster from chatmaster where status='Y' and radiostation='Y' 
@@ -95,7 +95,7 @@ require_once("internationalization.php");
             "
         );
         $count = 0;
-        while($row = do_mysqli_fetch("1",$result))
+        while($row = pdo_fetch($result))
         {
             $count++;
             if($row['broadcaster']!=''){
@@ -112,13 +112,13 @@ require_once("internationalization.php");
     function SyncMailStatus($providerid){
         return 0;
         /*
-        $result = do_mysqli_query("2",
+        $result = pdo_query("2",
         
             "
             select count(*) as proccount from imap_fillqueue where providerid=$providerid and xaccode='R' and status in ('P','N')
             "
         );
-        if($row = do_mysqli_fetch("1",$result))
+        if($row = pdo_fetch($result))
         {
             if( intval($row['proccount'])>0){
                 return $row['proccount'];
@@ -132,7 +132,7 @@ require_once("internationalization.php");
     function MeetupStatus($providerid){
 
         $meetupstatus = "";
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
         
             "
             select * from 
@@ -143,7 +143,7 @@ require_once("internationalization.php");
             where providerid = $providerid and appmeetup.status = 'Y'
             "
         );
-        if($row = do_mysqli_fetch("1",$result))
+        if($row = pdo_fetch($result))
         {
             $meetupstatus = "blink";
         }
@@ -169,7 +169,7 @@ require_once("internationalization.php");
         $flag = "<img class='icon15 chatalert' title='Checked' src='../img/check-yellow-128.png' style='position:relative;top:3px' />";
         $flag = $global_icon_check;
         
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
          
              "
              select 
@@ -240,7 +240,7 @@ require_once("internationalization.php");
 
          );
         $count = 0;
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             $count++;
         
             $title = htmlentities( DecryptText( $row['title'], $row['encoding'],$row['chatid'] ),ENT_QUOTES);
@@ -325,7 +325,7 @@ require_once("internationalization.php");
         $flag = "<img class='icon15 chatalert' title='Checked' src='../img/check-yellow-128.png' style='position:relative;top:3px' />";
         $flag = $global_icon_check;
         
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
          
              "
             SELECT providerid, username, startdate 
@@ -335,7 +335,7 @@ require_once("internationalization.php");
              //"
 
          );
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
             $count++;
         
         
@@ -397,7 +397,7 @@ require_once("internationalization.php");
         $flag = "<img class='icon15 chatalert' title='Checked' src='../img/check-yellow-128.png' style='position:relative;top:3px' />";
         $flag = $global_icon_check;
         
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
          
              "
              select provider.providerid, tokens, provider.providername, provider.avatarurl, provider.profileroomid,
@@ -424,7 +424,7 @@ require_once("internationalization.php");
 
          );
         $count = 0;
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             
             if($count == 0){
                 
@@ -534,7 +534,7 @@ require_once("internationalization.php");
         $notifytext .=  GetBytzVPNNotifications($providerid);
         
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
                 select 
                 DATE_FORMAT(date_add(notification.notifydate,
                     INTERVAL $_SESSION[timezoneoffset]*60 MINUTE), 
@@ -567,7 +567,7 @@ require_once("internationalization.php");
         $lastid = '';
         $lastcomment = '';
         $blink = '';
-        while($row = do_mysqli_fetch("1",$result))
+        while($row = pdo_fetch($result))
         {
             
             $circular = 'circular';
@@ -591,11 +591,11 @@ require_once("internationalization.php");
                 $notifytype = "Room";
                 
                 
-                $result2 = do_mysqli_query("1","select comment, encoding, providerid, owner, shareid from statuspost where postid = '$row[reference]' ");
+                $result2 = pdo_query("1","select comment, encoding, providerid, owner, shareid from statuspost where postid = '$row[reference]' ");
                 $postactive = false;
                 $notifyComment = "";
                 $shareid = '';
-                if($row2 = do_mysqli_fetch("1",$result2)){
+                if($row2 = pdo_fetch($result)){
                     
                     $shareid = $row2['shareid'];
                     $notifyComment = strip_tags( html_entity_decode(DecryptPost($row2['comment'],$row2['encoding'],$row2['owner'],"" )));
@@ -675,9 +675,9 @@ require_once("internationalization.php");
                 }
                 
                 
-                $result2 = do_mysqli_query("1","select status, keyhash, title, radiotitle, encoding, broadcaster from chatmaster where chatid = $row[chatid] and status='Y' ");
+                $result2 = pdo_query("1","select status, keyhash, title, radiotitle, encoding, broadcaster from chatmaster where chatid = $row[chatid] and status='Y' ");
                 $postactive = false;
-                if($row2 = do_mysqli_fetch("1",$result2)){
+                if($row2 = pdo_fetch($result)){
                     $postactive = true;
                 }
                 $title = DecryptText($row2['title'], $row2['encoding'],$row['chatid']);
@@ -768,8 +768,8 @@ require_once("internationalization.php");
         //if($_SESSION['inforequest']!='Y'){
         //    return "";
         //}
-        $result = do_mysqli_query("1","select * from credentialformtrigger where providerid = $providerid ");
-        if(!$row = do_mysqli_fetch("1",$result)){
+        $result = pdo_query("1","select * from credentialformtrigger where providerid = $providerid ");
+        if(!$row = pdo_fetch($result)){
             return "";
         }
         

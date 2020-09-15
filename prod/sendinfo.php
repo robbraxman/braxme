@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 
 
 
@@ -12,7 +12,7 @@ require_once("config.php");
     }
     $email = tvalidator("PURIFY", $_POST[email]);
     
-    $result = do_mysqli_query("1", 
+    $result = pdo_query("1", 
             "insert ignore into emaillist (email, source) values ('$email', 'MOBILE' ) "
             );
     

@@ -1,9 +1,9 @@
 <?php
 session_start();
 $_SESSION['returnurl']="<a href='login.php'>Login</a>";
-require_once("config.php");
+require_once("config-pdo.php");
 require ("SmsInterface.inc");
-require ("crypt.inc.php");
+require ("crypt-pdo.inc.php");
 require ("notify.inc.php");
 require ("aws.php");   
 require ("password.inc.php");
@@ -42,16 +42,16 @@ $sig = rtrim(@tvalidator("PURIFY",$_POST['sig']));
 $contactgroup = rtrim(@tvalidator("PURIFY",$_POST['contactgroup']));
 $mobile = @tvalidator("PURIFY",$_POST['mobile']);
 
-$result = do_mysqli_query("1", "update imap set sig='$sig' where name = '".$_SESSION['imap_name'][$imap_item]."' and providerid=$providerid ");
+$result = pdo_query("1", "update imap set sig='$sig' where name = '".$_SESSION['imap_name'][$imap_item]."' and providerid=$providerid ");
 
 
-$result = do_mysqli_query("1", 
+$result = pdo_query("1", 
         "SELECT providername, companyname, avatarurl, ".
         "autosendkey, serverhost, msglifespan, allowtexting, ".
         "allowrandomkey, allowkeydownload, afterreadlifespan ".
         "from provider where providerid=$providerid and active='Y' ");
 
-if (!$row = do_mysqli_fetch("1",$result)) 
+if (!$row = pdo_fetch($result)) 
 {
    echo "<tr class='msgsource'>";
    echo "<h2>Subscriber not Found or Not Active</h2><br>";
@@ -116,13 +116,13 @@ if (
     $targetname = htmlentities($recipient_array[0]->personal, ENT_QUOTES);
     $targetexists = false;
     $targetimapexists = false;
-    $result = do_mysqli_query("1","select providerid from provider where replyemail = '$targetemail' and active='Y' ");
-    if($row = do_mysqli_fetch("1",$result) ){
+    $result = pdo_query("1","select providerid from provider where replyemail = '$targetemail' and active='Y' ");
+    if($row = pdo_fetch($result) ){
         $targetexists = true;
         $targetproviderid = $row['providerid'];
         
-        $result = do_mysqli_query("1","select * from imap where email = '$targetemail'  ");
-        if($row = do_mysqli_fetch("1",$result) ){
+        $result = pdo_query("1","select * from imap where email = '$targetemail'  ");
+        if($row = pdo_fetch($result) ){
             $targetimapexists = true;
         }
         
@@ -166,7 +166,7 @@ if( $errorstate == true)
  *                        SEND MESSAGES
  *********************************************************************/
 
-@do_mysqli_query("1","
+@pdo_query("1","
     delete from contactgroups where providerid=$providerid and groupname='$contactgroup'
     ");
 
@@ -184,13 +184,13 @@ foreach( $recipient_array as $recipient_item)
         exit();
     }
 
-    $result = do_mysqli_query("1", 
+    $result = pdo_query("1", 
             "
                 select email from imap where 
                 email = '$recipient_item->mailbox@$recipient_item->host' and
                 providerid in (select providerid from provider where active='Y') 
             ");
-    if( !$row = do_mysqli_fetch("1",$result))
+    if( !$row = pdo_fetch($result))
     {
         $encryptflag = false;
     }
@@ -206,13 +206,13 @@ if($alwaysencrypt)
 if (is_array($cc_array) && count($cc_array) > 0) 
 foreach( $cc_array as $cc_item)
 {
-    $result = do_mysqli_query("1", 
+    $result = pdo_query("1", 
             "
                 select email from imap where 
                 email = '$cc_item->mailbox@$cc_item->host' and
                 providerid in (select providerid from provider where active='Y' )
             ");
-    if( !$row = do_mysqli_fetch("1",$result))
+    if( !$row = pdo_fetch($result))
     {
         $encryptflag = false;
     }
@@ -225,17 +225,17 @@ if( $encryptflag == true)
 
     $attachmentlinks = "";
     //Encrypted Message - Move all Attachments to FILES AREA
-    $result = do_mysqli_query("1", "
+    $result = pdo_query("1", "
         select attachfilename, origfilename, filesize from attachments where sessionid = '$_SESSION[sessionid]' 
         ");
-    while($row = do_mysqli_fetch("1",$result))
+    while($row = pdo_fetch($result))
     {
         if( $attachmentlinks == ""){
             $attachmentlinks = "<br>";
         }
         $attachmentlinks .= UploadToMyFiles( $providerid, "attachments", $row['origfilename'], $row['origfilename'] , "/var/www/html/$installfolder/".$_SESSION['attachmentpath'].$row['attachfilename'], intval($row['filesize']) );
     }
-    $result = do_mysqli_query("1", "
+    $result = pdo_query("1", "
         delete from attachments where sessionid = '$_SESSION[sessionid]' 
         ");
     //Append Attachment Links Inline
@@ -407,10 +407,10 @@ if (is_array($bcc_array) && count($bcc_array) > 0) {
     }
 }
 
-$result = do_mysqli_query("1", "
+$result = pdo_query("1", "
     select attachfilename, origfilename from attachments where sessionid = '$_SESSION[sessionid]' 
     ");
-while($row = do_mysqli_fetch("1",$result))
+while($row = pdo_fetch($result))
 {
     $mail->AddAttachment( "/var/www/html/$installfolder/".$_SESSION['attachmentpath'].$row['attachfilename'], $row['origfilename'] );
     echo "Attaching $row[origfilename] <br>";
@@ -483,14 +483,14 @@ else
 }
     
 
-$result = do_mysqli_query("1", "
+$result = pdo_query("1", "
     select attachfilename from attachments where sessionid = '$_SESSION[sessionid]' 
     ");
-while($row = do_mysqli_fetch("1",$result))
+while($row = pdo_fetch($result))
 {
     unlink("/var/www/html/$installfolder/".$_SESSION['attachmentpath'].$row['attachfilename'] );
 }
-$result = do_mysqli_query("1", "
+$result = pdo_query("1", "
     delete from attachments where sessionid = '$_SESSION[sessionid]' 
     ");
 
@@ -505,7 +505,7 @@ function ImapPopulateContacts2( $to, $email )
 {
     global $providerid;
     
-        do_mysqli_query("1","
+        pdo_query("1","
             insert into contacts (providerid, contactname, email, blocked) 
             values 
             ($providerid, '$to', '$email','')
@@ -585,7 +585,7 @@ function SaveToContactGroup( $providerid, $contactgroup, $recipient )
     $email = $recipient->mailbox."@".$recipient->host;
     $name =  ucwords("$recipient->personal");
     
-    @do_mysqli_query("1","
+    @pdo_query("1","
         insert into contactgroups 
         ( providerid, contactname, email, groupname ) values
         ( $providerid, '$name', '$email', '$contactgroup' )
@@ -741,13 +741,13 @@ function AlertNotification( $encryptflag, $providerid, $sendername, $targetemail
     {
         return;
     }
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
         SELECT providerid FROM imap where email='$targetemail' and providerid 
         in (select providerid from notifytokens  where  imap.providerid = notifytokens.providerid )
         ");
     
-    while($row = do_mysqli_fetch("1",$result))
+    while($row = pdo_fetch($result))
     {
         //No Response Yet
         $row['providerid'];
@@ -780,12 +780,12 @@ function UploadToMyFiles( $providerid, $filefolder, $origfilename, $title, $loca
     $encrypted_title = EncryptTextCustomEncode($title,"PLAINTEXT","$attachmentfilename");
     
     //Ignore Errors
-    @do_mysqli_query("1","
+    @pdo_query("1","
         insert into filefolders (providerid, foldername) values
         ($providerid, 'attachments')
         ");
 
-    $result = do_mysqli_query("1", 
+    $result = pdo_query("1", 
             "
                 insert into filelib
                 ( providerid, filename, origfilename, folder, filesize, filetype, title, createdate, alias, encoding, status )

@@ -1,5 +1,5 @@
 <?php
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("phpmailer/PHPMailerAutoload.php");
     
     function SendMailNotification($defaultsmtp, $msgtitle, $message, $messagealt, $sendername, $senderemail, $recipientname, $recipientemail )
@@ -106,7 +106,7 @@ require_once("phpmailer/PHPMailerAutoload.php");
         
         
         $mail->CharSet = 'UTF-8';        
-        $mail->AddReplyTo("$replyto","$sendername");
+        $mail->AddReplyTo("$senderemail","$sendername");
 
 
         $mail->SMTPDebug  = 0;                     // enables SMTP debug information (for testing)
@@ -361,7 +361,7 @@ require_once("phpmailer/PHPMailerAutoload.php");
             return true;
         else 
         {
-            $result1 = do_mysqli_query("1", 
+            $result1 = pdo_query("1", 
                "update msgmain set errorcode = 'SendFail' where sessionid = '$_SESSION[sessionid]' and providerid=$providerid "
                     );
             return false;

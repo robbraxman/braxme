@@ -116,7 +116,7 @@
     $limit_to_owner = "";
     
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
             select statuspost.anonymous, statuspost.encoding, statuspost.postid, 
             statuspost.pin, statuspost.locked,
@@ -168,7 +168,7 @@
     
     
     $postcount = 0;
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         
         $postcount++;
         $cleanPostid = str_replace(".","",$row['postid']);

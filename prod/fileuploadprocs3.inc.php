@@ -1,7 +1,7 @@
 <?php
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("aws.php");
-require_once("crypt.inc.php");
+require_once("crypt-pdo.inc.php");
 
 
 function ProcessUpload( $providerid, $encoding, $subject, $upload_hdr, $uploadtype, $folder, $sendemail, $chatid, $passkey64 )
@@ -50,11 +50,11 @@ function ProcessUpload( $providerid, $encoding, $subject, $upload_hdr, $uploadty
         }
         //who is other?
         $uploadprovider = 0;
-        $result = do_mysqli_query("1", 
+        $result = pdo_query("1", 
           "select providerid, providername from provider where
               (replyemail = '$sendemail' or (handle = '$sendemail' and '$sendemail' != '')) and active='Y' "
         );
-        if( $row = do_mysqli_fetch("1",$result))
+        if( $row = pdo_fetch($result))
         {
             $uploadprovider = $row['providerid'];
             $uploadprovidername = $row['providername'];
@@ -188,7 +188,7 @@ function ProcessUpload( $providerid, $encoding, $subject, $upload_hdr, $uploadty
                                         }
                                         $encrypted_subject .= " sent to $sendemail";
 
-                                        $result = do_mysqli_query("1", 
+                                        $result = pdo_query("1", 
                                                 "
                                                     insert into filelib
                                                     ( providerid, filename, origfilename, folder, filesize, filetype, title, createdate, alias, fileencoding, encoding, sendtoid, status )
@@ -214,7 +214,7 @@ function ProcessUpload( $providerid, $encoding, $subject, $upload_hdr, $uploadty
                                             $encrypted_origfilename = EncryptTextCustomEncode($origfilename,"PLAINTEXT","$attachmentfilename2");
                                             $encrypted_subject = EncryptTextCustomEncode("$origfilename from $_SESSION[providername]","PLAINTEXT","$attachmentfilename2");
                                             
-                                            $result = do_mysqli_query("1", 
+                                            $result = pdo_query("1", 
                                                     "
                                                         insert into filelib
                                                         ( providerid, filename, origfilename, folder, filesize, filetype, title, createdate, alias, encoding, sendtoid, status )
@@ -237,17 +237,17 @@ function ProcessUpload( $providerid, $encoding, $subject, $upload_hdr, $uploadty
                                                             data-page='1'>My Files</div> <br><br>$origfilename was added to your MY FILES. <br>", 
                                                         "$chatid","$passkey" );
 
-                                                $result = do_mysqli_query("1",
+                                                $result = pdo_query("1",
                                                     "
                                                         insert into chatmessage ( chatid, providerid, message, msgdate, encoding, status)
                                                         values
                                                         ( $chatid, $providerid, \"$encode\", now(), '$_SESSION[responseencoding]', 'Y' );
                                                     ");
-                                                do_mysqli_query("1",
+                                                pdo_query("1",
                                                     "
                                                     update chatmembers set lastmessage=now(), lastread=now() where providerid= $providerid and chatid=$chatid and status='Y'
                                                     ");
-                                                do_mysqli_query("1",
+                                                pdo_query("1",
                                                     "
                                                     update chatmaster set lastmessage=now() where  chatid=$chatid and status='Y'
                                                     ");

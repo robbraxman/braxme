@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 
 $share = tvalidator("PURIFY", $_GET[p] );
 $ip = tvalidator("PURIFY", $_GET[ip] );
@@ -10,17 +10,17 @@ $d = tvalidator("PURIFY", $_GET[d] );
 $i = tvalidator("PURIFY", $_GET[i] );
 $action = tvalidator("PURIFY", $_GET[a] );
 
-$result = do_mysqli_query("1","
+$result = pdo_query("1","
     select shareto, platform from shares where shareid='$share'
     ");
-$row = do_mysqli_fetch("1",$result);
+$row = pdo_fetch($result);
 $shareto = $row[shareto];
 if( $shareto == "Unspecified")
     $shareto = "$row[platform]";
 
 if( $action == 'D')
 {
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         delete from shareposts where shareid='$share' and ip='$ip' and postid='$i'
         ");
     
@@ -32,7 +32,7 @@ else
 
     if( $c !="")
     {
-        do_mysqli_query("1","
+        pdo_query("1","
             insert into shareposts (shareid, ip, postdate, comment,name, device ) values
             ('$share','$ip',now(), '$c','$n','$d' )
             ");
@@ -43,7 +43,7 @@ else
 //***********************************************
 
 
-$result2 = do_mysqli_query("1","
+$result2 = pdo_query("1","
     select name, ip,comment, postid,
     DATE_FORMAT( postdate, '%Y-%m-%d %H:%i') as postdate,
     DATE_FORMAT( postdate, '%m/%d/%y %h:%i %p') as fpostdate,
@@ -81,7 +81,7 @@ $comments = "
             </tr>
             ";
 
-while( $row2 = do_mysqli_fetch("1",$result2))
+while( $row2 = pdo_fetch($result))
 {
     $action = "&nbsp;&nbsp;&nbsp;<div 
             class='delete' 

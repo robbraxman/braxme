@@ -1,9 +1,9 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 require ("SmsInterface.inc");
 require ("htmlhead.inc.php");
-require ("crypt.inc.php");
+require ("crypt-pdo.inc.php");
 ?>
         <title>Save Profile</title>
     </head>
@@ -84,8 +84,8 @@ require ("crypt.inc.php");
     //$accountnote = mysql_escape_string( $_POST[accountnote]);
     $accountnote = @tvalidator("PURIFY",$_POST['accountnote']);
 
-    $result = do_mysqli_query("1", "SELECT active, announcement from service where msglevel='STATUS' /*test1*/");
-    if ($row = do_mysqli_fetch("1",$result)) 
+    $result = pdo_query("1", "SELECT active, announcement from service where msglevel='STATUS' /*test1*/");
+    if ($row = pdo_fetch($result)) 
     {
         if($row['active']=='N')
         {
@@ -108,10 +108,10 @@ require ("crypt.inc.php");
     //}
     
     //Check for Change in REPLY EMAIL - Important!
-    $result = do_mysqli_query("1", 
+    $result = pdo_query("1", 
             "select replyemail, verified, handle from provider where providerid=$providerid "
             );
-    $row = do_mysqli_fetch("1",$result);
+    $row = pdo_fetch($result);
     $orig_replyemail = $row['replyemail'];
     $orig_handle = $row['handle'];
     $verified = $row['verified'];
@@ -120,7 +120,7 @@ require ("crypt.inc.php");
         $verified='R';
         $signupverificationkey = uniqid("", true);
     
-        $result = do_mysqli_query("1", 
+        $result = pdo_query("1", 
                 "insert into verification (type, providerid, verificationkey, loginid, email, createdate ) values (".
                 " 'ACCOUNT', $providerid, '$signupverificationkey', '$loginid', '$replyemail', now() ) "
                 );
@@ -150,12 +150,12 @@ require ("crypt.inc.php");
     $handle = "@".strtolower(str_replace(" ","",$handle));
     
     
-    do_mysqli_query("1","delete from handle where email ='$replyemail' ");
+    pdo_query("1","delete from handle where email ='$replyemail' ");
     if( $handle!='@' && $active=='Y') //Check for Unique Handle
     {
-        do_mysqli_query("1","insert into handle (handle, email, providerid) values ('$handle', '$replyemail',$providerid) ");
-        $result = do_mysqli_query("1","select handle from handle where handle='$handle' ");
-        if($row = do_mysqli_fetch("1",$result))
+        pdo_query("1","insert into handle (handle, email, providerid) values ('$handle', '$replyemail',$providerid) ");
+        $result = pdo_query("1","select handle from handle where handle='$handle' ");
+        if($row = pdo_fetch($result))
         {
             $handle = $row['handle'];
         }
@@ -253,7 +253,7 @@ require ("crypt.inc.php");
     if( $defaultsmtp != '1')
         $defaultsmtp = '0';
         
-        $result = do_mysqli_query("1", 
+        $result = pdo_query("1", 
           " update provider " .
           " set verified='$verified', providername= '$providername', ".
           " name2='$name2', companyname= '$companyname', handle='$handle', ".
@@ -266,14 +266,14 @@ require ("crypt.inc.php");
           );
         
         //Create encrypted SMS
-        do_mysqli_query("1","
+        pdo_query("1","
             delete from sms where providerid = $providerid
             ");
 
         if($replysms!=''){
             $sms_encrypted = EncryptText($replysms, $providerid);
             //$sms_decrypted = DecryptText($sms_encrypted, $_SESSION['responseencoding'], $providerid);
-            do_mysqli_query("1","
+            pdo_query("1","
                 insert into sms (providerid, sms, encoding ) values 
                 (
                     $providerid, '$sms_encrypted','$_SESSION[responseencoding]'
@@ -282,22 +282,22 @@ require ("crypt.inc.php");
         }
         
         
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
             update contacts set handle ='$handle' where handle='$orig_handle' and '$orig_handle'!=''
             "
         );
 
-        $result = do_mysqli_query("1", 
+        $result = pdo_query("1", 
             " update staff set staffname='$providername' where loginid='admin' and providerid=$providerid " 
           );
         
     //Account Termination Cleanup
     if($active == 'N'){
-        do_mysqli_query("1","delete from invites where email='$replyemail' and chatid is not null ");
+        pdo_query("1","delete from invites where email='$replyemail' and chatid is not null ");
     }
     if($enterprise != ''){
-        do_mysqli_query("1","update provider set enterprise = '$enterprise' where providerid = $providerid ");
+        pdo_query("1","update provider set enterprise = '$enterprise' where providerid = $providerid ");
     }
     
     $errorstate = true;
@@ -353,13 +353,13 @@ require ("crypt.inc.php");
         {
             echo "<br><h3>You changed your 'Reply Email'. We sent a verification Email to<br>".
                  "$replyemail.<br>Please respond to it to verify your identity.</h3><br>";
-            $result = do_mysqli_query("1", "update staff set email='$replyemail' where loginid='$loginid' and providerid=$providerid ");
+            $result = pdo_query("1", "update staff set email='$replyemail' where loginid='$loginid' and providerid=$providerid ");
         }
         else 
         {
             echo "<br><h3>You changed your 'Reply Email'.</h3><br>";
             echo "Verification Email sent to $replyemail failed. Your Reply Email was restored to the original.";
-            $result = do_mysqli_query("1", "update provider set verified='Y', replyemail = '$orig_replyemail' where providerid=$providerid ");
+            $result = pdo_query("1", "update provider set verified='Y', replyemail = '$orig_replyemail' where providerid=$providerid ");
         }
 
         

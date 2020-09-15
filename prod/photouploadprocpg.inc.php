@@ -1,6 +1,6 @@
 <?php
 //Called by Uploadpg.php
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("aws.php");
 
 function ProcessUpload( $providerid, $encoding, $subject, $album, $upload_hdr, $uploadtype )
@@ -55,7 +55,7 @@ function ProcessUpload( $providerid, $encoding, $subject, $album, $upload_hdr, $
         
         $alias = uniqid("T4AZ", true);
 
-        $result = do_mysqli_query("1", 
+        $result = pdo_query("1", 
                 "
                     insert into photolib
                     ( providerid, album, filename, folder, filesize, filetype, title, createdate, alias, owner )

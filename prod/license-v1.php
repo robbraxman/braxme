@@ -1,5 +1,5 @@
 <?php
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("htmlhead.inc.php");
 $i = @tvalidator("PURIFY",$_GET['i']);
 $apn = @tvalidator("PURIFY",$_GET['apn']);

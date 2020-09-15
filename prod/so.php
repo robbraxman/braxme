@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("config.php");
+include("config-pdo.php");
 include("lib_autolink.php");
 $uniqid = uniqid();
 
@@ -17,10 +17,10 @@ $i = @tvalidator("PURIFY", isset( $_REQUEST["i"] ) ? $_REQUEST["i"] : "" );
 $a = @tvalidator("PURIFY",isset( $_REQUEST["a"] ) ? $_REQUEST["a"] : ""  );
 $e = @tvalidator("PURIFY", isset( $_REQUEST["e"] ) ? $_REQUEST["e"] : ""  );
 
-$result = do_mysqli_query("1","
+$result = pdo_query("1","
     select shareto, platform from shares where shareid='$share'
     ");
-$row = do_mysqli_fetch("1",$result);
+$row = pdo_fetch($result);
 $shareto = $row['shareto'];
 if( $shareto == "Unspecified")
     $shareto = "$row[platform]";
@@ -44,7 +44,7 @@ $bot = BotDetected();
 
     if( $a == 'D')
     {
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             delete from shareposts where shareid='$share' and ip='$ip' and postid='$i'
             ");
 
@@ -57,7 +57,7 @@ $bot = BotDetected();
 
         if( $c !="")
         {
-            do_mysqli_query("1","
+            pdo_query("1","
                 insert into shareposts (shareid, ip, postdate, comment,name, device, email ) values
                 ('$share','$ip',now(), '$c','$n','$d','$e' )
                 ");
@@ -66,7 +66,7 @@ $bot = BotDetected();
     else
     if( $a == 'L' )
     {
-        do_mysqli_query("1","
+        pdo_query("1","
             update shares set likes=likes+1 where shareid='$share'
         ");
     }
@@ -80,7 +80,7 @@ $bot = BotDetected();
     $sharelink = "https://bytz.io/$installfolder/so.php?p=$share";
     if( $view!=='N' )
     {
-        $result2 = do_mysqli_query("1","
+        $result2 = pdo_query("1","
             update shares set views=views+1 where shareid='$share'
             ");
         $displaylink = "";
@@ -100,7 +100,7 @@ $bot = BotDetected();
  ******************************************************/
 
 
-$result = do_mysqli_query("1","
+$result = pdo_query("1","
         select aws_url, filename, folder, comment, 
         (select sharetitle from shares where shareid='$share') as title,
         (select shareopentitle from shares where shareid='$share') as opentitle,
@@ -112,7 +112,7 @@ $result = do_mysqli_query("1","
         ");
 
 
-if( !$row = do_mysqli_fetch("1",$result))
+if( !$row = pdo_fetch($result))
 {
     
     
@@ -232,13 +232,13 @@ if( !$row = do_mysqli_fetch("1",$result))
             </tr>
             ";
 
-    $result2 = do_mysqli_query("1","
+    $result2 = pdo_query("1","
         select name, ip,comment, postid,
         DATE_FORMAT( postdate, '%Y-%m-%d %H:%i') as postdate,
         DATE_FORMAT( postdate, '%m/%d/%y %h:%i %p') as fpostdate
         from shareposts where shareid='$share' order by postdate asc
     ");
-    while( $row2 = do_mysqli_fetch("1",$result2))
+    while( $row2 = pdo_fetch($result))
     {
         $action = "&nbsp;&nbsp;&nbsp;<div 
                 class='delete' 
@@ -411,14 +411,14 @@ if( $view == 'N')
         ";
                     
     
-    $result =  do_mysqli_query("1","
+    $result =  pdo_query("1","
         select ip, device, views, 
         DATE_FORMAT( lastread, '%m/%d/%y %h:%i %p') as lastread
         from sharereads where shareid='$share'
         ");
     
     
-    while($row= do_mysqli_fetch("1",$result))
+    while($row= pdo_fetch($result))
     {
         echo "
             <tr>

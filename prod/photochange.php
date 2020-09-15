@@ -1,7 +1,7 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
     $providerid = tvalidator("PURIFY",$_SESSION[pid]);
@@ -13,7 +13,7 @@ require_once("config.php");
 
     if( $xaccode == 'T')
     {
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 update photolib set title='$value', comment='$value2', album='$value3' 
                 where providerid= $providerid and filename='$filename'

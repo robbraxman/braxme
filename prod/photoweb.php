@@ -2,7 +2,7 @@
 exit();
 session_start();
 require("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 
 $max = 50;
 
@@ -12,17 +12,17 @@ $max = 50;
     $mode = tvalidator("PURIFY",$_POST[mode]);
     if( $collection != "" && $mode =='D')
     {
-        do_mysqli_query("1","
+        pdo_query("1","
             delete from sharecollection where providerid=$providerid
             and collection = '$collection'
             ");
         
-        do_mysqli_query("1","
+        pdo_query("1","
             delete from shares where providerid=$providerid and sharetype='A'
             and collection = '$collection'
             ");
         
-        do_mysqli_query("1","
+        pdo_query("1","
             delete from shares where providerid=$providerid and sharetype='W'
             and sharelocal = '$collection'
             ");
@@ -33,13 +33,13 @@ $max = 50;
     if( $collection != "" && $mode =='A')
     {
 
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select url
             from sharecollection where providerid=$providerid
             and collection='$collection' and collection in (select sharelocal
             from shares where providerid=$providerid)
          ");
-        if( $row = do_mysqli_fetch("1",$result))
+        if( $row = pdo_fetch($result))
         {
             $url = $row[url];
         }
@@ -49,7 +49,7 @@ $max = 50;
             $url = "$rootserver/$installfolder/sharew.php?p=$linkid";
             $securetype='O';
             $proxyfilename = "";
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 insert into shares 
                 (setid, providerid, sharedate, sharetype, sharelocal, 
                 shareid, shareto, shareexpire, sharetitle, platform, 
@@ -64,18 +64,18 @@ $max = 50;
         
         
         
-        do_mysqli_query("1","
+        pdo_query("1","
             delete from sharecollection where providerid=$providerid
             and collection = '$collection'
             ");
         
-        do_mysqli_query("1","
+        pdo_query("1","
             delete from shares where providerid=$providerid
             and collection = '$collection' and sharetype='A'
             ");
         
         /*
-        do_mysqli_query("1","
+        pdo_query("1","
             delete from shares where providerid=$providerid and sharetype='W'
             and sharelocal = '$collection'
             ");
@@ -91,7 +91,7 @@ $max = 50;
                 $linkid1 = uniqid("CX", true);
                 $url1 = "$rootserver/$installfolder/soa.php?p=$linkid1";
                 
-                $result = do_mysqli_query("1","
+                $result = pdo_query("1","
                     insert into shares 
                     (setid, providerid, sharedate, sharetype, sharelocal, 
                     shareid, shareto, shareexpire, sharetitle, platform, 
@@ -103,7 +103,7 @@ $max = 50;
                  ");
                 
                 
-                do_mysqli_query("1","
+                pdo_query("1","
                     insert into sharecollection
                     (providerid, collection, album, url, url1, seq, description ) 
                     values
@@ -120,12 +120,12 @@ $max = 50;
         $albumselect = "";  
         $description = "";
 
-        $result2 = do_mysqli_query("1","
+        $result2 = pdo_query("1","
                 select distinct album from photolib where providerid = $providerid and 
                 album!='' and album!='All'  order by album asc
                 ");
         $albumselect .= "<option value=''>Select</option>";
-        while( $row2 = do_mysqli_fetch("1",$result2))
+        while( $row2 = pdo_fetch($result))
         {
             $albumselect .= "<option value='$row2[album]'>$row2[album]</option>";
         }
@@ -138,14 +138,14 @@ $max = 50;
     {
         $albumselect = "";  
 
-        $result2 = do_mysqli_query("1","
+        $result2 = pdo_query("1","
                 select album,seq, url, description from sharecollection where providerid=$providerid 
                     and collection = '$collection' order by seq asc
                 ");
         
         for($i=0;$i<=$max;$i++) $album_selected[$i]="";
         
-        while( $row2 = do_mysqli_fetch("1",$result2))
+        while( $row2 = pdo_fetch($result))
         {
             $album_selected[$row2[seq]]="<option value='$row2[album]' selected=selected>$row2[album]</option>";
             $url="$row2[url]";
@@ -153,12 +153,12 @@ $max = 50;
         }
         
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
                 select distinct album from photolib where providerid = $providerid and 
                 album!='' and album!='All'  order by album asc
                 ");
         $albumselect .= "<option value=''></option>";
-        while( $row = do_mysqli_fetch("1",$result))
+        while( $row = pdo_fetch($result))
         {
             $albumselect .= "<option value='$row[album]'>$row[album]</option>";
         }
@@ -285,11 +285,11 @@ $(document).ready( function() {
             <td class="label">Existing Websites<br><br><br><br></td>
             <td class="dataarea">
             <?php
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 select distinct collection from sharecollection where providerid=$providerid
                     order by collection asc
                 ");
-            while($row = do_mysqli_fetch("1",$result))
+            while($row = pdo_fetch($result))
             {
                 echo "
                     <div class='displaycollection' style='cursor:pointer;display:inline;color:steelblue' data-collection='$row[collection]'>$row[collection]</div>
