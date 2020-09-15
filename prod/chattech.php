@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("internationalization.php");
 
     //$replyflag = mysql_safe_string($_POST[replyflag]);
@@ -9,7 +9,7 @@ require_once("internationalization.php");
     $handle = @mysql_safe_string($_SESSION['handle']);
     
     /*
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
         update notification set displayed = 'Y' where notifytype='CP' and displayed!='Y'
         ");
@@ -48,7 +48,7 @@ require_once("internationalization.php");
     
          //To Randomize:
          // order by rand()
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
         "
             select distinct provider.replyemail, provider.providername as name, provider.companyname, 
             provider.alias, provider.providerid, provider.handle,
@@ -76,7 +76,7 @@ require_once("internationalization.php");
         ";
     $list .=   "   <div style='color:$global_textcolor;margin:auto;text-align:center'>";
     
-    while($row = do_mysqli_fetch("1",$result))
+    while($row = pdo_fetch($result))
     {
         
         $id = $row['replyemail'];

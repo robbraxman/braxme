@@ -9,7 +9,7 @@ require_once("config.php");
     
     $_SESSION['age'] = $age;
 
-    $result = do_mysqli_query("1", 
-            " update provider set age=$age where providerid=$providerid "
-            );
+    $result = pdo_query("1", 
+            " update provider set age=? where providerid=? "
+            ,array($age,$providerid));
         

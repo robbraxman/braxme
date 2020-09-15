@@ -1,15 +1,15 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require("config.php");
+require("config-pdo.php");
 $checkbox = '';//"<img src='../img/checkbox-green-128.png' style='height:25px;position:relative;top:5px' />";
 $welcome = "";
 $sponsor = ucfirst($_SESSION['sponsor']);
 
-do_mysqli_query("1","update provider set lasttip=1 where providerid=$_SESSION[pid]");
+pdo_query("1","update provider set lasttip=1 where providerid=$_SESSION[pid]");
 
-$result = do_mysqli_query("1","select welcome from sponsor where sponsor='$_SESSION[sponsor]' ");
-if($row = do_mysqli_fetch("1",$result)){
+$result = pdo_query("1","select welcome from sponsor where sponsor='$_SESSION[sponsor]' ");
+if($row = pdo_fetch($result)){
     $message = $row['welcome'];
     //$message = str_replace("\\n","<br>",$message);
     //$message = str_replace("\\r","<br>",$message);

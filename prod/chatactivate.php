@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 
     //$replyflag = mysql_safe_string($_POST[replyflag]);
     $providerid = @mysql_safe_string($_POST['c']);
@@ -8,64 +8,64 @@ require_once("config.php");
     $mode = @mysql_safe_string($_POST['mode']);
     
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
             insert into chatmaster ( owner, created, status, archive, keyhash )
             values
-            ( $providerid, now(), 'Y',(select archivechat from provider where providerid=$providerid),'' );
-        ");
+            ( ?, now(), 'Y',(select archivechat from provider where providerid=?),'' );
+        ",array($providerid,$providerid));
     
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
-            select chatid from chatmaster where owner = $providerid and status='Y' order by created desc
-        ");
+            select chatid from chatmaster where owner = ? and status='Y' order by created desc
+        ",array($providerid));
     
-    if( $row = do_mysqli_fetch("1",$result))
+    if( $row = pdo_fetch($result))
     {
         $chatid = $row[chatid];
         
-        $result2 = do_mysqli_query("1",
+        $result2 = pdo_query("1",
             "
                 select chatid from chatmaster where 
-                chatid in (select chatid from chatmembers where providerid=$providerid) and
-                chatid in (select chatid from chatmembers where providerid=$callingid) 
-            ");
+                chatid in (select chatid from chatmembers where providerid=?) and
+                chatid in (select chatid from chatmembers where providerid=?) 
+            ",array($providerid,$callingid));
         
-        while( $row2 = do_mysqli_fetch("1",$result2))
+        while( $row2 = pdo_fetch($result2))
         {
             //Delete old chat with same person
-            $result3 = do_mysqli_query("1",
+            $result3 = pdo_query("1",
                 "
                     delete from chatmembers where chatid = $row2[chatid]
                 ");
         }
         
         
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 insert into chatmembers ( chatid, providerid, status, lastactive ) 
                 values
-                ( $row[chatid], $providerid, 'Y', now() );
-            ");
+                ( $row[chatid], ?, 'Y', now() );
+            ",array($providerid));
         
         
         if( $mode == 'A')
         {
-            $result = do_mysqli_query("1",
+            $result = pdo_query("1",
                 "
                     insert into chatmembers ( chatid, providerid, status, lastactive ) 
                     values
-                    ( $row[chatid], $callingid, 'Y', 0 );
-                ");
+                    ( $row[chatid], ?, 'Y', 0 );
+                ",array($callingid));
             if( $result )
             {
 
-                $result = do_mysqli_query("1", " select providername from provider where providerid = $providerid ");
-                $row = do_mysqli_fetch("1",$result);
+                $result = pdo_query("1", " select providername from provider where providerid = ? ",array($providerid));
+                $row = pdo_fetch($result);
                 $name1 = $row[providername];
-                $result = do_mysqli_query("1", " select providername from provider where providerid = $callingid ");
-                $row = do_mysqli_fetch("1",$result);
+                $result = pdo_query("1", " select providername from provider where providerid = ? ",array($callingid));
+                $row = pdo_fetch($result);
                 $name2 = $row[providername];
 
                 $dot = "<img class='unreadicon' src='../img/dot.png' style='height:10px;width:auto;padding-top:3;padding-right:2px;padding-bottom:3px;' />";

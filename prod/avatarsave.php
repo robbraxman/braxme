@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 
 require_once("htmlhead.inc.php");
 require_once("password.inc.php");

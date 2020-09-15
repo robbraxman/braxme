@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 
     //$replyflag = mysql_safe_string($_POST[replyflag]);
     $providerid = mysql_safe_string($_POST['providerid']);
@@ -31,15 +31,15 @@ require_once("config.php");
     
     //$fullscreen = "<img class='fullscreenvideo icon15' src='../img/full-screen-expand-128.png' style='float:left;padding-top:5px;padding-bottom:5px;padding-left:15px;cursor:pointer' /><br><br>";
     $fullscreen = "<center><img class='fullscreenvideo icon15' src='../img/full-screen-expand-128.png' style='padding-top:5px;padding-bottom:5px;padding-left:15px;cursor:pointer' /></center>";
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
                 select chatpopup.url, chatpopup.broadcaster, provider.handle  from 
                 chatpopup 
                 left join provider on chatpopup.broadcaster = provider.providerid
-                where chatpopup.chatid=$chatid and chatpopup.broadcaster in 
+                where chatpopup.chatid=? and chatpopup.broadcaster in 
                 (select broadcaster from chatmaster where chatmaster.chatid=chatpopup.chatid) 
-             ");
+             ",array($chatid));
     $url = "";
-    if($row = do_mysqli_fetch("1",$result)){
+    if($row = pdo_fetch($result)){
         $url = base64_decode($row['url']);
         $broadcaster = base64_decode($row['broadcaster']);
         $handle = $row['handle'];
@@ -129,50 +129,50 @@ require_once("config.php");
                 </script>            
              ";
 
-        do_mysqli_query("1", " 
+        pdo_query("1", " 
             update chatmembers 
                 set chatmembers.broadcaster = (select broadcaster from chatmaster where chatmembers.chatid = chatmaster.chatid)
-                where chatmembers.chatid = $chatid  and chatmembers.providerid = $_SESSION[pid]
-        ");
+                where chatmembers.chatid = ? and chatmembers.providerid = $_SESSION[pid]
+        ",array($chatid));
         
     } else 
     if(strtolower($link[0]=='youtube')){
         $panel = 'panel';
         $data =  "<iframe class='videoframe' src='https://www.youtube.com/embed/live_stream?channel=".$link[1]."&rel=0&$autoplayYt' style='border:0px none transparent;width:$width;height:$height' allowfullscreen='true' playsinline='true' $autoplay></iframe> ";
-        do_mysqli_query("1", " 
+        pdo_query("1", " 
             update chatmembers 
                 set chatmembers.broadcaster = (select broadcaster from chatmaster where chatmembers.chatid = chatmaster.chatid)
-                where chatmembers.chatid = $chatid  and chatmembers.providerid = $_SESSION[pid]
-        ");
+                where chatmembers.chatid = ?  and chatmembers.providerid = $_SESSION[pid]
+        ",array($chatid));
     } else 
     if(strtolower($link[0]=='braxlive')){
         
         $panel = 'panel';
         $data =  "<iframe class='videoframe' src='http://videolive.brax.me/live/viewer2.jsp?host=videolive.brax.me&stream=".substr($handle,1)."'  style='border:0px none transparent;width:100%;height:100%;padding:0;margin:0'  ></iframe> ";
-        do_mysqli_query("1", " 
+        pdo_query("1", " 
             update chatmembers 
                 set chatmembers.broadcaster = (select broadcaster from chatmaster where chatmembers.chatid = chatmaster.chatid)
-                where chatmembers.chatid = $chatid  and chatmembers.providerid = $_SESSION[pid]
-        ");
+                where chatmembers.chatid = ?  and chatmembers.providerid = $_SESSION[pid]
+        ",array($chatid));
     } else 
     if(strtolower($link[0]=='webcam')){
         
         $panel = 'panel';
         $data =  "<iframe class='videoframe' src='https://videolive.brax.me/live/viewer2.jsp?host=videolive.brax.me&stream=".substr($handle,1)."'  style='border:0px none transparent;width:100%;height:100%;padding:0;margin:0'  allowfullscreen='yes' $autoplay></iframe> ";
-        do_mysqli_query("1", " 
+        pdo_query("1", " 
             update chatmembers 
                 set chatmembers.broadcaster = (select broadcaster from chatmaster where chatmembers.chatid = chatmaster.chatid)
-                where chatmembers.chatid = $chatid  and chatmembers.providerid = $_SESSION[pid]
-        ");
+                where chatmembers.chatid = ?  and chatmembers.providerid = $_SESSION[pid]
+        ",array($chatid));
     } else 
     if(strtolower($link[0]=='youtubevideo')){
         $panel = 'panel';
         $data =  "<iframe class='videoframe' src='https://www.youtube.com/embed/".$link[1]."?rel=0&$autoplayYt' style='border:0px none transparent;width:100%;height:100%' allowfullscreen='yes' $autoplay></iframe> ";
-        do_mysqli_query("1", " 
+        pdo_query("1", " 
             update chatmembers 
                 set chatmembers.broadcaster = (select broadcaster from chatmaster where chatmembers.chatid = chatmaster.chatid)
-                where chatmembers.chatid = $chatid  and chatmembers.providerid = $_SESSION[pid]
-        ");
+                where chatmembers.chatid = ?  and chatmembers.providerid = $_SESSION[pid]
+        ",array($chatid));
     } else 
     if(strtolower($link[0]=='periscope')){
         $data =  "https://periscope.tv/".$link[1];
@@ -185,21 +185,21 @@ require_once("config.php");
         $data = $url;
     }
    
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "select broadcastid from broadcastlog  
          where 
-         chatid = $chatid and mode='B' order by broadcastid desc limit 1
-        "
+         chatid = ? and mode='B' order by broadcastid desc limit 1
+        ",array($chatid)
         );
-    if($row = do_mysqli_fetch("1",$result)){
+    if($row = pdo_fetch($result)){
 
-        do_mysqli_query("1",
+        pdo_query("1",
             "
             insert into broadcastlog 
             (providerid, chatid, broadcastdate, mode, broadcastid, chatcount ) 
             values 
-            ( $providerid, $chatid, now(), 'V', $row[broadcastid], 0 )
-            ");
+            ( ?, ?, now(), 'V', $row[broadcastid], 0 )
+            ",array($providerid,$chatid));
     }
 
     $arr = array('data'=> "$data",

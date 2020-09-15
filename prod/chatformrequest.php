@@ -1,8 +1,8 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("password.inc.php");
-require_once("crypt.inc.php");
+require_once("crypt-pdo.inc.php");
 
 $providerid = @mysql_safe_string($_SESSION['pid']);
 $mode = @mysql_safe_string($_POST['mode']);
@@ -11,9 +11,9 @@ $roomid = @mysql_safe_string($_POST['roomid']);
 $formid = @mysql_safe_string($_POST['formid']);
 $passkey64 = @mysql_safe_string($_POST['passkey64']);
 
-    $result = do_mysqli_query("1","select keyhash from chatmaster where chatid = $chatid ");
+    $result = pdo_query("1","select keyhash from chatmaster where chatid = ? ",array($chatid));
     $keyhash = '';
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         $keyhash = $row['keyhash'];
     }
 
@@ -21,49 +21,49 @@ $passkey64 = @mysql_safe_string($_POST['passkey64']);
 if( $mode == 'A'){
     
     if(intval($chatid)>0){
-        $result = do_mysqli_query("1","select providerid from chatmembers where chatid=$chatid and providerid!=$providerid ");
+        $result = pdo_query("1","select providerid from chatmembers where chatid=? and providerid!=? ",array($chatid,$providerid));
     }
     if(intval($roomid)>0){
-        $result = do_mysqli_query("1","insert into roomforms (roomid, formid ) values ($roomid, $formid) ");
+        $result = pdo_query("1","insert into roomforms (roomid, formid ) values (?, ?) ",array($roomid, $formid));
         
         
-        $result = do_mysqli_query("1","select providerid from statusroom where roomid=$roomid and providerid!=$providerid ");
+        $result = pdo_query("1","select providerid from statusroom where roomid=? and providerid!=? ",array($roomid, $formid));
     }
         
     $count = 0;
     
     
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         
         $count++;
         
-        do_mysqli_query("1"," 
-        update credentialformrequest set status='Y' where providerid = $row[providerid] and formid=$formid and status='N' 
-            ");
+        pdo_query("1"," 
+        update credentialformrequest set status='Y' where providerid = $row[providerid] and formid=? and status='N' 
+            ",array($formid));
         
         
-        do_mysqli_query("1"," 
+        pdo_query("1"," 
         insert ignore into credentialformtrigger (providerid, formid, created, status ) values 
-        ($row[providerid], $formid, now(), 'N')
-            ");
+        ($row[providerid], ?, now(), 'N')
+            ",array($formid));
 
         /*If form is re-requested, invalidate signature */
-        do_mysqli_query("1"," 
-        update credentials set submitted = null where formid = $formid and providerid = $row[providerid] 
-            ");
+        pdo_query("1"," 
+        update credentials set submitted = null where formid = ? and providerid = $row[providerid] 
+            ",array($formid));
         
         
-        do_mysqli_query("1"," 
+        pdo_query("1"," 
         insert ignore into credentialformrequest (providerid, formid, created, status, requestor ) values 
-        ($row[providerid], $formid, now(), 'N', $providerid)
-            ");
+        ($row[providerid], ?, now(), 'N', ?)
+            ",array($formid, $providerid));
         
         
     }
     if($count > 0){
 
-        $result = do_mysqli_query("1","select formname from credentialform where formid=$formid");
-        $row = do_mysqli_fetch("1",$result);
+        $result = pdo_query("1","select formname from credentialform where formid=? ",array($formid));
+        $row = pdo_fetch($result);
         $formname = $row['formname'];
         
         
@@ -73,12 +73,12 @@ if( $mode == 'A'){
             $passkey = DecryptE2EPasskey($passkey64,$providerid);
             $encode = EncryptChat ($message,"$chatid","$passkey" );
             $encodeshort = EncryptChat ($messageshort,"$chatid","" );
-            $result = do_mysqli_query("1",
+            $result = pdo_query("1",
             "
                 insert into chatmessage ( chatid, providerid, message, msgdate, encoding, status, loginid)
                 values
-                ( $chatid, $providerid, \"$encode\", now(), '$_SESSION[responseencoding]', 'Y','$_SESSION[loginid]' );
-            ");
+                ( ?, ?, \"$encode\", now(), '$_SESSION[responseencoding]', 'Y','$_SESSION[loginid]' );
+            ",array($chatid,$providerid));
         }
         echo "Form request sent to $count members";
     }
@@ -107,17 +107,17 @@ if( $mode == 'A'){
         </tr>
             
 <?php
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
                 select credentialform.formname, credentialform.formid 
                 from credentialform
                 where
                 ( 
-                  owner = $providerid or owner = 0 or 
+                  owner = ? or owner = 0 or 
                   credentialform.industry in (select industry from sponsorforms where sponsor= '$_SESSION[sponsor]') 
                 )
                 order by formname asc
-               ");
-    while($row = do_mysqli_fetch("1",$result)){
+               ",array($providerid));
+    while($row = pdo_fetch($result)){
         echo "
         <tr>
         <td class='dataarea'>

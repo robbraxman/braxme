@@ -1,7 +1,7 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("password.inc.php");
 require_once("internationalization.php");
 require_once("internationalization2.php");

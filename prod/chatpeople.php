@@ -1,7 +1,7 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 
     $providerid = @mysql_safe_string($_POST['providerid']);
     $find = rtrim(@mysql_safe_string($_POST['find']));
@@ -100,7 +100,7 @@ require_once("config.php");
 
         
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
         select provider.providername, provider.providerid as otherid,  
         provider.replyemail as otheremail, provider.avatarurl, 
         provider.handle, chatmembers.techsupport, chatmembers.broadcaster,
@@ -108,27 +108,27 @@ require_once("config.php");
         (select 'Y' from ban where ban.banid = provider.banid and ban.chatid = chatmaster.chatid ) as banned,
         chatmaster.owner, chatmaster.radiostation, provider.publishprofile,
         DATE_FORMAT(
-           date_add(chatmembers.lastread, interval ($timezoneoffset)*(60) MINUTE),
+           date_add(chatmembers.lastread, interval (?)*(60) MINUTE),
             '%b %d/%y %a  %h:%i:%s%p'
         ) as seen,
         chatmembers.lastread, chatmembers.techsupport,
         timestampdiff( HOUR, now(), chatmembers.lastread) as hourdiff,
-        (select count(*) from chatmembers c2 where c2.chatid = $chatid and c2.broadcaster is not null and c2.broadcaster > 0 ) as listenercount
+        (select count(*) from chatmembers c2 where c2.chatid = ? and c2.broadcaster is not null and c2.broadcaster > 0 ) as listenercount
         from chatmembers
         left join chatmaster on chatmaster.chatid = chatmembers.chatid
         left join provider on provider.providerid = chatmembers.providerid 
-        where chatmembers.chatid = $chatid 
+        where chatmembers.chatid = ?
         and provider.active = 'Y' and termsofuse is not null
         order by chatmembers.lastread desc 
         limit 1000
             
             
-                ");
+                ",array($timezoneoffset,$chatid,$chatid));
         $count = 0;
         $joined = "";
         $otherid = "";
         $techsupport = "";
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             if($row['techsupport']=='Y'){
                 $techsupport = 'Y';
             }
@@ -273,7 +273,7 @@ require_once("config.php");
             return "";
         }
         $technotes = "";
-        $result = do_mysqli_query("1","   
+        $result = pdo_query("1","   
             select providerid, useragent, deviceheight, devicewidth, pixelratio, industry, enterprise, notifications,
                 notificationflags,
                 providername, name2, alias, replyemail, handle, createdate, devicecode,
@@ -285,7 +285,7 @@ require_once("config.php");
 
                 from provider where providerid = $otherid and superadmin is null and techsupport = ''
                 ");
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
             $technotes .= "<div class='smalltext' style='padding:10px'>";
             $technotes .= "Name $row[providername] - $otherid chatID $chatid<br>";
             $technotes .= "Name2 $row[name2]<br>";
@@ -303,10 +303,10 @@ require_once("config.php");
             $technotes .= "Banned $row[banned]<br>";
             $technotes .= "<br>";
 
-            $result = do_mysqli_query("1","   
-                select platform, registered, status, error from notifytokens where providerid = $otherid 
-                ");
-            while($row = do_mysqli_fetch("1",$result)){
+            $result = pdo_query("1","   
+                select platform, registered, status, error from notifytokens where providerid = ? 
+                ",array($otherid));
+            while($row = pdo_fetch($result)){
                 $token = "NotifyToken $row[platform] - $row[registered] S=$row[status] $row[error]<br>";
                 $technotes .= $token;
             }
@@ -325,9 +325,9 @@ require_once("config.php");
             return "";
         }
         $notes="";
-        $result = do_mysqli_query("1","   
+        $result = pdo_query("1","   
                 ");
-        if($row = do_mysqli_fetch("1",$result)){
+        if($row = pdo_fetch($result)){
             $technotes .= "<br><br><br></div>";
 
             return $notes;

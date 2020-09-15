@@ -1,8 +1,8 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require("config.php");
-require_once("crypt.inc.php");
+require("config-pdo.php");
+require_once("crypt-pdo.inc.php");
 require_once("internationalization.php");
 
 $providerid = @mysql_safe_string($_SESSION['pid']);
@@ -32,8 +32,8 @@ $actiontitle = "$menu_startchat";
 $chattitle = "";
 
 if($roomid!=''){
-    $result = do_mysqli_query("1","select room, radiostation from roominfo where roomid = $roomid");
-    if($row = do_mysqli_fetch("1",$result)){
+    $result = pdo_query("1","select room, radiostation from roominfo where roomid = ?",array($roomid));
+    if($row = pdo_fetch($result)){
         
         $chattitle = htmlentities("$row[room]", ENT_QUOTES);
         $chattitle = str_replace("Welcome","",$chattitle);
@@ -80,8 +80,8 @@ if($mode =='C'){
     
     $windowtitle = "Access E2E Encrypted Chat";
     $placeholder = "Secret Key";
-    $result = do_mysqli_query("1","select title, encoding from chatmaster where chatid=$chatid ");
-    if($row = do_mysqli_fetch("1",$result)){
+    $result = pdo_query("1","select title, encoding from chatmaster where chatid=? ",array($chatid));
+    if($row = pdo_fetch($result)){
         $title = DecryptText( $row['title'],$row['encoding'], $chatid);
         
     }
@@ -91,9 +91,9 @@ if($mode =='C'){
     $button = "<img class='usechatpasskey' src='$iconsource_braxarrowright_common' style='cursor:pointer;position:relative;top:12px;height:35px;width:auto;padding-top:0;padding-left:2px;padding-bottom:0px;' />";
     $delete = "<img class='endchatbutton' id='endchatbutton' data-archive='N' data-chatid='$chatid' src='$iconsource_braxclose_common' style='cursor:pointer;position:relative;top:12px;height:35px;width:auto;padding-top:0;padding-left:2px;padding-bottom:0px;' />";
     if($title == ''){
-        $prompt = "<b>Enter the E2E Secret Key</b><br>";
+        $prompt = "<b>Enter the Chat Secret Key</b><br>";
     } else {
-        $prompt = "<b>$title</b> requires an E2E Secret Key.<br>";
+        $prompt = "<b>$title</b> requires a Chat Secret Key.<br>";
         
     }
     $buttonback = "<center><img class='selectchatlist tapped icon20' data-mode='CHAT' src='../img/arrow-stem-circle-left-128.png' style='padding-top:0;padding-left:2px;padding-bottom:0px;max-height:35px' /> Back</center>";
@@ -155,10 +155,11 @@ if($mode ==''){
             </div>
             <div class='chatE2Earea' style='color:$global_textcolor;max-width:300px;margin:auto;display:none'>
                 <br><br><br>
-                <b>E2E Secret Key</b><br>
+                <b>Chat Secret Key</b><br>
                 <span class='smalltext'>
                 Advanced Feature: 
-                This is an optional end-to-end encryption (E2E). When used, the session is E2E encrypted.
+                This is an optional chat storage encryption. When used, the session is encrypted with a key only
+                the participants posess.
                 Keys are automatically sent for pickup to the recipient device but must be done within 24 hours.
                 Keys also need to be resent for additional devices. Due to the extra steps involved with
                 key management, this is 

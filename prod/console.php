@@ -3,18 +3,29 @@ session_start();
 header('X-Frame-Options: SAMEORIGIN');
 header('X-Content-Type: nosniff');
 //header('X-XSS-Protection: 1; mode=block');
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("htmlhead.inc.php");
 require_once("password.inc.php");
 
 require_once("internationalization.php");
 require('colorscheme.php');
+require_once("accountcheck.inc.php");
 require_once("startup.inc.php");
 
-$connecterror = "<div class='tilebutton' style='padding:20px'>Internet Connectivity Issue. Please retry.</div>";
+$connecterror = "<div class='tilebutton restarthome' style='cursor:pointer;padding:20px;color:black;background:white'><b>Internet Connectivity Issue. Please try again.</b></div>";
+$timeouterror = "<div class='tilebutton restarthome' style='cursor:pointer;padding:20px;color:black;background:white'><b>Session Timeout. Please tap to restart.</b></div>";
 
 $uniqid = uniqid();
 
+
+$tester = 'N';
+//if($_SESSION['pid'] == 690001027 || $_SESSION['pid'] == 690034545 )
+if(
+    $_SESSION['pid'] == 690001027 ) 
+        //|| $_SESSION['pid'] == 690032821)
+{
+    $tester ='Y';
+}
 
 //Auto Launch Chat
 $initmodule = "";
@@ -111,14 +122,14 @@ if($_SESSION['enterprise']=='Y'){
             <td class='gridnoborder'  style='width:100%;vertical-align:top;overflow-x:hidden;overflow-y:hidden'>
                 <div id="banner" class="bannerflush bannerheight" 
                    style="position:relative;top:0;left:0;padding:0;overflow:hidden;
-                   width:100%;margin:0;text-align:left;background-color:<?=$global_banner_color?>">
+                   width:100%;margin:0;text-align:left;background-color:transparent">
                     <span class='formobile'>
                          <?=$blink?>
                         <img class='<?=$_SESSION['profileaction']?>  mainbutton tooltip bannerheight' alt='Change your profile and data' 
                            data-roomid='<?=$_SESSION['profileroomid']?>' data-providerid='<?=$providerid?>' data-caller='none'
                            title='Change your profile photo and data <?=$_SESSION['superadmin']?>/<?=$global_banner_color?>' 
                            data-mode='test'
-                           style='float:left;cursor:pointer;width:auto;padding:0;margin:0;max-width:15%' src='<?=$_SESSION['avatarurl']?>' />
+                           style='float:right;cursor:pointer;width:auto;padding:0;margin:0;max-width:15%' src='<?=$_SESSION['avatarurl']?>' />
                     </span>
                     <span class='nonmobile'>
                          <div class="smalltext bannerheight" 
@@ -128,20 +139,20 @@ if($_SESSION['enterprise']=='Y'){
                          </div>
                     </span>
                     <div class='closesidemenu tapped menubutton formobile' 
-                        style='display:inline;float:left;cursor:pointer;padding-right:20px;padding-left:5px;padding-bottom:0px;'>
+                        style='display:inline;float:right;cursor:pointer;padding-right:20px;padding-left:5px;padding-bottom:0px;'>
                         <img class='tip1 icon30' src='../img/Arrow-Left-in-Circle_120px.png' 
                              style=";top:6px;;cursor:pointer;opacity:0.0"  title="Main Menu" />
                     </div>
                     <div class='opensidemenu menubutton formobile' 
-                        style='display:inline;float:right;cursor:pointer;padding-right:20px;padding-left:5px;padding-bottom:0px;'>
+                        style='display:inline;float:left;cursor:pointer;padding-right:20px;padding-left:20px;padding-bottom:0px;'>
                         <?=$beacon?>
-                        <img class='tip1 icon15' src='../img/brax-menu-128.png' 
-                             style=";top:10px;;cursor:pointer;"  title="Main Menu" />
+                        <img class='tip1 icon20' src='<?=$iconsource_braxmenu?>' 
+                             style=";top:10px;cursor:pointer;"  title="Main Menu" />
                     </div>
                     <div class='camera formobile tapped menubutton' 
-                         style='display:inline;float:right;cursor:pointer;padding-right:8px;padding-left:5px;padding-bottom:0px;margin-right:20px' data-chatid=''>
-                        <img class='icon20' src='../img/camera-white-128.png' 
-                             style=";top:8px;;cursor:pointer;" title="Camera" />
+                         style='display:inline;float:left;cursor:pointer;padding-right:5px;padding-left:5px;padding-bottom:0px;margin-right:10px' data-chatid=''>
+                        <img class='icon20' src='<?=$iconsource_braxcamera?>' 
+                             style=";top:11px;;cursor:pointer;" title="Camera" />
                     </div>
                 </div>
                 <div class='tileview gridnoborder' style='display:none;background-color:transparent;overflow-x:hidden;width:100%'>
@@ -201,17 +212,19 @@ if($_SESSION['enterprise']=='Y'){
                                     <div class='settingsview' data-colorscheme='<?=$_SESSION['colorscheme']?>' data-sponsorcolorscheme='<?=$_SESSION['sponsorcolorscheme']?>'
 
                                          style="display:none;overflow:visible;background-color:transparent;text-align:left;color:<?=$global_textcolor?>;max-width:100%;">
+                                        <!--
                                         <div class='pagetitle2a' style='background-color:<?=$global_titlebar_color?>;color:white;padding-left:20px;padding-right:20px;padding-top:0px;padding-bottom:3px'>
-                                            <!--
+                                            !--
                                             <img class='icon20 tilebutton' Title='Back to Home' src='../img/Arrow-Left-in-Circle-White_120px.png' 
                                                 style='' />
                                             &nbsp;
-                                            -->
+                                            --
                                             <span style='opacity:.5'>
                                             <?=$icon_braxsettings2?>
                                             </span>
                                             <?=ucfirst(strtolower($menu_settings));?>
                                         </div>
+                                        -->
                                         <div 
                                          style="background-color:transparent;margin:auto;text-align:center;width:90%;min-width:70%;vertical-align:top">
                                                     <?=$settingsmenu?>
@@ -315,6 +328,7 @@ if($_SESSION['enterprise']=='Y'){
     <div id=trigger_members class='mainbutton togglememberson' data-userid=''  style='display:none'></div>
     <div id=trigger_uploadavatar class='mainbutton uploadavatar'   style='display:none'></div>
     <div id=trigger_iotview class='mainbutton homeiot'   style='display:none'></div>
+    <div id=trigger_restart class='mainbutton restart'   style='display:none'></div>
     
     
     <div class='roommanagediv' style='display:none'><?=$roommanagemenu?></div>
@@ -663,8 +677,10 @@ var pin = "<?=$_SESSION['pin'];?>";
 var pinlock = "<?=$_SESSION['pinlock'];?>";
 var livesupport = "<?=$_SESSION['livesupport']?>";
 var mobileversion = "<?=$_SESSION['version']?>";
+var hardenter = "<?=$_SESSION['hardenter']?>";
 var startupphp = "<?=$startupphp?>";
 var ConnectError = "<?=$connecterror?>";
+var TimeoutError = "<?=$timeouterror?>";
 try {
         localStorage.mobilecommand = ''; 
         localStorage.mobilenotification = ''; 
@@ -678,8 +694,31 @@ try {
         }
 } catch(err) {}
 </script>
+<?php
+
+
+
+if( $tester == 'Y'){
+?>
 <script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console0.js?i=<?=$uniqid?>'></script>
 <script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console.js?i=<?=$uniqid?>'></script>
 <script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/notifywebtest.js?<?=$uniqid?>'></script>
+<script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console_extra.js?<?=$uniqid?>'></script>
 
+<?php
+
+} else {
+?>
+<script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console0.js?i=<?=$uniqid?>'></script>
+<script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console.js?i=<?=$uniqid?>'></script>
+<script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/notifyweb.js?<?=$uniqid?>'></script>
+
+<?php
+/*
+<script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console0-obf.js?i=<?=$uniqid?>'></script>
+<script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console-obf.js?i=<?=$uniqid?>'></script>
+<script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/notifywebtest.js'></script>
+*/
+} 
+?>
 </html>

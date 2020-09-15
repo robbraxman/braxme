@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 
     $providerid = mysql_safe_string($_POST[providerid]);
     $mode = mysql_safe_string($_POST[mode]);
@@ -23,12 +23,12 @@ require_once("config.php");
     
     
     /* Get Info on Owner/Inviter */
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select providername, replyemail, alias, companyname from
         provider where
-        providerid = $providerid
-            ");
-    if($row = do_mysqli_fetch("1",$result))
+        providerid = ?
+            ",array($providerid));
+    if($row = pdo_fetch($result))
     {
         $providername = $row[providername];
         $replyemail = $row[replyemail];
@@ -48,22 +48,22 @@ require_once("config.php");
     
     
     //Is Invitee an Existing Account?
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select providerid, providername, replyemail, alias, providerid, mobile from
         provider where
-        replyemail='$email' and active='Y'
-            ");
-    if($row = do_mysqli_fetch("1",$result))
+        replyemail=? and active='Y'
+            ",array($email));
+    if($row = pdo_fetch($result))
     {
         
         $mobile = $row[mobile];
         $recipientid = $row[providerid];
 
-        $result2 = do_mysqli_query("1","
-            select * from contacts where providerid=$providerid and email='$email' and
-            email in (select replyemail from provider where replyemail='$email' and active='Y')
-                ");
-        if($row2 = do_mysqli_fetch("1",$result2))
+        $result2 = pdo_query("1","
+            select * from contacts where providerid=? and email=? and
+            email in (select replyemail from provider where replyemail=? and active='Y')
+                ",array($providerid,$email,$email));
+        if($row2 = pdo_fetch($result2))
         {
             $msg .= "&nbsp;&nbsp;$name is already on your contact list.";
             $alert = 'Y';
@@ -72,45 +72,45 @@ require_once("config.php");
         {
             if( $email != '')
             {
-                $result2 = do_mysqli_query("1","
+                $result2 = pdo_query("1","
                     insert into contacts (providerid, name, email, sms, status, imapbox ) values
-                    ($providerid, '$name', '$email', '$sms', 'Y', null  )
-                        ");
+                    (?, ?,?, ?, 'Y', null  )
+                        ",array($providerid,$name,$email,$sms));
             }
 
 
             $msg .= "&nbsp;&nbsp;$name has an account. Added to your contact list";
             $alert = '';
         }
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 insert into chatmembers ( chatid, providerid, status, lastactive ) 
                 values
-                ( $chatid, $row[providerid], 'Y', now() );
-        ");
+                ( ?, $row[providerid], 'Y', now() );
+        ",array($chatid));
     }
     else
     {
         if( $email != '')
         {
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 insert into contacts (providerid, name, email, sms, status, imapbox ) values
-                ($providerid, '$name', '$email', '$sms', 'Y', null  )
-                    ");
+                (?, ?, ?, ?, 'Y', null  )
+                    ",array($providerid,$name,$email,$sms));
         }
         $alert = 'C';
 
         //Delete prior chat invites
-        $result = do_mysqli_query("1","
-            delete from invites where chatid is not null and email ='$email' and providerid='$providerid'
-                ");
+        $result = pdo_query("1","
+            delete from invites where chatid is not null and email =? and providerid=?
+                ",array($email,$providerid));
 
         $inviteid = base64_encode(uniqid("$providerid"));
 
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             insert into invites (providerid, name, email, sms, contactlist, roomid, chatid, invitedate, status, retries, inviteid ) values
-            ($providerid, '$name', '$email', '$sms', '', 0, $chatid, now(), 'Y', 0, '$inviteid'  )
-                ");
+            (?, ?, ?, ?, '', 0, ?, now(), 'Y', 0, ?  )
+                ",array($providerid,$name,$email,$sms,$chatid,$inviteid));
         $mobile = "N";
 
     }
@@ -130,7 +130,7 @@ require_once("config.php");
     if($alert == 'C' )
     {
         $notifytype = 'C';
-        do_mysqli_query("1"," 
+        pdo_query("1"," 
             insert into notifications (
             providerid, notifydate, status, notifytype,
             name, email, sms, 
@@ -144,7 +144,7 @@ require_once("config.php");
     else
     {
         $notifytype = 'EC';
-        do_mysqli_query("1"," 
+        pdo_query("1"," 
             insert into notifications (
             providerid, notifydate, status, notifytype,
             name, email, sms, 
@@ -189,31 +189,31 @@ require_once("config.php");
     function EstablishChatSession( $providerid )
     {
         /* Create Chat Session - Owner */
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 insert into chatmaster ( owner, created, status )
                 values
-                ( $providerid, now(), 'Y' );
-            ");
+                ( ?, now(), 'Y' );
+            ",array($providerid));
 
         /* Get Chat ID of New Chat Session */
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
-                select chatid from chatmaster where owner = $providerid and status='Y' order by created desc
-            ");
+                select chatid from chatmaster where owner = ? and status='Y' order by created desc
+            ",array($providerid));
 
-        if( $row = do_mysqli_fetch("1",$result))
+        if( $row = pdo_fetch($result))
         {
             $chatid = $row[chatid];
         }
 
         //Create New Chat Session Member (Owner)
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 insert into chatmembers ( chatid, providerid, status, lastactive ) 
                 values
-                ( $chatid, $providerid, 'Y', now() );
-        ");
+                ( ?, ?, 'Y', now() );
+        ",array($chatid,$providerid));
         return $chatid;
     }
         

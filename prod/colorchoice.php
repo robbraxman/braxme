@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("internationalization.php");
 
 $colorscheme = @mysql_safe_string( strtolower($_POST['colorscheme']) );
@@ -9,17 +9,17 @@ $mode = @mysql_safe_string( $_POST['mode'] );
 $providerid = @mysql_safe_string( $_POST['providerid'] );
 
 if($mode == 'S'){
-    do_mysqli_query("1","update provider set colorscheme='$colorscheme' where providerid = $providerid");
+    pdo_query("1","update provider set colorscheme=? where providerid = ? ",array($colorscheme,$providerid));
     exit();
 }
 if($mode == 'W'){
-    do_mysqli_query("1","update provider set wallpaper='$wallpaper' where providerid = $providerid");
+    pdo_query("1","update provider set wallpaper=? where providerid = ? ",array($wallpaper,$providerid));
     exit();
 }
 if($mode == ''){
     $colorscheme = 'std';
-    $result = do_mysqli_query("1","select colorscheme, wallpaper from  provider  where providerid = $providerid");
-    if($row = do_mysqli_fetch("1",$result)){
+    $result = pdo_query("1","select colorscheme, wallpaper from  provider  where providerid = ?",array($providerid));
+    if($row = pdo_fetch($result)){
         $colorscheme = $row['colorscheme'];
         $wallpaper = $row['wallpaper'];
         

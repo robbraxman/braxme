@@ -349,6 +349,37 @@ function saveAWSObjectStreamEncrypted( $filename, $encoding, $chunksize, $target
 }
 
 
+function saveAWSObjectStream( $filename, $chunksize, $targetfilename )
+{
+    global $s3bucket;
+    global $s3Client;
+    
+    /*****
+     * 
+     *  NOT TESTED - Affects B/W Conversion in DocLIB. Will have to address later
+     * 
+     */
+    
+    try {
+        if ($stream = fopen("s3://$s3bucket/$filename", 'r')) {
+            $fp2 = fopen( $targetfilename, 'w' );
+            // While the stream is still open
+            $content = "";
+            while (!feof($stream)) {
+                // Read 1024 bytes from the stream
+                $content = fread($stream, $chunksize);
+                fwrite($fp2, $content, $chunksize);
+            }
+            // Be sure to close the stream resource when you're done with it
+            fclose($stream);
+            fclose($fp2);
+        }    
+    
+    } catch(Exception $e){
+        return  false;
+    }
+    return false;
+}
 
 
 function getAWSObjectUrl( $filename )
@@ -418,7 +449,7 @@ function putAWSObject( $filename, $filepath )
     unlink($filepath);
     
     $aws_url = getAWSObjectUrl( $filename );
-    do_mysqli_query("1","update photolib set aws_url='$aws_url' where filename='$filename' ");
+    pdo_query("1","update photolib set aws_url='$aws_url' where filename='$filename' ");
     
     return $result;
 

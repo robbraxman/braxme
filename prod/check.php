@@ -1,9 +1,17 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require("config.php");
+require("config-pdo.php");
 require("sidebar.inc.php");
 
+    if(!isset($_SESSION['pid']) || $_SESSION['pid']=='') //Invalid Session
+    {
+        if(!array_key_exists('reset', $_SESSION)){
+            echo "timeout";
+        }
+        $_SESSION['reset']='Y';
+        exit();
+    }
 
 
     if(@intval($_POST['sizing'])>0 ){
@@ -17,7 +25,14 @@ require("sidebar.inc.php");
     if(!isset($_POST['innerwidth']) ){
         exit();
     }
-    
+
+    $mobilecapable = @mysql_safe_string($_POST['mobilecapable']);
+    if($mobilecapable=='true'){
+        $_SESSION['mobilecapable']='Y';
+    } else {
+        $_SESSION['mobilecapable']='N';
+        
+    }
     $_SESSION['innerwidth']=@mysql_safe_string($_POST['innerwidth']);
     $_SESSION['innerheight']=@mysql_safe_string($_POST['innerheight']);
     $_SESSION['pixelratio']=@mysql_safe_string($_POST['pixelratio']);
@@ -34,8 +49,7 @@ require("sidebar.inc.php");
         
         $mobiledevice=mysql_safe_string($_POST['device']);
         $_SESSION['mobiledevice']=$mobiledevice;
-        if( $mobiledevice === 'P'){
-        
+        if( $mobiledevice === 'P' || $mobiledevice === 'U' ){
             $_SESSION['mobilesize']='Y';
         } else
         if( $mobiletype == 'A' || $mobiletype == 'I'){
@@ -58,16 +72,16 @@ require("sidebar.inc.php");
     
     if(intval($chatid) > 0 && intval($_SESSION['pid']) > 0 ){
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select chatmaster.lastmessage        
             
         from chatmembers 
             left join chatmaster on chatmembers.chatid = chatmaster.chatid
-            where chatmembers.chatid = $chatid
+            where chatmembers.chatid = ?
             and chatmembers.providerid = $_SESSION[pid]
             and chatmaster.lastmessage > chatmembers.lastread
-                ");
-        if($row = do_mysqli_fetch("1",$result)){
+                ",array($chatid));
+        if($row = pdo_fetch($result)){
                 echo "chat";
                 exit();
         } else {
@@ -80,14 +94,6 @@ require("sidebar.inc.php");
     
     
     //echo $_SESSION['sizing'];
-    if(!isset($_SESSION['pid']) || $_SESSION['pid']=='') //Invalid Session
-    {
-        if(!array_key_exists('reset', $_SESSION)){
-            echo "timeout";
-        }
-        $_SESSION['reset']='Y';
-        exit();
-    }
 
     if( TimeOutCheck()){
         echo "timeout";

@@ -1,8 +1,8 @@
 <?php
 session_start();
-require("config.php");
+require("config-pdo.php");
 require("colorscheme.php");
-require("crypt.inc.php");
+require("crypt-pdo.inc.php");
 require_once 'authenticator/GoogleAuthenticator.php';
 
     $providerid = mysql_safe_string("$_SESSION[pid]");
@@ -11,7 +11,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
     
     if($secret == 'delete'){
 
-        do_mysqli_query("1","
+        pdo_query("1","
             update staff set auth_hash=null, encoding=null 
             where loginid = '$_SESSION[loginid]' and providerid = $_SESSION[pid] ");
         
@@ -39,9 +39,9 @@ require_once 'authenticator/GoogleAuthenticator.php';
         
             $secret_encrypted = EncryptText($secret, $providerid);
         
-            do_mysqli_query("1","
-                update staff set auth_hash='$secret_encrypted', encoding='$_SESSION[responseencoding]' 
-                where loginid = '$_SESSION[loginid]' and providerid = $_SESSION[pid] ");
+            pdo_query("1","
+                update staff set auth_hash=?, encoding='$_SESSION[responseencoding]' 
+                where loginid = '$_SESSION[loginid]' and providerid = $_SESSION[pid] ",array($secret_encrypted));
             
             //echo "Successfully added Authenticator";
             $arr = array('msg'=> "Successfully added Authenticator",

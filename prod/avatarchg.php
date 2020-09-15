@@ -1,6 +1,6 @@
 <?php
 session_start();
-require("config.php");
+require("config-pdo.php");
 require_once("internationalization.php");
 $mode = @mysql_safe_string($_POST['mode']);
 $chatid = @mysql_safe_string($_POST['chatid']);
@@ -18,17 +18,17 @@ if( $mode == 'S'){
     $bio = StripEmojis($bio);
     
     if($publish == 'Y'){
-        do_mysqli_query("1","
-            update provider set publishprofile = '$bio', 
+        pdo_query("1","
+            update provider set publishprofile = ?, 
             publish='Y', 
             lastactive=now() where providerid = $_SESSION[pid]
-        ");
+        ",array($bio));
     } else {
-        do_mysqli_query("1","
-            update provider set publishprofile = '$bio', 
+        pdo_query("1","
+            update provider set publishprofile = ?, 
             publish='N' 
             where providerid = $_SESSION[pid]
-        ");
+        ",array($bio));
         
     }
     $bio = stripslashes($bio);
@@ -38,10 +38,10 @@ if( $mode == 'S'){
 if($mode == ''){
     
     $publishchecked = "";
-    $result = do_mysqli_query("1"," 
+    $result = pdo_query("1"," 
         select publishprofile, publish from provider where providerid = $_SESSION[pid]
             ");
-    if($row = do_mysqli_fetch("1",$result)){
+    if($row = pdo_fetch($result)){
         $bio = $row['publishprofile'];
         $publish = $row['publish'];
         if($publish == 'Y'){
@@ -120,7 +120,7 @@ if($_SESSION['language']=='english'){
         
             <input class='publish' name='publish' value='Y' <?=$publishchecked?> type='checkbox' style=';position:relative;top:5px' /> <?=$menu_public?>
             <br><br>
-            <textarea  class='mainfont publicbio' id=publicbio name='publicbio' placeholder="<?=$menu_biography?>" style='max-width:500px;width:90%;height:200px'><?=$bio?></textarea>
+            <textarea  class='mainfont publicbio' id=publicbio name='publicbio' placeholder="<?=$menu_biographyprompt?>" style='max-width:500px;width:90%;height:200px'><?=$bio?></textarea>
             <br><br>
 
             <div class="divbutton3 divbutton3_unsel savebio" id="upload"><?=$menu_save?></div>

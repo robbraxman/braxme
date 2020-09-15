@@ -1,5 +1,5 @@
 <?php
-require_once("config.php");
+require_once("config-pdo.php");
 $_SERVER['DOCUMENT_ROOT']='/var/www/html';
 require_once("aws.php");
 require_once("SmsInterface.inc");

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 
 $email = @mysql_safe_string($_POST['email']);
 
@@ -30,11 +30,11 @@ $email = @mysql_safe_string($_POST['email']);
         }
     }
 
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
     
-        "select replyemail from provider where replyemail = '$email' and active='Y' "
-    );
-    if( $row = do_mysqli_fetch("1",$result))
+        "select replyemail from provider where replyemail = ? and active='Y' "
+    ,array($email));
+    if( $row = pdo_fetch($result))
     {
         Error("emailtaken","$email is an existing account. Please use Forgot Password on the Login Page to access your existing account.",'');
         exit();
@@ -53,11 +53,11 @@ $email = @mysql_safe_string($_POST['email']);
     }
     function CheckHandleDuplicate($handle)
     {
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
         
-            "select handle from provider where handle = '$handle' and active='Y' "
-        );
-        if( $row = do_mysqli_fetch("1",$result)){
+            "select handle from provider where handle = ? and active='Y' "
+        ,array($handle));
+        if( $row = pdo_fetch($result)){
             return false;
         }
         return true;

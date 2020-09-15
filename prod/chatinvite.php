@@ -1,8 +1,8 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("sendmail.php");
-require_once("crypt.inc.php");
+require_once("crypt-pdo.inc.php");
 require ("notify.inc.php");
 require("chat.inc.php");
 
@@ -60,12 +60,12 @@ require("chat.inc.php");
     /***************************************************/
     /***************************************************/
     
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select providername, replyemail, alias, companyname, handle from
         provider where
-        providerid = $providerid
-            ");
-    if($row = do_mysqli_fetch("1",$result)){
+        providerid = ?
+            ",array($providerid));
+    if($row = pdo_fetch($result)){
         
         $myname = $row['providername'];
         $myemail = $row['replyemail'];
@@ -165,7 +165,7 @@ require("chat.inc.php");
         
         
             //Is Invitee an Existing Account?
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 select providername, replyemail, alias, providerid, handle, mobile from
                     provider where active = 'Y' and 
                     ( 
@@ -174,7 +174,7 @@ require("chat.inc.php");
                         (handle='$handle' and '$handle'  !='') 
                     )
                     ");
-            if($row = do_mysqli_fetch("1",$result)){
+            if($row = pdo_fetch($result)){
 
                 
 
@@ -244,50 +244,50 @@ require("chat.inc.php");
                 }
 
                 if( $email != '' && substr($name,0,1)!='@'){
-                    $result = do_mysqli_query("1","
+                    $result = pdo_query("1","
                         insert into contacts (providerid, name, email, sms, status, imapbox,blocked ) values
-                        ($providerid, '$name', '$email', '$sms', 'Y', null,''  )
-                            ");
+                        (?, ?, ?, ?, 'Y', null,''  )
+                            ",array($providerid,$name,$email,$sms));
                 }
                 
                 $alert = 'C';
 
                 //Delete prior chat invites
-                $result = do_mysqli_query("1","
+                $result = pdo_query("1","
                     delete from invites where chatid is not null and  
-                    (( email ='$email' and email!='') or (handle='$handle' and handle!='' ))
-                     and providerid='$providerid'
-                        ");
+                    (( email =? and email!='') or (handle=? and handle!='' ))
+                     and providerid=?
+                        ",array($email,$handle,$providerid));
                 
                 $inviteid = base64_encode(uniqid("$providerid"));
                 $inviteid = str_replace('=','',$inviteid);
 
-                $result = do_mysqli_query("1","
+                $result = pdo_query("1","
                     insert into invites (providerid, name, email, handle, sms, contactlist, roomid, chatid, invitedate, status, retries, inviteid ) values
-                    ($providerid, '$name', '$email', '$handle', '$sms', '', 0, $chatid, now(), 'Y', 0, '$inviteid'  )
-                        ");
+                    (?, ?, ?, ?, ?, '', 0, ?, now(), 'Y', 0, ?  )
+                        ",array($providerid,$name,$email,$handle,$sms,$chatid,$inviteid));
                 $mobile = "N";
 
                 $message = "Let me know when you see this!";
                 $encode = EncryptChat ($message,"$chatid","" );
 
 
-                $result = do_mysqli_query("1",
+                $result = pdo_query("1",
                     "
                         insert into chatmessage ( chatid, providerid, message, msgdate, encoding, status)
                         values
-                        ( $chatid, $providerid, \"$encode\", now(), '$_SESSION[responseencoding]', 'Y' );
-                    ");
+                        ( ?, ?, \"$encode\", now(), '$_SESSION[responseencoding]', 'Y' );
+                    ",array($chatid,$providerid));
 
 
-                $result = do_mysqli_query("1",
+                $result = pdo_query("1",
                     "
-                    update chatmembers set lastmessage=now(), lastread=now() where providerid= $providerid and chatid=$chatid and status='Y'
-                    ");        
-                $result = do_mysqli_query("1",
+                    update chatmembers set lastmessage=now(), lastread=now() where providerid= ? and chatid=? and status='Y'
+                    ",array($providerid,$chatid));        
+                $result = pdo_query("1",
                     "
-                    update chatmaster set lastmessage=now() where chatid=$chatid and status='Y'
-                    ");        
+                    update chatmaster set lastmessage=now() where chatid=? and status='Y'
+                    ",array($chatid));        
 
             }
             
@@ -327,12 +327,12 @@ require("chat.inc.php");
             $alert = '';
             $chatid = "";
         
-            $result = do_mysqli_query("1","
-                select * from chatmaster where roomid = $roomid and owner = $providerid and 
+            $result = pdo_query("1","
+                select * from chatmaster where roomid = ? and owner = ? and 
                 status='Y' and roomid in (select roomid from roominfo where radiostation = 'Q' and chatmaster.roomid = roominfo.roomid )
                 and chatmaster.roomid is not null
-                    ");
-            if($row = do_mysqli_fetch("1",$result)){
+                    ",array($roomid,$providerid));
+            if($row = pdo_fetch($result)){
                 $msg .= "&nbsp;&nbsp;Duplicate quiz session";
                 $alert = 'Y';
                 ExitRoutine($msg, $alert, 0,"","");
@@ -342,7 +342,7 @@ require("chat.inc.php");
             
         
             //Is Invitee an Existing Account?
-            $result = do_mysqli_query("1","
+            $result = pdo_query("1","
                 select provider.providername, provider.replyemail, provider.alias, provider.providerid, provider.handle,
                     roominfo.radiostation
                     from provider 
@@ -350,10 +350,10 @@ require("chat.inc.php");
                     left join roominfo on roominfo.roomid = statusroom.roomid
                     where 
                     provider.active = 'Y' and
-                    statusroom.roomid = $roomid
-                    ");
+                    statusroom.roomid = ?
+                    ",array($roomid));
             $i = 0;
-            while($row = do_mysqli_fetch("1",$result)){
+            while($row = pdo_fetch($result)){
 
                 if($radiostation==''){
                     $radiostation = $row['radiostation'];
@@ -396,25 +396,25 @@ require("chat.inc.php");
         $encode = EncryptChat ($message,"$chatid","" );
 
 
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 insert into chatmessage ( chatid, providerid, message, msgdate, encoding, status)
                 values
-                ( $chatid, $providerid, \"$encode\", now(), '$_SESSION[responseencoding]', 'Y' );
-            ");
-        $result = do_mysqli_query("1",
+                ( ?, ?, \"$encode\", now(), '$_SESSION[responseencoding]', 'Y' );
+            ",array($chatid,$providerid));
+        $result = pdo_query("1",
             "
-            update chatmembers set lastmessage=now(), lastread=now() where providerid= $providerid and chatid=$chatid and status='Y'
-            ");        
-        $result = do_mysqli_query("1",
+            update chatmembers set lastmessage=now(), lastread=now() where providerid= ? and chatid=? and status='Y'
+            ",array($providerid,$chatid));        
+        $result = pdo_query("1",
             "
-            update chatmaster set lastmessage=now() where chatid=$chatid and status='Y'
-            ");        
+            update chatmaster set lastmessage=now() where chatid=? and status='Y'
+            ",array($chatid));        
         if($radiostation == 'Q'){
-            $result = do_mysqli_query("1",
+            $result = pdo_query("1",
                 "
-                update chatmaster set radiostation='Q' where chatid = $chatid and status='Y'
-                ");        
+                update chatmaster set radiostation='Q' where chatid = ? and status='Y'
+                ",array($chatid));        
             
         }
 

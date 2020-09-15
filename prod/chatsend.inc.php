@@ -40,13 +40,13 @@
             $exploded2 = explode("&",$exploded[1]);
             $alias = $exploded2[0];
             $comment .= "&test=$alias";
-            $result = do_mysqli_query("1",
+            $result = pdo_query("1",
                 "
                 select filetype from filelib where 
-                alias='$alias' and filetype in ('jpg','jpeg','tiff','tif','png','gif') and status='Y'
+                alias=? and filetype in ('jpg','jpeg','tiff','tif','png','gif') and status='Y'
                 " 
-                );
-            if($row = do_mysqli_fetch("1",$result))
+                ,array($alias));
+            if($row = pdo_fetch($result))
             {
                 return true;
             }
@@ -410,43 +410,46 @@
     function DeleteChatMessage($msgid, $chatid)
     {
     //for delete
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
-            update chatmessage set status='N' where msgid=$msgid and 
-            chatid=$chatid 
-            ");
-        $result = do_mysqli_query("1",
+            update chatmessage set status='N' where msgid=? and 
+            chatid=? 
+            ",array($msgid,$chatid));
+        $result = pdo_query("1",
             "
-            delete from chatmessage where msgid=$msgid and 
-            chatid=$chatid 
-            ");
+            delete from chatmessage where msgid=? and 
+            chatid=? 
+            ",array($msgid,$chatid));
         
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
-            update chatmembers set lastread=now()-1000  where  chatid=$chatid and status='Y'
+            update chatmembers set lastread=now()-1000  where  chatid=? and status='Y'
             and timestampdiff(SECOND, lastread, now() ) < 120
-            ");
-        $result = do_mysqli_query("1",
+            ",array($chatid));
+        $result = pdo_query("1",
             "
-            update chatmaster set lastmessage=now() where  chatid=$chatid and status='Y'
-            ");
+            update chatmaster set lastmessage=now(),
+            chatcount = (select count(*) from chatmessage where chatmessage.chatid = chatmaster.chatid and chatmessage.status = 'Y'),
+            chatmembers = (select count(*) from chatmembers where chatmembers.chatid = chatmaster.chatid )
+            where  chatid=? and chatmaster.status='Y'
+            ",array($chatid));
     
     }
     function FlagChatMessage($action, $msgid, $chatid)
     {
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
             update chatmessage set flag='$action' where msgid=$msgid and chatid=$chatid
             ");
         
-        do_mysqli_query("1","
-            update chatmembers set lastread=now()-1000  where  chatid=$chatid and status='Y'
+        pdo_query("1","
+            update chatmembers set lastread=now()-1000  where  chatid=? and status='Y'
             and timestampdiff(SECOND, lastread, now() ) < 120
-        ");
-        do_mysqli_query("1","
+        ",array($chatid));
+        pdo_query("1","
             update chatmaster set lastmessage=now() where 
-            chatid=$chatid and status='Y'
-        ");
+            chatid=? and status='Y'
+        ",array($chatid));
         
     }
 
@@ -460,18 +463,41 @@ function CreateChatMessage( $providerid, $chatid, $passkey, $message, $messagesh
         $loginid = 'admin';
     }
         
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
         "
             insert into chatmessage ( chatid, providerid, message, msgdate, encoding, status, loginid)
             values
-            ( $chatid, $providerid, \"$encode\", now(), '$_SESSION[responseencoding]', 'Y','$loginid' );
-        ");
+            ( ?, ?, \"$encode\", now(), '$_SESSION[responseencoding]', 'Y',? );
+        ",array($chatid,$providerid,$loginid));
         $subtype = '';
         
         if($notify){
             
+            if($radiostation == 'Y'){
+                $subtype = 'LV';
+            }
             ChatNotificationRequest($providerid, $chatid, $encodeshort, $_SESSION['responseencoding'],$subtype);
         } 
+        /*
+         * This is the original and it is wrong because it's updating V even if not current broadcast
+        if( $streaming ){
+            pdo_query("1"," 
+               update broadcastlog set chatcount=chatcount+1 
+               where chatid=$chatid and providerid =$providerid
+               and mode ='V'
+            ");
+        }
+         * 
+         */
+        if( $streaming ){
+            pdo_query("1"," 
+               update broadcastlog set chatcount=chatcount+1 
+               where chatid=? and providerid =?
+               and mode ='V' and 
+               broadcastid = (select max(broadcastid) from broadcastlog 
+               where mode='V' and providerid = ? and chatid=?)
+            ",array($chatid,$providerid,$providerid,$chatid));
+        }
     
     
 }    

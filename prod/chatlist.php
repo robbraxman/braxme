@@ -1,10 +1,26 @@
 <?php
 session_start();
-require("validsession.inc.php");
 require("nohost.php");
-require_once("config.php");
-require_once("crypt.inc.php");
+require_once("config-pdo.php");
+require_once("crypt-pdo.inc.php");
 require_once("internationalization.php");
+
+if(ServerTimeOutCheck()){
+    
+    $arr = array('list'=> "",
+                 'chatid'=> "",
+                 'noitems' => "T"
+                );
+        
+    echo json_encode($arr);
+    
+}
+require("validsession.inc.php");
+
+$mobile = '';
+if($_SESSION['mobilesize']=='Y'){
+    $mobile = 'Y';
+}
 
 $live_roomid = 898; //#LIVE
 
@@ -27,140 +43,29 @@ $time1 = microtime(true);
     
     
     if($mode !== 'LIVE'){
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
-            update notification set displayed = 'Y' where notifytype='CP' and displayed!='Y' and recipientid=$providerid
-            ");
+            update notification set displayed = 'Y' where notifytype='CP' and displayed!='Y' and recipientid=?
+            ",array($providerid));
     }
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
-        update alertrefresh set lastnotified = null where providerid=$providerid and deviceid = '$_SESSION[deviceid]'
-        ");
+        update alertrefresh set lastnotified = null where providerid=? and deviceid = ?
+        ",array($providerid,$_SESSION['deviceid']));
 
 
     $roomdiscovery = "";
-    $result = do_mysqli_query("1",
-            "select roomdiscovery from provider where providerid = $_SESSION[pid]");
-    if($row = do_mysqli_fetch("1",$result)){
+    $result = pdo_query("1",
+            "select roomdiscovery from provider where providerid = ?",array($_SESSION['pid']));
+    if($row = pdo_fetch($result)){
         $roomdiscovery = $row['roomdiscovery'];
         if($roomdiscovery == ''){
             $roomdiscovery = 'Y';
         }
     }
 
-    
-    $sorttext = SortButtons($sort);
-    if($sort == ''){
-    
-        $sortorder = ' order by radiostation asc, broadcaster desc, lastmessage desc';
-    } else {
-        
-        $sortorder = ' order by title,providername asc';
-        
-    }
-    if($mode == 'LIVE'){
-        $sortorder = ' order by radiostation asc, live desc, lastmessage desc';
-        
-    }
-    
-    $timezone = $_SESSION['timezoneoffset'];
-    if($timezone==''){
-        $timezone = '-7';
-    }
-    
-    $livefilter = "";
-    if($mode == 'LIVE' ){
-        $livefilter = " and radiostation in ('Y','Q') ";
-    }
-    if($mode == 'CHAT' ){
-        $livefilter = " and radiostation='' ";
-    }
-    $findfilter = "";
-    if($find!=''){
-        $findfilter = " 
-        and
-        chatmaster.chatid in 
-        (select chatid from chatmembers 
-        where
-        status='Y' 
-        and chatmembers.providerid in (select providerid from provider where chatmembers.providerid = provider.providerid and providername like '%$find%' )
-        )
-        and radiostation = ''
-        ";
-    }
-    
-    $limit = "";
-    if($_SESSION['superadmin']=='Y'){
-        $limit = "limit 100";
-    }
-    
-   $result = do_mysqli_query("1",
-    
-        "
-        select 
-        DATE_FORMAT(date_add(chatmaster.created, 
-        interval ($timezone)*(60) MINUTE), '%b %d %h:%i%p') as created, 
-            
-        chatmaster.chatid, 
-        chatmaster.title,
-        chatmaster.radiostation,
-        chatmaster.broadcaster,
-        chatmaster.broadcastmode,
-        chatmaster.radiotitle,
-        chatmaster.roomid,
-        chatmaster.encoding,
-        chatmaster.lastmessage,
-        DATE_FORMAT(date_add(
-            chatmaster.lastmessage, interval ($timezone)*(60) MINUTE), '%b %d %h:%i%p') as lastmessage2,
 
-        (select count(*) from chatmembers 
-            where chatmembers.chatid = chatmaster.chatid ) as membercount,
-
-        (select timestampdiff(SECOND, lastread, chatmaster.lastmessage ) from chatmembers 
-            where providerid = $providerid and
-                 chatmembers.chatid = chatmaster.chatid) as diff, 
-                 
-        (select lastread from chatmembers 
-            where providerid = $providerid and
-                 chatmembers.chatid = chatmaster.chatid) as lastread,
-
-        (select count(*) from chatmessage 
-            where chatmaster.chatid = chatmessage.chatid and status='Y') as chatcount,
-            
-                
-        (select count(*) from chatmessage 
-            where chatmaster.chatid = chatmessage.chatid and 
-            chatmessage.providerid != $providerid and status='Y') as chatcountc,
-                
-        (select
-        chatmembers.techsupport from chatmembers 
-        where chatmaster.chatid = chatmembers.chatid and
-        chatmembers.providerid = $providerid ) as techsupport,
-        
-        chatmaster.keyhash,
-        provider.providername,
-        provider.stealth
-
-        from chatmaster
-        left join provider on chatmaster.owner = provider.providerid
-        where chatmaster.status='Y' and chatmaster.chatid in 
-        (select chatid from chatmembers 
-        where providerid = $providerid and status='Y' )
-        and (select count(*) from chatmessage where chatmaster.chatid = chatmessage.chatid) > 0
-        $findfilter
-        $livefilter
-        $sortorder
-        $limit
-        "
-           
-    );
-        /*
-        (select count(*) from chatmessage 
-            where chatmaster.chatid = chatmessage.chatid and 
-            chatmessage.providerid = $providerid and status='Y') as chatcountr,
-         * 
-         */
-$time2 = microtime(true);
+    $time2 = microtime(true);
 
    /*
     * 
@@ -192,20 +97,23 @@ $time2 = microtime(true);
     }
 
     
-    
+    $sorttext = SortButtons($sort);
+
     
     $i1 = 0;
     $count = 0;
     $chatid = "";
     $noitems = 'N';
-    $list = "";
     $listheading = "";
+    
+    $list = "";
     
     //$chatfunc = "startchatbutton";
     $chatfunc = "starthyperchatbutton";
             
     if($mode != 'LIVE'){
     $list .= "
+        <!--
         <div class='pagetitle2a gridnoborder' 
             style='background-color:$global_titlebar_color;padding-top:0px;
             padding-left:20px;padding-bottom:3px;
@@ -217,6 +125,7 @@ $time2 = microtime(true);
             <b>$menu_chats</b>
             <br>
         </div>
+        -->
         <div class='gridnoborder chatlistarea' 
             style='background-color:transparent;color:$global_textcolor;padding-left:0px;margin:0;padding-top:5px'>
             <div style='padding:20px'>
@@ -227,11 +136,11 @@ $time2 = microtime(true);
                     <span class='showhiddenarea' style='display:none'>
                         <br><br>
                     </span>
-                    <img class='icon30 showhidden' src='$iconsource_braxfind_common' title='Find Existing Chat' style='' />
+                    <img id='findchatbyname' class='icon30 showhidden' src='$iconsource_braxfind_common' title='Find Existing Chat' style='' />
                     <span class='showhiddenarea' style='display:none'>
                         <input class='inputline dataentry mainfont' id='findchat' placeholder='$menu_name' name='findchat' type='text' size=20 value=''              
                             style='width:220px;padding-left:10px;;margin-bottom:10px;color:$global_textcolor'/>
-                        <div class='mainfont selectchatlist' style='white-space:nowrap;display:inline;cursor:pointer;color:black' data-mode='F'>
+                        <div id='selectchatlistbutton' class='mainfont selectchatlist' style='white-space:nowrap;display:inline;cursor:pointer;color:black' data-mode='F'>
                             <img class='icon25'   src='$iconsource_braxarrowright_common' 
                             style='top:3px' >
                         </div>
@@ -241,7 +150,6 @@ $time2 = microtime(true);
                 
             
             <div style='padding:10px;text-align:center;color:$global_textcolor'>
-                <br>
                 <div class='pagetitle' style='color:$global_textcolor'>
                     $menu_chats
                 </div>
@@ -254,11 +162,134 @@ $time2 = microtime(true);
             ";
     }
                 
+    if($sort == ''){
+    
+        $sortorder = ' order by radiostation asc, broadcaster desc, lastmessage desc';
+    } else {
+        
+        $sortorder = ' order by title,providername asc';
+        
+    }
+    if($mode == 'LIVE'){
+        $sortorder = ' order by radiostation asc, live desc, lastmessage desc';
+        
+    }
+    
+    
+    $timezone = $_SESSION['timezoneoffset'];
+    if($timezone==''){
+        $timezone = '-7';
+    }
+    
+    $livefilter = "";
+    if($mode == 'LIVE' ){
+        $livefilter = " and radiostation in ('Y','Q') ";
+    }
+    if($mode == 'CHAT' ){
+        $livefilter = " and radiostation='' ";
+    }
+    $findfilter = "";
+    if($find!=''){
+        $findfilter = " 
+        and
+        chatmaster.chatid in 
+        (  select chatid from chatmembers 
+           where
+           status='Y' 
+           and chatmembers.providerid in 
+           (  select providerid from provider 
+              where chatmembers.providerid = provider.providerid and 
+              ( providername like '%$find%' or handle like '@%$find%' )
+           )
+        )
+        and chatmaster.radiostation = '' and chatmaster.roomid is null
+        ";
+    }
+    
+    $limit = "limit 100";
+    if($_SESSION['superadmin']=='Y'){
+        $limit = "limit 200";
+    }
+    
+    $mobilequery = "";
+    if($mobile=='Y'){
+        $mobilequery = "
+             (
+             select concat(p2.providername,' ',p2.handle,'~',p2.avatarurl)
+             from chatmembers
+             left join provider p2 on chatmembers.providerid = p2.providerid
+             where chatmembers.providerid !=$providerid and 
+             chatmembers.chatid = chatmaster.chatid and p2.active='Y' 
+             order by chatmembers.lastmessage desc limit 1
+             ) as chatmembername,
+             ";
+    }
+        
+    
+   $result = pdo_query("1",
+    
+        "
+        select 
+        DATE_FORMAT(date_add(chatmaster.created, 
+        interval (?)*(60) MINUTE), '%b %d %h:%i%p') as created, 
+            
+        chatmaster.chatid, 
+        chatmaster.title,
+        chatmaster.radiostation,
+        chatmaster.broadcaster,
+        chatmaster.broadcastmode,
+        chatmaster.radiotitle,
+        chatmaster.roomid,
+        chatmaster.encoding,
+        chatmaster.lastmessage,
+        DATE_FORMAT(date_add(
+            chatmaster.lastmessage, interval (?)*(60) MINUTE), '%b %d %h:%i%p') as lastmessage2,
+        chatcount,
+        chatmembers as membercount,
+
+        (select timestampdiff(SECOND, lastread, chatmaster.lastmessage ) from chatmembers 
+            where providerid = ? and
+                 chatmembers.chatid = chatmaster.chatid) as diff, 
+                 
+        (select lastread from chatmembers 
+            where providerid = ? and
+                 chatmembers.chatid = chatmaster.chatid) as lastread,
+
+                
+        (select count(*) from chatmessage 
+            where chatmaster.chatid = chatmessage.chatid and 
+            chatmessage.providerid != ? and status='Y') as chatcountc,
+                
+        (select
+        chatmembers.techsupport from chatmembers 
+        where chatmaster.chatid = chatmembers.chatid and
+        chatmembers.providerid = ? ) as techsupport,
+
+        $mobilequery
+            
+        chatmaster.keyhash,
+        provider.providername,
+        provider.stealth
+
+        from chatmaster
+        left join provider on chatmaster.owner = provider.providerid
+        where chatmaster.status='Y' and chatmaster.chatid in 
+        (select chatid from chatmembers 
+        where providerid = ? and status='Y' )
+        and (select count(*) from chatmessage where chatmaster.chatid = chatmessage.chatid) > 0
+        $findfilter
+        $livefilter
+        $sortorder
+        $limit
+        ",
+           array($timezone,$timezone,$providerid,$providerid,$providerid,$providerid,$providerid)
+           
+    );    
 
     
     $count = 0;
     $listdetail = "";
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         
         if($count == 0){
             $listdetail .= "
@@ -286,24 +317,23 @@ $time2 = microtime(true);
         
         $count++;
 
-        if($row['radiostation']=='' ){
-            $memberlist = DisplayChatMembers(
-                $providerid, $row['chatid'], $title, $row['keyhash'], $row['diff'], $row['lastread'], 
-                $row['chatcount'], $row['chatcountc'], $row['membercount'],
-                $row['techsupport'], $headingcolor, $backgroundcolor, $flag, $techavatar, $row['roomid'], $count );
-        } else 
         if($row['radiostation']=='Y'){
             $memberlist = DisplayRadio(
                 $providerid, $row['chatid'], $title, $row['keyhash'], $row['diff'], $row['lastread'], 
                 $row['chatcount'], $row['chatcountc'], $row['membercount'],
                 $row['techsupport'], $headingcolor, $backgroundcolor, $flag, $techavatar, $row['roomid'], $row['broadcaster'], $row['radiotitle'], $row['broadcastmode']);
-        } else 
-        if($row['radiostation']=='Q'){
-            $memberlist = DisplayQuiz(
+        } else
+        if($mobile !='Y' || $_SESSION['mobiledevice']=='T'  ){
+            $memberlist = DisplayChatMembers(
                 $providerid, $row['chatid'], $title, $row['keyhash'], $row['diff'], $row['lastread'], 
                 $row['chatcount'], $row['chatcountc'], $row['membercount'],
-                $row['techsupport'], $headingcolor, $backgroundcolor, $flag, $techavatar, $row['roomid'], $row['broadcaster'], $row['radiotitle'], $row['broadcastmode']);
-        }
+                $row['techsupport'], $headingcolor, $backgroundcolor, $flag, $techavatar, $row['roomid'], $count );
+        } else {
+            $memberlist = DisplayChatMembersMobile(
+                $providerid, $row['chatid'], $title, $row['keyhash'], $row['diff'], $row['lastread'], 
+                $row['chatcount'], $row['chatcountc'], $row['membercount'],
+                $row['techsupport'], $headingcolor, $backgroundcolor, $flag, $techavatar, $row['roomid'], $count, $row['chatmembername'] );
+        } 
         
         $list .= $memberlist;
         
@@ -326,7 +356,7 @@ $time2 = microtime(true);
     if($mode == 'LIVE'){
         
         $listheading .= "
-
+            <!--
             <div class='pagetitle2a gridnoborder' 
                 style='background-color:$global_titlebar_color;padding-top:0px;
                 padding-left:20px;padding-bottom:3px;
@@ -338,6 +368,7 @@ $time2 = microtime(true);
                 <b>$menu_live</b>
                 <br>
             </div>
+            -->
             <div class='gridnoborder' style='background-color:transparent;width:100%'>
             ";
         
@@ -559,15 +590,6 @@ $e2 = $time3 - $time1;
 
     $list = $listheading . $list;
 
-    /*
-if($providerid == 690001027){
-    $list .= " <br><br>
-        1 $e1
-        <br>2 $e2
-        
-    ";
-}
- */
     $list .="   
             </div>";
  
@@ -649,8 +671,8 @@ function DisplayChatMembers(
         
             $avatar = "$rootserver/img/internetradio.png";
             if($roomid > 0 ){
-                $result = do_mysqli_query("1", "select photourl from roominfo where roomid = $roomid ");
-                if($row = do_mysqli_fetch("1",$result)){
+                $result = pdo_query("1", "select photourl from roominfo where roomid = ? ",array($roomid));
+                if($row = pdo_fetch($result)){
                     $avatar = RootServerReplace($row['photourl']);
                 }
             }
@@ -717,17 +739,16 @@ function DisplayChatMembers(
          * 
          *  Search for Regular Members in Chat
          */
-        //if($_SESSION['superadmin']!='Y'){
-        $result3 = do_mysqli_query("1",
+        $result3 = pdo_query("1",
         "
              select provider.providername, provider.companyname, provider.avatarurl,
              chatmembers.lastmessage, chatmembers.techsupport, provider.stealth
              from chatmembers
              left join provider on chatmembers.providerid = provider.providerid
-             where chatmembers.providerid !=$providerid and 
-             chatmembers.chatid = $chatid and provider.active='Y' $stealth
+             where chatmembers.providerid !=? and 
+             chatmembers.chatid = ? and provider.active='Y' ?
              order by chatmembers.lastmessage desc limit 4
-            "
+            ",array($providerid, $chatid, $stealth)
         );
         
         $avatar = "";
@@ -739,7 +760,7 @@ function DisplayChatMembers(
         $techsupportflag = "";
         $header = false;
         $i1 = 0;
-        while($row3 = do_mysqli_fetch("3",$result3)){
+        while($row3 = pdo_fetch($result3)){
         
             $lock = "<img class='icon15' src='$iconsource_braxlock_common' style='' />";
             if($keyhash==''){
@@ -902,13 +923,13 @@ function DisplayChatMembers(
          */
         if($parties == 0){
         
-            $result2 = do_mysqli_query("1",
+            $result2 = pdo_query("1",
             
                  "
-                 select name, email from invites where providerid=$providerid and chatid=$chatid limit 1
-                 "
+                 select name, email from invites where providerid=? and chatid=? limit 1
+                 ",array($provierid,$chatid)
             );
-            if($row2 = do_mysqli_fetch("1",$result2)){
+            if($row2 = pdo_fetch($result2)){
                 $avatar = "$rootserver/img/newbie2.jpg";
                 
                 $header = true;
@@ -994,8 +1015,8 @@ function DisplayRadio(
     
             $avatar = "$rootserver/img/internetradio.png";
             if($roomid > 0 ){
-                $result = do_mysqli_query("1", "select photourl from roominfo where roomid = $roomid ");
-                if($row = do_mysqli_fetch("1",$result)){
+                $result = pdo_query("1", "select photourl from roominfo where roomid = ? ",array($roomid));
+                if($row = pdo_fetch($result)){
                     $avatar = $row['photourl'];
                 }
             }
@@ -1007,8 +1028,8 @@ function DisplayRadio(
             $streamhash = substr(hash("sha1", $chatid),0,8);
             $streamid = "chat$streamhash";
             if($broadcaster!=''){
-                $result = do_mysqli_query("1", "select providername from provider where providerid = $broadcaster ");
-                if($row = do_mysqli_fetch("1",$result)){
+                $result = pdo_query("1", "select providername from provider where providerid = ? ",array($broadcaster));
+                if($row = pdo_fetch($result)){
                     $broadcastername = substr($row['providername'],0,15);
                 }
                 
@@ -1074,101 +1095,251 @@ function DisplayRadio(
             return $list;
             
 }
-function DisplayQuiz(
+function DisplayChatMembersMobile(
         $providerid, $chatid, $title, $keyhash, $diff, $lastread, 
         $chatcount, $chatcountc, $membercount,
-        $techsupport, $headingcolor, $backgroundcolor, $flag, $techavatar, $roomid, $broadcaster, $radiotitle, $broadcastmode )
+        $techsupport, $headingcolor, $backgroundcolor, $flag, $techavatar, $roomid, $count, $chatmemberraw)
 {
     global $prodserver;
     global $rootserver;
+    global $flagred;
+    global $dot;
     global $icon_darkmode;
+    global $global_textcolor;
+    global $global_background;
+    global $global_bottombar_color;
+    global $iconsource_braxlock_common;
+    global $menu_chats;
     
-    //$broadcasttitle = stripslashes(substr(base64_decode($radiotitle),0,15));
+    $tmp = explode('~',$chatmemberraw);
+    $chatmembername = $tmp[0];
+    $avatarurl = $tmp[1];
     
-            //$alert = "";
-            //if( ($diff > 0 || $lastread==0) ){
-            
-                $alert = " ".$flag;
-            //} 
+    $backgroundcolor = "$global_background";
+    $list = "";
+    $alert = "";
+    $i1 = 0;
     
+    $lock = "<img class='icon15' src='$iconsource_braxlock_common' style='' />";
+    if($keyhash==''){
+        $lock = '';
+    }
+    
+    $alert = "";
+    if( ($diff > 0 || $lastread==0) ){
+
+        $alert = " ".$flag;
+        $i1++;
+    } 
+    if(
+            intval($chatcount)>0 && (
+            //I have not responded
+            //intval($row['chatcountr'])==0 || 
+            //Other has not responded
+            intval($chatcountc)==0 
+            )
+    ){
+
+        $alert = " ".$flagred;
+    }
+    
+    if($roomid > 0){
+        
             $avatar = "$rootserver/img/internetradio.png";
             if($roomid > 0 ){
-                $result = do_mysqli_query("1", "select photourl from roominfo where roomid = $roomid ");
-                if($row = do_mysqli_fetch("1",$result)){
-                    $avatar = $row['photourl'];
+                $result = pdo_query("1", "select photourl from roominfo where roomid = ? ",array($roomid));
+                if($row = pdo_fetch($result)){
+                    $avatar = RootServerReplace($row['photourl']);
                 }
             }
+            if( ($diff > 0 || $lastread==0) ){
             
-            $streamhash = substr(hash("sha1", $chatid),0,8);
-            $streamid = "chat$streamhash";
+                $alert = " ".$flag;
+                $i1++;
+            } 
             
-                
-            $live = "<b class='blink' style='color:firebrick'>Live Quiz</b>
-                    <br> 
-                    <span class='smalltext' style='color:firebrick'>$title</span><br>
-                    ";
+            $backgroundcolor = "$global_bottombar_color;";
+            $color = "white";
+            $opacity = "";
+            
+            
             $shadow = "shadow gridstdborder";
             if($icon_darkmode){
                 $shadow = "";
             }
-                    
+           
             
             $list = 
                 "   
-                <div class='smalltext2 setchatsession tapped2 chatlistbox rounded $shadow noselect' 
+                <div class='smalltext2 setchatsession rounded $shadow noselect' 
                     id='setchatsession' 
-                    data-chatid='$chatid' 
-                    data-channelid='$chatid'
+                    data-chatid='$chatid'  
+                    data-channelid=''
                     data-keyhash='$keyhash'
-                    style='position:relative;display:inline-block;text-align:left;
+                    style='width:90%;max-width:400px;position:relative;display:inline-block;text-align:left;$opacity;
                     overflow:hidden;
-                    color:black;background-color:white;
+                    color:$global_textcolor;background-color:$global_background;
                     cursor:pointer;font-weight:300;
-                    margin-left:20px;margin-bottom:5px;
+                    margin-left:20px;margin-bottom:5px;;
                     word-wrap:break-word' title='$title'>
+                    <table style='padding-left:10px;gridnoborder;width:100%'>
+                    <tr>
+                        <td style='width:50px'>
+                            <div class='circular gridnoborder' style='overflow:hidden'><img class='' src='$avatar' style='margin:0;max-width:100%' /></div>
+                        </td>
+                        <td>
+                            <div class='smalltext' style='
+                                width:150px;
+                                text-align:left;overflow:hidden;width:100%;padding-left:10px;padding-top:10px;
+                                padding-bottom:10px;
+                                background-color:$global_background;color:$global_textcolor'>
+                                Group Chat<br>
+                                <b>$title</b>
+                                <br>
+                                <span class='smalltext2' style='color:$global_textcolor;opacity:.5'>($chatcount)</span>
+                                <br>
 
-                    <div style='float:left;
-                        text-align:center;overflow:hidden;width:100%;
-                        background-color:white'>
-                            <img class='chatlistphoto1' src='$avatar' title'$title'
-                                style='background-color:white;width:auto;display:inline' />
-                    </div>
-                    <div class='roundedtop chatlistboxtop smalltext' 
-                        style='float:left;padding-top:0px;padding-bottom:0px;;width:100%;;
-                        background-color:white;color:black'>
-                        &nbsp;&nbsp;<b>$title</b>
-                    </div>
-                    <div class='smalltext' title='mountpoint' style='float:left;color:black;text-align:center;width:100%'></div>
-                        <div class='pagetitle3' style='float:left;color:#3d8da5;text-align:center;width:100%'>$live</div>
+                            </div>
+                        </td>
+                        <td style='text-align:right;width:100px;padding-right:10px'>
+                            $alert     
+                        </td>
+                    </tr>
+                    </table>
                 </div>
              ";
+            return $list;        
+    }
+    
+
+
+    //    $list .= "$row2[diff], $row2[lastread]<br>";
+            
             
 
-            /*
-            $list = 
+    //New Chat ID
+    $header = true;
+    $shadow = "shadow gridstdborder";
+    $extrastyle = '';
+    if($icon_darkmode){
+        $shadow = "";
+        $extrastyle = 'filter:brightness(120%);';
+    }
+                
+    $list .= 
+        "   
+        <div class='smalltext2 setchatsession tapped2 rounded $shadow noselect' 
+            id='setchatsession' 
+            data-chatid='$chatid' 
+            data-channelid='' 
+            data-keyhash='$keyhash'
+            style='width:90%;;max-width:400px;position:relative;display:inline-block;text-align:left;$extrastyle;
+            overflow:hidden;
+            color:$global_textcolor;background-color:$backgroundcolor;
+            cursor:pointer;font-weight:300;
+            margin-left:20px;margin-bottom:5px;
+            word-wrap:break-word'>
+
+        ";
+
+                
+    //$chatmembername=substr($chatmembername,0,20);
+
+    if(intval($membercount) <= 2 ){
+        $chatmembertext = $chatmembername;
+
+    } else {
+
+        $chatmembertext =  "$chatmembername +$membercount others";
+    } 
+    
+
+    /*
+     * 
+     *  Search for Invited Members in Chat
+     */
+    if($membercount == 1){
+
+        $result2 = pdo_query("1",
+
+             "
+             select name, email from invites where providerid=? and chatid=? limit 1
+             ",array($providerid, $chatid)
+        );
+        if($row2 = pdo_fetch($result2)){
+            $avatar = "$rootserver/img/newbie2.jpg";
+
+            $header = true;
+
+            $list .= 
                 "   
-                <div class='smalltext2 setchatsession tapped2 gridstdborder chatlistbox rounded shadow noselect' 
+                <div class='smalltext2 setchatsession tapped2 gridstdborder rounded' 
                     id='setchatsession' 
                     data-chatid='$chatid' data-keyhash='$keyhash'
                     style='position:relative;display:inline-block;text-align:left;
                     overflow:hidden;
-                    color:black;background-color:white;
-                    cursor:pointer;font-weight:300;margin:5px;
-                    word-wrap:break-word' title='$title'>
+                    color:$global_textcolor;background-color:$backgroundcolor;
+                    cursor:pointer;font-weight:300;margin:5px;word-wrap:break-word'>
 
-                    <div style='float:left;
-                        text-align:center;overflow:hidden;width:100%;
-                        background-color:white'>
-                            <img class='chatlistphoto1' src='$avatar' title'$title'
-                                style='background-color:white;width:auto;display:inline' />
-                    </div>
-                    <br><br>
-                    <div class='pagetitle3' style='float:left;padding-top:10px;color:#3d8da5;text-align:center;width:100%'>$live</div>
-                </div>
-             ";
-             * 
-             */
-            return $list;
-            
+                        <div class='roundedtop smalltext2' 
+                            style='float:left;padding-top:7px;padding-bottom:10px;;width:100%;;
+                            background-color:#5f5f5f;color:white'>
+                            &nbsp;&nbsp;$title<br>&nbsp;&nbsp;$lock $alert $techsupport ($chatcount) <br>
+                        </div>
+                        <div style='float:left;
+                            text-align:center;overflow:hidden;width:100%;
+                            background-color:$backgroundcolor;$global_textcolor'>
+
+                                <div>
+                                    &nbsp;&nbsp;$row2[name]<br>$row2[email]<br>(Pending)
+                                </div>
+
+                ";
+
+        }
+    }
+    if($header){
+
+        if($title == ''){
+            $title = 'Private Chat';
+
+        }
+        $list .= "
+                    <table style='padding-left:10px;gridnoborder;width:100%'>
+                    <tr>
+                        <td style='width:50px'>
+                            <div class='circular gridnoborder' style='background-color:black;overflow:hidden'><img class='' src='$avatarurl' style='background-color:black;margin:0;max-width:100%' /></div>
+                        </td>
+                        <td>
+                            <div class='smalltext' style='
+                                width:150px;
+                                text-align:left;overflow:hidden;width:100%;padding-left:10px;padding-top:10px;
+                                padding-bottom:10px;
+                                background-color:$global_background;color:$global_textcolor'>
+                                $chatmembertext<br>
+                                <b>$title</b>
+                                <br>
+                                <span class='smalltext2' style='color:$global_textcolor;opacity:.5'>($chatcount)</span>
+                                <br>
+
+                            </div>
+                        </td>
+                        <td style='text-align:right;width:100px;padding-right:10px'>
+                            $alert $lock   
+                        </td>
+                    </tr>
+                    </table>
+                ";
+
+        $list .= 
+        "   
+       </div>
+
+         ";
+}
+        
+        
+return $list;
+
 }
 ?>

@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once("validsession.inc.php");
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("password.inc.php");
 
 require_once("htmlhead.inc.php");
@@ -9,8 +9,8 @@ $providerid = @mysql_safe_string($_SESSION['pid']);
 $loginid = @mysql_safe_string($_SESSION['loginid']);
 $devicetype = @mysql_safe_string($_POST['devicetype']);
 
-$result = do_mysqli_query("1","select publish, publishprofile from provider where providerid=$providerid");
-if($row = do_mysqli_fetch("1",$result)){
+$result = pdo_query("1","select publish, publishprofile from provider where providerid=?",array($providerid));
+if($row = pdo_fetch($result)){
     $publishprofile = $row['publishprofile'];
     if($row['publish']=='Y'){
         $publishchecked = "checked=checked";

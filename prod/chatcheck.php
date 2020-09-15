@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 
 $providerid = mysql_safe_string($_POST[providerid]);
 $override = mysql_safe_string($_POST[override]);
@@ -8,19 +8,19 @@ $override = mysql_safe_string($_POST[override]);
 
 if( $override == "")
 {
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
     
-        "select chatid from chatmembers where providerid = $providerid and status = 'Y' and lastmessage >= lastread"
-    );
+        "select chatid from chatmembers where providerid = ? and status = 'Y' and lastmessage >= lastread"
+    ,array($providerid));
 }
 else
 {
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
     
-        "select chatid from chatmembers where providerid = $providerid and status = 'Y' "
-    );
+        "select chatid from chatmembers where providerid = ? and status = 'Y' "
+    ,array($providerid));
 }
-if( $row = do_mysqli_fetch("1",$result))
+if( $row = pdo_fetch($result))
 {
     echo "$row[chatid]";
     exit();

@@ -1,22 +1,22 @@
 <?php
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("sendmail.php");
 require_once("SmsInterface.inc");
-require_once("crypt.inc.php");
+require_once("crypt-pdo.inc.php");
 require_once("notify.inc.php");
 
     function IsNotExistingChat($providerid, $recipientid )
     {
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
             select * from chatmaster where chatid in
-            (select chatid from chatmembers where chatmembers.providerid=$providerid
+            (select chatid from chatmembers where chatmembers.providerid=?
                 and chatmaster.chatid = chatmembers.chatid )
             and chatid in
-            (select chatid from chatmembers where chatmembers.providerid=$recipientid
+            (select chatid from chatmembers where chatmembers.providerid=?
                 and chatmaster.chatid = chatmembers.chatid )
 			and (select count(*) from chatmessage where chatmaster.chatid = chatmessage.chatid) > 0
-                ");
-        if($row = do_mysqli_fetch("1",$result)){
+                ",array($providerid,$providerid));
+        if($row = pdo_fetch($result)){
             return false;
         }
         return true;
@@ -28,22 +28,22 @@ require_once("notify.inc.php");
     {
         $status = 'N';
         if($mode == 'me'){
-            $result2 = do_mysqli_query("1","
-                select * from contacts where providerid=$providerid and targetproviderid is not null and
-                (   (email='$email'  and
+            $result2 = pdo_query("1","
+                select * from contacts where providerid=? and targetproviderid is not null and
+                (   (email=?  and
                         email in 
-                        (select replyemail from provider where replyemail='$email' and '$email'!='' and active='Y')
+                        (select replyemail from provider where replyemail=? and ?!='' and active='Y')
                     )
                     or
-                    (handle='$handle' and
+                    (handle=? and
                         handle in 
-                        (select handle from provider where handle='$handle' and '$handle'!='' and active='Y')
+                        (select handle from provider where handle=? and ?!='' and active='Y')
                     )
                 )
-            ");
+            ",array($providerid,$email,$email,$email,$handle,$handle,$handle));
 
 
-            if($row2 = do_mysqli_fetch("1",$result2)){
+            if($row2 = pdo_fetch($result2)){
                 return false;
             } else {
 
@@ -58,18 +58,18 @@ require_once("notify.inc.php");
             if($handle!=''){
                 $email = '';
             }
-            $result2 = do_mysqli_query("1","
-                delete from contacts where providerid = $providerid and 
+            $result2 = pdo_query("1","
+                delete from contacts where providerid = ? and 
                 (
-                    (email = '$email' and '$email'!='') or
-                    (handle = '$handle' and '$handle'!='') 
+                    (email = ? and ?!='') or
+                    (handle = ? and ?!='') 
                 )
-            ");
+            ",array($providerid,$email,$email,$handle,$handle));
 
-            $result2 = do_mysqli_query("1","
+            $result2 = pdo_query("1","
                 insert into contacts (providerid, targetproviderid, contactname, handle, email, sms, friend, imapbox, blocked, createdate, source ) values
-                ($providerid, $targetproviderid, '$name', '$handle', '$email', '$sms', 'Y', null,'', now(),'C'  )
-            ");
+                (?, ?,?, ?,?, ?, 'Y', null,'', now(),'C'  )
+            ",array($providerid,$targetproviderid,$name,$handle,$email,$sms));
         }
         
     }
@@ -102,7 +102,7 @@ require_once("notify.inc.php");
         $si2 = new SmsInterface (false, false);
         $si2->addMessage ( $sms, $message, 0, 0, 169,true);
 
-        if (!$si2->connect (testaccount ,welcome1, true, false)){
+        if (!$si2->connect (MaddisonCross002 ,welcome1, true, false)){
             return false;
         }
         elseif (!$si2->sendMessages ()) {
@@ -116,13 +116,13 @@ require_once("notify.inc.php");
      
         if($techsupport == 'Y' ){
         
-            $result = do_mysqli_query("1",
+            $result = pdo_query("1",
                 "
                 select * from chatmaster where
                 status = 'Y' and
                 exists
                 (select * from chatmembers where chatmaster.chatid =chatmembers.chatid
-                and chatmembers.providerid = $providerid
+                and chatmembers.providerid = ?
                 )
                 and
                 exists
@@ -130,14 +130,14 @@ require_once("notify.inc.php");
                 and techsupport ='Y'
                 and chatmembers.providerid = 
                         (
-                        select providerid from provider where handle='$handle' limit 1
+                        select providerid from provider where handle=? limit 1
                     )
                 )
                 and
                 (select count(*) from chatmessage where chatid=chatmaster.chatid) > 0
                 order by chatid desc 
-                ");
-            if($row=do_mysqli_fetch("1",$result))
+                ",array($providerid,$handle));
+            if($row=pdo_fetch($result))
             {
                 //Duplicate!
                 return false;
@@ -160,28 +160,28 @@ require_once("notify.inc.php");
         
         
         /* Create Chat Session - Owner */
-        do_mysqli_query("1",
+        pdo_query("1",
             "
                 insert into chatmaster ( 
                 owner, created, status, archive, keyhash, title, encoding, lifespan, roomid, radiostation )
                 values
-                ( $providerid, now(), 'Y',
-                (select archivechat from provider where providerid=$providerid),
-                    '','','$encoding', $lifespan, $roomid, '$radiostation'  );
-            ");
+                ( ?, now(), 'Y',
+                (select archivechat from provider where providerid=?),
+                    '','',?, ?, ?, ?  );
+            ",array($providerid,$providerid,$encoding,$lifespan,$roomid,$radiostation));
         
         
         
 
         /* Get Chat ID of New Chat Session */
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
                 select chatid from chatmaster 
-                where owner = $providerid and status='Y' 
+                where owner = ? and status='Y' 
                 order by chatid desc limit 1;
-            ");
+            ",array($providerid));
 
-        if( $row = do_mysqli_fetch("1",$result)){
+        if( $row = pdo_fetch($result)){
             
             //Hash
             $chatid = $row['chatid'];
@@ -189,10 +189,10 @@ require_once("notify.inc.php");
             if($radiostation!=''){
                 $streamhash = substr(hash("sha1", $chatid),0,8);
                 $streamid = "chat$streamhash";
-                do_mysqli_query("1",
+                pdo_query("1",
                     "
-                        update chatmaster set streamid='$streamid' where chatid=$chatid 
-                    ");
+                        update chatmaster set streamid=? where chatid=? 
+                    ",array($streamid, $chatid));
             }
             
             //Hash
@@ -201,7 +201,7 @@ require_once("notify.inc.php");
                 
                 $hash = hash('sha256',"$passkey$chatid");
                 
-                do_mysqli_query("1",
+                pdo_query("1",
                     "
                         update chatmaster set keyhash='$hash' where chatid=$chatid 
                     ");
@@ -211,19 +211,19 @@ require_once("notify.inc.php");
             if($title != ''){
                 $encoding = $_SESSION['responseencoding'];
                 $titleencrypted =  EncryptText( $title, "$chatid" );
-                do_mysqli_query("1",
+                pdo_query("1",
                     "
-                        update chatmaster set title='$titleencrypted', encoding='$encoding' where chatid=$chatid 
-                    ");
+                        update chatmaster set title=?, encoding=? where chatid=? 
+                    ",array($titleencrypted,$encoding,$chatid));
             }
 
-            do_mysqli_query("1",
+            pdo_query("1",
                 "
                     insert into chatmembers 
                     ( chatid, providerid, status, lastactive, lastmessage, lastread ) 
                     values
-                    ( $chatid, $providerid, 'Y', now(), now(), now() );
-                "
+                    ( ?, ?, 'Y', now(), now(), now() );
+                ",array($chatid,$providerid)
             );
             
 
@@ -231,11 +231,11 @@ require_once("notify.inc.php");
                 
             
                 /* Create Chat Spawned */
-                do_mysqli_query("1",
+                pdo_query("1",
                 "
                     insert into chatspawned ( chatid, roomid, providerid, createdate )
                     values ( $chatid, $roomid, $providerid, now() )
-                ");
+                ",array($chatid,$roomid,$providerid));
             }
             
             
@@ -271,11 +271,11 @@ require_once("notify.inc.php");
          * 
          */
         
-        $result = do_mysqli_query("1","
+        $result = pdo_query("1","
                 insert into chatmembers ( chatid, providerid, status, lastactive, techsupport ) 
                 values
-                ( $chatid, $recipientid, 'Y', now(),'$techsupport' );
-        ");
+                ( ?, ?, 'Y', now(),? );
+        ",$array($chatid,$recipientid,$techsupport));
         
         if($techsupport == 'Y'){
             
@@ -287,23 +287,23 @@ require_once("notify.inc.php");
             $encode = EncryptChat ($message,"$chatid","" );
 
 
-            $result = do_mysqli_query("1",
+            $result = pdo_query("1",
                 "
                     insert into chatmessage ( chatid, providerid, message, msgdate, encoding, status)
                     values
-                    ( $chatid, $recipientid, \"$encode\", now(), '$_SESSION[responseencoding]', 'Y' );
-                ");
+                    ( ?, ?, \"$encode\", now(), '$_SESSION[responseencoding]', 'Y' );
+                ",array($chatid,$recipientid));
             
         }
     }
     function IsBlocked( $providerid, $handle, $email)
     {
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
-                select * from contacts where ( (handle = '$handle' and '$handle'!='') or (email = '$email' and '$email'!=''))
-                and providerid = $providerid and blocked = 'Y'
-            ");
-        if($row = do_mysqli_fetch("1",$result)){
+                select * from contacts where ( (handle = ? and ?!='') or (email = ? and ?!=''))
+                and providerid = ? and blocked = 'Y'
+            ",array($handle,$handle,$email,$email,$providerid));
+        if($row = pdo_fetch($result)){
             return true;
             
         }

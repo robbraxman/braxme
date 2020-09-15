@@ -17,10 +17,10 @@ if( $createtime=='Deletions Made')
         exit();
 }
 
-$result = do_mysqli_query("1",
-    "select count(*) from msgmain where providerid = $providerid and createtime > '$createtime' and replyflag='$replyflag' "
-);
-$row = do_mysqli_fetch_row("1",$result);
+$result = pdo_query("1",
+    "select count(*) from msgmain where providerid = ? and createtime > ? and replyflag=? "
+,array($providerid,$createtime,$replyflag));
+$row = pdo_fetch_row($result);
 if( $row )
 {
     if( $row[0] > 0)

@@ -3,8 +3,8 @@ session_start();
 set_time_limit ( 30 );
 require("validsession.inc.php");
 require("nohost.php");
-require_once("config.php");
-require_once("crypt.inc.php");
+require_once("config-pdo.php");
+require_once("crypt-pdo.inc.php");
 require_once('simple_html_dom.php');
 require_once('internationalization.php');
 
@@ -14,6 +14,7 @@ require_once('internationalization.php');
     $enableAdminDeleteMode = false;
 
     $braxchat = "<img src='../img/braxchat.png' style='position:relative;top:5px;height:30px;width:auto;padding-top:0;padding-right:2px;padding-bottom:0px;' />";
+    $braxmedal = "<img class='icon15' src='$iconsource_braxmedal_common' title='Trusted $appname Resource' style='top:0px;bottom:0px;height:14px' />";
 
     
     $time1 = microtime(true);
@@ -36,7 +37,7 @@ require_once('internationalization.php');
 
     
     
-    $limit = "1000";
+    $limit = "5000";
     $togglemsg = "$menu_hideoldermessages";
     $hideextra = '';
     if($togglechat == "false"){
@@ -85,8 +86,6 @@ require_once('internationalization.php');
     $broadcastmode = $chatobj->broadcastmode;
     $streamingaccount = $chatobj->streamingaccount;
     $hidemode = $chatobj->hidemode;
-    $quizroom = $chatobj->quizroom;
-    $quizquestion = $chatobj->quizquestion;
     $streamid = $chatobj->streamid;
     $broadcast = "";
     $broadcastowner = "";
@@ -128,7 +127,22 @@ require_once('internationalization.php');
     $time4 = microtime(true);
     
     $streaming = false;
+    if($chatobj->radiostation=='Y' && $chatobj->broadcastmode!='V' ){
+        
+        $streaming = CheckLiveStream($streamid);
+        if(!$streaming){
+            $broadcaster = "";
+        }
+    }
+    if($chatobj->radiostation=='Y' && 
+       $chatobj->broadcastmode=='V' && 
+       $chatobj->broadcasterid!='' ){
+        $streaming = true;
+    }
     $chatmode = 'CHAT';
+    if($chatobj->radiostation=='Y' ){
+        $chatmode = 'LIVE';
+    }
     
     
     $otherparty = "";
@@ -224,6 +238,36 @@ require_once('internationalization.php');
                             </span>
                  ";
     
+    if($chatobj->radiostation=='Y'){
+    
+        $broadcastobj = BroadcastInfo($streaming, $broadcastmode, $broadcaster, $chatid, $streamid, $title, $broadcasterid == $providerid, $broadcasttitle, $listenercount, $chatobj->radiostation );
+        $broadcast = $broadcastobj->broadcast;
+        $broadcastowner = $broadcastobj->broadcastowner;
+        $broadcastownermobile = $broadcastobj->broadcastownermobile;
+        $radiostationinfo = $broadcastobj->radiostationinfo;
+        
+        
+        pdo_query("1","update chatmaster set streamid=? where chatid=? ",array($streamid,$chatid));
+        
+        $chatparty = "
+                        <div class='x' style='background-color:$global_titlebar_alt_color;padding:5px'>
+                            <span class='pagetitle3' style='color:white;font-weight:bold;'>
+                                <span class='chatsettitleopen' style='cursor:pointer'>
+                                    $lock Live Streaming $title1
+                                </span>
+                     ";
+        
+    }
+    
+    if($force == true && $streaming ){
+        
+        $limit = "200";
+        if($togglechat == "false"){
+            $limit = "50";
+        }
+        
+    }
+
     
     
     //if($owner == $providerid || $_SESSION['superadmin']=='Y'){
@@ -284,11 +328,11 @@ require_once('internationalization.php');
     
     if( $other == ''){
         
-        $result2 = do_mysqli_query("1",
+        $result2 = pdo_query("1",
             "
-            select name from invites where providerid=$providerid and chatid=$chatid 
-            ");
-        $row2 = do_mysqli_fetch("1",$result2);
+            select name from invites where providerid=? and chatid=? 
+            ",array($providerid,$chatid));
+        $row2 = pdo_fetch($result2);
         $other = "$row2[name] (Invited)";
     }
 
@@ -298,7 +342,7 @@ require_once('internationalization.php');
         $chatmsgobj =  ShowChatMessages(
                         $chatid, $providerid, $limit, $passkey, $passkey64, 
                         $chatparty, $togglemsg, $togglemsgmembers, $script, $more, $owner, 
-                        $quizroom, $hidemode, $membercount, $chatobj->mute );
+                        $hidemode, $membercount, $chatobj->mute );
         
         $chat = $chatmsgobj->chat;
         $count = $chatmsgobj->count;
@@ -337,7 +381,8 @@ require_once('internationalization.php');
                 $avatarblocklong, $otherparty2, $displaytwopartyonly );        
 
     }
-    
+
+    //$chat .= "$broadcastowner";
     /*
     $time6 = microtime(true);
     $time7 = microtime(true);
@@ -360,7 +405,7 @@ require_once('internationalization.php');
     $chatheading = $radiostationinfo;
     $broadcastheading = $broadcast;
     if($broadcastheading =='' || $chatobj->radiostation == 'Q'){
-        $chatheading = ChatHeading($broadcastmode, $chatid, "$title1", $quizroom, $quizquestion, $owner == $providerid, $hidemode);
+        $chatheading = ChatHeading($broadcastmode, $chatid, "$title1", $owner == $providerid, $hidemode);
     } 
     if($videoactive=='true'){
         //$chatheading = "<span class='nonmobile'>".$chatheading."</span>";
@@ -407,7 +452,41 @@ require_once('internationalization.php');
             </div>
             ";
     }
+    if($broadcastmode == 'B' && $streaming){
+        $gif = "../img/animated-spring.gif";
+        if(strstr($title,"Music")!==false){
+            //$gif = "../img/animated-snow.gif";
+            $gif = "../img/animated-rain.gif";
+        }
+        if(strstr($title,"Music Tree")!==false){
+            $gif = "../img/animated-jazzpiano.gif";
+        }
+        if(strstr($title,"Talk")!==false){
+            $gif = "../img/animated-brook.gif";
+        }
+        if(strstr($title,"Talk Too")!==false){
+            $gif = "../img/animated-spring.gif";
+        }
+        
+        if(strstr($title,"Pirate")!==false){
+            $gif = "../img/animated-spring-2.gif";
+        }
+        if(strstr(strtolower($chatobj->photourl),".gif")!==false){
+            $gif = $chatobj->photourl;
+        }
+        
+        $panel = "
+            <div style='text-align:center;vertical-align:center;width:100%;height:100%;background-color:black;color:white'>
+            <div class='pagetitle' style='padding:20px;color:white'>$broadcasttitle</div>
+            <img src='$gif' style='width:100%;height:auto;margin-auto;' />
+            <div class='pagetitle2a' style='padding:20px;color:white'>Audio and Video Broadcast</div>
+            </div>
+            ";
+    }
     
+    if(($broadcastmode == 'A' || $broadcastmode == 'B') && !$streaming){
+        $broadcastmode = "";
+    }
     $chatentry = "
         <div class='refreshchatsession chatscrollsuspended pagetitle3 chatwidth2 gridnoborder' 
             data-chatid='$chatid' data-keyhash='$chatobj->keyhash' 
@@ -423,28 +502,36 @@ require_once('internationalization.php');
             placeholder='$menu_message' 
             data-streaming='$streaming' data-passkey64='$passkey64'  data-sms='' data-name='' data-send='Y' data-msgid=''        
         ></textarea>
-        <img class='sendchatbutton chatcommenthide2 tapped icon30 chatentrybutton' 
+        <img class='sendchatbutton chatcommenthide2 tapped icon25 chatentrybutton' 
             title='Send Message' 
             alt='Send Message' src='../img/Arrow-Right-in-Circle-White_120px.png' id='sendchatbutton' 
             data-streaming='$streaming' data-passkey64='$passkey64'  data-sms='' data-name='' data-send='Y' data-msgid='' 
-            style='display:inline-block;margin-left:10px;;margin-top:10px;margin-bottom:10px' />   
+            style='display:inline-block;margin-left:15px;;margin-top:10px;margin-bottom:10px' />   
             ";
+    
     if($chatobj->radiostation!='Q' || $owner == $providerid){
+        
         $chatentry .= "
             
-        <img class='chatextra icon30'  title='Show Menu' alt='Show Menu' src='../img/ellipsis-white-128.png' style='display:inline-block;margin-left:10px;margin-top:10px;margin-bottom:10px' />
-        <img class='chatextrahide icon30' title='Collapse Menu' src='../img/ellipsis-white-128.png' style='display:inline-block;display:none;margin-left:10px;;margin-top:10px;margin-bottom:10px' />
+        <img class='chatextra icon25'  title='Show Menu' alt='Show Menu' src='../img/ellipsis-white-128.png' style='display:inline-block;margin-left:10px;margin-top:10px;margin-bottom:10px' />
+        <img class='chatextrahide icon25' title='Collapse Menu' src='../img/ellipsis-white-128.png' style='display:inline-block;display:none;margin-left:10px;;margin-top:10px;margin-bottom:10px' />
         <br>
         ";
+    }
+    if(!$streaming){
+        //$chatentry .= "
+        //<div class='nonmobile smalltext' style='color:white;padding-top:10px;padding-left:20px'><br><br>&nbsp;&nbsp;&nbsp; Ctrl-Enter to Send</div>
+        //";
     }
     
     $chatentry .= "</span>";
     
+    $chat = $chat.$broadcastheading;
     
     $arr = array('chat'=> "$chat",
                  'chatheading' => $chatheading,
                  'chatentry' => $chatentry,
-                 'video' => '',
+                 'video' => $broadcastmode,
                  'panel' => $panel,
                  'scroll'=> "Y",
                  'lastseen'=> "",
@@ -499,7 +586,7 @@ function SafeUrl($url)
     //
     //test http://ianfette.org
 
-    $apikey = "";
+    $apikey = "AIzaSyDd_Y3cZI4MRmEFA4vnqzlfoKEM8LTBWjs";
     $encoded_url = urlencode($url);
     
     $api = "https://sb-ssl.google.com/safebrowsing/api/lookup?client=CLIENT&key=$apikey&appver=1.1&pver=3.1&url=$encoded_url";    
@@ -582,30 +669,29 @@ function IsValidChat($chatid, $providerid, $passkey)
     
     
     
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
         select chatmaster.keyhash, chatmaster.title, chatmaster.archive, 
         chatmaster.owner, chatmaster.encoding, radiostation,  
-        (select 'Y' from notifymute where notifymute.id = chatmaster.chatid and idtype='C' and notifymute.providerid = $providerid ) as mute,
+        (select 'Y' from notifymute where notifymute.id = chatmaster.chatid and idtype='C' and notifymute.providerid = ? ) as mute,
         broadcastmode, timestampdiff(MINUTE, reservestation, now() ) as reservedtime, 
         provider.providername as broadcaster, 
-        (select streamingaccount from provider where providerid=$providerid) as streamingaccount,
+        (select streamingaccount from provider where providerid=?) as streamingaccount,
         (select broadcastid from broadcastlog where mode='B' and broadcastlog.chatid = chatmaster.chatid and broadcastdate2 is null order by broadcastid desc limit 1 ) as broadcastid,
-        (select broadcastid from broadcastlog where mode='V' and broadcastlog.chatid = chatmaster.chatid and broadcastdate2 is null and broadcastlog.providerid = $providerid order by broadcastid desc limit 1 ) as viewerbroadcastid,
+        (select broadcastid from broadcastlog where mode='V' and broadcastlog.chatid = chatmaster.chatid and broadcastdate2 is null and broadcastlog.providerid = ? order by broadcastid desc limit 1 ) as viewerbroadcastid,
         chatmaster.broadcaster as broadcasterid, chatmaster.radiotitle,
-        (select radiostation from roominfo where roominfo.roomid = chatmaster.roomid) as quizroom,
         (select photourl from roominfo where roominfo.roomid = chatmaster.roomid) as photourl,
         (select owner from statusroom where statusroom.roomid = chatmaster.roomid and statusroom.providerid = statusroom.owner) as roomowner,
         blocked1.blockee, blocked2.blocker,
         chatmaster.hidemode, chatmaster.question
         from chatmaster 
         left join provider on provider.providerid = chatmaster.broadcaster
-        left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = $providerid
-        left join blocked blocked2 on blocked2.blocker = provider.providerid and blocked2.blockee = $providerid
-        where chatmaster.chatid=$chatid and chatid in 
-        (select chatid from chatmembers where providerid = $providerid and chatmaster.chatid = chatmembers.chatid )
-        ");
-    if(!$row = do_mysqli_fetch("1",$result)){
+        left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = ?
+        left join blocked blocked2 on blocked2.blocker = provider.providerid and blocked2.blockee = ?
+        where chatmaster.chatid=? and chatid in 
+        (select chatid from chatmembers where providerid = ? and chatmaster.chatid = chatmembers.chatid )
+        ",array($providerid,$providerid,$providerid,$providerid,$providerid,$chatid,$providerid));
+    if(!$row = pdo_fetch($result)){
         
         
         $arr = array('chat'=> "This chat session has been ended. Please exit chat.",
@@ -709,11 +795,6 @@ function IsValidChat($chatid, $providerid, $passkey)
         $array['archivemode']=$menu_delete;
     }
     $array['hidemode'] = $row['hidemode'];
-    $array['quizroom'] = '';
-    if($row['quizroom']=='Q'){
-        $array['quizroom'] = 'Y';
-    }
-    $array['quizquestion'] = $row['question'];
     if($array['streamid']!='' && $array['broadcastmode']!='V' && $array['broadcastmode']!='B'){
         $array['broadcastmode']='A';
     }
@@ -764,7 +845,7 @@ function E2EVerify($chatid, $providerid, $keyhash, $passkey )
 function CheckUnreadMessages($chatid, $providerid, $force)
 {
 
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
         select
         TIMESTAMPDIFF(
@@ -774,14 +855,14 @@ function CheckUnreadMessages($chatid, $providerid, $force)
             ) as unreadtime
         from chatmaster 
         left join chatmembers on chatmembers.chatid = chatmaster.chatid
-        where chatmaster.chatid = $chatid and chatmembers.providerid = $providerid
-        ");
+        where chatmaster.chatid = ? and chatmembers.providerid = ?
+        ",array($chatid,$providerid));
     
-    do_mysqli_query("1",
+    pdo_query("1",
         "
         update chatmembers set lastactive=now(), lastread=now() where 
-        providerid= $providerid and chatid=$chatid and status='Y'
-        ");
+        providerid= ? and chatid=? and status='Y'
+        ",array($providerid,$chatid));
     if($force=='true'){
         return;
     }
@@ -789,7 +870,7 @@ function CheckUnreadMessages($chatid, $providerid, $force)
     
     
     $scroll = 'Y';
-    if($row = do_mysqli_fetch("1",$result)){
+    if($row = pdo_fetch($result)){
         
         
         $u = intval($row['unreadtime']);
@@ -832,23 +913,23 @@ function GetOtherPartyName($chatid, $providerid)
     global $timezoneoffset;
     global $rootserver;
     
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
             select provider.providername, provider.providerid as otherid,  
             provider.replyemail as otheremail, provider.avatarurl,
             provider.handle, chatmembers.techsupport, chatmembers.broadcaster,
-            (select count(*) from chatmembers c2 where c2.chatid = $chatid ) as membercount,
-            (select count(*) from chatmembers c2 where c2.chatid = $chatid and c2.broadcaster is not null and c2.broadcaster > 0 ) as listenercount,
+            (select count(*) from chatmembers c2 where c2.chatid = ? ) as membercount,
+            (select count(*) from chatmembers c2 where c2.chatid = ? and c2.broadcaster is not null and c2.broadcaster > 0 ) as listenercount,
             DATE_FORMAT(
-               date_add(lastread, interval ($timezoneoffset)*(60) MINUTE),
+               date_add(lastread, interval (?)*(60) MINUTE),
                 '%b %d/%y %a  %h:%i:%s%p'
             ) as seen
             from chatmembers
             left join provider on provider.providerid = chatmembers.providerid 
-            where chatmembers.chatid = $chatid and chatmembers.providerid != $providerid
+            where chatmembers.chatid = ? and chatmembers.providerid != ?
             and provider.active = 'Y'
             order by lastread desc limit 15
-            ");
+            ",array($chatid,$chatid,$timezoneoffset,$chatid,$providerid));
 
 
         $otheremail = "";
@@ -861,7 +942,7 @@ function GetOtherPartyName($chatid, $providerid)
         $techsupport = "";
         $firstparty = '';
         
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             
             if($row['avatarurl']=="$rootserver/img/faceless.png"){
                 //$row['avatarurl']="$rootserver/img/newbie.jpg";
@@ -929,7 +1010,7 @@ function GetOtherPartyName($chatid, $providerid)
         return (object) $array;
     
 }
-function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $chatparty, $togglemsg, $togglemsgmembers, $script, $more, $owner, $quizroom, $hidemode, $membercount, $mute  )
+function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $chatparty, $togglemsg, $togglemsgmembers, $script, $more, $owner, $hidemode, $membercount, $mute  )
 {
     global $timezoneoffset;
     global $rootserver;
@@ -948,6 +1029,7 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
     global $iconsource_braxclose_common;
     global $iconsource_braxeraser_common;
     global $iconsource_braxrestore_common;
+    global $iconsource_braxedit_common;
     global $menu_mutenotifications;
     global $menu_unmutenotifications;
     global $menu_displayinglast;
@@ -955,6 +1037,7 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
     global $menu_cancel;
     global $menu_save;
     global $menu_edit;
+    global $braxmedal;
     
     if($_SESSION['superadmin']=='Y'){
         //$hidemode = 'Y';
@@ -978,12 +1061,26 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
                 </div>
                 
                     ";
+    if(  (($membercount <=2 || $owner == $providerid) ) ){
+    $chat .= "
+                    
+                    &nbsp;
+                    &nbsp;
+                    <div class='quizbutton tapped mainfont' data-chatid='$chatid' data-mode='clear' style='white-space:nowrap;display:inline;padding-left:10px'>
+                       <img class='icon20' src='$iconsource_braxeraser_common' title='Temporarily Archive Past Comments' />
+                    </div>
+                    &nbsp;
+                    <div class='quizbutton tapped mainfont' data-chatid='$chatid' data-mode='unclear' style='white-space:nowrap;display:inline;padding-left:10px'>
+                       <img class='icon20' src='$iconsource_braxrestore_common' title='Restore All Comments' />
+                    </div>
+                    ";
+    }
     $chat .= "
                 <br>
                 <div class='mute mainfont' data-chatid='$chatid' data-roomid='' style='display:inline-block;padding-left:20px;padding-right:10px;padding-top:10px;cursor:pointer;color:$global_activetextcolor;' title='Mute Notificsations'>
                     $mutemsg
                 </div>
-                <span class='nonmobile'>
+                <span class=''>
                     <div class='togglechat mainfont' style='display:inline-block;padding-left:20px;padding-right:10px;padding-top:10px;cursor:pointer;color:$global_activetextcolor;' title='$togglemsg'>
                         $togglemsg
                     </div>
@@ -992,11 +1089,11 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
             ";
     
     
-        
+
 
     $lifespanfilter = "";
     if( intval($_SESSION['msglifespan'])>0){
-        $lifespanfilter = " and timestampdiff( MINUTE, chatmessage.msgdate, now() ) < $_SESSION[msglifespan] ";
+        //$lifespanfilter = " and timestampdiff( MINUTE, chatmessage.msgdate, now() ) < $_SESSION[msglifespan] ";
     }
     $hidemodefilter = "";
     if( $owner != $providerid && $hidemode == 'Y' ){
@@ -1006,16 +1103,17 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
 
     if($_SESSION['superadmin']!='X'){
         //shadow banning test
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
             select * from
             (
                 select distinct chatmessage.message, chatmessage.encoding, chatmessage.msgid,
-                DATE_FORMAT(date_add(chatmessage.msgdate, interval ($timezoneoffset)*(60) MINUTE), 
+                DATE_FORMAT(date_add(chatmessage.msgdate, interval (?)*(60) MINUTE), 
                 '%m/%d/%y %h:%i:%s%p') as msgdate, 
                 chatmembers.techsupport, chatmessage.flag,
                 chatmessage.providerid, chatmessage.chatid,
                 provider.providername, provider.avatarurl, chatmaster.owner,
+                provider.medal,
 
                 staff.staffname as name, blocked1.blockee, blocked2.blocker, provider.profileroomid,
                 ban.banid
@@ -1026,31 +1124,32 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
                 left join provider on provider.providerid = chatmessage.providerid and provider.active='Y'
                 left join staff on staff.providerid = chatmessage.providerid and
                    staff.loginid = chatmessage.loginid
-                left join blocked blocked1 on blocked1.blockee = chatmessage.providerid and blocked1.blocker = $providerid 
-                left join blocked blocked2 on blocked2.blocker = chatmessage.providerid and blocked2.blockee = $providerid 
+                left join blocked blocked1 on blocked1.blockee = chatmessage.providerid and blocked1.blocker = ? 
+                left join blocked blocked2 on blocked2.blocker = chatmessage.providerid and blocked2.blockee = ?
                 left join ban on ban.banid = provider.banid and ban.chatid = chatmaster.chatid
-                where chatmessage.chatid = $chatid and chatmessage.status='Y'  and 
+                where chatmessage.chatid = ? and chatmessage.status='Y'  and 
                 blocked1.blockee is null and blocked2.blocker is null 
                 $lifespanfilter
                 $hidemodefilter
-                and (ban.banid is null or (ban.banid = '$_SESSION[banid]' and ban.chatid = $chatid) or '$_SESSION[superadmin]'='Y' )
+                and (ban.banid is null or (ban.banid = ? and ban.chatid = ?) or '$_SESSION[superadmin]'='Y' )
 
                 order by chatmessage.msgid desc limit $limit 
              ) as t order by msgid asc
-            ");
+            ",array($timezoneoffset,$providerid,$providerid,$chatid,$_SESSION['banid'],$chatid));
         
     } else {
     
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
             select * from
             (
                 select distinct chatmessage.message, chatmessage.encoding, chatmessage.msgid,
-                DATE_FORMAT(date_add(chatmessage.msgdate, interval ($timezoneoffset)*(60) MINUTE), 
+                DATE_FORMAT(date_add(chatmessage.msgdate, interval (?)*(60) MINUTE), 
                 '%m/%d/%y %h:%i:%s%p') as msgdate, 
                 chatmembers.techsupport, chatmessage.flag,
                 chatmessage.providerid, chatmessage.chatid,
                 provider.providername, provider.avatarurl, chatmaster.owner,
+                provider.medal,
 
                 staff.staffname as name, blocked1.blockee, blocked2.blocker, provider.profileroomid,
                 ban.banid
@@ -1061,30 +1160,26 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
                 left join provider on provider.providerid = chatmessage.providerid and provider.active='Y'
                 left join staff on staff.providerid = chatmessage.providerid and
                    staff.loginid = chatmessage.loginid
-                left join blocked blocked1 on blocked1.blockee = chatmessage.providerid and blocked1.blocker = $providerid 
-                left join blocked blocked2 on blocked2.blocker = chatmessage.providerid and blocked2.blockee = $providerid 
+                left join blocked blocked1 on blocked1.blockee = chatmessage.providerid and blocked1.blocker = ? 
+                left join blocked blocked2 on blocked2.blocker = chatmessage.providerid and blocked2.blockee = ? 
                 left join ban on ban.banid = provider.banid and ban.chatid = chatmaster.chatid
-                where chatmessage.chatid = $chatid and chatmessage.status='Y'  and 
+                where chatmessage.chatid = ? and chatmessage.status='Y'  and 
                 blocked1.blockee is null and blocked2.blocker is null 
                 $lifespanfilter
                 $hidemodefilter
 
                 order by chatmessage.msgid desc limit $limit 
              ) as t order by msgid asc
-        ");
+            ",array($timezoneoffset,$providerid,$providerid,$chatid));
     }
 
     $count = 0;
 
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
         
         $msgdate = InternationalizeDate($row['msgdate']);
         
-        $quizflagbutton = "";
         $dataname = $row['name'];
-        if($quizroom=='Y'){
-            $dataname = '';
-        }
         
         if($row['providername']!=$row['name']){
             $row['name'] = "$row[providername]/$row[name]";
@@ -1110,7 +1205,10 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
             $action = '';
             
         }
-
+        $usermedal = '';
+        if($row['medal']=='1'){
+            $usermedal = $braxmedal;
+        }
 
         $oldchat = "";
         //if( $count < $total && toggleChat ){
@@ -1137,6 +1235,7 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
         //Admin Delete Mode
         $deleteitem = '';
         $edititem = "";
+        $edititem2 = "";
         
         if( $row['providerid']==$providerid ||
                 $enableAdminDeleteMode ){
@@ -1156,13 +1255,13 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
             if($decodeEdit !== false){
                 
             
-                $edititem = "&nbsp;&nbsp;
-                <div class='chatedititem tapped2 smalltext2 gridstdborder' 
-                    title='Edit' alt='Edit'
-                    data-msgid='$row[msgid]'  
-                     style='display:inline-block;cursor:pointer;position:relative;
-                     display:inline-block;position:relative;top:-5px;
-                     width:auto;top:0px;padding-left:10px;padding-right:10px' >$menu_edit</div>
+                $edititem = "
+                <img class='chatedititem tapped2'
+                         data-msgid='$row[msgid]'    
+                         src='$iconsource_braxedit_common' 
+                         style='padding-top:3px;padding-left:15px;padding-right:15px;height:20px;cursor:pointer' />
+                         ";
+                $edititem2 = "
                 <span class='chateditcontent' id='chatedit-$row[msgid]' style='display:none'>
                     <br><br>
                     <div class='chatedititem tapped2' style='display:inline-block;cursor:pointer' 
@@ -1189,9 +1288,6 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
                 
                 $edititem = $deleteitem;
             }
-            if($quizroom == 'Y'){
-                $edititem = '';
-            }
         }
         
 
@@ -1202,7 +1298,7 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
 
 
                 $chat .= " 
-                        <div class='chatitem $oldchat chatself mainfont' style='background-color:$global_background;color:$textcolor2;padding-left:10px;padding-right:10px;margin-top:0px;;'>
+                        <div class='chatitem $oldchat chatself mainfont' style='background-color:transparent;color:$textcolor2;padding-left:10px;padding-right:10px;margin-top:0px;;'>
 
                             
                             <div class='bubblesize' style='background-color:transparent'>
@@ -1213,10 +1309,9 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
                                         data-mode ='S' data-passkey64=''
                                      />
                                  </div>
-                                <span class=chatselftext style='float:left;color:$textcolor'>$row[name]&nbsp;</span> 
+                                <span class=chatselftext style='float:left;color:$textcolor'>$row[name]&nbsp;$usermedal&nbsp;</span> 
                                <div class='smalltext2' style='display:inline-block;height:20px;color:$global_textcolor2;font-family:helvetica;position:relative;top:5px;vertical-align:top'>$msgdate</div>
-                               $edititem
-                              <div class='chatcontent' id='chatcontent-$row[msgid]'>$medal $decode</div>
+                              <div class='chatcontent' id='chatcontent-$row[msgid]'>$decode $edititem</div>$edititem2
                             </div>
                         </div>";
                     
@@ -1224,7 +1319,7 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
             } else {
 
                 
-                $chat .= "<div class='chatitem $oldchat chatother mainfont' style='background-color:$global_background;color:$textcolor;padding-left:10px;;padding-right:10px;margin-top:0px;padding-bottom:0px'>
+                $chat .= "<div class='chatitem $oldchat chatother mainfont' style='background-color:transparent;color:$textcolor;padding-left:10px;;padding-right:10px;margin-top:0px;padding-bottom:0px'>
                     
 
                             <div class='bubblesize' style='background-color:transparent'>
@@ -1237,11 +1332,10 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
                                  </div>
                                 <div class='chatothertext' data-reply='$dataname' 
                                         style='color:$textcolor;float-left;padding-bottom:0px;padding-top:0px;font-weight:normal;cursor:pointer'>
-                                         <b style='cursor:pointer'>$row[name]</b>&nbsp;
+                                         <b style='cursor:pointer'>$row[name]</b>&nbsp;$usermedal&nbsp;
                                     <span class='smalltext2' style='color:$global_textcolor2;font-family:helvetica;'>$msgdate</span>
                                 </div>
-                                $edititem
-                                <div class='chatcontent' id='chatcontent-$row[msgid]'>$medal $decode</div>
+                                <div class='chatcontent' id='chatcontent-$row[msgid]'>$decode $edititem</div>$edititem2
                             </div>
                         </div>";
             }
@@ -1276,7 +1370,7 @@ function MemberList($chatid, $providerid, $title, $keyhash, $streaming )
     if($streaming){
         $radio = "Y";
     }
-    $result = do_mysqli_query("1",
+    $result = pdo_query("1",
         "
         select provider.providername, provider.providerid as otherid,  
         provider.replyemail as otheremail, provider.avatarurl,
@@ -1284,23 +1378,23 @@ function MemberList($chatid, $providerid, $title, $keyhash, $streaming )
         provider.profileroomid,
         chatmaster.owner,
         DATE_FORMAT(
-           date_add(chatmembers.lastread, interval ($timezoneoffset)*(60) MINUTE),
+           date_add(chatmembers.lastread, interval (?)*(60) MINUTE),
             '%b %d/%y %a  %h:%i:%s%p'
         ) as seen,
         chatmembers.lastread,
         timestampdiff( HOUR, now(), chatmembers.lastread) as hourdiff,
-        (select count(*) from chatmembers c2 where c2.chatid = $chatid and c2.broadcaster is not null and c2.broadcaster > 0 ) as listenercount
+        (select count(*) from chatmembers c2 where c2.chatid = ? and c2.broadcaster is not null and c2.broadcaster > 0 ) as listenercount
         from chatmembers
         left join chatmaster on chatmaster.chatid = chatmembers.chatid
         left join provider on provider.providerid = chatmembers.providerid 
-        where chatmembers.chatid = $chatid 
+        where chatmembers.chatid = ?
         and provider.active = 'Y'
         order by chatmembers.lastread desc 
-        ");
+        ",array($timezoneoffset,$chatid,$chatid));
 
     $i = 0;
     $displayed = 0;
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
 
         $i++;
         $seen = $row['seen'];
@@ -1450,14 +1544,14 @@ function MemberList($chatid, $providerid, $title, $keyhash, $streaming )
         $otherparty2 .= "($i Members)";
     }
     if($otherparty == ''){
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
-            select name from invites where chatid = $chatid 
-            ");
+            select name from invites where chatid = ? 
+            ",array($chatid));
 
 
         $otherparty = "";
-        while($row = do_mysqli_fetch("1",$result)){
+        while($row = pdo_fetch($result)){
             $otherparty = $row['name']." (Invited)";
         }
         
@@ -1479,7 +1573,329 @@ function MemberList($chatid, $providerid, $title, $keyhash, $streaming )
     
     return (object) $array;
 }
-function ChatHeading($broadcastmode, $chatid, $title, $quizroom, $quizquestion, $owned, $hidemode)
+function BroadcastInfo($streaming, $broadcastmode, $broadcaster, $chatid, $streamid, $title, $owned, $broadcasttitle, $listenercount, $radiostation )
+{
+    $broadcastowner = "";
+    $broadcastownermobile = "";
+    $broadcastmobile1 = "";
+    $broadcastmobile2 = "";
+    $broadcastdiv = "";
+    $broadcast = "";
+    $video = "";
+    $video2 = "";
+    $stop = "";
+    $play = "";
+    $mode = "";
+    
+    global $global_titlebar_color;
+    global $global_streamlive_color;
+    global $iconsource_braxstopmusic_common;
+    global $iconsource_braxplaymusic_common;
+    global $iconsource_braxbell_common;
+    global $iconsource_braxlike_common;
+    global $iconsource_braxunlike_common;
+    global $iconsource_braxvideo_common;
+    global $global_background;
+    global $global_textcolor;
+    
+
+    if($broadcasttitle == ''){
+        $broadcasttitle = "is Live";
+    }
+    
+    $radiostationinfo = RadioStationHeader( $broadcastmode, $broadcasttitle,$title, $streamid, $broadcaster, $listenercount,$chatid );
+    if( $streaming ){
+        
+        
+        //Get Video Source
+        $result = pdo_query("1","select url from chatpopup where chatid=? and url!='' and broadcaster in 
+            (select broadcaster from chatmaster where chatid=? ) ",array($chatid,$chatid));
+        if($row = pdo_fetch($result)){
+            $audiopanelmode = "audiopanel_desktop";
+            if($_SESSION['innerwidth']<1000){
+                $mode = 'M';
+                $audiopanelmode = "audiopanel_mobile";
+            }
+                
+            $video = " 
+                    <img class='$audiopanelmode icon25' data-mode='$mode' src='$iconsource_braxplaymusic_common' title='Play Movie' data-chatid='$chatid' style='margin-left:10px;top:3px' />
+                     ";
+            $video2 = " 
+                    <img class='$audiopanelmode icon30' data-mode='$mode' src='$iconsource_braxplaymusic_common' title='Play Movie'  data-chatid='$chatid' style='margin-left:10px;top:3px' />
+                    ";
+                
+        }
+        if($broadcastmode!='V'){
+            $play = "
+                    <img class='icon25 audiostream' 
+                          title='Play Audio'
+                          data-streamid='$streamid' data-chatid='$chatid'  data-mode='START'
+                        src='$iconsource_braxplaymusic_common' style='margin-left:10px;' />
+            ";
+            $video = "";
+            $video2 = "";
+        }
+        
+    }
+    
+    if( $streaming ){
+        
+        $radiocolor = "$global_background;color:$global_textcolor";
+        
+            if($broadcaster == ''){
+                $broadcast = "<div style='text-align:center;background-color:$global_streamlive_color;color:white;cursor:pointer' class='setchatsession' data-chatid='$chatid'  title='Refresh'>Audio Stream Source Active</div>";
+                //$broadcastmobile1 .= $broadcast;
+            } else {
+                $broadcast = 
+                    " 
+                    <div class='icon30' style='min-height:45px;float:left'></div>
+                        
+                    $play
+                    $video
+
+                    <img class='icon25 audiostream' 
+                          title='Stop'
+                        data-chatid='$chatid' data-mode='STOP' 
+                         src='$iconsource_braxstopmusic_common' style='margin-left:15px' />
+                         
+                    <img class='notifyaudiostream icon25' src='$iconsource_braxbell_common' style='margin-left:15px;' 
+                          title='Notify Members'
+                       data-chatid='$chatid' data-mode='STREAM' 
+                    />
+                    <img class='notifyaudiostream icon25' src='$iconsource_braxlike_common' style='margin-left:15px;'
+                        title='Like'
+                       data-chatid='$chatid' data-mode='LIKE'
+                     />
+                    <img class='notifyaudiostream icon25' src='$iconsource_braxunlike_common' style='margin-left:15px;' 
+                        title='Unlike'
+                       data-chatid='$chatid' data-mode='UNLIKE'
+                    />
+                    <img class='refreshchatsession icon25' src='$iconsource_braxunlike_common' style='opacity:0.0;margin-left:0px;top:3px;' 
+                          title='Refresh'
+                       data-chatid='$chatid'
+                    />
+                    <br><br>
+                    ";
+                
+            }
+        
+            if($broadcaster == '' && $_SESSION['broadcaster']!='N'){
+                $broadcastowner = 
+                    " 
+                        <br>
+                        &nbsp;&nbsp;<b>Broadcast Info</b>
+                        <br>
+                        &nbsp;&nbsp;<input class='chatextraarea chatwidth2 dataentry' id='audiostreamtitle' type='text'  maxlength=40 placeholder='Broadcast Title' title='Enter Broadcast Title Here' />
+                        <br><br>&nbsp;
+                        <div class='notifyaudiostream divbutton3' style='background-color:$global_titlebar_color;color:white' 
+                              data-chatid='$chatid' data-mode='BROADCASTER'  data-action=''>
+                           <img class='icon15' src='../img/Microphone-2-White_120px.png' title='Claim the Broadcast' />
+                           I am the Broadcaster
+                        </div>
+                        <br><br>
+                ";
+                $broadcastownermobile = $broadcastowner;
+            } 
+            
+            if( $owned) { //BOOL
+                $broadcast = "<div style='min-height:25px;float:left;padding-top:5px;background-color:$radiocolor;width:100%'>
+                    ";
+
+                if($broadcastmode=='V'){
+                    $broadcast .= 
+                        "
+                        <img class='notifyaudiostream icon25' src='../img/close-broadcast-128.png' style='margin-left:10px;top:3px;' 
+                              title='Stop Video Broadcast'
+                           data-chatid='$chatid' data-mode='ENDBROADCAST'
+                        />
+                        ";
+                } else {
+                    
+                }
+                
+                $broadcast .= 
+                    "
+                        $play
+                        $video
+                        <img class='icon25 audiostream' 
+                              title='Stop Monitoring of Broadcast'
+                            data-chatid='$chatid' data-mode='STOP' 
+                             src='$iconsource_braxstopmusic_common' style='margin-left:10px;top:3px' />
+                        <img class='notifyaudiostream icon25' src='$iconsource_braxbell_common' style='margin-left:15px;top:3px;' 
+                              title='Notify Members'
+                           data-chatid='$chatid' data-mode='STREAM'
+                        />
+                        <img class='notifyaudiostream icon25' src='$iconsource_braxlike_common' style='margin-left:15px;top:3px;'
+                              title='Like'
+                           data-chatid='$chatid' data-mode='LIKE'
+                         />
+                        <img class='notifyaudiostream icon25' src='$iconsource_braxunlike_common' style='margin-left:15px;top:3px;' 
+                              title='Unlike'
+                           data-chatid='$chatid' data-mode='UNLIKE'
+                        />
+                        ";
+                $broadcast .= 
+                    "
+                        <br><br><div class='audiopanelbroadcaster' data-chatid='$chatid' data-mode='$mode' style='display:inline'></div>
+                    ";
+                $broadcast .= "</div>";
+                
+                $broadcastowner = 
+                    " 
+                        <br>
+                        <hr class='formobile' />
+                        &nbsp;&nbsp;<b>Change Broadcast Info</b><br>
+                        &nbsp;&nbsp;<input class='chatwidth2' id='audiostreamtitle' type='text' size=80 maxlength=40 placeholder='New Broadcast Title' style='max-width:250px' title='Enter new broadcast title here' />
+                            <img class='notifyaudiostream icon25' src='../img/Arrow-Right-in-Circle-White_120px.png' 
+                                title='Save New Title'  
+                                  data-chatid='$chatid' data-mode='BROADCASTER' data-action='TITLE' />
+                        
+                        &nbsp;&nbsp;
+                        <br>
+                ";
+                $broadcastownermobile = 
+                    " 
+                        <br>
+                        <hr class='formobile' />
+                        &nbsp;&nbsp;<b>Change Broadcast Info</b><br>
+                        &nbsp;&nbsp;
+                        <input class='chatwidth2' id='audiostreamtitle' type='text' size=80 maxlength=40 
+                            placeholder='New Broadcast Title' style='max-width:250px' 
+                            title='Enter new broadcast title here' />
+                            
+                            <img class='notifyaudiostream icon25' src='../img/Arrow-Right-in-Circle_120px.png' 
+                                title='Save New Title'  
+                                  data-chatid='$chatid' data-mode='BROADCASTER' data-action='TITLE' />
+                        
+                        &nbsp;&nbsp;
+                ";
+                if($broadcastmode == 'V'){
+                    
+                    $stop = "
+                        <br><br>&nbsp;&nbsp;
+                        <div class='notifyaudiostream divbuttontext' 
+                             data-mode='ENDBROADCAST' data-chatid='$chatid' title='Stop Video Broadcast' 
+                             style='color:white;background-color:$global_titlebar_color'>Stop Video Broadcast
+                        </div>
+                        <br><br>
+                        ";
+                    
+                }
+                $broadcastowner .= $stop;
+                $broadcastownermobile .= $stop;
+                
+            } else {
+                if( $broadcastmode == 'V'   && 
+                       
+                         
+                    $_SESSION['superadmin']=='Y'){
+                    $broadcastowner .= "
+                        <br>
+                        &nbsp;&nbsp;<div class='notifyaudiostream divbuttontext' data-mode='ENDBROADCAST' data-chatid='$chatid' style='color:white;background-color:$global_titlebar_color'>Moderator Stop</div>
+                        <br><br>
+                        ";
+                    
+                }
+                
+            }
+            
+    } else {
+        
+    /* STREAMING IS OFF
+     * 
+     */
+        
+        if($streamid !='' && $radiostation!='Q'){
+            
+            AutoEndBroadcast($chatid);
+            
+            $broadcast = "
+                    <div class='gridnoborder smalltext' 
+                        style='min-height:25px;cursor:pointer;padding-bottom:10px;background-color:$global_background;color:$global_textcolor;vertical-align:center;
+                        width:100%'>
+
+                        <div class='notifyaudiostream mainfont' style='float:left;margin-left:30px'
+                            title='Broadcast'
+                            data-action='VIDEO'
+                            data-mode='BROADCASTER'
+                            data-chatid='$chatid'
+                           data-chatid='$chatid' data-mode='LIVE' >
+                            <img class='icon25' 
+                                src='$iconsource_braxvideo_common' style='position:relative;top:5px' /> &nbsp;Stream Video
+                        </div>
+
+
+                       <br><br>
+                    </div>";
+
+        }
+    }    
+    if($_SESSION['broadcaster']!='N'){
+        $broadcastdiv = "<div class='broadcastdiv' style='background-color:$global_background;min-height:25px;margin:0px;'>$broadcast</div>";
+    }
+    //} else {
+    //    $broadcastdiv = "<span class='nonmobile'><div style='min-height:1px;margin:0px;'>$broadcast</div></span>";
+    //}
+    
+    $array['broadcastowner'] = $broadcastowner;
+    $array['broadcastownermobile'] = $broadcastownermobile;
+    $array['radiostationinfo'] = $radiostationinfo;
+    $array['broadcast'] = $broadcastdiv;
+    $array['broadcastmobile1'] = $broadcastmobile1;
+    $array['broadcastmobile2'] = $broadcastmobile2;
+
+    return (object) $array;
+        
+}
+function RadioStationHeader( $broadcastmode, $broadcasttitle,$title, $streamid, $broadcaster, $listenercount, $chatid )
+{
+    global $global_titlebar_color;
+    global $global_titlebar_alt_color;
+    global $global_menu2_color;
+    global $global_background;
+    global $global_textcolor;
+    
+    $radiocolor = "$global_menu2_color;color:white";
+    //$radiocolor = "whitesmoke;color:black";
+
+
+    $radiostationinfo = "
+            <div class='gridnoborder smalltext  selectchatlist' 
+                data-chatid='$chatid' data-mode='LIVE' 
+                style='padding:5px;background-color:$radiocolor;width:100%;margin:auto;height:30px;
+                text-align:center;cursor:pointer;position:relative;top:0px;cursor:pointer' >
+                <img class='icon20' 
+                      title='Back'
+                     src='../img/Arrow-Left-in-Circle-White_120px.png' style='float:left;margin-left:10px' />
+                
+                $title - Mount ID: $streamid
+            </div>";
+
+    if($broadcaster!=''){
+        $radiostationinfo = "
+            <img class='icon20 selectchatlist' 
+                  title='Back'
+                data-chatid='$chatid' data-mode='LIVE' 
+                 src='../img/Arrow-Left-in-Circle-White_120px.png' style='float:left;margin-left:10px' />
+            <div class='gridnoborder smalltext' 
+                style='padding:5px;background-color:$radiocolor;width:100%;height:30px;
+                margin:auto;text-align:center'>
+                <span class='togglememberson tapped' style='cursor:pointer;position:relative;top:0px'>
+                    <b>$broadcaster - $title</b>
+                    $broadcasttitle 
+                    <span class='smalltext' title='Active Listener Count' style='color:white'>($listenercount)</span>
+                </span>
+                <br>
+             </div>";
+        if($broadcastmode == 'V'){
+            //hide the heading on Mobile video so there's more space for the video
+            $radiostationinfo = "<span class='nonmobile'>".$radiostationinfo."</span>";
+        }
+    }
+    return $radiostationinfo;
+    
+}
+function ChatHeading($broadcastmode, $chatid, $title, $owned, $hidemode)
 {
 
     global $global_menu2_color;
@@ -1495,16 +1911,23 @@ function ChatHeading($broadcastmode, $chatid, $title, $quizroom, $quizquestion, 
     global $iconsource_braxeraser_common;
     global $iconsource_braxrestore_common;
     
+    $video = "";
+    $video2 = "";
+    $stop = "";
+    $videobuttons = "";
+    if($owned){
+        $videobuttons = "<br>";
+    }
     
     $heading = 
-            "<div class='gridnoborder smalltext' 
-                style='padding:5px;background-color:$global_menu2_color;color:white;width:100%;margin:auto;
-                text-align:left:pointer;position:relative;top:0px' >
-                <img class='icon20 selectchatlist' 
-                      title='Back'
+            "<div class='gridnoborder smalltext selectchatlist' 
                     data-chatid='$chatid' data-mode='CHAT' 
-                     src='../img/Arrow-Left-in-Circle-White_120px.png' style='margin-left:10px' />
-                     &nbsp;&nbsp;&nbsp;<span class='mainfont' style='color:white'>
+                style='padding:10px;background-color:transparent;color:$global_textcolor;width:100%;margin:auto;
+                text-align:left:pointer;position:relative;top:0px' >
+                <img class='icon20' 
+                      title='Back'
+                     src='$iconsource_braxarrowleft_common' style='margin-left:10px' />
+                     &nbsp;&nbsp;&nbsp;<span class='mainfont' style='color:$global_textcolor'>
                      
                     <span style='opacity:.5'>
                     $icon_braxchat2 
@@ -1512,23 +1935,6 @@ function ChatHeading($broadcastmode, $chatid, $title, $quizroom, $quizquestion, 
                     $menu_chat $title
             </div>";
 
-        if($owned){
-                $heading .= "
-                 <div class='quizbutton tapped mainfont' data-chatid='$chatid' data-mode='clear' style='white-space:nowrap;display:inline;padding-left:10px'>
-                    <img class='icon20' src='$iconsource_braxeraser_common' title='Clear Comments' />
-                 </div>
-                    ";
-                $heading .= "
-                 <div class='quizbutton tapped mainfont' data-chatid='$chatid' data-mode='unclear' style='white-space:nowrap;display:inline;padding-left:10px'>
-                    <img class='icon20' src='$iconsource_braxrestore_common' title='Restore Comments' />
-                 </div>
-                    ";
-        
-        }
-        $heading .= "
-                     $buttontext 
-            </div>";
-        
     
     
     return $heading;
@@ -1537,6 +1943,9 @@ function ChatHeading($broadcastmode, $chatid, $title, $quizroom, $quizquestion, 
 function MemberInfo($radiostation, $chatparty, $hidemembers, $chatid, $otheremail, $keyhash, $technotes, $otherparty )
 {
     $operation = "Chat";
+    if($radiostation=='Y'){
+        $operation = "Live Streaming Channel";
+    }
     
     $chat  = "
             <div class='oldchat' style='padding:0px;margin:0;color:white;background-color:black;$hidemembers'>
@@ -1625,9 +2034,16 @@ function MobileMenu(
             ";
         } else {
             
+            if($radiostation=='Y'){
                 
-            $deletemode = 'L';
-            $deletetext = 'Chat';
+                $deletemode = 'R';
+                $deletetext = 'Station';
+                
+            } else {
+                
+                $deletemode = 'L';
+                $deletetext = 'Chat';
+            }
             
             $buttondelete = "
                 <table class='gridnoborder smalltext chatdeleteparty tapped' 
@@ -1779,23 +2195,75 @@ function MobileMenu(
         
         //Removing these functions during a broadcast to save space for smaller phone
         $buttontakephoto = "";
-        $buttontoggle = "
-            <table class='gridnoborder smalltext togglechat tapped' 
-                title='$togglemsg'
-                 data-chatid='$chatid'                                 
-                style='vertical-align:top;color:black;padding-top:10px;height:40px'>
-            <tr>
-                <td>
-                    <img class='icon30 tapped' 
-                        src='../img/Arrow-Right-in-Circle_120px.png'
-                        style='cursor:pointer;;position:relative;top:0px' />
-                </td>
-                <td class='mainfont' style='padding-right:10px;padding-left:10px;vertical-align:center'>
-                        $togglemsg
-                </td>
-            </tr>
-            </table>
+        $buttontoggle = "";
+        if($broadcastowner == ''){
+            
+            /*
+            $buttontakephoto = "
+                <table class='gridnoborder smalltext camera tapped' 
+                    title='Take Photo for Chat'
+                   data-caller='chat'
+                   data-otherid='$otheremail' data-chatid='$chatid'
+                    style='vertical-align:top;color:black;padding-top:10px;height:40px'>
+                <tr>
+                    <td>
+                        <img class='icon30 tapped' 
+                            src='../img/Camera-Circle-Gray-128.png'
+                            style='cursor:pointer;$notactive_e2e;;position:relative;top:0px' />
+                    </td>
+                    <td class='mainfont' style='padding-left:10px;vertical-align:center'>
+                        $menu_takephoto
+                    </td>
+                </tr>
+                </table>
+                
+
+                    ";
+             * 
+             */
+            $buttontoggle = "
+                <table class='gridnoborder smalltext togglechat tapped' 
+                    title='$togglemsg'
+                     data-chatid='$chatid'                                 
+                    style='vertical-align:top;color:black;padding-top:10px;height:40px'>
+                <tr>
+                    <td>
+                        <img class='icon30 tapped' 
+                            src='../img/Arrow-Right-in-Circle_120px.png'
+                            style='cursor:pointer;;position:relative;top:0px' />
+                    </td>
+                    <td class='mainfont' style='padding-right:10px;padding-left:10px;vertical-align:center'>
+                            $togglemsg
+                    </td>
+                </tr>
+                </table>
+                    ";
+        }
+        $buttonstream = "";
+        if(($radiostation=='Y') 
+                && !$streaming  && $_SESSION['broadcaster']!='N' ){
+                
+            $buttonstream = "
+                <table class='gridnoborder smalltext notifyaudiostream tapped' 
+                    title='Broadcast'
+                    data-action='VIDEO'
+                    data-mode='BROADCASTER'
+                    data-chatid='$chatid'
+                    style='vertical-align:top;color:black;padding-top:10px;height:40px'>
+                <tr>
+                    <td>
+                        <img class='icon30 tapped' 
+                                src='../img/Arrow-Right-in-Circle_120px.png'
+                            style='cursor:pointer;;position:relative;top:0px' />
+                    </td>
+                    <td class='mainfont' style='padding-right:10px;padding-left:10px;vertical-align:center'>
+                        Stream Video 
+                    </td>
+                </tr>
+                </table>
+
                 ";
+        }
         
         $chat  .= "
         <div class=''
@@ -1821,6 +2289,7 @@ function MobileMenu(
                             <td style='padding-left:10px'>
                         $buttonaddparty
                         $buttonmembers 
+                        $buttonstream 
                         $buttondelete
                         $buttontoggle
                             </td>
@@ -1837,6 +2306,7 @@ function MobileMenu(
         
         
         $chat .= "
+                    $broadcastownermobile
                     <br>
                     <br>
                 </div>
@@ -1880,9 +2350,16 @@ function DesktopMenu( $providerid, $chatid, $passkey64, $keyhash, $archive,
             ";
         } else {
             
-
-            $deletemode = 'L';
-            $deletetext = $menu_chat;
+            if($radiostation=='Y'){
+                
+                $deletemode = 'R';
+                $deletetext = $menu_station;
+                
+            } else {
+                
+                $deletemode = 'L';
+                $deletetext = $menu_chat;
+            }
             
             $deletechat = "
                 <div class='smalltext2 chatbutton tapped' >
@@ -1907,6 +2384,8 @@ function DesktopMenu( $providerid, $chatid, $passkey64, $keyhash, $archive,
                 </span><br>
                 $avatarblocklong
                 <br><br>
+                $broadcastowner
+                <br>
                 
              </div>
             
@@ -1991,6 +2470,22 @@ function DesktopMenu( $providerid, $chatid, $passkey64, $keyhash, $archive,
                         <br>Notify
                     </div>
                     ";
+        if($_SESSION['enterprise']=='Y' || $_SESSION['superadmin']=='Y'){
+        $chat .= "
+                    <div class='smalltext2 chatbutton tapped' style='' >
+                            <img class='chatformrequest icon25' src='../img/credentials-128.png'
+                                style='top:0px' 
+                                title='Form Request'
+                            data-passkey64='$passkey64'  
+                            data-keyhash='$keyhash'    
+                            data-otherid='' 
+                            data-chatid='$chatid'
+                            />
+                        <br>Form
+                        <br>Request
+                    </div>
+                    ";
+        }
         $chat .= "
                     
                     <div class='smalltext2 chatbutton tapped' style='' >
@@ -2004,6 +2499,24 @@ function DesktopMenu( $providerid, $chatid, $passkey64, $keyhash, $archive,
                         <br>
                     </div>
                 ";
+        if(( $radiostation=='Y'  ) && !$streaming ){
+            
+                $chat .= "
+
+                    <div class='smalltext2 chatbutton tapped' style='' >
+                            <img class='notifyaudiostream icon25' src='../img/Video-Tripod_120px.png'
+                                style='top:0px' 
+                                title='Broadcast Video'
+                            data-mode='BROADCASTER'
+                            data-action='VIDEO'
+                            data-chatid='$chatid' 
+                            />
+                        <br>Stream
+                        <br>Video
+                        <br>
+                    </div>
+                    ";
+        }
                 
                 
         
@@ -2016,4 +2529,33 @@ function DesktopMenu( $providerid, $chatid, $passkey64, $keyhash, $archive,
         $chat .= "</div>";
         
         return $chat;
+}
+function AutoEndBroadcast($chatid)
+{
+
+    //Look for Un-Ended Audio Broadcast
+    $result = pdo_query("1",
+        "select broadcastid from broadcastlog  
+         where broadcastdate2 is null and 
+         chatid = ? order by broadcastid desc limit 1
+        ",array($chatid)
+        );
+    if($row = pdo_fetch($result)){
+        
+        pdo_query("1",
+            "
+            update broadcastlog
+            set broadcastdate2 = now(),
+            elapsed = time_to_sec(timediff( now(), broadcastdate ))
+            where broadcastid = $row[broadcastid]
+            and mode = 'B' and broadcastdate2 is null
+            ");
+            
+            
+    }
+    
+    pdo_query("1","
+        update chatmaster set broadcaster = null, broadcastmode = null, live='N', radiotitle='' where chatid = ? 
+    ",array($chatid));
+    
 }

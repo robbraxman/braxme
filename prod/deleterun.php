@@ -1,20 +1,20 @@
 <?php
 session_start();
 set_time_limit ( 30 );
-require_once("config.php");
+require_once("config-pdo.php");
 
 
 $timestamp = time();
 
 
 
-$result = do_mysqli_query("1", 
+$result = pdo_query("1", 
     "update attachments set archive='Y' where sessionid not in ".
     "(select sessionid from msgmain ) "
 );
 
 
-$result = do_mysqli_query("1", 
+$result = pdo_query("1", 
     "select attachfilename, providerid from attachments where archive='Y' "
 );
 
@@ -37,31 +37,31 @@ while( $row = do_mysqli_fetch("1",$result))
     
 }
 
-$result = do_mysqli_query("1", 
+$result = pdo_query("1", 
     "delete from attachments where archive='Y' "
 );
 
 
-$result = do_mysqli_query("1", 
+$result = pdo_query("1", 
     "delete from shares where shareexpire < now() "
 );
 
 
 
-$result = do_mysqli_query("1", 
+$result = pdo_query("1", 
     "delete from shares where views = 0 and datediff(now(), sharedate ) > 1 "
 );
 
 
 
-$result = do_mysqli_query("1", 
+$result = pdo_query("1", 
     "
     delete from notification where status='Y' and
     notifydate < curdate()-7
     "
 );
 
-$result = do_mysqli_query("1", 
+$result = pdo_query("1", 
     "
     update notification set status = 'Y' where status='N' and
     datediff( currdate(), notifydate ) > 1
@@ -69,49 +69,49 @@ $result = do_mysqli_query("1",
 );
 
 
-$result = do_mysqli_query("1", 
+$result = pdo_query("1", 
     "
     delete from statuspost where roomid not in (select distinct roomid from statusroom )
     "
 );
 
 
-$result = do_mysqli_query("1", 
+$result = pdo_query("1", 
     "
     delete from statuspost where roomid not in (select distinct roomid from statusroom )
     "
 );
 
 
-$result = do_mysqli_query("1",
+$result = pdo_query("1",
  
     "
     delete from roominvite where now() > expires
     "
 );
 
-$result = do_mysqli_query("1", 
+$result = pdo_query("1", 
     "
     delete from statusroom where providerid not in (select providerid from provider where active='Y')
     "
 );
 
 
-$result = do_mysqli_query("1", 
+$result = pdo_query("1", 
     "
     delete from notification where 
     datediff(now(), notifydate ) > 3
     "
 );
 
-$result = do_mysqli_query("1", 
+$result = pdo_query("1", 
     "
     delete from notifyrequest where status = 'Y' and 
     datediff(now(), requestdate ) > 1
     "
 );
 
-$result = do_mysqli_query("1", 
+$result = pdo_query("1", 
     "
     update contacts set targetproviderid = (select providerid
         from provider 
@@ -129,7 +129,7 @@ $result = do_mysqli_query("1",
 
 
 
-$result = do_mysqli_query("1", "
+$result = pdo_query("1", "
     select distinct chatmessage.chatid 
     from chatmessage
     left join chatmaster on chatmessage.chatid = chatmaster.chatid
@@ -145,7 +145,7 @@ $result = do_mysqli_query("1", "
 while( $row = do_mysqli_fetch("1",$result))
 {
     //  delete from chatmessage where chatid = $row[chatid]
-    do_mysqli_query("1", "
+    pdo_query("1", "
         delete from chatmessage where chatid = $row[chatid] and status = 'Y'
       "
     );
@@ -153,7 +153,7 @@ while( $row = do_mysqli_fetch("1",$result))
 }
 
 //Delete from chatmaster where there are no active chats after 2 days
-$result = do_mysqli_query("1", "
+$result = pdo_query("1", "
     delete from chatmaster 
     where (select count(*) 
     from chatmessage
@@ -162,24 +162,24 @@ $result = do_mysqli_query("1", "
 ");
 
 //Delete from chatmaster where status='N'
-$result = do_mysqli_query("1", "
+$result = pdo_query("1", "
     delete from chatmaster where status='N'
 ");
 
 
-$result = do_mysqli_query("1", "
+$result = pdo_query("1", "
     delete from chatmembers where chatid not in
     (select chatid from chatmaster where chatmembers.chatid = chatmaster.chatid and chatmaster.status='Y')
 ");
 
-$result = do_mysqli_query("1", "
+$result = pdo_query("1", "
     update contacts 
     set targetproviderid = (select providerid from provider where provider.active='Y' 
      and provider.handle = contacts.handle )
     where targetproviderid is null and handle!='' and handle!='@'
 ");
 
-$result = do_mysqli_query("1", "
+$result = pdo_query("1", "
     delete from keysend where 
     timestampdiff(HOUR, now(), expiration) > 24
     and providerid > 0 and chatid > 0

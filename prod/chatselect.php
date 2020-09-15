@@ -1,8 +1,8 @@
 <?php
 session_start();
 require("validsession.inc.php");
-require_once("config.php");
-require_once("crypt.inc.php");
+require_once("config-pdo.php");
+require_once("crypt-pdo.inc.php");
 
     $braxchat2 = "<img src='../img/braxchat-square.png' style='position:relative;top:3px;height:15px;width:auto;padding-top:0;padding-right:2px;padding-bottom:0px;margin:0' />";
     $braxchat = "<img src='../img/braxchat-128.png' style='height:30px;width:auto;padding-top:0;padding-right:2px;padding-bottom:0px;' />";
@@ -19,13 +19,13 @@ require_once("crypt.inc.php");
     $find = rtrim(stripslashes(@mysql_safe_string($_POST['find'])));
     
     $email_available = false;
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select replyemail from provider 
-            where providerid=$providerid and 
+            where providerid=? and 
             replyemail not like '%.account@brax.me' and 
             active='Y' and verified='Y'
-        ");
-    if($row = do_mysqli_fetch("1",$result)){
+        ",array($providerid));
+    if($row = pdo_fetch($result)){
         $email_available = true;
     }
     
@@ -67,8 +67,8 @@ require_once("crypt.inc.php");
     }
         
     $roomdiscovery = "";
-    $result = do_mysqli_query("1", "select roomdiscovery from provider where providerid = $providerid");
-    if($row = do_mysqli_fetch("1",$result)){
+    $result = pdo_query("1", "select roomdiscovery from provider where providerid = ? ",array($providerid));
+    if($row = pdo_fetch($result)){
         $roomdiscovery = $row['roomdiscovery'];
     }
     if($_SESSION['sponsor']==''){
@@ -76,7 +76,7 @@ require_once("crypt.inc.php");
     }
     
     if( $roomdiscovery == 'Y' || "$find"!='' ){
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
            "
             select distinct 
                 provider.providername as name, provider.replyemail, 
@@ -85,7 +85,7 @@ require_once("crypt.inc.php");
             from provider where active='Y' and provider.termsofuse is not null
             and (
                   
-                  ( (provider.providername like '$find%' or provider.handle like '%$find%' ) 
+                  ( (provider.providername like ? or provider.handle like ? ) 
                       
                       and 
                         (   publish='Y'
@@ -93,11 +93,11 @@ require_once("crypt.inc.php");
                             or
                             
                             ( 
-                                trim('$find') != '' and providerid in 
+                                trim(?) != '' and providerid in 
 
                                 (select providerid from groupmembers where groupid in
 
-                                    (select groupid from groupmembers where providerid = $providerid )
+                                    (select groupid from groupmembers where providerid = ? )
 
                                     and groupmembers.providerid = provider.providerid
                                 )
@@ -112,19 +112,20 @@ require_once("crypt.inc.php");
                             or
                             ( providerid in 
                                (select targetproviderid from contacts 
-                               where contacts.providerid = $providerid)
+                               where contacts.providerid = ?)
                             )
 
                         )
                   )
                    or
-                  ( provider.handle = '$find' or provider.handle = '@$find'  )
+                  ( provider.handle = ? or provider.handle = ?  )
                 )
             $order
             limit 200
-            ");
+            ",array($find."%","%".$find."%",$find,$providerid,$providerid,$find,"@".$find));
+        
         /*
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
            "
             select distinct 
                 provider.providername as name, provider.replyemail, 
@@ -163,7 +164,7 @@ require_once("crypt.inc.php");
          * 
          */
     } else {
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
            "
             select distinct 
                 provider.providername as name, provider.replyemail, 
@@ -183,7 +184,7 @@ require_once("crypt.inc.php");
 
     
     $count = 0;
-    while($row = do_mysqli_fetch("1",$result)){
+    while($row = pdo_fetch($result)){
     
         
         $id = $row['replyemail'];
@@ -303,10 +304,10 @@ function ShowChatInvite($count, $email_available, $chatid){
     }
     if($mode == 'A'){
     
-        $result = do_mysqli_query("1","
-            select keyhash from chatmaster where chatid = $chatid 
-            ");
-        if($row = do_mysqli_fetch("1",$result)){
+        $result = pdo_query("1","
+            select keyhash from chatmaster where chatid = ?
+            ",array($chatid));
+        if($row = pdo_fetch($result)){
             $keyhash = $row['keyhash'];
         }
         

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 
     //$replyflag = mysql_safe_string($_POST[replyflag]);
     $providerid = mysql_safe_string($_POST['providerid']);
@@ -20,31 +20,31 @@ require_once("config.php");
     
     if( $archive !== 'Y')
     {
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
-            delete from chatmembers where chatid=$chatid 
-            ");
+            delete from chatmembers where chatid=?
+            ",array($chatid));
 
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
-            delete from chatmessage where chatid=$chatid 
-            ");
+            delete from chatmessage where chatid=?
+            ",array($chatid));
 
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
-            delete from chatmaster where chatid=$chatid 
-            ");
+            delete from chatmaster where chatid=? 
+            ",array($chatid));
     }
     if( $archive === 'Y')
     {
-        $result = do_mysqli_query("1",
+        $result = pdo_query("1",
             "
-            update chatmessage set status='N' where chatid=$chatid 
-            ");
-        $result = do_mysqli_query("1",
+            update chatmessage set status='N' where chatid=?
+            ",array($chatid));
+        $result = pdo_query("1",
             "
-            update chatmaster set status='N' where chatid=$chatid 
-            ");
+            update chatmaster set status='N' where chatid=?
+            ",array($chatid));
 
     }
 ?>

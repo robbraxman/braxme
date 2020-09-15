@@ -1,6 +1,6 @@
 <?php
 session_start();
-require("config.php");
+require("config-pdo.php");
 require("colorscheme.php");
 require_once 'authenticator/GoogleAuthenticator.php';
 
@@ -8,15 +8,15 @@ $ga = new PHPGangsta_GoogleAuthenticator();
 $secret = $ga->createSecret();
 
 $auth_hash = '';
-$result = do_mysqli_query("1","
+$result = pdo_query("1","
     select auth_hash from staff 
     where loginid = '$_SESSION[loginid]' and providerid = $_SESSION[pid] ");
-if( $row = do_mysqli_fetch("1",$result)){
+if( $row = pdo_fetch($result)){
     $auth_hash = $row['auth_hash'];
 }
 
 /*
-do_mysqli_query("1","
+pdo_query("1","
     update staff set auth_hash='$secret' 
     where loginid = '$_SESSION[loginid]' and providerid = $_SESSION[pid] ");
 */  

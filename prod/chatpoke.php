@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("config.php");
+require_once("config-pdo.php");
 require_once("sendmail.php");
 require ("SmsInterface.inc");
 
@@ -9,11 +9,11 @@ require ("SmsInterface.inc");
     $email = mysql_safe_string($_POST[email]);
     $name = mysql_safe_string($_POST[name]);
     
-    $result = do_mysqli_query("1","
+    $result = pdo_query("1","
         select providername, replyemail, alias from
         provider where
-        providerid = $providerid
-            ");
+        providerid = ?
+            ",array($providerid));
     if($row = do_mysqli_fetch("1",$result))
     {
         $providername = $row[providername];
