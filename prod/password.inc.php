@@ -399,7 +399,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
 
         //Fingerprint Without IP
         /*
-         *  The purpose of fingerprint is from troll control. If you block one user
+         *  The purpose of fingerprint is for troll control. If you block one user
          *  all users with the same fingerprint get blocked as well.
          *  just a simplistic fingerprint and no IP addresses are collected.
          * 
