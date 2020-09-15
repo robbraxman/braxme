@@ -100,7 +100,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
 
         if( isset($_SESSION['pid'])){
 
-            $pid = rtrim(tvalidator("PURIFY", "$_SESSION[pid]"));
+            $pid = rtrim(tvalidator("ID",$_SESSION[pid]));
             $loginid = rtrim(@tvalidator("PURIFY", "$_SESSION[loginid]"));
             $password = "";
             if($loginid == ''){
@@ -113,8 +113,8 @@ require_once 'authenticator/GoogleAuthenticator.php';
 
             $_SESSION['timeoutcheck']=time();
 
-            $pid = rtrim(tvalidator("PURIFY", "$_POST[pid]"));
-            $_SESSION['pid'] = tvalidator("PURIFY",$_POST['pid']);
+            $pid = rtrim(tvalidator("ID","$_POST[pid]"));
+            $_SESSION['pid'] = tvalidator("ID",$_POST['pid']);
             $_SESSION['logintoken']=session_id();
             $_SESSION['pwd_hash'] = session_id();
             $_SESSION['loginid'] = tvalidator("PURIFY",$_POST['loginid']);

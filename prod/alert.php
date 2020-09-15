@@ -5,7 +5,7 @@ require_once("config-pdo.php");
 
 $replyflag = tvalidator("PURIFY",$_POST['replyflag']);
 $createtime = tvalidator("PURIFY",$_POST['createtime']);
-$providerid = tvalidator("PURIFY",$_POST['providerid']);
+$providerid = tvalidator("ID",$_POST['providerid']);
 
 
 echo "<span class='NoAlert'><img class='buttonicon' src='../img/check-box-128.png' style='height:25px;width:auto;padding-top:0px;padding-bottom:0px;padding-right:10px;'  alt='No Alert' title='No Alert'/></span>";
