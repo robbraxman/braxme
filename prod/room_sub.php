@@ -7,7 +7,7 @@ require_once("room.inc.php");
 require_once("internationalization.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
-    $providerid = @tvalidator("PURIFY",$_SESSION['pid']);
+    $providerid = @tvalidator("ID",$_SESSION['pid']);
     $shareid = @tvalidator("PURIFY",$_POST['shareid']);
     $scrollreference = @tvalidator("PURIFY",$_POST['scrollreference']);
     $selectedroomid = @tvalidator("PURIFY",$_POST['selectedroomid']);

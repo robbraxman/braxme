@@ -10,9 +10,9 @@ require_once("internationalization.php");
 
     
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
-    $providerid = tvalidator("PURIFY",$_SESSION['pid']);
+    $providerid = tvalidator("ID",$_SESSION['pid']);
     
-    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+    $roomid = @tvalidator("ID",$_POST['roomid']);
     $selectedfolder = @tvalidator("PURIFY",$_POST['folder']);
     $selectedfolderid = @tvalidator("PURIFY",intval($_POST['folderid']));
     $roomfolderid = @tvalidator("PURIFY",intval($_POST['roomfolderid']));

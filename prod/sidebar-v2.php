@@ -112,9 +112,9 @@ require("nohost.php");
         }
         
         $startup = @tvalidator("PURIFY",$_POST['startup']);
-        $providerid = tvalidator("PURIFY",$_SESSION['pid']);
+        $providerid = tvalidator("ID",$_SESSION['pid']);
         $devicecode = tvalidator("PURIFY",$_POST['devicecode']);
-        $chatid = tvalidator("PURIFY",$_POST['chatid']);
+        $chatid = tvalidator("ID",$_POST['chatid']);
         $_SESSION['iscore'] = @tvalidator("PURIFY",$_POST['iscore']);
         
         $_SESSION['devicecode'] = $devicecode;

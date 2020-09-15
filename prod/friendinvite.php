@@ -4,10 +4,10 @@ require_once("config-pdo.php");
 require_once("sendmail.php");
 require ("SmsInterface.inc");
 
-    $providerid = tvalidator("PURIFY",$_POST['providerid']);
+    $providerid = tvalidator("ID",$_POST['providerid']);
     $mode = @tvalidator("PURIFY",$_POST['mode']);
     $caller = @tvalidator("PURIFY",$_POST['caller']);
-    $roomid = intval(@tvalidator("PURIFY",$_POST['roomid']));
+    $roomid = intval(@tvalidator("ID",$_POST['roomid']));
     $inviteemail = @tvalidator("PURIFY",$_POST['inviteemail']);
     $invitesms = @tvalidator("PURIFY",$_POST['invitesms']);
     $invitename = @tvalidator("PURIFY",$_POST['invitename']);

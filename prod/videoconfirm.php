@@ -3,7 +3,7 @@ session_start();
 require("validsession.inc.php");
 require_once("config-pdo.php");
 
-$chatid = tvalidator("PURIFY",$_POST['chatid']);
+$chatid = tvalidator("ID",$_POST['chatid']);
 $mode = tvalidator("PURIFY",$_POST['mode']);
 ?>
     <title>Broadcast Choices</title>

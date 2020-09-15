@@ -7,7 +7,7 @@ require_once("roomselect.inc.php");
 
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
-    $providerid = @tvalidator("PURIFY",$_POST['providerid']);
+    $providerid = @tvalidator("ID",$_POST['providerid']);
     $providerid = $_SESSION['pid'];
     $find = @tvalidator("PURIFY",$_POST['find']);
 
@@ -33,7 +33,7 @@ require_once("roomselect.inc.php");
     
     $roomid = '';
     if(isset($_POST['roomid'])){
-        $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+        $roomid = @tvalidator("ID",$_POST['roomid']);
     }
     
     $postid = '';

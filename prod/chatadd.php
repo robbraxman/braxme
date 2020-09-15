@@ -7,7 +7,7 @@ require_once("crypt-pdo.inc.php");
     $providerid = @tvalidator("PURIFY",$_POST['c']);
     $callingid = @tvalidator("PURIFY",$_POST['a']);
     $mode = @tvalidator("PURIFY",$_POST['mode']);
-    $chatid = @tvalidator("PURIFY",$_POST['chatid']);
+    $chatid = @tvalidator("ID",$_POST['chatid']);
     $passkey64 = @tvalidator("PURIFY",$_POST['passkey64']);
     
     $result = pdo_query("1",

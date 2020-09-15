@@ -4,7 +4,7 @@ require_once("config-pdo.php");
 require_once("sendmail.php");
 require ("SmsInterface.inc");
 
-    $providerid = tvalidator("PURIFY",$_POST[providerid]);
+    $providerid = tvalidator("ID",$_POST['providerid']);
     $mode = tvalidator("PURIFY",$_POST[mode]);
     $email = tvalidator("PURIFY",$_POST[email]);
     $name = tvalidator("PURIFY",$_POST[name]);

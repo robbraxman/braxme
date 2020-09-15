@@ -7,12 +7,12 @@ require_once("roommanage.inc.php");
 
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
-    $providerid = tvalidator("PURIFY",$_POST['providerid']);
+    $providerid = tvalidator("ID",$_POST['providerid']);
 
     $mode = @tvalidator("PURIFY",$_POST['mode']);
     $handle = stripslashes(@tvalidator("PURIFY",$_POST['handle']));
     $caller = @tvalidator("PURIFY",$_POST['caller']);
-    $roomid = intval(@tvalidator("PURIFY",$_POST['roomid']));
+    $roomid = intval(@tvalidator("ID",$_POST['roomid']));
     $action = @tvalidator("PURIFY",$_POST['action']);
     $inviteid = @tvalidator("PURIFY",$_POST['inviteid']);
     

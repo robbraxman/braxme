@@ -3,7 +3,7 @@ session_start();
 require("config-pdo.php");
 require_once("internationalization.php");
 $mode = @tvalidator("PURIFY",$_POST['mode']);
-$chatid = @tvalidator("PURIFY",$_POST['chatid']);
+$chatid = @tvalidator("ID",$_POST['chatid']);
 $buttonback = "<img class='selectchatlist tapped icon20' src='../img/arrow-stem-circle-left-128.png' style='padding-top:0;padding-left:10px;padding-bottom:0px;' />";
 $bio = @tvalidator("PURIFY",$_POST['bio']);
 $publish = @tvalidator("PURIFY",$_POST['publish']);

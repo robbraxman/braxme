@@ -4,7 +4,7 @@ require("validsession.inc.php");
 require_once("config-pdo.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
-    $providerid = tvalidator("PURIFY",$_POST['providerid']);
+    $providerid = tvalidator("ID",$_POST['providerid']);
 
     $mode = '';
     if(isset($_POST['mode'])){
@@ -12,7 +12,7 @@ require_once("config-pdo.php");
     }
     $roomid = '';
     if(isset($_POST['roomid'])){
-        $roomid = tvalidator("PURIFY",$_POST['roomid']);
+        $roomid = tvalidator("ID",$_POST['roomid']);
     }
     
     

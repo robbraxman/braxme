@@ -7,13 +7,13 @@ require_once("crypt-pdo.inc.php");
 require_once("notify.inc.php");
 
 
-    $providerid = tvalidator("PURIFY",$_POST['providerid']);
+    $providerid = tvalidator("ID",$_POST['providerid']);
     $mode = @tvalidator("PURIFY",$_POST['mode']);
     $friendproviderid = @tvalidator("PURIFY",$_POST['friendid']);
     $caller = @tvalidator("PURIFY",$_POST['caller']);
     $filter = @tvalidator("PURIFY",$_POST['filter']);
     $friendlevel = @tvalidator("PURIFY",$_POST['friendlevel']);
-    $chatid = @tvalidator("PURIFY",$_POST['chatid']);
+    $chatid = @tvalidator("ID",$_POST['chatid']);
 
     if($providerid == $friendproviderid ){
         exit();

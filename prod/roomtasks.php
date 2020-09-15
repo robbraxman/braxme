@@ -4,10 +4,10 @@ require("validsession.inc.php");
 require_once("config-pdo.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
-    $providerid = tvalidator("PURIFY",$_POST['providerid']);
+    $providerid = tvalidator("ID",$_POST['providerid']);
 
     $mode = @tvalidator("PURIFY",$_POST['mode']);
-    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+    $roomid = @tvalidator("ID",$_POST['roomid']);
     $eventname = @tvalidator("PURIFY",$_POST['eventname']);
     $eventdesc = @tvalidator("PURIFY",$_POST['eventdesc']);
     $eventdate = @tvalidator("PURIFY",$_POST['eventdate']);

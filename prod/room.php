@@ -16,10 +16,10 @@ require_once("roomfunc.inc.php");
     $backgroundcolor = $global_background;
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
-    $providerid = @tvalidator("PURIFY",$_SESSION['pid']);
+    $providerid = @tvalidator("ID",$_SESSION['pid']);
     $caller = @tvalidator("PURIFY",$_POST['caller']);
     $host = @tvalidator("PURIFY",$_POST['host']);
-    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+    $roomid = @tvalidator("ID",$_POST['roomid']);
     
     $mode = @tvalidator("PURIFY",$_POST['mode']);
     $comment = @mysql_safe_string_unstripped($_POST['comment']);

@@ -11,7 +11,7 @@ require_once("internationalization.php");
     //savelastfunc ( "P" );
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
-    $providerid = tvalidator("PURIFY",$_SESSION['pid']);
+    $providerid = tvalidator("ID",$_SESSION['pid']);
     
     
     $showfilename = '';

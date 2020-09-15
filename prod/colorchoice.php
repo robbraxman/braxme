@@ -6,7 +6,7 @@ require_once("internationalization.php");
 $colorscheme = @tvalidator("PURIFY", strtolower($_POST['colorscheme']) );
 $wallpaper = @tvalidator("PURIFY", strtolower($_POST['wallpaper']) );
 $mode = @tvalidator("PURIFY", $_POST['mode'] );
-$providerid = @tvalidator("PURIFY", $_POST['providerid'] );
+$providerid = @tvalidator("ID",$_POST['providerid']);
 
 if($mode == 'S'){
     pdo_query("1","update provider set colorscheme=? where providerid = ? ",array($colorscheme,$providerid));

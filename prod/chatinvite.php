@@ -6,7 +6,7 @@ require_once("crypt-pdo.inc.php");
 require ("notify.inc.php");
 require("chat.inc.php");
 
-    $providerid = @tvalidator("PURIFY",$_POST['providerid']);
+    $providerid = @tvalidator("ID",$_POST['providerid']);
     $recipientid = @tvalidator("PURIFY",$_POST['recipientid']);
     $mode = @tvalidator("PURIFY",$_POST['mode']);
     $email = @tvalidator("PURIFY",$_POST['email']);
@@ -22,7 +22,7 @@ require("chat.inc.php");
     $lifespan = @tvalidator("PURIFY",$_POST['lifespan']);
     
     //For Full Room Chat
-    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+    $roomid = @tvalidator("ID",$_POST['roomid']);
     
     
     $msg = '';

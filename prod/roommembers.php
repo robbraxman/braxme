@@ -6,11 +6,11 @@ require_once("room.inc.php");
 require_once("roommanage.inc.php");
 require_once("internationalization.php");
 
-    $providerid = tvalidator("PURIFY",$_POST['providerid']);
+    $providerid = tvalidator("ID",$_POST['providerid']);
     $mode = @tvalidator("PURIFY",$_POST['mode']);
     $room = @tvalidator("PURIFY",$_POST['room']);
     $friendproviderid = @tvalidator("PURIFY",$_POST['friendproviderid']);
-    $roomid = intval(@tvalidator("PURIFY",$_POST['roomid']));
+    $roomid = intval(@tvalidator("ID",$_POST['roomid']));
     $caller = @tvalidator("PURIFY",$_POST['caller']);
     $filter = @tvalidator("PURIFY",$_POST['filter']);
 

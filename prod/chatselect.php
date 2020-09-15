@@ -8,9 +8,9 @@ require_once("crypt-pdo.inc.php");
     $braxchat = "<img src='../img/braxchat-128.png' style='height:30px;width:auto;padding-top:0;padding-right:2px;padding-bottom:0px;' />";
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
-    $providerid = @tvalidator("PURIFY",$_POST['providerid']);
+    $providerid = @tvalidator("ID",$_POST['providerid']);
     $mode = @tvalidator("PURIFY",$_POST['mode']);
-    $chatid = @tvalidator("PURIFY",$_POST['chatid']);
+    $chatid = @tvalidator("ID",$_POST['chatid']);
     $lifespan =  @tvalidator("PURIFY",$_POST['lifespan']);
     $passkey = @tvalidator("PURIFY",$_POST['passkey']);
     $passkey64 =  @tvalidator("PURIFY",$_POST['passkey64']);

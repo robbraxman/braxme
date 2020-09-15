@@ -39,7 +39,7 @@ require("sidebar.inc.php");
     if(isset($_POST['timezoneoffset']) && @tvalidator("PURIFY",$_POST['timezoneoffset']!='')){
         $_SESSION['timezoneoffset']=tvalidator("PURIFY",$_POST['timezoneoffset']);
     }
-    $chatid =@tvalidator("PURIFY",$_POST['chatid']);
+    $chatid =@tvalidator("ID",$_POST['chatid']);
     
     if(isset($_POST['mobile'])){
         $mobiletype=tvalidator("PURIFY",$_POST['mobile']);

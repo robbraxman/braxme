@@ -5,7 +5,7 @@ require_once("config-pdo.php");
 require_once("password.inc.php");
 
 require_once("htmlhead.inc.php");
-$providerid = @tvalidator("PURIFY",$_SESSION['pid']);
+$providerid = @tvalidator("ID",$_SESSION['pid']);
 
 ?>
 <script>

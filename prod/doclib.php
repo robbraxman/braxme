@@ -13,7 +13,7 @@ require_once("internationalization.php");
 
     
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
-    $providerid = tvalidator("PURIFY",$_SESSION['pid']);
+    $providerid = tvalidator("ID",$_SESSION['pid']);
     
     $selectedfolder = @tvalidator("PURIFY",$_POST['folder']);
     $selectedfolderid = @tvalidator("PURIFY",intval($_POST['folderid']));
@@ -27,7 +27,7 @@ require_once("internationalization.php");
     $mode = @tvalidator("PURIFY",$_POST['mode']);
     $altfilename = @tvalidator("PURIFY",$_POST['altfilename']);
     $filtername = @tvalidator("PURIFY",$_POST['filtername']);
-    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+    $roomid = @tvalidator("ID",$_POST['roomid']);
     $targetemail = @tvalidator("PURIFY",$_POST['targetemail']);
     $passkey64 = @tvalidator("PURIFY",$_POST['passkey64']);
 

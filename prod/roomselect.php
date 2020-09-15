@@ -16,10 +16,10 @@ require("validsession.inc.php");
 
     $time1 = microtime(true);
 
-    $providerid = tvalidator("PURIFY",$_POST['providerid']);
+    $providerid = tvalidator("ID",$_POST['providerid']);
 
     $mode = @tvalidator("PURIFY",$_POST['mode']);
-    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+    $roomid = @tvalidator("ID",$_POST['roomid']);
     $find = stripslashes(htmlentities(@tvalidator("PURIFY",$_POST['find'],ENT_QUOTES)));
     
     SaveLastFunction($providerid,"R", 0);

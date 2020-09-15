@@ -6,9 +6,9 @@ require("aws.php");
 
     
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
-    $providerid = tvalidator("PURIFY",$_SESSION['pid']);
+    $providerid = tvalidator("ID",$_SESSION['pid']);
     
-    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+    $roomid = @tvalidator("ID",$_POST['roomid']);
     $selectedfolder = @tvalidator("PURIFY",$_POST['folder']);
     $filename = @tvalidator("PURIFY",$_POST['filename']);
     $sort = @tvalidator("PURIFY",$_POST['sort']);

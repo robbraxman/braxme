@@ -32,7 +32,7 @@ require_once("sidebar.inc.php");
         
         
         $startup = @tvalidator("PURIFY",$_POST['startup']);
-        $providerid = tvalidator("PURIFY",$_POST['providerid']);
+        $providerid = tvalidator("ID",$_POST['providerid']);
         
         if( TimeOutCheck()){
             $arr = array('notification'=>"T");

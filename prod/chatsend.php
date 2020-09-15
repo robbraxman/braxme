@@ -8,9 +8,9 @@ require_once("broadcast.inc.php");
 include("lib_autolink.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
-    $providerid = tvalidator("PURIFY",$_POST['providerid']);
+    $providerid = tvalidator("ID",$_POST['providerid']);
     $message = @mysql_safe_string_unstripped($_POST['message']);
-    $chatid = tvalidator("PURIFY",$_POST['chatid']);
+    $chatid = tvalidator("ID",$_POST['chatid']);
     $msgid = tvalidator("PURIFY",$_POST['msgid']);
     $img = tvalidator("PURIFY",$_POST['img']);
     $url = tvalidator("PURIFY",$_POST['url']);

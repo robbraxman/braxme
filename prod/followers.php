@@ -3,7 +3,7 @@ session_start();
 require("validsession.inc.php");
 require_once("config-pdo.php");
 
-    $providerid = @tvalidator("PURIFY",$_POST['providerid']);
+    $providerid = @tvalidator("ID",$_POST['providerid']);
     $find = rtrim(@tvalidator("PURIFY",$_POST['find']));
     
     

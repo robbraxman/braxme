@@ -67,7 +67,7 @@ require_once("internationalization.php");
     $industry = @tvalidator("PURIFY",$_POST['industry']);
     $enterprise = @tvalidator("PURIFY",$_POST['enterprise']);
     $avatarurl = @tvalidator("PURIFY",$_POST['avatarurl']);
-    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+    $roomid = @tvalidator("ID",$_POST['roomid']);
     $sponsor = @tvalidator("PURIFY",$_POST['sponsor']);
     $onetimeflag = @tvalidator("PURIFY",$_POST['onetimeflag']);
     $termsofuse = @tvalidator("PURIFY",$_POST['termsofuse']);

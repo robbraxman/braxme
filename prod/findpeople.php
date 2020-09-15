@@ -14,7 +14,7 @@ if(ServerTimeOutCheck()){
 require("validsession.inc.php");
 
 
-    $providerid = @tvalidator("PURIFY",$_POST['providerid']);
+    $providerid = @tvalidator("ID",$_POST['providerid']);
     $mode = @tvalidator("PURIFY",$_POST['mode']);
     $find = rtrim(@tvalidator("PURIFY",$_POST['find']));
     

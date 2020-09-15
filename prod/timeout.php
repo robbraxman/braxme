@@ -8,7 +8,7 @@ if($_SESSION['source']){
     $source = $_SESSION['source'];
 }
 
-///$providerid = tvalidator("PURIFY",$_POST['providerid']);
+///$providerid = tvalidator("ID",$_POST['providerid']);
 //$loginid = tvalidator("PURIFY",$_POST['loginid']);
 
 $date = date(DATE_RFC2822);   

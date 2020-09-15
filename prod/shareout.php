@@ -14,7 +14,7 @@ $shareopentitle = @tvalidator("PURIFY", $_POST['shareopentitle'] );
 $expire = @tvalidator("PURIFY", $_POST['expire'] );
 $platform = @tvalidator("PURIFY", $_POST['platform'] );
 $mode = @tvalidator("PURIFY", $_POST['mode'] );
-$providerid = @tvalidator("PURIFY", $_SESSION['pid'] );
+$providerid = @tvalidator("ID",$_SESSION['pid']);
 
 
 if( $mode == 'P' )

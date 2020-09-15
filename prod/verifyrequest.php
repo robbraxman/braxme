@@ -3,7 +3,7 @@ session_start();
 require_once("config-pdo.php");
 require ("sendmail.php");
 
-$providerid = @tvalidator("PURIFY",$_SESSION['pid']);
+$providerid = @tvalidator("ID",$_SESSION['pid']);
 if($providerid == ''){
     exit();
 }

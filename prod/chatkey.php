@@ -5,9 +5,9 @@ require("config-pdo.php");
 require_once("crypt-pdo.inc.php");
 require_once("internationalization.php");
 
-$providerid = @tvalidator("PURIFY",$_SESSION['pid']);
+$providerid = @tvalidator("ID",$_SESSION['pid']);
 $mode = @tvalidator("PURIFY",$_POST['mode']);
-$chatid = @tvalidator("PURIFY",$_POST['chatid']);
+$chatid = @tvalidator("ID",$_POST['chatid']);
 $passkey64 = @tvalidator("PURIFY",$_POST['passkey64']);
 
 $recipientid = @tvalidator("PURIFY",$_POST['recipientid']);
@@ -16,7 +16,7 @@ $name = @tvalidator("PURIFY",$_POST['name']);
 $email = @tvalidator("PURIFY",$_POST['email']);
 $sms = @tvalidator("PURIFY",$_POST['sms']);
 $techsupport = @tvalidator("PURIFY",$_POST['techsupport']);
-$roomid = @tvalidator("PURIFY",$_POST['roomid']);
+$roomid = @tvalidator("ID",$_POST['roomid']);
 $radiostation = @tvalidator("PURIFY",$_POST['radiostation']);
 
 $buttonback = "<center><span class='mainfont'><img class='selectchatlist tapped icon20' 

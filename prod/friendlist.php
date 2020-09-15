@@ -4,11 +4,11 @@ require("validsession.inc.php");
 require_once("config-pdo.php");
 require_once("room.inc.php");
 
-    $providerid = tvalidator("PURIFY",$_POST['providerid']);
+    $providerid = tvalidator("ID",$_POST['providerid']);
     $mode = @tvalidator("PURIFY",$_POST['mode']);
     $room = @tvalidator("PURIFY",$_POST['room']);
     $friendproviderid = @tvalidator("PURIFY",$_POST['friendproviderid']);
-    $roomid = intval(@tvalidator("PURIFY",$_POST['roomid']));
+    $roomid = intval(@tvalidator("ID",$_POST['roomid']));
     $caller = @tvalidator("PURIFY",$_POST['caller']);
 
     

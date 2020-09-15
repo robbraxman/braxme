@@ -5,7 +5,7 @@ include("internationalization.php");
 
 $language = @tvalidator("PURIFY", strtolower($_POST['language']) );
 $mode = @tvalidator("PURIFY", $_POST['mode'] );
-$providerid = @tvalidator("PURIFY", $_POST['providerid'] );
+$providerid = @tvalidator("ID",$_POST['providerid']);
 
 if($mode == 'S'){
     pdo_query("1","update provider set language='$language' where providerid = $providerid");

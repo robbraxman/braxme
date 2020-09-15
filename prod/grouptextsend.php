@@ -8,11 +8,11 @@ require_once ("room.inc.php");
 require_once ("notify.inc.php");
 include("lib_autolink.php");
 
-    $providerid = $_SESSION['pid'];//@tvalidator("PURIFY",$_POST['providerid']);
+    $providerid = $_SESSION['pid'];//@tvalidator("ID",$_POST['providerid']);
     $smstext = @tvalidator("PURIFY",$_POST['smstext']);
     $text = @tvalidator("PURIFY",$_POST['text']);
     $texttitle = @tvalidator("PURIFY",$_POST['texttitle']);
-    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+    $roomid = @tvalidator("ID",$_POST['roomid']);
     $textgroup = @tvalidator("PURIFY",rtrim($_POST['textgroup']));
     $excludesms = @tvalidator("PURIFY",rtrim($_POST['excludesms']));
     $test = @tvalidator("PURIFY",rtrim($_POST['test']));

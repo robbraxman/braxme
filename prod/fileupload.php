@@ -11,10 +11,10 @@ require("password.inc.php");
 require_once("htmlhead2.inc.php");
 
 
-$providerid = @tvalidator("PURIFY",$_SESSION['pid']);
+$providerid = @tvalidator("ID",$_SESSION['pid']);
 $today = date("m-d",time()+$_SESSION['timezone']*60*60);
 $otherid = @tvalidator("PURIFY",$_POST['otherid']);
-$chatid = @tvalidator("PURIFY",$_POST['chatid']);
+$chatid = @tvalidator("ID",$_POST['chatid']);
 $passkey64 = @tvalidator("PURIFY",$_POST['passkey64']);
 
 ?>

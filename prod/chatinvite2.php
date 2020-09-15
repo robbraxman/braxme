@@ -2,7 +2,7 @@
 session_start();
 require_once("config-pdo.php");
 
-    $providerid = tvalidator("PURIFY",$_POST[providerid]);
+    $providerid = tvalidator("ID",$_POST['providerid']);
     $mode = tvalidator("PURIFY",$_POST[mode]);
     $email = tvalidator("PURIFY",$_POST[email]);
     $name = tvalidator("PURIFY",$_POST[name]);

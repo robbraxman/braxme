@@ -5,7 +5,7 @@ require_once("internationalization.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
     $lasttime = @tvalidator("PURIFY",$_POST['lasttime']);
-    $providerid = @tvalidator("PURIFY",$_POST['providerid']);
+    $providerid = @tvalidator("ID",$_POST['providerid']);
     $handle = @tvalidator("PURIFY",$_SESSION['handle']);
     
     /*

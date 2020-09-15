@@ -3,7 +3,7 @@ session_start();
 require_once("config-pdo.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
-    $providerid = @tvalidator("PURIFY",$_POST['providerid']);
+    $providerid = @tvalidator("ID",$_POST['providerid']);
     $mode = @tvalidator("PURIFY",$_POST['mode']);
     
     if($mode == 'A') //Add Connect Request

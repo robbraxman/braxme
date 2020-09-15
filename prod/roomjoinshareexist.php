@@ -2,7 +2,7 @@
 session_start();
 require_once("config-pdo.php");
 
-$roomid = intval(@tvalidator("PURIFY",$_POST['roomid']));
+$roomid = intval(@tvalidator("ID",$_POST['roomid']));
 $handle = @tvalidator("PURIFY",$_POST['roomhandle']);
 
 $providerid = "";

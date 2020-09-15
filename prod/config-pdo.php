@@ -163,6 +163,16 @@ require('colorscheme.php');
         if(TrapJs($string)){
             return "";
         }
+        if($type == 'ID'){
+        
+            if(val($string)==0){
+                return 0;
+            }
+            if(val($string)> 9999999999){
+                return 0;
+            }
+            
+        }
 
             //$clean_html = $purifier->purify($dirty_html);
             if( isset($string)){

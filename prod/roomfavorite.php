@@ -7,7 +7,7 @@ include("config-pdo.php");
 
 
 $mode = @tvalidator("PURIFY", $_POST['mode'] );
-$providerid = @tvalidator("PURIFY", $_SESSION['pid'] );
+$providerid = @tvalidator("ID",$_SESSION['pid']);
 $roomid = @tvalidator("PURIFY", $_POST['roomid'] );
 
 if($mode == 'A'){

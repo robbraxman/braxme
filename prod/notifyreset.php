@@ -3,7 +3,7 @@ session_start();
 require("validsession.inc.php");
 require_once("config-pdo.php");
 
-$providerid = tvalidator("PURIFY",$_SESSION['pid']);
+$providerid = tvalidator("ID",$_SESSION['pid']);
 
     $result = pdo_query("1",
         "

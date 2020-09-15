@@ -8,10 +8,10 @@ require_once("roommanage.inc.php");
 require_once("internationalization.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
-    $providerid = tvalidator("PURIFY",$_POST['providerid']);
+    $providerid = tvalidator("ID",$_POST['providerid']);
     
     $mode = @tvalidator("PURIFY",$_POST['mode']);
-    $roomid = stripslashes(@tvalidator("PURIFY",$_POST['roomid']));
+    $roomid = stripslashes(@tvalidator("ID",$_POST['roomid']));
     $friendproviderid = @tvalidator("PURIFY",$_POST['friendproviderid']);
     $handle = strtolower(stripslashes(@tvalidator("PURIFY",$_POST['handle'])));
     $newroom = @tvalidator("PURIFY",stripslashes($_POST['newroom']));

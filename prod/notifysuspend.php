@@ -3,8 +3,8 @@ session_start();
 require("validsession.inc.php");
 require_once("config-pdo.php");
 
-$chatid = tvalidator("PURIFY",$_POST['chatid']);
-$providerid = tvalidator("PURIFY",$_POST['providerid']);
+$chatid = tvalidator("ID",$_POST['chatid']);
+$providerid = tvalidator("ID",$_POST['providerid']);
 
 
 $result = pdo_query("1",

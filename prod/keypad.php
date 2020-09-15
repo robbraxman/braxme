@@ -3,7 +3,7 @@ session_start();
 ob_start();
 require_once("config-pdo.php");
 
-$providerid = tvalidator("PURIFY",$_POST['providerid']);
+$providerid = tvalidator("ID",$_POST['providerid']);
 $version = tvalidator("PURIFY",$_POST['version']);
 //$_SESSION['version']=$version;
 if($version == ''){

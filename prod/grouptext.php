@@ -4,7 +4,7 @@ require_once("validsession.inc.php");
 require_once("config-pdo.php");
 
     $mode = @tvalidator("PURIFY",$_POST['mode']);
-    $roomid = tvalidator("PURIFY",$_POST['roomid']);
+    $roomid = tvalidator("ID",$_POST['roomid']);
     if( $mode == '2')
     {
         $fieldselect = "";

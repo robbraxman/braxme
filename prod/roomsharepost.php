@@ -9,7 +9,7 @@ require_once("room.inc.php");
     $providerid = $_SESSION['pid'];
 
     $mode = @tvalidator("PURIFY",$_POST['mode']);
-    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+    $roomid = @tvalidator("ID",$_POST['roomid']);
     $room = htmlentities(stripslashes(@tvalidator("PURIFY",$_POST['room'])),ENT_COMPAT);
     $postid = @tvalidator("PURIFY",$_POST['postid']);
     $articleid = @tvalidator("PURIFY",$_POST['articleid']);

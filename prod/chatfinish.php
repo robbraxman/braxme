@@ -3,8 +3,8 @@ session_start();
 require_once("config-pdo.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
-    $providerid = tvalidator("PURIFY",$_POST['providerid']);
-    $chatid = tvalidator("PURIFY",$_POST['chatid']);
+    $providerid = tvalidator("ID",$_POST['providerid']);
+    $chatid = tvalidator("ID",$_POST['chatid']);
     $archive = tvalidator("PURIFY",$_POST['archive']);
 
     SaveLastFunction($providerid,"", "");

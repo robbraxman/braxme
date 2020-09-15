@@ -11,7 +11,7 @@ require_once("internationalization2.php");
 
 
 $mode = @tvalidator("PURIFY", $_POST['mode'] );
-$providerid = @tvalidator("PURIFY", $_SESSION['pid'] );
+$providerid = @tvalidator("ID",$_SESSION['pid']);
 $caller = @tvalidator("PURIFY", $_SESSION['caller'] );
 
 

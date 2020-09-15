@@ -28,7 +28,7 @@ $time1 = microtime(true);
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
     $lasttime = @tvalidator("PURIFY",$_POST['lasttime']);
-    $providerid = @tvalidator("PURIFY",$_POST['providerid']);
+    $providerid = @tvalidator("ID",$_POST['providerid']);
     $handle = @tvalidator("PURIFY",$_SESSION['handle']);
     $sort = @tvalidator("PURIFY",$_POST['sort']);
     $mode = @tvalidator("PURIFY",$_POST['mode']);

@@ -5,10 +5,10 @@ require_once("config-pdo.php");
 require_once("room.inc.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
-    $providerid = tvalidator("PURIFY",$_POST['providerid']);
+    $providerid = tvalidator("ID",$_POST['providerid']);
 
     $mode = @tvalidator("PURIFY",$_POST['mode']);
-    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+    $roomid = @tvalidator("ID",$_POST['roomid']);
     $url = @tvalidator("PURIFY",$_POST['url']);
     $backgroundcolor = @tvalidator("PURIFY",$_POST['backgroundcolor']);
     $color = @tvalidator("PURIFY",$_POST['color']);

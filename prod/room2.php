@@ -11,7 +11,7 @@ require_once("roomuserview.php");
     $timestart = microtime();
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
-    $providerid = @tvalidator("PURIFY",$_SESSION['pid']);
+    $providerid = @tvalidator("ID",$_SESSION['pid']);
     $host = @tvalidator("PURIFY",$_POST['host']);
     
     $mode = @tvalidator("PURIFY",$_POST['mode']);
@@ -29,7 +29,7 @@ require_once("roomuserview.php");
     $filterterm = rtrim(@tvalidator("PURIFY",$_POST['filterterm']));
     $filterdate = @tvalidator("PURIFY",$_POST['filterdate']);
     $room = @tvalidator("PURIFY",$_POST['room']);
-    $roomid = @tvalidator("PURIFY",$_POST['roomid']);
+    $roomid = @tvalidator("ID",$_POST['roomid']);
     $selectedroomid = @tvalidator("PURIFY",$_POST['selectedroomid']);
     $page = @tvalidator("PURIFY",$_POST['page']);
     $timezone = @tvalidator("PURIFY",$_POST['timezone']);

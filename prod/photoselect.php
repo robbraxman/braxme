@@ -5,7 +5,7 @@ require_once("aws.php");
 require_once("internationalization.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
-    $providerid = tvalidator("PURIFY",$_SESSION['pid']);
+    $providerid = tvalidator("ID",$_SESSION['pid']);
     $target = tvalidator("PURIFY",$_POST['target']);
     $src = @tvalidator("PURIFY",$_POST['src']);
     $passkey64 = @tvalidator("PURIFY",$_POST['passkey64']);

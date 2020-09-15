@@ -3,7 +3,7 @@ session_start();
 include("config-pdo.php");
 
 $uniqid = uniqid('R');
-$providerid = tvalidator("PURIFY", $_POST['providerid'] );
+$providerid = tvalidator("ID",$_POST['providerid']);
 $roomid = tvalidator("PURIFY", $_POST['roomid'] );
 $result = pdo_query("1",
         "insert into shares (providerid, sharetype, shareid, sharelocal, sharetitle, 

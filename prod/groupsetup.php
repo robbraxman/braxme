@@ -8,11 +8,11 @@ require_once("groupmanage.inc.php");
 require_once("internationalization.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
-    $providerid = tvalidator("PURIFY",$_SESSION['pid']);
+    $providerid = tvalidator("ID",$_SESSION['pid']);
     
     $mode = @tvalidator("PURIFY",$_POST['mode']);
     $groupid = stripslashes(@tvalidator("PURIFY",$_POST['groupid']));
-    $roomid = stripslashes(@tvalidator("PURIFY",$_POST['roomid']));
+    $roomid = stripslashes(@tvalidator("ID",$_POST['roomid']));
     $friendproviderid = @tvalidator("PURIFY",$_POST['friendproviderid']);
     $newgroupname = @tvalidator("PURIFY",stripslashes($_POST['groupname']));
     $filter = @tvalidator("PURIFY",stripslashes($_POST['filter']));

@@ -3,7 +3,7 @@ session_start();
 require_once("config-pdo.php");
 require_once("crypt-pdo.inc.php");
 
-$providerid = @tvalidator("PURIFY",$_SESSION['pid']);
+$providerid = @tvalidator("ID",$_SESSION['pid']);
 $mode = @tvalidator("PURIFY",$_POST['mode']);
 $lastfunc = @tvalidator("PURIFY",$_POST['lastfunc']);
 $parm1 = @tvalidator("PURIFY",$_POST['parm1']);
