@@ -132,8 +132,10 @@ function ProcessUpload( $providerid, $encoding, $subject, $upload_hdr, $uploadty
                                                     insert into filelib
                                                     ( providerid, filename, origfilename, folder, filesize, filetype, title, createdate, alias, status )
                                                     values
-                                                    ( $providerid, '$attachmentfilename','$origfilename', '$upload_dir',$fsize, '$filenameext','$subject', now(), '$alias','Y' ) 
-                                                 "
+                                                    ( ?, ?,?, ?,?, ?,?, now(), ?,'Y' ) 
+                                                 ",array(
+                                                    $providerid, $attachmentfilename, $origfilename, $upload_dir, $fsize, $filenameext, $subject, $alias
+                                                 )
                                          );
                                         
                                         

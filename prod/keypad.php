@@ -12,7 +12,7 @@ if($version == ''){
 $apn = tvalidator("PURIFY",$_POST['apn']);
 $gcm = tvalidator("PURIFY",$_POST['gcm']);
 
-pdo_query("1","update provider set pinlock = 'Y' where providerid = $providerid");
+pdo_query("1","update provider set pinlock = 'Y' where providerid = ?",array($providerid));
 $_SESSION['pinlock']='Y';
 
 $start = $rootserver."/".$startupphp."?s=$_SESSION[source]&v=$version&apn=$apn&gcm=$gcm";

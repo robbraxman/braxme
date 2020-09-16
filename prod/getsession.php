@@ -16,8 +16,9 @@ $password = tvalidator("PURIFY","$_REQUEST[password]");
 $result = mysql_query( 
     "SELECT encoding, message, recipientname, recipientsms, recipientemail, patientname, patientmrno ".
     "from msgmain ".
-    "where sessionid='$sessionid' and '$loginid' in  ".
-    "(select loginid from staff where providerid = $providerid and passwordhash = password('$password') ) "
+    "where sessionid=? and ? in  ".
+    "(select loginid from staff where providerid = ? and passwordhash = password(?) ) ",
+        array($sessionid,$loginid,$providerid,$password)
         
 );
 

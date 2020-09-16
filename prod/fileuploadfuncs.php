@@ -133,9 +133,12 @@ require_once("notify.inc.php");
                         ( providerid, filename, origfilename, folder, folderid, 
                           filesize, filetype, title, createdate, alias, encoding, fileencoding, status )
                         values
-                        ( $providerid, '$aws_filename','$duplicatechecked_origfilename', 
-                          '$filefolder',$folderid, $fsize, '$filenameext','$encrypted_title', now(), '$alias','$encoding','$fileencoding','Y' ) 
-                     "
+                        ( ?, ?,?, 
+                          ?,?, ?, ?,?, now(), ?,?,?,'Y' ) 
+                     ",array(
+                         $providerid, $aws_filename, $duplicatechecked_origfilename, 
+                          $filefolder, $folderid, $fsize, $filenameext, $encrypted_title, $alias, $encoding,$fileencoding
+                     )
              );
             putAWSObject("$aws_filename",$physical_filename );
             
@@ -212,9 +215,13 @@ require_once("notify.inc.php");
                         ( providerid, filename, origfilename, folder, folderid, 
                           filesize, filetype, title, createdate, alias, encoding, fileencoding, status )
                         values
-                        ( $providerid, '$attachmentfilename','$encrypted_origfilename', 
-                          '$filefolder',$folderid, $fsize, '$filenameext','$encrypted_subject', now(), '$alias','$encoding','$fileencoding','Y' ) 
-                     "
+                        ( ?, ?,?, 
+                          ?,?,?, ?,?, now(),?,?,?,'Y' ) 
+                     ",array(
+                         $providerid, $attachmentfilename, $encrypted_origfilename, 
+                          $filefolder, $folderid, $fsize, $filenameext, $encrypted_subject, $alias, $encoding, $fileencoding 
+                         
+                     )
              );
                     
 
@@ -306,8 +313,10 @@ require_once("notify.inc.php");
                         insert into photolib
                         ( providerid, album, filename, folder, filesize, filetype, title, createdate, alias, owner, f_filename )
                         values
-                        ( $providerid, '$album', '$attachmentfilename', '$upload_dir',$filesize, '$filenameext','$subject', now(), '$alias', $providerid, '$attachmentfilename_large' ) 
-                     "
+                        ( ?, ?, ?,?,?, ?,?, now(),?, ?, ? ) 
+                     ",array(
+                        $providerid, $album, $attachmentfilename, $upload_dir, $filesize, $filenameext, $subject, $alias, $providerid, $attachmentfilename_large
+                     )
              );
 
             putAWSObject("$attachmentfilename",$upload_dir."medium/".$origfilename);
@@ -353,16 +362,18 @@ require_once("notify.inc.php");
                 "
                     insert into chatmessage ( chatid, providerid, message, msgdate, encoding, status)
                     values
-                    ( $chatid, $providerid, \"$encode\", now(), '$_SESSION[responseencoding]', 'Y' );
-                ");
+                    ( ?, ?, \"$encode\", now(), '$_SESSION[responseencoding]', 'Y' );
+                ",array(
+                     $chatid, $providerid,
+                ));
             $result = pdo_query("1",
                 "
-                update chatmembers set lastmessage=now(), lastread=now() where providerid= $providerid and chatid=$chatid and status='Y'
-                ");
+                update chatmembers set lastmessage=now(), lastread=now() where providerid= ? and chatid=? and status='Y'
+                ",array($providerid,$chatid));
             $result = pdo_query("1",
                 "
-                update chatmaster set lastmessage=now() where chatid=$chatid 
-                ");
+                update chatmaster set lastmessage=now() where chatid=?
+                ",array($chatid));
             
             ChatNotificationRequest($providerid, $chatid, $encodeshort, $_SESSION['responseencoding'],'P');
             SaveLastFunction($providerid,"C", "$chatid");
@@ -385,8 +396,8 @@ require_once("notify.inc.php");
         {
             $caseid = intval($lastfunc->parm1);    
             pdo_query("1","insert into casefiles (caseid, filename, createdate, providerid, downloads, folderid) 
-                values ($caseid, '$filename', now(), $providerid, 0, $casefolderid ) 
-                    ");
+                values (?, ?, now(), ?, 0, ? ) 
+                    ",array($caseid,$filename,$providerid,$casefolderid));
             
             SaveLastFunction($providerid,"X", "$caseid");
             //exit();
@@ -406,9 +417,9 @@ require_once("notify.inc.php");
             $result = pdo_query("1", 
                     "
                         select * from filelib 
-                        where providerid = $providerid and origfilename = '$filename_encrypted' and status='Y'
-                        and folderid = $folderid
-                     "
+                        where providerid = ? and origfilename = ? and status='Y'
+                        and folderid = ?
+                     ",array($providerid,$filename_encrypted,$folderid)
              );
             if(!$row = pdo_fetch($result)){
                 $matched = false;

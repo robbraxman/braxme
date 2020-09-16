@@ -104,10 +104,10 @@ require ("aws.php");
                 notification.payload, notification.payloadsms, notification.encoding
             from notification
             left join provider on notification.providerid = provider.providerid
-            where notification.status='N' and recipientid=$recipientid
+            where notification.status='N' and recipientid=?
             and (provider.active = 'Y' or notification.providerid=0 or notification.providerid=1)
             order by notification.notifytype, notification.roomid, notification.notifydate asc 
-                ");
+                ",array($recipientid));
         $email_throttle_limit = 100;
         $count = 0;
         $party = new stdClass();
@@ -130,9 +130,9 @@ require ("aws.php");
                 //Cancel out other notifications
                 pdo_query("1","update notification set status='Y' 
                         where notifytype in ('RP') and 
-                        roomid = $lastroomid and 
-                        recipientid=$recipientid and status='N' "
-                        );
+                        roomid = ? and 
+                        recipientid=? and status='N' "
+                        ,array($lastroomid,$recipientid));
                 continue;
                  
             }

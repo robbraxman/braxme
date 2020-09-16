@@ -55,8 +55,8 @@ if($inviteid!=''){
             select * from invites 
             left join provider on invites.providerid = provider.providerid
             where
-            inviteid = '$inviteid' 
-            ");
+            inviteid = ? 
+            ",array($inviteid));
     if( $row = pdo_fetch($result)){
     
         $invitename =$row['name'];

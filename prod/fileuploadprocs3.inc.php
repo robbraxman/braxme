@@ -52,7 +52,8 @@ function ProcessUpload( $providerid, $encoding, $subject, $upload_hdr, $uploadty
         $uploadprovider = 0;
         $result = pdo_query("1", 
           "select providerid, providername from provider where
-              (replyemail = '$sendemail' or (handle = '$sendemail' and '$sendemail' != '')) and active='Y' "
+              (replyemail = ? or (handle = ? and ? != '')) and active='Y' ",
+                array($sendmail,$sendmail,$sendmail)
         );
         if( $row = pdo_fetch($result))
         {
@@ -193,8 +194,11 @@ function ProcessUpload( $providerid, $encoding, $subject, $upload_hdr, $uploadty
                                                     insert into filelib
                                                     ( providerid, filename, origfilename, folder, filesize, filetype, title, createdate, alias, fileencoding, encoding, sendtoid, status )
                                                     values
-                                                    ( $providerid, '$attachmentfilename','$encrypted_origfilename', '$filefolder',$fsize, '$filenameext','$encrypted_subject', now(), '$alias','$fileencoding','PLAINTEXT', $uploadprovider,'Y' ) 
-                                                 "
+                                                    ( ?, ?,?, ?,?, ?,?, now(), ?,?,'PLAINTEXT',?,'Y' ) 
+                                                 ",array(
+                                                     $providerid, $attachmentfilename, $encrypted_origfilename, $filefolder,$fsize, $filenameext,$encrypted_subject, $alias,$fileencoding, $uploadprovider 
+                                                     
+                                                 )
                                          );
                                         
                                         //*********AWS ***********//
@@ -219,8 +223,11 @@ function ProcessUpload( $providerid, $encoding, $subject, $upload_hdr, $uploadty
                                                         insert into filelib
                                                         ( providerid, filename, origfilename, folder, filesize, filetype, title, createdate, alias, encoding, sendtoid, status )
                                                         values
-                                                        ( $uploadprovider, '$attachmentfilename2','$encrypted_origfilename', '$filefolder',$fsize, '$filenameext','$encrypted_subject', now(), '$alias2','PLAINTEXT', $uploadprovider, 'Y' ) 
-                                                     "
+                                                        ( ?, ?,?, ?,?, ?,?, now(), ?,'PLAINTEXT', ?, 'Y' ) 
+                                                     ",array(
+                                                        $uploadprovider, $attachmentfilename2, $encrypted_origfilename, $filefolder, $fsize, $filenameext, $encrypted_subject,$alias2, $uploadprovider 
+                                                         
+                                                     )
                                              );
                                             
                                             copyAWSObject($attachmentfilename2, $attachmentfilename);
@@ -241,16 +248,16 @@ function ProcessUpload( $providerid, $encoding, $subject, $upload_hdr, $uploadty
                                                     "
                                                         insert into chatmessage ( chatid, providerid, message, msgdate, encoding, status)
                                                         values
-                                                        ( $chatid, $providerid, \"$encode\", now(), '$_SESSION[responseencoding]', 'Y' );
-                                                    ");
+                                                        ( ?,?, \"$encode\", now(), '$_SESSION[responseencoding]', 'Y' );
+                                                    ",array($chatid,$providerid));
                                                 pdo_query("1",
                                                     "
-                                                    update chatmembers set lastmessage=now(), lastread=now() where providerid= $providerid and chatid=$chatid and status='Y'
-                                                    ");
+                                                    update chatmembers set lastmessage=now(), lastread=now() where providerid= ? and chatid=? and status='Y'
+                                                    ",array($providerid,$chatid));
                                                 pdo_query("1",
                                                     "
-                                                    update chatmaster set lastmessage=now() where  chatid=$chatid and status='Y'
-                                                    ");
+                                                    update chatmaster set lastmessage=now() where  chatid=? and status='Y'
+                                                    ",array($chatid));
                                             }
                                             
                                         }

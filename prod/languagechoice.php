@@ -8,11 +8,11 @@ $mode = @tvalidator("PURIFY", $_POST['mode'] );
 $providerid = @tvalidator("ID",$_POST['providerid']);
 
 if($mode == 'S'){
-    pdo_query("1","update provider set language='$language' where providerid = $providerid");
+    pdo_query("1","update provider set language=? where providerid = ? ",array($language,$providerid));
     exit();
 }
 if($mode == ''){
-    $result = pdo_query("1","select language from  provider  where providerid = $providerid");
+    $result = pdo_query("1","select language from  provider  where providerid = ? ",array($providerid));
     if($row = pdo_fetch($result)){
         $language = $row['language'];
         if($language == ''){

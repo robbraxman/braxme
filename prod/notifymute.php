@@ -24,12 +24,12 @@ require("sidebar.inc.php");
     }
     
     $result = pdo_query("1",
-            "select id from notifymute where ((id=$chatid and idtype='C') or (id=$roomid and idtype='R') ) and providerid = $providerid "
-            );
+            "select id from notifymute where ((id=? and idtype='C') or (id=? and idtype='R') ) and providerid = ? "
+            ,array($chatid,$roomid,$providerid));
     if($row = pdo_fetch($result) ){
         $result = pdo_query("1",
-            "delete from notifymute where ((id=$chatid and idtype='C') or (id=$roomid and idtype='R') ) and providerid = $providerid "
-            );
+            "delete from notifymute where ((id=? and idtype='C') or (id=? and idtype='R') ) and providerid = ? "
+            ,array($chatid,$roomid,$providerid));
     } else {
         
         $id = 0;
@@ -45,8 +45,8 @@ require("sidebar.inc.php");
         if($id > 0){
             
             $result = pdo_query("1",
-                "insert into  notifymute (id, idtype, providerid ) values ($id, '$idtype', $providerid )"
-                );
+                "insert into  notifymute (id, idtype, providerid ) values (?,?,? )"
+                ,array($id,$idtype,$providerid));
             echo 'Y';
             exit();
         }

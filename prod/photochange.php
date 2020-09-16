@@ -15,9 +15,9 @@ require_once("config-pdo.php");
     {
         $result = pdo_query("1",
             "
-                update photolib set title='$value', comment='$value2', album='$value3' 
-                where providerid= $providerid and filename='$filename'
-            ");
+                update photolib set title=?, comment=?, album=? 
+                where providerid= ? and filename=?
+            ",array($value,$value2,$value3,$providerid,$filename));
     }
     
 ?>

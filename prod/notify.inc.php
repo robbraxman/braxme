@@ -20,7 +20,7 @@ function CSVText(
         pdo_query("1"," 
             insert into csvtext (ownerid, message, sms, uploaded, status, error )
             values (?, ?,?,now(), 'N','' )
-                ",$senderid, $messagesql,$phone);
+                ",array($senderid, $messagesql,$phone));
         
 }
 function BatchSendText()

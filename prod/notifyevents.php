@@ -74,8 +74,8 @@ function NotifyRoomMembers( $roomid, $roomname, $eventdate, $eventname, $notific
         $result = pdo_query("1",
         "
             select providerid
-            from statusroom where roomid = $roomid 
-        ");
+            from statusroom where roomid = ? 
+        ",array($roomid));
     if($eventdate!='')
     {
         $encodedpayload = base64_encode("Event Reminder - $roomname: $eventname $eventdate");

@@ -17,14 +17,14 @@ require_once("room.inc.php");
     {
         //Delete from statusroom if owner is inactive
         $result = pdo_query("1","
-            delete from statusroom where roomid=$roomid and owner=$providerid and
+            delete from statusroom where roomid=? and owner=? and
             providerid not in (select providerid from provider where
             statusroom.providerid = provider.providerid and active='Y')
-            ");
+            ",array($roomid,$providerid));
 
         $result = pdo_query("1","
-            select count(*) as total from statusroom where roomid=$roomid  
-            ");
+            select count(*) as total from statusroom where roomid=?  
+            ",$roomid);
         $row = pdo_fetch($result);
         $membercount = $row['total'];
         
@@ -32,34 +32,34 @@ require_once("room.inc.php");
         {
             //delete user but not owner
             pdo_query("1","
-                delete from statusroom where roomid=$roomid and 
-                providerid = $friendproviderid and providerid!=owner
+                delete from statusroom where roomid=? and 
+                providerid = ? and providerid!=owner
                 and 
-                ( owner = $providerid 
+                ( owner = ? 
                   or
                   roomid in
-                    (select roomid from roommoderator r2 where r2.roomid=$roomid and r2.providerid =$providerid)
+                    (select roomid from roommoderator r2 where r2.roomid=? and r2.providerid =? )
                 )
-                ");
+                ",array($roomid,$friendproviderid,$providerid,$roomid,$providerid));
         }
         else
         {
             //delete user even of owner
             pdo_query("1","
-                delete from statusroom where roomid=$roomid and 
-                providerid = $friendproviderid 
+                delete from statusroom where roomid=? and 
+                providerid = ? 
                 and 
-                ( owner = $providerid 
+                ( owner = ? 
                   or
                   roomid in
-                    (select roomid from roommoderator r2 where roomid=$roomid and providerid =$providerid)
+                    (select roomid from roommoderator r2 where roomid=? and providerid =? )
                 )
-                ");
+                ",array($roomid,$friendproviderid,$providerid,$roomid, $providerid));
         }
         
         $result = pdo_query("1","
-            select count(*) as total from statusroom where roomid=$roomid  
-            ");
+            select count(*) as total from statusroom where roomid=?
+            ",array($roomid));
         $row = pdo_fetch($result);
         $membercount = $row['total'];
         
@@ -67,50 +67,50 @@ require_once("room.inc.php");
         if( $membercount == 0) //no more users so delete room and its contents
         {
             pdo_query("1","
-                delete from statusroom where roomid=$roomid and owner=$providerid 
-                ");
+                delete from statusroom where roomid=? and owner=? 
+                ",array($roomid,$providerid));
             pdo_query("1","
-                delete from roominfo where roomid=$roomid  
-                ");
+                delete from roominfo where roomid=?  
+                ",array($roomid));
             pdo_query("1","
-                delete from roomhandle where roomid=$roomid  
-                ");
+                delete from roomhandle where roomid=?  
+                ",$roomid);
             $result = pdo_query("1","
-                delete from statuspost where roomid=$roomid and providerid=$providerid 
-                ");
+                delete from statuspost where roomid=? and providerid=? 
+                ",array($roomid,$providerid));
             $result = pdo_query("1","
-                delete from statusreads where roomid=$roomid and providerid=$providerid 
-                ");
+                delete from statusreads where roomid=? and providerid=? 
+                ",array($roomid,$providerid));
             $result = pdo_query("1","
-                delete from credentials where roomid=$roomid
-                ");
+                delete from credentials where roomid=?
+                ",array($roomid));
             $result = pdo_query("1","
-                delete from credentialrequest where roomid=$roomid 
-                ");
+                delete from credentialrequest where roomid=?
+                ",array($roomid));
             $result = pdo_query("1","
-                delete from events where roomid=$roomid 
-                ");
+                delete from events where roomid=?
+                ",array($roomid));
             $result = pdo_query("1","
-                delete from tasks where roomid=$roomid
-                ");
+                delete from tasks where roomid=?
+                ",array($roomid));
             $result = pdo_query("1","
-                delete from tasksaction where roomid=$roomid 
-                ");
+                delete from tasksaction where roomid=? 
+                ",array($roomid));
             $result = pdo_query("1","
-                delete from roomwebstyle where roomid=$roomid 
-                ");
+                delete from roomwebstyle where roomid=? 
+                ",array($roomid));
             $result = pdo_query("1","
-                delete from roomfiles where roomid=$roomid 
-                ");
+                delete from roomfiles where roomid=?
+                ",array($roomid));
             $result = pdo_query("1","
-                delete from roomfilefolders where roomid=$roomid 
-                ");
+                delete from roomfilefolders where roomid=?
+                ",array($roomid));
             $result = pdo_query("1","
-                delete from roominvite where roomid=$roomid 
-                ");
+                delete from roominvite where roomid=?
+                ",array($roomid));
             $result = pdo_query("1","
-                delete from roommoderator where roomid=$roomid 
-                ");
+                delete from roommoderator where roomid=? 
+                ",array($roomid));
             $roomid = 0;
             $friendproviderid = "";
         }
@@ -122,14 +122,14 @@ require_once("room.inc.php");
     {
         
             pdo_query("1","
-                delete from statusroom where roomid='$roomid' and owner!=$providerid and
-                providerid = $friendproviderid and roomid not in (select roomid from publicrooms)
-                ");
+                delete from statusroom where roomid=? and owner!=? and
+                providerid = ? and roomid not in (select roomid from publicrooms)
+                ",array($roomid,$providerid,$friendproviderid));
         
             pdo_query("1","
-                update invites set status='N' where roomid='$roomid' and email in (select replyemail from 
-                provider where providerid = $providerid )
-                ");
+                update invites set status='N' where roomid=? and email in (select replyemail from 
+                provider where providerid = ? )
+                ",array($roomid,$providerid));
             $roomid = "All";
             $friendproviderid = "";
     }
@@ -191,11 +191,11 @@ require_once("room.inc.php");
             (select roomdesc from roominfo where roominfo.roomid = statusroom.roomid ) as roomdesc
             from statusroom 
             left join provider on statusroom.providerid = provider.providerid
-            where statusroom.owner = $providerid
-            and (roomid = $roomid  or '$roomid' = '0' )
+            where statusroom.owner = ?
+            and (roomid = ?  or ? = '0' )
             and provider.active = 'Y' and roomid not in (select roomid from publicrooms )
              order by  roomid, name asc
-        ");
+        ",array($providerid,$roomid,$roomid));
     
     $lastroom = "";
     echo "<div style='padding:0;margin-auto;text-align:center'>";
@@ -314,7 +314,7 @@ require_once("room.inc.php");
                 and provider.active = 'Y'
             
             order by  statusroom.roomid asc, provider.providername asc
-        ");
+        ",array($providerid,$providerid,$roomid,$roomid));
 
     //echo "<table  class='' style='background-color:transparent;border:0;border-collapse:collapse;margin:auto;width:250px'>";
     echo "<div style='padding:0;margin-auto;text-align:center'>";

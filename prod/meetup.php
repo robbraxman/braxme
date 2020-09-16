@@ -16,15 +16,15 @@ require_once("config-pdo.php");
         
         pdo_query("1"," 
             delete from appmeetup where replyemail = '$_SESSION[replyemail]' and
-                appname = '$appname' and appidentity='$appidentity'
-                ");
+                appname = ? and appidentity=?
+                ",array($appname,$appidentity));
         
         pdo_query("1"," 
             insert ignore into appmeetup 
             ( replyemail, appname, appidentity, greeting, status, reqdate )
             values
-            ( '$_SESSION[replyemail]', '$appname', '$appidentity', '$greeting', 'Y', now() )
-                ");
+            ( '$_SESSION[replyemail]', ?, ?, ?, 'Y', now() )
+                ",array($appname,$appidentity,$greeting));
             //$arr = array('list'=> "Test1"
                         //);
             //echo json_encode($arr);
@@ -40,15 +40,15 @@ require_once("config-pdo.php");
         
         pdo_query("1"," 
             delete from appidentity where replyemail = '$_SESSION[replyemail]' and
-                appname = '$appname' and appidentity='$appidentity'
-                ");
+                appname = ? and appidentity=?
+                ",array($appname,$appidentity));
         
         $result = pdo_query("1"," 
             insert into appidentity 
             ( replyemail, appname, appidentity, status )
             values
-            ( '$_SESSION[replyemail]', '$appname', '$appidentity', 'Y' )
-                ");
+            ( '$_SESSION[replyemail]', ?, ?, 'Y' )
+                ",array($appname,$appidentity));
         if(!$result)
         {
             //Someone stole identity!
@@ -93,8 +93,8 @@ require_once("config-pdo.php");
         
         pdo_query("1"," 
             delete from appidentity where replyemail = '$_SESSION[replyemail]' and
-                appname = '$appname' and appidentity='$appidentity'
-                ");
+                appname = ? and appidentity=?
+                ",array($appname,$appidentity));
         
     }
     if($mode == 'D1') //Delete Connect Request
@@ -104,8 +104,8 @@ require_once("config-pdo.php");
         
         pdo_query("1"," 
             delete from appmeetup where replyemail = '$_SESSION[replyemail]' and
-                appname = '$appname' and appidentity='$appidentity'
-                ");
+                appname = ? and appidentity=?
+                ",array($appname,$appidentity));
         
     }
     if($mode == 'C') //Connect listed Request
@@ -114,15 +114,15 @@ require_once("config-pdo.php");
         $id = @tvalidator("PURIFY",$_POST['id']);
         
         pdo_query("1"," 
-            update appmeetup set status='N' where id = $id
-                ");
+            update appmeetup set status='N' where id = ?
+                ",$id);
         
         //Add to My Contact List
         $result = pdo_query("1"," 
             select providerid, providername, alias, handle, replyemail from provider where replyemail =
-            (select replyemail from appmeetup where id =$id )
+            (select replyemail from appmeetup where id =?)
             and active = 'Y'
-                ");
+                ",array($id));
         if($row = pdo_fetch($result)){
             $targetid = $row['providerid'];
             $name = $row['providername'];
@@ -141,16 +141,16 @@ require_once("config-pdo.php");
             {
                 pdo_query("1","
                     insert ignore into contacts (providerid, contactname, email, sms, handle, friend, imapbox, source,createdate )
-                    values ( $providerid, '$name', '$email', '', '$handle', 'Y', null, 'Z', now() )
-                        ");
+                    values ( ?,?, ?, '', ?, 'Y', null, 'Z', now() )
+                        ",array($providerid,$name,$email,$handle));
             }
         }
         
         //Add Me to their contact list
         $result = pdo_query("1"," 
             select providername, alias, handle, replyemail from
-            provider where providerid = $providerid
-                ");
+            provider where providerid = ?
+                ",array($providerid));
         if($row = pdo_fetch($result))
         {
             $name = $row['providername'];
@@ -169,8 +169,8 @@ require_once("config-pdo.php");
             {
                 pdo_query("1","
                     insert ignore into contacts (providerid, contactname, email, sms, handle, friend, imapbox, source )
-                    values ( $targetid, '$name', '$email', '', '$handle', 'Y', null, 'Z' )
-                        ");
+                    values ( ?, ?, ?, '', ?, 'Y', null, 'Z' )
+                        ",array($targetid,$name,$email,$handle));
             }
         }
         $mode = '';
@@ -183,8 +183,8 @@ require_once("config-pdo.php");
         $id = @tvalidator("PURIFY",$_POST['id']);
         
         pdo_query("1"," 
-            update appmeetup set status='X' where id = $id
-                ");
+            update appmeetup set status='X' where id = ?
+                ",array($id));
         $mode = '';
         //exit();
     }
@@ -318,10 +318,10 @@ require_once("config-pdo.php");
 			and appidentity.appname = appmeetup.appname
         left join provider on provider.replyemail = appmeetup.replyemail and provider.active = 'Y'
         where appidentity.replyemail = (select replyemail from provider 
-        where providerid = $providerid and active='Y')
+        where providerid = ? and active='Y')
         and appmeetup.status = 'Y'
         order by providername
-        "
+        ",array($providerid)
     );
 
     
@@ -546,11 +546,11 @@ require_once("config-pdo.php");
 			and appidentity.appname = appmeetup.appname
         left join provider on provider.replyemail = appmeetup.replyemail and provider.active = 'Y'
         where appidentity.replyemail = (select replyemail from provider 
-        where providerid = $providerid and active='Y' and providername!='' )
+        where providerid = ? and active='Y' and providername!='' )
         and datediff(curdate(), appmeetup.reqdate) < 30
         and appmeetup.status in ('N','X')
         order by appmeetup.reqdate desc
-            ");
+            ",array($providerid));
     $count = 0;
     while($row = pdo_fetch($result)){
         if($count == 0){

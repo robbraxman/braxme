@@ -60,8 +60,8 @@ require_once("internationalization.php");
     
         if( $selectedalbum[0]!='*' && $selectedalbum!=''){
         
-            $result = pdo_query("1","select distinct album from photolib where album = '$selectedalbumSql' 
-                and providerid=$providerid ");
+            $result = pdo_query("1","select distinct album from photolib where album =? 
+                and providerid=? ",array($selectedalbumSql,$providerid));
             if($row = pdo_fetch($result)){
             
                 $selectedalbum = $row['album'];
@@ -70,8 +70,9 @@ require_once("internationalization.php");
             } else {
             
                 //check for closest name to album
-                $result = pdo_query("1","select distinct album from photolib where album like '$selectedalbumSql%' 
-                    and providerid=$providerid order by album desc limit 1 ");
+                $result = pdo_query("1","select distinct album from photolib where album like ? 
+                    and providerid=? order by album desc limit 1 ",array($selectedalbumSql."%",$providerid));
+                
                 if($row = pdo_fetch($result)){
                 
                     $selectedalbum = $row['album'];
@@ -93,9 +94,9 @@ require_once("internationalization.php");
         ( album like '* Public%' or album = '* Artist Submission')  
         ");
     pdo_query("1","
-        update photolib set public='N', providerid=$providerid where album not like '* Public%'        
-        and owner = $providerid
-        ");
+        update photolib set public='N', providerid=? where album not like '* Public%'        
+        and owner = ?
+        ",array($providerid,$providerid));
     
     
     //*************************************************************
@@ -120,10 +121,10 @@ require_once("internationalization.php");
         $result = pdo_query("1",
             "
                 delete from photolib 
-                where owner= $providerid and album='$selectedalbum' 
+                where owner= ? and album=? 
                 and public='N'
                 
-            ");
+            ",array($providerid,$selectedalbum));
         $selectedalbum = "";
         $selectedalbumHtml = "";
         $selectedalbumSql = "";
@@ -138,13 +139,13 @@ require_once("internationalization.php");
         $result = pdo_query("1",
             "
                 update photolib set hide='Y' 
-                where owner= $providerid and public='N'
+                where owner= ? and public='N'
                 and ( 
-                (album='$selectedalbum' and album!='zuck' and hide is null)
+                (album=? and album!='zuck' and hide is null)
                     or hide = 'N'
                 )
                 
-            ");
+            ",array($providerid,$selectedalbum));
         $selectedalbum = "";
         $selectedalbumHtml = "";
         $selectedalbumSql = "";
@@ -159,10 +160,10 @@ require_once("internationalization.php");
         $result = pdo_query("1",
             "
                 update photolib set hide='N' 
-                where owner= $providerid  
+                where owner= ?  
                 and public='N' and (hide='Y')
                 
-            ");
+            ",array($provider));
         $selectedalbum = "";
         $selectedalbumHtml = "";
         $selectedalbumSql = "";
@@ -184,13 +185,13 @@ require_once("internationalization.php");
         }
         $result = pdo_query("1",
         "
-            delete from photolibshare where providerid = $providerid and album = '$selectedalbumSql'
-        ");
+            delete from photolibshare where providerid = ? and album = ?
+        ",array($providerid,$selectedalbumSql));
         
         $result = pdo_query("1",
         "
-            insert into photolibshare (providerid, album, sharetype ) values ($providerid, '$selectedalbumSql','$sharetype')
-        ");
+            insert into photolibshare (providerid, album, sharetype ) values (?, ?,?)
+        ",array($providerid,$selectedalbumSql,$sharetype));
             
        $save ='';         
         $selectedalbum = DeconvertHTML(tvalidator("PURIFY",$_POST['origalbum']));
@@ -210,8 +211,8 @@ require_once("internationalization.php");
         
         $result = pdo_query("1",
         "
-            delete from photolibshare where providerid = $providerid and album = '$selectedalbumSql'
-        ");
+            delete from photolibshare where providerid = ? and album = ?
+        ",array($providerid,$selectedalbumSql));
             
        $save ='';         
         $selectedalbum = DeconvertHTML(tvalidator("PURIFY",$_POST['origalbum']));
@@ -235,9 +236,9 @@ require_once("internationalization.php");
         }
             $result = pdo_query("1",
             "
-                update photolib set title='$title', comment='$comment', album='$selectedalbumSql'
-                where owner= $providerid and filename='$showfilename'
-            ");
+                update photolib set title=?, comment=?, album=?
+                where owner= ? and filename=?
+            ",array($title,$comment,$selectedalbumSql,$providerid,$showfilename));
             
        $save ='';         
         $selectedalbum = DeconvertHTML(tvalidator("PURIFY",$_POST['origalbum']));
@@ -253,8 +254,8 @@ require_once("internationalization.php");
         
         $result = pdo_query("1",
         "
-            select aws_url from photolib where filename ='$showfilename' 
-        ");
+            select aws_url from photolib where filename =? 
+        ",array($showfilename));
         $row = pdo_fetch($result);
         $avatarurl = $row['aws_url'];
         
@@ -264,9 +265,9 @@ require_once("internationalization.php");
         }
         
         pdo_query("1","
-            update provider set avatarurl = '$avatarurl', lastactive=now() where
-                providerid = $providerid
-            ");
+            update provider set avatarurl = ?, lastactive=now() where
+                providerid = ?
+            ",array($avatarurl,$providerid));
        $showfilename = "";
         SaveLastFunction($providerid,"", "");
        
@@ -285,19 +286,19 @@ require_once("internationalization.php");
             }
 
             pdo_query("1", "
-                update photolib set album='$newalbumSql', public='$newpublic' where album='$selectedalbumSql' and public='N'
-                and providerid=$providerid
-                ");
+                update photolib set album=?, public=? where album=? and public='N'
+                and providerid=?
+                ",array($newalbumSql,$newpublic,$selectedalbumSql,$providerid));
 
             pdo_query("1", "
-                update sharecollection set album='$newalbumSql' where album='$selectedalbumSql'
-                and providerid=$providerid
-                ");
+                update sharecollection set album=? where album=?
+                and providerid=?
+                ",array($newalbumSql,$selectedalbumSql,$providerid));
 
             pdo_query("1", "
-                update shares set sharelocal='$newalbumSql' where sharelocal='$selectedalbumSql'
-                and providerid=$providerid and sharetype='A'
-                ");
+                update shares set sharelocal=? where sharelocal=?
+                and providerid=? and sharetype='A'
+                ",array($newalbumSql,$selectedalbumSql,$providerid));
         }
        $showfilename = "";
         $selectedalbum = $newalbum;
@@ -311,22 +312,22 @@ require_once("internationalization.php");
     
     
     $result2 =pdo_query("1","
-        select sum(filesize) as filesize, count(*) as count from photolib where owner = $providerid and public!='Y'
-        ");
+        select sum(filesize) as filesize, count(*) as count from photolib where owner = ? and public!='Y'
+        ",array($providerid));
     $row2 = pdo_fetch($result);
     $totalsize = round(($row2['filesize']/1000000),1);
     $totalAll = $row2['count'];
     
     $result2 =pdo_query("1","
         select count(*) as count, sum(filesize) as filesize from photolib where
-        ( providerid = $providerid
-            and (album='$selectedalbum' or 'All' ='$selectedalbum')
+        ( providerid = ?
+            and (album=? or 'All' =? )
         )
         or
         (
-           public = 'Y' and album='$selectedalbum'
+           public = 'Y' and album=?
         )
-        ");
+        ",array($providerid,$selectedalbum,$selectedalbum));
          
     
     $row2 = pdo_fetch($result);
@@ -341,7 +342,7 @@ require_once("internationalization.php");
             select filename from photolib where
                 providerid = $providerid
                 and album='$selectedalbum'  
-                    ");
+                    ",array($providerid,$selectedalbum));
         if($row2 = pdo_fetch($result))
             $firstphoto = $row2['filename'];
                 
@@ -386,21 +387,21 @@ require_once("internationalization.php");
         if($_SESSION['superadmin']!='Y'){
             $result = pdo_query("1",
                 "   delete from photolib where 
-                    (owner =$providerid )
-                    and filename ='$deletefilename' 
-                ");
+                    (owner =? )
+                    and filename =? 
+                ",array($providerid,$deletefilename));
         } else {
             $result = pdo_query("1",
                 "   delete from photolib where 
-                    filename ='$deletefilename' 
-                ");
+                    filename =? 
+                ",array($deletefilename));
             
         }
         //unlink("$filepath/$installfolder/$folder$deletefilename");
         $result = pdo_query("1",
         "
-            select filename from photolib where filename ='$deletefilename' 
-        ");
+            select filename from photolib where filename =? 
+        ",array($deletefilename));
         if(!$row = pdo_fetch($result)){
         
             deleteAWSObject($deletefilename);
@@ -417,8 +418,8 @@ require_once("internationalization.php");
             select folder, title, filename, comment, album, alias, aws_url, public, owner,
             datediff(aws_expire,now()) as expire, 
             (select providername from provider where provider.providerid = photolib.owner) as ownername
-            from photolib where filename ='$showfilename' 
-        ");
+            from photolib where filename =? 
+        ",array($showfilename));
         $row = pdo_fetch($result);
         $folder = $row['folder'];
         $title = htmlentities($row['title'], ENT_QUOTES);
@@ -470,10 +471,10 @@ require_once("internationalization.php");
                 $alias = uniqid("T4AZ", true);
 
                 pdo_query("1","
-                    update photolib set filename='$newfilename', aws_url='$new_awsurl',
-                        alias='$alias'
-                        where providerid=$providerid and filename='$filename'
-                        ");
+                    update photolib set filename=?, aws_url=?,
+                        alias=?
+                        where providerid=? and filename=?
+                        ",array($newfilename,$new_awsul,$alias,$providerid,$filename));
                 
                 unlink("$rotatefolder$filename");
 
@@ -836,7 +837,7 @@ require_once("internationalization.php");
               $selectedalbum == '* Artist Submission'
           )
         {
-            $result2 = pdo_query("1","select body from profile where providerid=$owner");
+            $result2 = pdo_query("1","select body from profile where providerid=? ",array($owner));
             if( $row2 = pdo_fetch($result)){
                $profile = base64_decode($row2['body']);
             }
@@ -1058,11 +1059,11 @@ require_once("internationalization.php");
             aws_url, aws_expire, datediff(aws_expire,now()) as expire,
             public
             from photolib where 
-            ( (providerid = $providerid or public='Y')
+            ( (providerid = ? or public='Y')
               and 
-                (   album = '$selectedalbumSql' 
+                (   album = ? 
                     or 
-                    ('$selectedalbumSql' = '' 
+                    (? = '' 
                       and public!='Y' 
                       and 
                          ( 
@@ -1081,7 +1082,7 @@ require_once("internationalization.php");
             
                 
             order by createdate desc limit $pagestart, $max
-        ");
+        ",array($providerid,$selectedalbumSql,$selectedalbumSql));
     
     
     $col=1;
@@ -1102,9 +1103,9 @@ require_once("internationalization.php");
         
             $filename = getAWSObjectUrl($row['filename']);
             pdo_query("1","
-                update photolib set aws_url = '$filename', aws_expire='2036-01-01' where providerid=$providerid and
+                update photolib set aws_url = ?, aws_expire='2036-01-01' where providerid=? and
                     filename = '$row[filename]'
-                ");
+                ",array($filename,$providerid));
             // 'expires'          => gmdate(DATE_RFC2822, strtotime('1 January 1980'))        
         }
         
@@ -1399,9 +1400,9 @@ function RotateImage( $rotateangle, $filename, $folder)
 
 
     pdo_query("1","
-        update photolib set filename='$newfilename', aws_url='$new_awsurl' 
-            where providerid=$providerid and filename='$filename'
-            ");
+        update photolib set filename=?, aws_url=? 
+            where providerid=? and filename=?
+            ",array($newfilename,$new_awsurl,$providerid,$filename));
 
     unlink("$folder$filename");
 
@@ -1439,8 +1440,8 @@ function CreateAlbumList( $providerid, $selectedalbum, $selectedalbumHtml, $page
     
     $result = pdo_query("1","
         select sharetype from photolibshare where
-              providerid=$providerid and  album='$selectedalbumSql' 
-        ");
+              providerid=? and  album=? 
+        ",array($providerid,$selectedalbumSql));
 
         $icon1 = "";
         $icon2 = "";
@@ -1575,10 +1576,10 @@ function CreateAlbumList( $providerid, $selectedalbum, $selectedalbumHtml, $page
             from photolib 
             left join photolibshare on photolibshare.providerid = photolib.providerid and photolibshare.album = photolib.album
             where
-            ( ( photolib.providerid=$providerid and photolib.album!='' and photolib.album!='$selectedalbumSql' ) or photolib.public='Y')
-            $albumexclude and (hide is null or hide='N')
+            ( ( photolib.providerid=? and photolib.album!='' and photolib.album!=? ) or photolib.public='Y')
+            ? and (hide is null or hide='N')
             order by photolib.public asc, photolib.album asc
-        ");
+        ",$providerid,$selectedalbumSql,$albumexclude);
     
     
     $color = $global_titlebar_alt_color;//'#a1a1a4';
@@ -1774,10 +1775,10 @@ function AlbumMenu($providerid, $selectedalbum, $page)
      $albummenu .=      "<li id='photoalbumitem' data-album='$selectedalbumHtml'>$selectedalbum</li>";
      
     $result2 = pdo_query("1","
-        select distinct album from photolib where ( providerid = $providerid )
+        select distinct album from photolib where ( providerid = ? )
             and album!='' and album!='All' and 
                 album!='* Artist Submission' order by album asc
-        ");
+        ",array($providerid));
     
     $albumselect .= "
             <option value='(New)' selected='selected'>(New)</option>";
@@ -1803,15 +1804,15 @@ function AlbumMenu($providerid, $selectedalbum, $page)
         $result2 = pdo_query("1","
             select distinct album from photolib where 
                 public='Y'
-                  and album!='' and album!='All' and album!='$selectedalbumSql'
+                  and album!='' and album!='All' and album!=?
                  order by album asc
-            ");
+            ",array($selectedalbumSql));
     } else {
             
         $result2 = pdo_query("1","
             select distinct album from photolib where  public='Y' and album not like '* %'
-                and album!='' and album!='All' and album!='$selectedalbumSql' and album!='* Artist Submission' order by album asc
-            ");
+                and album!='' and album!='All' and album!=? and album!='* Artist Submission' order by album asc
+            ",array($selectedalbumSql));
     }
         
     $albumselect .= "

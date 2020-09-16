@@ -150,11 +150,7 @@ if($_SESSION['enterprise']=='Y'){
                              style=";top:10px;cursor:pointer;"  title="Main Menu" />
                     </div>
                     <div class='camera formobile tapped menubutton' 
-<<<<<<< HEAD
                          style='display:inline;float:left;cursor:pointer;padding-right:5px;padding-left:5px;padding-bottom:0px;margin-right:10px' data-chatid=''>
-=======
-                         style='display:inline;float:right;cursor:pointer;padding-right:5px;padding-left:5px;padding-bottom:0px;margin-right:10px' data-chatid=''>
->>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
                         <img class='icon20' src='<?=$iconsource_braxcamera?>' 
                              style=";top:11px;;cursor:pointer;" title="Camera" />
                     </div>
@@ -164,7 +160,7 @@ if($_SESSION['enterprise']=='Y'){
 
 
                 <div class='mainview gridnoborder' 
-                     style="max-height:100%;overflow-x:hidden;overflow-y:scroll;position:relative;display:none;background-color:transparent;
+                     style="max-height:100%;width:98%;overflow-x:hidden;overflow-y:scroll;position:relative;display:none;background-color:transparent;
                      padding:0;margin:0;z-index:10">
                     <table id='mainviewtop gridnoborder' class="panelhost mainfont" style="background-color:transparent;width:100%;height:auto;margin:0;padding:0px;border-spacing:0;border:0">
                         <tr class='gridnoborder' style="padding:0;margin:0;background-color:transparent;;width:100%">
@@ -684,11 +680,7 @@ var mobileversion = "<?=$_SESSION['version']?>";
 var hardenter = "<?=$_SESSION['hardenter']?>";
 var startupphp = "<?=$startupphp?>";
 var ConnectError = "<?=$connecterror?>";
-<<<<<<< HEAD
 var TimeoutError = "<?=$timeouterror?>";
-=======
-var TimeoutError = "<?=$timeoutrror?>";
->>>>>>> d09b95b601296e47dbf1975a21403d408ce23ef8
 try {
         localStorage.mobilecommand = ''; 
         localStorage.mobilenotification = ''; 

@@ -99,9 +99,13 @@
                         ( providerid, filename, origfilename, folder, folderid, 
                           filesize, filetype, title, createdate, alias, encoding, fileencoding, status )
                         values
-                        ( $providerid, '$aws_filename','$duplicatechecked_origfilename', 
-                          '$filefolder',$folderid, $fsize, '$filenameext','$encrypted_title', now(), '$alias','$encoding','$fileencoding','Y' ) 
-                     "
+                        ( ?, ?,?, 
+                          ?,?, ?, ?,?, now(), ?,?,?,'Y' ) 
+                     ",array(
+                          $providerid, $aws_filename, $duplicatechecked_origfilename, 
+                          $filefolder,$folderid, $fsize, $filenameext, $encrypted_title, $alias, $encoding, $fileencoding 
+                         
+                     )
              );
                     
 
@@ -214,8 +218,12 @@
                         insert into photolib
                         ( providerid, album, filename, folder, filesize, filetype, title, createdate, alias, owner, f_filename )
                         values
-                        ( $providerid, '$album', '$attachmentfilename', '$upload_dir',$filesize, '$filenameext','$subject', now(), '$alias', $providerid, '$attachmentfilename_large' ) 
-                     "
+                        ( ?, ?, ?,?,?,?,?, now(),?, ?, ? ) 
+                     ",array(
+                            $providerid, $album,$attachmentfilename, $upload_dir, $filesize, $filenameext,$subject, 
+                            $alias, $providerid, $attachmentfilename_large 
+                         
+                     )
              );
 
             putAWSObject("$attachmentfilename",$upload_dir."medium/".$origfilename);
@@ -269,9 +277,9 @@
             $result = pdo_query("1", 
                     "
                         select * from filelib 
-                        where providerid = $providerid and origfilename = '$filename_encrypted' and status='Y'
-                        and folderid = $folderid
-                     "
+                        where providerid = ? and origfilename = ? and status='Y'
+                        and folderid = ?
+                     ",array($providerid,$filename_encrypted,$folderid)
              );
             if(!$row = pdo_fetch($result)){
                 $matched = false;

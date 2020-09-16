@@ -44,7 +44,7 @@ if( $highid > $providerid)
     $providerid = $highid;
 }
 
-$result = pdo_query("1", "update parms set val1 = $providerid where parmkey='SUBSCRIBER' and parmcode='ID' ");
+$result = pdo_query("1", "update parms set val1 = ? where parmkey='SUBSCRIBER' and parmcode='ID' ",array($providerid));
 
 
 $mobileflag='';

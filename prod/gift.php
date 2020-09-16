@@ -26,11 +26,11 @@ $mode = @tvalidator("PURIFY", $_POST['mode'] );
             }
             $sendername='';
             $receivername='';
-            $result = pdo_query("1","select providername from provider where providerid=$providerid ");
+            $result = pdo_query("1","select providername from provider where providerid=? ",array($providerid));
             if($row = pdo_fetch($result)){
                 $sendername = $row['providername'];
             }
-            $result = pdo_query("1","select providername from provider where providerid=$owner ");
+            $result = pdo_query("1","select providername from provider where providerid=? ",array($owner));
             if($row = pdo_fetch($result)){
                 $receivername = $row['providername'];
             }
@@ -47,8 +47,8 @@ $mode = @tvalidator("PURIFY", $_POST['mode'] );
                 insert into gifts 
                 ( xacdate, providerid, method, owner  )
                 values 
-                ( now(), $providerid, '$method', $owner ) 
-                ");
+                ( now(), ?, ?, ? ) 
+                ",array($providerid,$method,$owner));
         
             
             

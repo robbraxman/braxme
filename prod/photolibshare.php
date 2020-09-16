@@ -17,10 +17,10 @@ require_once("internationalization.php");
     
     $mode = tvalidator("PURIFY",$_POST['mode']);
     if($mode == 'F'){
-        pdo_query("1","update provider set photosharelevel = 'F' where providerid = $providerid ");
+        pdo_query("1","update provider set photosharelevel = 'F' where providerid = ? ",array($providerid));
     }
     if($mode == 'A'){
-        pdo_query("1","update provider set photosharelevel = 'A' where providerid = $providerid ");
+        pdo_query("1","update provider set photosharelevel = 'A' where providerid = ? ",array($providerid));
     }
     
     
@@ -28,9 +28,9 @@ require_once("internationalization.php");
     $result = pdo_query("1",
     "
         select providername, avatarurl, profileroomid,handle,
-        (select level from friends where friends.providerid = provider.providerid and friendid = $providerid) as level    
-        from provider where providerid = $userid
-    ");
+        (select level from friends where friends.providerid = provider.providerid and friendid = ?) as level    
+        from provider where providerid = ?
+    ",array($providerid,$userid));
     $sharelevel = 'A';
     $providername = '';
     $profileroomid = "";
@@ -110,11 +110,11 @@ require_once("internationalization.php");
         "
             select count(*) as count
             from photolib where 
-            providerid = $userid
-            and  album in (select album from photolibshare where providerid = $userid and sharetype in ($sharelevel)
+            providerid = ?
+            and  album in (select album from photolibshare where providerid = ? and sharetype in (?)
             )
-            and (album = '$selectedalbumSql' or '$selectedalbumSql' = '')
-        ");
+            and (album = ? or ? = '')
+        ",array($userid,$userid,$sharelevel,$selectedalbumSql,$selectedalbumSql));
          
     
     $row2 = pdo_fetch($result);
@@ -159,8 +159,8 @@ require_once("internationalization.php");
             select folder, title, filename, comment, album, alias, aws_url, public, owner,
             datediff(aws_expire,now()) as expire, 
             (select providername from provider where provider.providerid = photolib.owner) as ownername
-            from photolib where filename ='$showfilename' 
-        ");
+            from photolib where filename =? 
+        ",array($showfilename));
         $row = pdo_fetch($result);
         $folder = $row['folder'];
         $title = htmlentities($row['title'], ENT_QUOTES);
@@ -374,12 +374,12 @@ require_once("internationalization.php");
             select filename, folder, album, title, createdate, alias, filesize,
             aws_url, aws_expire, datediff(aws_expire,now()) as expire
             from photolib where 
-            providerid = $userid
-            and  album in (select album from photolibshare where providerid = $userid and sharetype in ($sharelevel)
+            providerid = ?
+            and  album in (select album from photolibshare where providerid = ? and sharetype in (?)
             )
-            and (album='$selectedalbumSql' or '$selectedalbumSql'='')
+            and (album=? or ?='')
             order by album, createdate desc limit $pagestart, $max
-        ");
+        ",array($userid,$userid,$sharelevel,$selectedalbumSql,$selectedalbumSql));
     
     
     $col=1;
@@ -563,11 +563,11 @@ function GetSharedAlbums($sharelevel, $userid )
         "
             select distinct album
             from photolib where 
-            providerid = $userid
-            and  album in (select album from photolibshare where providerid = $userid and sharetype in ($sharelevel)
+            providerid = ?
+            and  album in (select album from photolibshare where providerid = ? and sharetype in (?)
             )
             order by album
-        ");
+        ",array($userid,$userid,$sharelevel));
     while($row = pdo_fetch($result)){
         $album = $row['album'];
         $albumHtml = ConvertHtml($album);

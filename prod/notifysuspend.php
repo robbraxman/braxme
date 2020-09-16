@@ -11,8 +11,8 @@ $result = pdo_query("1",
 
     "
     update notification set status = 'Y', displayed='N' where status='N' and 
-    recipientid = $providerid and chatid = $chatid  
-    "
+    recipientid = ? and chatid = ? 
+    ",array($providerid,$chatid)
 );
     
 ?>

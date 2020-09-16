@@ -484,29 +484,31 @@ require("validsession.inc.php");
             where  active='Y' and termsofuse is not null and 
             (
                 (
-                    (providername like '%$find%' or handle like '%$find%' or publishprofile like '%$find%')
+                    (providername like ? or handle like ? or publishprofile like?)
                     and 
                     (   
                         provider.publish='Y' 
                         or 
-                        provider.providerid  in (select targetproviderid from contacts where providerid = $providerid )
+                        provider.providerid  in (select targetproviderid from contacts where providerid = ? )
                         or
-                        provider.providerid in (select friendid from friends where providerid = $providerid )
+                        provider.providerid in (select friendid from friends where providerid = ? )
                         or
-                        provider.providerid in (select followerid from followers where providerid = $providerid )
+                        provider.providerid in (select followerid from followers where providerid = ? )
                         or
-                        provider.providerid in (select providerid from followers where followerid = $providerid )
+                        provider.providerid in (select providerid from followers where followerid = ? )
                         or 
                         ( provider.sponsor = '$_SESSION[sponsor]' and '$_SESSION[sponsor]'!='' )               
                     )
                 ) or (
-                    handle = '$find' or handle = '@$find'
+                    handle = ? or handle = ?
                 )
             )
             $activequery
             
-            ");
-        
+            ",array(
+                "%".$find."%","%".$find."%","%".$find."%",$providerid,$providerid,$providerid,$providerid,$find,"@".$find
+               )
+        );
             
         $count = 0;
         if($_SESSION['roomdiscovery']=='N' && $find == ''  ){
@@ -659,30 +661,33 @@ require("validsession.inc.php");
             DATE_FORMAT(provider.createdate, '%m/%d/%y') as joined, blocked1.blockee, provider.profileroomid, provider.score,
             (select 'Y' from followers where followers.providerid = provider.providerid and followers.followerid = $_SESSION[pid] ) as followed
             from provider
-            left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = $providerid
+            left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker =?
             where  provider.active='Y' and termsofuse is not null
             and  
             (
-                provider.providerid  in (select targetproviderid from contacts where providerid = $providerid )
+                provider.providerid  in (select targetproviderid from contacts where providerid = ? )
                 or
-                provider.providerid in (select friendid from friends where providerid = $providerid )
+                provider.providerid in (select friendid from friends where providerid = ? )
                 or
-                provider.providerid in (select followerid from followers where providerid = $providerid )
+                provider.providerid in (select followerid from followers where providerid = ? )
                 or
-                provider.providerid in (select providerid from followers where followerid = $providerid )
+                provider.providerid in (select providerid from followers where followerid = ? )
                 or 
                 ( provider.sponsor = '$_SESSION[sponsor]' and '$_SESSION[sponsor]'!='')
                 or
                 ( provider.publish = 'Y' and
-                '$find' != '' and ( provider.handle = '$find' or provider.handle = '@$find')
+                ? != '' and ( provider.handle = ? or provider.handle = ?)
                 )
             )
                 
             and
-            (provider.providername like '%$find%' or provider.handle like '%$find%')
+            (provider.providername like ? or provider.handle like ?)
             and provider.providername!=''
             $order
-                ");
+                ",array(
+                    $providerid,$providerid, $providerid, $providerid, $providerid, $find, $find,"@".$find,
+                    "%".$find."%","%".$find."%"
+                ));
 
                 /*
                 or 
@@ -832,7 +837,7 @@ require("validsession.inc.php");
             provider.positiontitle,
             DATE_FORMAT(provider.createdate, '%b %d/%y') as joined, blocked1.blockee, profileroomid, provider.score
             from provider
-            left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = $providerid
+            left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = ?
             where  provider.active='Y' and termsofuse is not null
             
             and 
@@ -844,14 +849,14 @@ require("validsession.inc.php");
                     (select providerid from sponsorlist where sponsor='$_SESSION[sponsor]')
                 or
                 ( publish = 'Y' and 
-                '$find' != '' and ( provider.handle = '$find' or provider.handle = '@$find')
+                ? != '' and ( provider.handle = ? or provider.handle = ?)
                 )
              )
             and
-            (provider.providername like '%$find%' or provider.handle like '%$find%')
+            (provider.providername like ? or provider.handle like ?)
             and provider.providername!=''
             $order
-                ");
+                ",array($providerid,$find,$find,"@".$find,"%".$find."%","%".$find."%"));
         
         
         $count = 0;
@@ -965,18 +970,18 @@ require("validsession.inc.php");
             provider.lastactive as lastactive2, provider.profileroomid, provider.score,
             (select 'Y' from followers where followers.providerid = provider.providerid and followers.followerid = $_SESSION[pid] ) as followed
             from provider
-            left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = $providerid
+            left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = ?
             where  provider.active='Y' and termsofuse is not null
             and  
             (
-                provider.providerid  in (select targetproviderid from contacts where providerid = $providerid )
+                provider.providerid  in (select targetproviderid from contacts where providerid = ? )
                     
                 or 
                 
                 provider.publish = 'Y'
             )
             order by provider.score desc, provider.createdate desc limit 200
-                ");
+                ",array($providerid,$providerid));
         $count = 0;
         while($row = pdo_fetch($result)){
             
@@ -1107,9 +1112,9 @@ require("validsession.inc.php");
             left join provider on provider.providerid = friends.friendid
             left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = $providerid
             where  provider.active='Y' 
-            and friends.providerid = $providerid
+            and friends.providerid = ?
             order by provider.providername asc limit 1000
-                ");
+                ",array($providerid));
         $count = 0;
         while($row = pdo_fetch($result)){
             
@@ -1243,11 +1248,11 @@ require("validsession.inc.php");
             followers.level
             from followers
             left join provider on provider.providerid = followers.providerid
-            left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = $providerid
+            left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = ?
             where  provider.active='Y' 
-            and followers.followerid = $providerid
+            and followers.followerid = ?
             order by provider.providername asc limit 1000
-                ");
+                ",array($providerid,$providerid));
         $count = 0;
         while($row = pdo_fetch($result)){
             

@@ -79,8 +79,8 @@ require_once("internationalization.php");
             $groupid = 0;
             //Find if the Room already exists
             $result = pdo_query("1","
-                select groupid from groups where groupname='$groupnameForSql' and creator=$providerid
-                ");
+                select groupid from groups where groupname=? and creator=?
+                ",array($groupnameForSql,$providerid));
             if( $row = pdo_fetch($result)){
             
                 $groupid = intval($row['groupid']);
@@ -96,8 +96,8 @@ require_once("internationalization.php");
             
             pdo_query("1","
                 insert into groups ( groupid, groupname, creator, createdate ) values
-                ( $groupid, '$groupnameForSql',$providerid, now() )
-                ");
+                ( ?, ?,?, now() )
+                ",$groupid,$groupnameForSql,$providerid);
             
             $error = SaveGroup($groupid, $groupname, $groupdesc, $organization, $photourl, $roomid );
             $mode = '';
@@ -334,7 +334,7 @@ require_once("internationalization.php");
 
     if(intval($groupid)==0){
         echo "<div style='color:$global_textcolor;background-color:$global_background;text-align:center;margin:auto'><br><br>";
-        $result = pdo_query("1","select groupname from groups where groupid in (select groupid from groupmembers where providerid = $providerid ) ");
+        $result = pdo_query("1","select groupname from groups where groupid in (select groupid from groupmembers where providerid = ? ) ",array($providerid));
         while($row = pdo_fetch($result)){
             echo "Member of $row[groupname]<br>";
         }

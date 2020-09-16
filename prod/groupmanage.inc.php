@@ -4,8 +4,8 @@ require_once("config-pdo.php");
     function DeleteGroup( $groupid )
     {
     
-        pdo_query("1","delete from groups where groupid = $groupid and creator=$_SESSION[pid] ");
-        pdo_query("1","delete from groupmembers where groupid = $groupid ");
+        pdo_query("1","delete from groups where groupid = ? and creator=$_SESSION[pid] ",array($groupid));
+        pdo_query("1","delete from groupmembers where groupid = ? ",array($groupid));
         return;
     }
     
@@ -15,10 +15,10 @@ require_once("config-pdo.php");
         //Delete from statusroom if member\ is inactive
         $result = pdo_query("1","
             delete from groupmembers 
-            where groupid=$groupid and 
-            providerid = $friendproviderid 
-            and exists (select * from groups where creator = $providerid and groupid = $groupid )
-            ");
+            where groupid=? and 
+            providerid = ? 
+            and exists (select * from groups where creator = ? and groupid = ? )
+            ",array($groupid,$friendproviderid,$providerid,$groupid));
         
 
         return;
@@ -34,8 +34,8 @@ require_once("config-pdo.php");
             
         pdo_query("1","
             insert into groupmembers ( groupid, providerid, createdate ) values 
-            ($groupid, $friendproviderid, now() )
-            ");
+            (?, ?, now() )
+            ",array($groupid,$friendproviderid));
 
         return true;
         
@@ -147,8 +147,8 @@ require_once("config-pdo.php");
             
         
             $result = pdo_query("1","
-                select val1 from parms where parmkey='$parmkey' and parmcode='$parmcode' 
-                ");
+                select val1 from parms where parmkey=? and parmcode=? 
+                ",array($parmkey,$parmcode));
             if( $row = pdo_fetch($result)){
                 $val1 =intval($row['val1']);
             } else {
@@ -166,14 +166,14 @@ require_once("config-pdo.php");
                 
                 $result = pdo_query("1","
                     insert into parms (parmkey, parmcode, val1, val2 ) values 
-                    ('$parmkey','$parmcode', $maxval, 0 )
-                ");
+                    (?,?, ?, 0 )
+                ",array($parmkey,$parmcode,$maxval));
                 $val1 = $maxgroupid;
      
             }
             $result = pdo_query("1","
-                update parms set val1=val1+1 where parmkey='$parmkey' and parmcode='$parmcode'
-            ");
+                update parms set val1=val1+1 where parmkey=? and parmcode=?
+            ",$parmkey,$parmcode);
             $val1++;
             
             return $val1;
@@ -195,24 +195,24 @@ require_once("config-pdo.php");
         $roomid = tvalidator("PURIFY",stripslashes($roomid));
         
         $result = pdo_query("1","
-            update groups set groupname ='$nameclean', groupdesc='$desc', 
-                photourl='$photourlclean',organization='$organizationclean', roomid=$roomid
-                where groupid = $groupid
-        ");
+            update groups set groupname =?, groupdesc=?, 
+                photourl=?,organization=?, roomid=?
+                where groupid = ?
+        ",array($nameclean,$desc,$photourlclean,$organizationclean,$roomid,$groupid));
         
         if(intval($roomid)>0){
 
             pdo_query("1"," 
-                delete from groupmembers where groupid = (select groupid from groups where groupid=$groupid and 
+                delete from groupmembers where groupid = (select groupid from groups where groupid=? and 
                 creator = $_SESSION[pid] )
-                    ");
+                    ",array($groupid));
             
             
             pdo_query("1"," 
                 insert into groupmembers( groupid, providerid, createdate ) 
-                select $groupid, providerid, now() from statusroom where 
-                roomid = $roomid and owner = $_SESSION[pid]
-                    ");
+                select ?, providerid, now() from statusroom where 
+                roomid = ? and owner = $_SESSION[pid]
+                    ",array($groupid,$roomid));
             
         }
         
@@ -239,9 +239,9 @@ require_once("config-pdo.php");
             select groupid, groupname, organization, photourl, roomid from
             groups
             where 
-                creator = $providerid 
+                creator = ?
             order by groupname asc
-        ");
+        ",array($providerid));
 //                statusroom.owner=$providerid or
 //                statusroom.groupid in (select groupid from roommoderator where providerid = $providerid )
     
@@ -301,10 +301,10 @@ require_once("config-pdo.php");
                 left join provider on groupmembers.providerid = provider.providerid
                 where 
                 provider.active='Y'
-                and groups.groupid=$groupid
-                and (provider.providername like '%$filter%' or provider.handle like '%$filter%')
+                and groups.groupid=?
+                and (provider.providername like ? or provider.handle like ? )
                 order by providername limit 500
-             ");
+             ",$groupid,"%".$filter,"%","%".$filter,"%");
 
         while($row = pdo_fetch($result)){
         
@@ -359,8 +359,8 @@ require_once("config-pdo.php");
         
         $result = pdo_query("1","
             select groupid, groupname, groupdesc, organization, photourl, creator, roomid from groups 
-            where groupid=$groupid and creator = $providerid
-            ");
+            where groupid=? and creator = ?
+            ",array($groupid,$providerid));
 
         if( $row = pdo_fetch($result)){
 
