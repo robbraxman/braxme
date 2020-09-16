@@ -20,16 +20,17 @@ require('colorscheme.php');
     function pdo_sql_connect( $connectnum, $sqlurl, $usr, $pwd, $database  )
     {
 
-        $dsn = "mysql:host=$sqlurl;dbname=$database;charset=utf8mb4";
+        $dsn = "mysql:host=$sqlurl:3306;dbname=$database;charset=utf8mb4";
         $options = [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES   => false,
         ];
+        $pdo = null;
         try {
              $pdo = new PDO($dsn, $usr, $pwd, $options);
         } catch (\PDOException $e) {
-             echo "Connection: $connectnum";
+             echo "Exception Connection: $connectnum";
              throw new \PDOException($e->getMessage(), (int)$e->getCode());
         }        
         return $pdo;
@@ -68,7 +69,7 @@ require('colorscheme.php');
             exit();
         }
         
-        $stmt = $pdo->prepare($query);
+        $stmt = $db_pdo[$connect]->prepare($query);
         $stmt->execute($varlist);
         if(!$stmt){
             //echo "$query<br>";
