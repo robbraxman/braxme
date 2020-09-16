@@ -24,8 +24,8 @@ $result = pdo_query("1","
     provider.blockdownload
     from filelib
     left join provider on filelib.providerid = provider.providerid
-    where filelib.alias='$share' and filelib.status='Y' and provider.blockdownload!='Y'
-    ");
+    where filelib.alias=? and filelib.status='Y' and provider.blockdownload!='Y'
+    ",array($share));
 if($row = pdo_fetch($result)){
 
     $mp3 = "$rootserver/$installfolder/$row[folder]$row[filename]";

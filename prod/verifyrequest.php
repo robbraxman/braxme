@@ -9,8 +9,8 @@ if($providerid == ''){
 }
     $result = pdo_query("1","
                 select replyemail, providername from provider where 
-                providerid = $providerid and 
-                active='Y' ");
+                providerid = ? and 
+                active='Y' ",array($providerid));
     
     if ($row = pdo_fetch($result)) {
         SendSignUpEmail( $providerid, $row['providername'], $row['replyemail'] );
@@ -27,8 +27,8 @@ if($providerid == ''){
         $signupverificationkey = uniqid("", true);
         pdo_query("1", 
                 "insert into verification (type, providerid, verificationkey, loginid, email, createdate ) values (".
-                " 'ACCOUNT', $providerid, '$signupverificationkey', 'admin', '$replyemail', now() ) "
-                );
+                " 'ACCOUNT', ?, ?, 'admin', ?, now() ) "
+                ,array($providerid,$signupverificationkey,$replyemail));
         
         $message = 
                 "<html><body>".

@@ -86,7 +86,7 @@ require ("aws.php");
     function NotificationCheck( $recipientid )
     {
         
-        $result2 = pdo_query("1","select arn, platform, token from notifytokens where providerid=$recipientid and token!='' and arn='' and status='Y' ");
+        $result2 = pdo_query("1","select arn, platform, token from notifytokens where providerid=? and token!='' and arn='' and status='Y' ",array($recipientid));
         while($row2 = pdo_fetch($result))
         {   
             //blank ARN so HOLD OFF
@@ -119,11 +119,11 @@ require ("aws.php");
             select notifytokens.arn, notifytokens.platform, notifytokens.token 
             from notifytokens 
             left join provider on provider.providerid = notifytokens.providerid
-            where notifytokens.providerid=$recipientid and notifytokens.arn!='' and notifytokens.status='Y' 
+            where notifytokens.providerid=? and notifytokens.arn!='' and notifytokens.status='Y' 
             and provider.providerid = 690001027
             and provider.active='Y'
             
-            ");
+            ",array($recipientid));
         while($row2 = pdo_fetch($result))
         {
             if( $row2['arn']=='')
@@ -208,7 +208,7 @@ require ("aws.php");
             return false;
         } 
         else {
-            pdo_query("1","insert into smslog (providerid, sms, sentdate. source) values ( 0, '$sms', now(),'V' )");
+            pdo_query("1","insert into smslog (providerid, sms, sentdate. source) values ( 0, ?, now(),'V' )",array($sms));
             return true;
         }
     }        

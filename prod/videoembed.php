@@ -19,8 +19,8 @@ $icon = "$rootserver/img/privatepost.jpg";
 $iconlock = "$rootserver/img/logo.png";
 
 $result = pdo_query("1","
-    select filename, folder, origfilename, title, providerid, encoding from filelib where alias='$share' and status='Y'
-    ");
+    select filename, folder, origfilename, title, providerid, encoding from filelib where alias=? and status='Y'
+    ",array($share));
 if($row = pdo_fetch($result))
 {
     $mp3 = "$rootserver/$installfolder/$row[folder]$row[filename]";

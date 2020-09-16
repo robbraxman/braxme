@@ -15,14 +15,14 @@ if(!$row = pdo_fetch($result))
 $verifiedemail = $row['email'];
 
 $result = pdo_query("1", 
-      "update provider set verified='Y', verifiedemail='$verifiedemail' where providerid in ".
+      "update provider set verified='Y', verifiedemail=? where providerid in ".
       "(select providerid from verification where type='ACCOUNT' ".
-      "and verificationkey= '$verificationcode') "
-       );
+      "and verificationkey= ? ) "
+       ,array($verifiedemail,$verificationcode));
 $result = pdo_query("1", 
       "update verification set verifieddate = now() 
-       where verificationkey= '$verificationcode' and verifieddate is null "
-       );
+       where verificationkey= ? and verifieddate is null "
+       ,array($verificationcode));
      
 require("htmlhead.inc.php");
 ?>
