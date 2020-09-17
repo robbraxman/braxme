@@ -763,7 +763,7 @@ function GetTechNotes( $otherid  )
 {
     global $rootserver;
     global $installfolder;
-    if($otherid == 690001027){
+    if($otherid == $admintestaccount){
         return "";
     }
     //return "";

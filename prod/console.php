@@ -19,9 +19,9 @@ $uniqid = uniqid();
 
 
 $tester = 'N';
-//if($_SESSION['pid'] == 690001027 || $_SESSION['pid'] == 690034545 )
+//if($_SESSION['pid'] == $admintestaccount || $_SESSION['pid'] == 690034545 )
 if(
-    $_SESSION['pid'] == 690001027 ) 
+    $_SESSION['pid'] == $admintestaccount ) 
         //|| $_SESSION['pid'] == 690032821)
 {
     $tester ='Y';

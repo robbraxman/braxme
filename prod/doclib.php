@@ -75,19 +75,19 @@ require_once("internationalization.php");
         
         pdo_query("1","
             insert into filefolders (providerid, foldername, parentfolder, parentfolderid) values
-            ($providerid, '--temp--','$parentfolder',0)
-            ");
+            (?, '--temp--',?,0)
+            ",array($providerid,$parentfolder));
         
         $result = 
         pdo_query("1","
             select folderid from filefolders where providerid=$providerid and foldername='--temp--'
-                ");
+                ",array($providerid));
         if($row = pdo_fetch($result)){
         
             pdo_query("1","
-                update filefolders set foldername='$selectedfolder' where providerid=$providerid
+                update filefolders set foldername=? where providerid=?
                     and folderid = $row[folderid]
-                    ");
+                    ",array($selectedfolder, $providerid));
         }
         //$statusMessage = "Folder $selectedfolder created ($row[folderid])<br>";
         $statusMessage = "Folder $selectedfolder created<br>";
@@ -102,12 +102,12 @@ require_once("internationalization.php");
     if($mode=='DF' && $selectedfolder!=''){
     
         pdo_query("1","
-            delete from filefolders where providerid=$providerid and folderid=$selectedfolderid
-            ");
+            delete from filefolders where providerid=? and folderid=?
+            ",array($selectedfolderid));
         
         pdo_query("1","
-            update filelib set status='N', folder='', folderid = 0 where providerid=$providerid and folderid=$selectedfolderid
-            ");
+            update filelib set status='N', folder='', folderid = 0 where providerid=? and folderid=?
+            ",array($providerid,$selectedfolderid));
         //$statusMessage = "Folder $selectedfolder deleted ($selectedfolderid)<br>";
         $statusMessage = "Folder $selectedfolder deleted<br>";
         
@@ -129,9 +129,9 @@ require_once("internationalization.php");
     if(intval($selectedfolderid)!=0){
     
         $result = pdo_query("1","  
-            select foldername from filefolders where providerid=$providerid 
-                and folderid = $selectedfolderid
-                ");
+            select foldername from filefolders where providerid=? 
+                and folderid = ?
+                ",array($providerid,$selectedfolderid));
         if($row = pdo_fetch($result)){
             $selectedfolder = $row['foldername'];
             
@@ -147,8 +147,8 @@ require_once("internationalization.php");
         $result = pdo_query("1",
             "
                 select folder, folderid from filelib where
-                    filename='$filename' and providerid = $providerid and status='Y'
-            ");
+                    filename=? and providerid = ? and status='Y'
+            ",array($filename,$providerid));
         if($row = pdo_fetch($result)){
         
             $origfolder = $row['folder'];
@@ -158,9 +158,9 @@ require_once("internationalization.php");
         
         $result = pdo_query("1",
             "
-                update filelib set folder='$selectedfolder', folderid=$selectedfolderid where
-                    filename='$filename' and providerid = $providerid
-            ");
+                update filelib set folder=?, folderid=? where
+                    filename=? and providerid = ?
+            ",array($selectedfolder,$selectedfolderid, $filename, $providerid));
         $thisfolder = $selectedfolder;
         if($selectedfolder == ''){
             $thisfolder = "Root";
@@ -198,8 +198,8 @@ require_once("internationalization.php");
     
         
         pdo_query("1","
-            update filelib set status='N' where providerid=$providerid and filename='$filename' and status='Y'
-            ");
+            update filelib set status='N' where providerid=? and filename=? and status='Y'
+            ",array($providerid,$filename));
         
         deleteAWSObject($filename);
         $statusMessage = "File deleted<br>";
@@ -213,8 +213,8 @@ require_once("internationalization.php");
     
         
         pdo_query("1","
-            update filelib set pin='Y' where providerid=$providerid and filename='$filename' and status='Y'
-            ");
+            update filelib set pin='Y' where providerid=? and filename=? and status='Y'
+            ",array($providerid,$filename));
         
         $filename = '';
         $mode = '';
@@ -224,8 +224,8 @@ require_once("internationalization.php");
     
         
         pdo_query("1","
-            update filelib set pin='' where providerid=$providerid and filename='$filename' and status='Y'
-            ");
+            update filelib set pin='' where providerid=? and filename=? and status='Y'
+            ",array($providerid,$filename));
         
         $filename = '';
         $mode = '';
@@ -240,8 +240,8 @@ require_once("internationalization.php");
         $result = pdo_query("1",
             "
                 select  providerid, providername from provider 
-                where (replyemail = '$targetemail' or (handle = '$targetemail' and handle!='' ) )  and active='Y'
-            ");
+                where (replyemail = ? or (handle = ? and handle!='' ) )  and active='Y'
+            ",array($targetemail,$targetemail));
         
         if($row = pdo_fetch($result)){
             $targetproviderid = $row['providerid'];
@@ -255,8 +255,8 @@ require_once("internationalization.php");
             "
                 select  filename, origfilename, title, folder, filesize, 
                         filetype, title, createdate, alias, encoding 
-                from filelib where filename='$filename' and providerid= $providerid and status='Y'
-            ");
+                from filelib where filename=? and providerid= ? and status='Y'
+            ",array($filename,$providerid));
         
         if($row = pdo_fetch($result)){
             $alias = uniqid("T4AZ", true);
@@ -275,9 +275,13 @@ require_once("internationalization.php");
                         ( providerid, filename, origfilename, folder, filesize, 
                           filetype, title, createdate, alias, encoding, status )
                         values
-                        ( $targetproviderid, '$uploadfilename','$neworigfilename', '',$row[filesize], 
-                          '$row[filetype]','$title', now(), '$alias','PLAINTEXT','Y' ) 
-                    ");
+                        ( ?, ?,?, '',$row[filesize], 
+                          '$row[filetype]',?, now(), ?,'PLAINTEXT','Y' ) 
+                    ",array(
+                        $targetproviderid, $uploadfilename,$neworigfilename, 
+                          $title,$alias ) 
+                        
+                    ));
             }
             
             
@@ -310,8 +314,8 @@ require_once("internationalization.php");
             $encoding = "PLAINTEXT";
             $result = pdo_query("1","
                 select fileencoding, filetype from filelib 
-                    where providerid=$providerid and filename='$filename'
-                    ");
+                    where providerid=? and filename=?
+                    ",array($provider,$filename));
             if($row = pdo_fetch($result)){
                 $encoding = $row['fileencoding'];
                 $ext = $row['filetype'];
@@ -329,9 +333,9 @@ require_once("internationalization.php");
 
 
             pdo_query("1","
-                update filelib set filename='$newfilename' 
-                    where providerid=$providerid and filename='$filename'
-                    ");
+                update filelib set filename=? 
+                    where providerid=? and filename=?
+                    ",array($newfilename,$providerid,$filename));
               
              
 
@@ -374,9 +378,11 @@ require_once("internationalization.php");
         $title = EncryptTextCustomEncode(@tvalidator("PURIFY",$_POST['title']),"PLAINTEXT", "$filename");
         $result = pdo_query("1",
             "
-                update filelib set origfilename='$origfilename_encrypted', title='$title', encoding='PLAINTEXT', folder='$selectedfolder' where
-                    filename='$filename' and providerid = $providerid
-            ");
+                update filelib set origfilename=?, title=?, encoding='PLAINTEXT', folder=? where
+                    filename=? and providerid = ?
+            ",array(
+                $origfilename_encrypted, $title, $selectedfolder,$filename, $providerid
+            ));
         $statusMessage = "File $origfilename info changed<br>";
         $filename = '';
         $mode = "";
@@ -388,9 +394,9 @@ require_once("internationalization.php");
         $alias = uniqid("T4AZ", true);
         $result = pdo_query("1",
             "
-                update filelib set alias='$alias' where
-                    filename='$filename' and providerid = $providerid
-            ");
+                update filelib set alias=? where
+                    filename=? and providerid = ?
+            ",array($alias,$filename,$providerid));
         $filename = '';
         $mode = "";
     }
@@ -570,9 +576,9 @@ require_once("internationalization.php");
                 select origfilename, filename, folder, folderid, alias, views, filetype, filesize, title,
                 date_format( date_add(createdate,INTERVAL ($_SESSION[timezoneoffset])*60 MINUTE),'%m/%d/%y %h:%i%p') as createdate,
                 createdate as createdate2, encoding
-                from filelib where providerid = $providerid and 
-                filename='$filename' and status='Y'
-            "
+                from filelib where providerid = ? and 
+                filename=? and status='Y'
+            ",array($providerid,$filename)
             );
         
         if($row = pdo_fetch($result)){
@@ -786,16 +792,16 @@ require_once("internationalization.php");
                 '%m/%d/%y %h:%i%p') as createdate,
             createdate as createdate2, encoding
             from filelib 
-            where providerid = $providerid and 
+            where providerid = ? and 
             (
                 folderid='$_SESSION[filefolderid]' and '$filtername'=''
                 or
                 '$filtername'!=''
-                or (pin ='Y' and '0'='$selectedfolderid')
+                or (pin ='Y' and '0'=?)
             ) and status='Y'
             order by pin desc, $sort_text
             $limit
-        ");
+        ",array($providerid,$selectedfolderid));
 
     
     /****************
@@ -973,8 +979,8 @@ require_once("internationalization.php");
     $result = pdo_query("1",
         "
             select sum(filesize) as totalsize, count(*) as filecount
-            from filelib where providerid = $providerid 
-        ");
+            from filelib where providerid = ?
+        ",array($providerid));
     $row = pdo_fetch($result);
     $totalsize = round($row['totalsize']/1000000,1);
     $filecount = $row['filecount'];
@@ -982,8 +988,8 @@ require_once("internationalization.php");
     $result = pdo_query("1",
         "
             select sum(filesize*views) as bandwidth
-            from fileviews where providerid = $providerid 
-        ");
+            from fileviews where providerid = ? 
+        ",array($providerid));
     $row = pdo_fetch($result);
     
     $bandwidth = round($row['bandwidth']/1000000000,1);
@@ -1027,7 +1033,7 @@ require_once("internationalization.php");
 
         
 
-    if($providerid==690001027){
+    if($providerid==$admintestaccount){
 
         echo " <br><br>
             1 $e1
@@ -1139,7 +1145,7 @@ function ShowFile( $displayOnly, $providerid, $mode, $filename, $altfilename, $t
     global $iconsource_braxshare_common;
     global $iconsource_braxclose_common;
     //$shareserver = "$rootserver";
-    //if($providerid == 690001027){
+    //if($providerid == $admintestaccount){
     $shareserver = "$prodserver";
     //}
     
@@ -1148,9 +1154,9 @@ function ShowFile( $displayOnly, $providerid, $mode, $filename, $altfilename, $t
                 select origfilename, filename, folder, alias, views, filetype, filesize, title,
                 date_format( date_add(createdate,INTERVAL ($_SESSION[timezoneoffset])*60 MINUTE),'%b %d, %Y %h:%i%p') as createdate,
                 createdate as createdate2, encoding, fileencoding
-                from filelib where providerid = $providerid and 
-                (filename='$filename' or filename='$altfilename') and status='Y'
-            "
+                from filelib where providerid = ? and 
+                (filename=? or filename=?) and status='Y'
+            ",array($providerid,$filename,$altfilename)
             );
         
         if($row = pdo_fetch($result)){
@@ -1768,10 +1774,10 @@ function CreateFolderList( $providerid, $mode, $selectedfolder, $selectedfolderi
         $selectedfolderid = 0;
     }
     $result2 = pdo_query("1","
-        select distinct foldername, folderid from filefolders where providerid = $providerid 
-            and parentfolderid=$selectedfolderid
+        select distinct foldername, folderid from filefolders where providerid = ?
+            and parentfolderid=?
             order by foldername asc
-        ");
+        ",array($providerid,$selectedfolderid));
     $folderdiv = "";       
     $folderdiv2 = "";       
    if($mode == 'CF')
@@ -2284,10 +2290,10 @@ function duplicateNameCorrection($providerid, $AWSfilename, $origfilename ) {
             $result = pdo_query("1", 
                     "
                         select * from filelib 
-                        where providerid = $providerid and 
-                        origfilename = '$filename_encrypted' and status='Y'
-                        and filename!='$AWSfilename'
-                     "
+                        where providerid = ? and 
+                        origfilename = ? and status='Y'
+                        and filename!=?
+                     ",array($providerid,$filename_encrypted,$AWSfilename)
              );
             if(!$row = pdo_fetch($result)){
                 $matched = false;

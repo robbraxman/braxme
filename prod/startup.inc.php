@@ -366,7 +366,7 @@ require_once("advertising.inc.php");
                             
                 if($_SESSION['roomdiscovery']!='N' || $_SESSION['enterprise']=='Y'){
 
-                    //$settingsmenu .= SettingsMenuButton("Rob Braxman Store", "userstore mainbutton", "","data-roomid='' data-owner='690001027'  ","" , $buttonbackgroundcolor2, $buttoncolor2);
+                    //$settingsmenu .= SettingsMenuButton("Rob Braxman Store", "userstore mainbutton", "","data-roomid='' data-owner='$admintestaccount'  ","" , $buttonbackgroundcolor2, $buttoncolor2);
                     $settingsmenu .= SettingsMenuButton("$menu_manageupgrade", "userstore mainbutton", "","data-roomid='' data-owner='0'  ","" , $buttonbackgroundcolor2, $buttoncolor2);
                     $settingsmenu .= "<hr style='border:1px solid  $global_separator_color'>";
                     

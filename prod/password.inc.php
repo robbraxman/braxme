@@ -329,7 +329,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
             $_SESSION['onetimeflag']='';
 
             
-            //echo "<script>alert('Alert 690001027');</script>";
+            //echo "<script>alert('Alert $admintestaccount');</script>";
             //Google Authenticator Validation
             if($row['auth_hash']!=''){
 

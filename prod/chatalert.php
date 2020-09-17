@@ -396,7 +396,7 @@ require_once('internationalization.php');
     $timediff5 = $time3 - $time1;
     
     $timing = "";
-    if( $providerid == 690001027){
+    if( $providerid == $admintestaccount){
         $timing = "$timediff1<br>$timediff2<br>$timediff3<br>$timediff4<br>$timediff5<br>";
     }
     $timing = "";

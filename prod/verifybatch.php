@@ -120,7 +120,7 @@ require ("aws.php");
             from notifytokens 
             left join provider on provider.providerid = notifytokens.providerid
             where notifytokens.providerid=? and notifytokens.arn!='' and notifytokens.status='Y' 
-            and provider.providerid = 690001027
+            and provider.providerid = $admintestaccount
             and provider.active='Y'
             
             ",array($recipientid));

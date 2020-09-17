@@ -9,7 +9,7 @@ require_once("config-pdo.php");
     
     SaveLastFunction($_SESSION['pid'],"C", $chatid);
 
-    //$providerid = 690001027;
+    //$providerid = $admintestaccount;
     //$chatid = 1217;
 
     /*****************************
@@ -269,7 +269,7 @@ require_once("config-pdo.php");
     }    
     function GetTechNotes( $otherid, $chatid )
     {
-        if($otherid == 690001027){
+        if($otherid == $admintestaccount){
             return "";
         }
         $technotes = "";
@@ -321,7 +321,7 @@ require_once("config-pdo.php");
     function GetFormData( $otherid )
     {
         return "";
-        if($otherid == 690001027){
+        if($otherid == $admintestaccount){
             return "";
         }
         $notes="";

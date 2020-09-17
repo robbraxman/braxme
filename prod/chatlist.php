@@ -844,7 +844,7 @@ function DisplayChatMembers(
                 $row3['providername']='Tech Support';
                 $avatar = $techavatar;
             }
-            //if($row3['providername']=='Scoperchat' && $providerid == 690001027){
+            //if($row3['providername']=='Scoperchat' && $providerid == $admintestaccount){
             //    $row3['providername']='Tech Guy';
             //}
 

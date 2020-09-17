@@ -1857,7 +1857,7 @@ function DisplayNewPost($readonly, $providerid, $roomid, $handle )
     }
 
     $add = "";
-    if(($adminroom!='Y' && $roomid !='All') || $providerid==690001027){
+    if(($adminroom!='Y' && $roomid !='All') || $providerid==$admintestaccount){
         $add =  "       
                 <center>
                 <input class='newroompost makecommenttop mainfont' data-shareid='' readonly=readonly placeholder='$menu_newtopic' style='cursor:pointer;background-color:white;height:35px;width:95%;min-width:50%;max-width:95%;padding:5px' />
@@ -2764,8 +2764,8 @@ function RoomPosterInfo( $roomid, $providerid, $avatarurl, $adminroom, $private,
         if(($adminroom=='Y' || $handle!='') && $anonymous == 'A' && $alias!='' ){
             $poster['name'] = $alias;
         }
-        if( ($adminroom == 'Y' && intval($providerid)==690001027) ||
-            ($roomid == 1 && intval($providerid)==690001027) 
+        if( ($adminroom == 'Y' && intval($providerid)==$admintestaccount) ||
+            ($roomid == 1 && intval($providerid)==$admintestaccount) 
             ){
             $poster['name'] ="$appname Admin";
             $poster['avatar']="$rootserver/img/admin.png";

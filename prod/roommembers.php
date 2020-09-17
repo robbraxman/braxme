@@ -351,7 +351,7 @@ require_once("internationalization.php");
         }
         $deleteme = "";
         /*
-        if( $row['providerid']==$providerid ){// || $providerid ==690001027) 
+        if( $row['providerid']==$providerid ){// || $providerid ==$admintestaccount) 
         
             $deleteme =
                     "

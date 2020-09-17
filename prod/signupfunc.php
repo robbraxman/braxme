@@ -1126,7 +1126,7 @@ class SignUp
         }
         
         /*
-        if( $this->pin !== ""  && $this->providerid == 690001027){
+        if( $this->pin !== ""  && $this->providerid == $admintestaccount){
         
             $error = $this->StoreError("Pin Problem $this->pin");
         }

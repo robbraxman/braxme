@@ -803,7 +803,7 @@ require("nohost.php");
             }
             $sidemenu .= "<br><br>";
             if($_SESSION['sponsor']==''){
-                $sidemenu .= MenuItem( "S", $braxstore, "$menu_store", "", "userstore mainbutton", "data-owner='690001027'", 1, $bold );
+                $sidemenu .= MenuItem( "S", $braxstore, "$menu_store", "", "userstore mainbutton", "data-owner='$admintestaccount'", 1, $bold );
             } 
             
             

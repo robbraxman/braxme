@@ -381,7 +381,7 @@ require_once("room.inc.php");
             
         }
         $deleteme = "";
-        if( $row['providerid']==$providerid )// || $providerid ==690001027) 
+        if( $row['providerid']==$providerid )// || $providerid ==$admintestaccount) 
         {
             $deleteme =
                     "<br>

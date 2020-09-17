@@ -8,7 +8,7 @@ require_once("config-pdo.php");
     
     
 
-    //$providerid = 690001027;
+    //$providerid = $admintestaccount;
     //$chatid = 1217;
 
     /*****************************
@@ -56,7 +56,7 @@ require_once("config-pdo.php");
         global $icon_braxpeople2;
         global $providerid;
         
-        $result = pdo_query("1","select providername, profileroomid from provider where providerid = $providerid");
+        $result = pdo_query("1","select providername, profileroomid from provider where providerid = ?",array($providerid));
         if($row = pdo_fetch($result)){
             $providername = $row['providername'];
             $profileroomid = $row['profileroomid'];
@@ -119,13 +119,13 @@ require_once("config-pdo.php");
         DATE_FORMAT(followers.followdate, '%b %d/%y') as followed        
         from followers
         left join provider on provider.providerid = followers.followerid
-        where followers.providerid = $providerid 
+        where followers.providerid = ?
         and provider.active = 'Y' and termsofuse is not null
         $order
         limit 1000
             
             
-                ");
+                ",array($providerid));
         $count = 0;
         $joined = "";
         $otherid = "";
