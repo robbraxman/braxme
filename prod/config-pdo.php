@@ -166,7 +166,7 @@ require('colorscheme.php');
         }
         if($type == 'ID'){
 
-            return filter_var(val($string), FILTER_VALIDATE_INT, array("options" => array("min_range" => 0,"max_range" => 9999999999)) );
+            return filter_var(intval($string), FILTER_VALIDATE_INT, array("options" => array("min_range" => 0,"max_range" => 9999999999)) );
             
         }
         if($type == 'EMAIL'){

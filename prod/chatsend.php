@@ -59,8 +59,8 @@ include("lib_autolink.php");
         }
         $result = pdo_query("1",
             "
-            update chatmaster set title='$titleencrypted', encoding='$encoding', radiostation='$radio' where chatid=$chatid 
-            ");
+            update chatmaster set title=?, encoding=?, radiostation=? where chatid=? 
+            ",array($titleencrypted,$encoding,$radio,$chatid));
         echo "success";
         exit();
     }
@@ -79,18 +79,18 @@ include("lib_autolink.php");
             "
             delete from chatmembers 
             where 
-            providerid = $providerid
+            providerid = ?
             and 
             (
                 providerid=$_SESSION[pid]
-                or $providerid in 
+                or ? in 
                     (select providerid from chatmaster 
                     where owner=$_SESSION[pid] and 
                     chatmaster.chatid = chatmembers.chatid )
             )
             and
-            chatid=$chatid 
-            ");
+            chatid=? 
+            ",array($providerid,$providerid,$chatid));
         
         //Remove Me from Room that spawned this chat
         $result = pdo_query("1","select roomid from chatmaster where chatid=? and owner!=?",array($chatid,$providerid));
@@ -198,7 +198,7 @@ include("lib_autolink.php");
                     update chatmaster set broadcaster = null, broadcastmode='', 
                     live='N', radiotitle='', reservestation=null 
                     where chatid=? and radiostation in ('Q','Y')
-                    ",array(4chatid));
+                    ",array($chatid));
                 //Delete original Streamid.mp3
                 DeleteIcecastRecording($providerid, $chatid );
                 RenameIcecastRecording($providerid, $chatid, $broadcastername, $title );

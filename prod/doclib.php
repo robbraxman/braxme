@@ -281,7 +281,7 @@ require_once("internationalization.php");
                         $targetproviderid, $uploadfilename,$neworigfilename, 
                           $title,$alias ) 
                         
-                    ));
+                    );
             }
             
             
@@ -794,14 +794,14 @@ require_once("internationalization.php");
             from filelib 
             where providerid = ? and 
             (
-                folderid='$_SESSION[filefolderid]' and '$filtername'=''
+                folderid='$_SESSION[filefolderid]' and ?=''
                 or
-                '$filtername'!=''
+                ? !=''
                 or (pin ='Y' and '0'=?)
             ) and status='Y'
             order by pin desc, $sort_text
             $limit
-        ",array($providerid,$selectedfolderid));
+        ",array($providerid,$filtername,$filtername,$selectedfolderid));
 
     
     /****************

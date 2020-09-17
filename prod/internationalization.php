@@ -954,9 +954,9 @@ if($_SESSION['language']=='german'){
     $menu_websites = "Websites";
     $menu_all = "Alle";
     $menu_activetoday = "Aktiv Heute";
-    $menu_sharefile = "Dokumente Teilin";
+    $menu_sharefile = "Dokumente Teilen";
     $menu_photos = "Fotos"; 
-    $menu_sharephoto = "Foto Teilin";
+    $menu_sharephoto = "Foto Teilen";
     $menu_uploadphoto = "Foto Hochladen";
     $menu_uploadfile = "Dokumente Hochladen";
     $menu_delete = "Löschen";
