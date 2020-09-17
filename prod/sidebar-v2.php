@@ -130,12 +130,12 @@ require("nohost.php");
                 
                 pdo_query("1"," 
                     update provider set 
-                    deviceheight=$innerheight, 
-                    devicewidth= $innerwidth,  
-                    pixelratio= $pixelratio,
-                    devicecode = '$devicecode'
+                    deviceheight=?, 
+                    devicewidth= ?,  
+                    pixelratio= ?,
+                    devicecode = ?
                     where providerid =$_SESSION[pid]
-                    ");
+                    ",array($innerheight,$innerwidth,$pixelratio,$devicecode));
             }
         }
         
@@ -205,8 +205,8 @@ require("nohost.php");
         $result2 = pdo_query("1","
                 select roomdiscovery, joinedvia, lasttip,
                 (select 'Y' from statusroom where roomid=12802 and statusroom.providerid = provider.providerid ) as braxtips 
-                from provider where providerid = $providerid
-                ");
+                from provider where providerid = ?
+                ",array($providerid));
         if( $row2 = pdo_fetch($result)){
             //$logo = "Sponsored by<br><img src='../img/dteenergy-logo.png' style='height:80px;max-width:80%'/>";
             $braxtips = $row2['braxtips'];

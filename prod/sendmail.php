@@ -361,9 +361,6 @@ require_once("phpmailer/PHPMailerAutoload.php");
             return true;
         else 
         {
-            $result1 = pdo_query("1", 
-               "update msgmain set errorcode = 'SendFail' where sessionid = '$_SESSION[sessionid]' and providerid=$providerid "
-                    );
             return false;
         }
 

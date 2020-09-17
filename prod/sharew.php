@@ -26,8 +26,8 @@ else
 
 $result = pdo_query("1","
         select providerid, sharelocal from shares
-        where shareid='$share'
-            ");
+        where shareid=?
+            ",array($share));
 if( $row = pdo_fetch($result))
 {
     $providerid = $row['providerid'];

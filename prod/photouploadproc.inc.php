@@ -135,17 +135,19 @@ function ProcessUpload( $providerid, $encoding, $subject, $album, $upload_hdr, $
                                                         insert into photolib
                                                         ( providerid, album, filename, folder, filesize, filetype, title, createdate, alias, owner )
                                                         values
-                                                        ( $providerid, '$album', '$attachmentfilename', '$upload_dir',$filesize, '$filenameext','$subject', now(), '$alias', $providerid ) 
-                                                     "
+                                                        ( ?, ?,?, ?,?, ?,?, now(), ?,? ) 
+                                                     ",array(
+                                                        $providerid, $album, $attachmentfilename, $upload_dir,$filesize, $filenameext, $subject, $alias, $providerid  
+                                                     )
                                              );
 
                                             if( $uploadtype == "A"){
                                             
                                                     $result = pdo_query("1", 
                                                             "
-                                                                update provider set avatarurl = '$rootserver/$installfolder/sharedirect.php?p=$attachmentfilename' where
-                                                                providerid = $providerid
-                                                             "
+                                                                update provider set avatarurl = '$rootserver/$installfolder/sharedirect.php?p=?' where
+                                                                providerid = ?
+                                                             ",array($attachmentfilename,$providerid)
                                                      );
                                                     $_SESSION['avatarurl']="$rootserver/$installfolder/sharedirect.php?p=$attachmentfilename";
                                             }

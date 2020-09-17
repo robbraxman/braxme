@@ -11,8 +11,9 @@ $result = pdo_query("1",
             shareto, sharedate, shareexpire, securetype, platform, views, likes, 
             setid, proxyfilename,
             collection, roomid ) values (
-            $providerid, 'R', '$uniqid', '', '','','Facebook',now(), now(), 
-            'C','Facebook',0,0,'','','', $roomid
-            )"
+            ?, 'R', '$uniqid', '', '','','Facebook',now(), now(), 
+            'C','Facebook',0,0,'','','', ?
+            )",
+            array($providerid,$roomid)
         );
 

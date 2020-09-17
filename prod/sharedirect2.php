@@ -19,13 +19,13 @@ if($alias == '' && $share == ''){
 if( $alias == ''){
 
     $result = pdo_query("1","
-            select filename, folder, title, comment, views, likes, filetype, filesize, public from photolib where filename='$share'
-            ");
+            select filename, folder, title, comment, views, likes, filetype, filesize, public from photolib where filename=?
+            ",array($share));
 } else {
     
     $result = pdo_query("1","
-            select filename, folder, title, comment, views, likes, filetype, filesize, public from photolib where alias='$alias'
-            ");
+            select filename, folder, title, comment, views, likes, filetype, filesize, public from photolib where alias=?
+            ",array($alias));
 }
 if( !$row = pdo_fetch($result)){
 

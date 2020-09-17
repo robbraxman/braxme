@@ -25,8 +25,8 @@ require_once("config-pdo.php");
     $result = pdo_query("1","
         select roomid, room, owner
         from statusroom 
-        where roomid='$roomid' 
-            ");
+        where roomid=? 
+            ",array($roomid));
     if($row = pdo_fetch($result))
     {
         $roomid = $row['roomid'];

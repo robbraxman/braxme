@@ -60,8 +60,11 @@ function ProcessUpload( $providerid, $encoding, $subject, $album, $upload_hdr, $
                     insert into photolib
                     ( providerid, album, filename, folder, filesize, filetype, title, createdate, alias, owner )
                     values
-                    ( $providerid, '$album', '$attachmentfilename', '$upload_dir',$filesize, '$filenameext','$subject', now(), '$alias', $providerid ) 
-                 "
+                    ( ?, ?, ?, ?,?, ?,?, now(),?, ? ) 
+                 ",array(
+                     $providerid, $album, $attachmentfilename, $upload_dir,$filesize, $filenameext,$subject, $alias, $providerid  
+                     
+                 )
          );
 
         putAWSObject("$attachmentfilename","$upload_dir$attachmentfilename");

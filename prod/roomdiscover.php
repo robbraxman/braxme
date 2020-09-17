@@ -196,8 +196,8 @@ require_once("roomselect.inc.php");
     
     /*****************************/
     $result = pdo_query("1","
-        select roomdiscovery, sponsor from provider where providerid = $providerid 
-        ");
+        select roomdiscovery, sponsor from provider where providerid = ? 
+        ",array($providerid));
     $roomdiscovery = '';
     if($row = pdo_fetch($result)){
         $roomdiscovery = $row['roomdiscovery'];
@@ -292,7 +292,7 @@ require_once("roomselect.inc.php");
         $result = pdo_query("1","
             select roomhandle.handle, roomhandle.roomdesc, roomhandle.roomid, 
             roomhandle.name, roomhandle.category,
-            (select 'Y' from statusroom where providerid=$providerid and 
+            (select 'Y' from statusroom where providerid=? and 
              statusroom.roomid = roomhandle.roomid ) as existing,
              datediff( now(), roominfo.lastactive) as active,
             roominfo.anonymousflag, roominfo.photourl,
@@ -312,14 +312,14 @@ require_once("roomselect.inc.php");
             )
             and roominfo.private!='Y'
             order by roomhandle.handle asc limit 100
-            ");
+            ",array($providerid));
         
     } else {
         
         $result = pdo_query("1","
             select roomhandle.handle, roomhandle.roomdesc, roomhandle.roomid, 
             roomhandle.name, roomhandle.category,
-            (select 'Y' from statusroom where providerid=$providerid and 
+            (select 'Y' from statusroom where providerid=? and 
              statusroom.roomid = roomhandle.roomid ) as existing,
              datediff( now(), roominfo.lastactive) as active,
             roominfo.anonymousflag, roominfo.photourl,
@@ -332,7 +332,7 @@ require_once("roomselect.inc.php");
             ) 
             and roomhandle.category like '%$category%'  and roomhandle.category not in ('Private')
             and datediff( now(), roominfo.lastactive ) < 8 
-            and roominfo.groupid in (select groupid from groupmembers where providerid =$providerid)
+            and roominfo.groupid in (select groupid from groupmembers where providerid =? )
             and (
               roominfo.roomdesc like '%$find%' or
               roominfo.room like '%$find%' or
@@ -341,7 +341,7 @@ require_once("roomselect.inc.php");
             and roominfo.private!='Y'
             
             order by roomhandle.handle asc limit 100
-            ");
+            ",array($providerid,$providerid));
         
     }
     
@@ -463,7 +463,7 @@ require_once("roomselect.inc.php");
         $result = pdo_query("1","
             
             select roomhandle.handle, roomhandle.roomdesc, roomhandle.roomid, roomhandle.name, roomhandle.category,
-            (select 'Y' from statusroom where providerid=$providerid and statusroom.roomid = roomhandle.roomid ) as existing,
+            (select 'Y' from statusroom where providerid=? and statusroom.roomid = roomhandle.roomid ) as existing,
              datediff( now(), roominfo.lastactive) as active,
             roominfo.anonymousflag, roominfo.photourl,
             (select count(*) from statuspost where statuspost.roomid = roomhandle.roomid ) as membercount
@@ -479,13 +479,13 @@ require_once("roomselect.inc.php");
             )
 
             order by roomhandle.category, roomhandle.rank desc, roomhandle.handle asc 
-            ");
+            ",array($providerid));
         
     } else {
         
         $result = pdo_query("1","
             select roomhandle.handle, roomhandle.roomdesc, roomhandle.roomid, roomhandle.name, roomhandle.category,
-            (select 'Y' from statusroom where providerid=$providerid and statusroom.roomid = roomhandle.roomid ) as existing,
+            (select 'Y' from statusroom where providerid=? and statusroom.roomid = roomhandle.roomid ) as existing,
              datediff( now(), roominfo.lastactive) as active,
             roominfo.anonymousflag, roominfo.photourl,
             (select count(*) from statuspost where statuspost.roomid = roomhandle.roomid ) as membercount
@@ -503,7 +503,7 @@ require_once("roomselect.inc.php");
             )
 
             order by roomhandle.category, roomhandle.rank desc, roomhandle.handle asc 
-            ");
+            ",array($providerid));
         
     }
     //        and roomhandle.minage <= $_SESSION[age] and roomhandle.public = 'Y' 

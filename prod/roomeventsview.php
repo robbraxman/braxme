@@ -77,10 +77,10 @@ $result = pdo_query("1","
         events.providerid, provider.providername, provider.name2 from 
         events 
         left join provider on provider.providerid = events.providerid
-        where roomid=$roomid
+        where roomid=?
         and eventdate > now()
         order by eventdate asc 
-        ");
+        ",array($roomid));
 while($row = pdo_fetch($result)){
 
     echo "

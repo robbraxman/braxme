@@ -31,8 +31,8 @@ if($batchruns!='Y')
         $result2 = pdo_query("1","
             insert into alerts (providerid, alerttype, alertdate, status )
             values
-            ($providerid, 'Chat', now(), 'N' )
-            ");
+            (?, 'Chat', now(), 'N' )
+            ",array($providerid));
     }
     /******
      * 
@@ -86,7 +86,7 @@ if($batchruns!='Y')
             insert into alerts (providerid, alerttype, alertdate, status )
             values
             ($providerid, 'Rooms', now(), 'N' )
-            ");
+            ",array($providerid));
     }
         
     

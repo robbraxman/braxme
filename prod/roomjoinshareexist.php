@@ -24,10 +24,10 @@ $providerid = "";
            " select providerid, pwd_ver, pwd_hash from staff where providerid in 
                 (    
                     select providerid from provider where active='Y' and
-                    (replyemail = '$userid' or (handle = '$userid' and handle!='') )
+                    (replyemail = ? or (handle = ? and handle!='') )
                 )
                 and active='Y' 
-            ");
+            ",array($userid,$userid));
         if( $row = pdo_fetch($result)){
 
             $providerid = $row['providerid'];
@@ -49,8 +49,8 @@ $providerid = "";
     if($handle!=''){
     
         $result = pdo_query("1","
-        select roomid from roomhandle where handle='$handle' 
-        ");
+        select roomid from roomhandle where handle=?
+        ",array($handle));
         if($row = pdo_fetch($result))
         {
             $roomid = $row['roomid'];

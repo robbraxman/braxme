@@ -25,45 +25,45 @@ require_once("config-pdo.php");
     if( $mode == 'S')
     {
         $result = pdo_query("1","
-            delete from roomwebstyle where roomid=$roomid
-                ");
+            delete from roomwebstyle where roomid=?
+                ",array($roomid));
         
         //Data
         $result = pdo_query("1","
             insert into roomwebstyle (roomid, seq, stylekey, styledata ) values
-            ($roomid,1,'backgroundcolor', '$backgroundcolor')
-                ");
+            (?,1,'backgroundcolor', ?)
+                ",array($roomid,$backgroundcolor));
         $result = pdo_query("1","
             insert into roomwebstyle (roomid, seq, stylekey, styledata ) values
-            ($roomid,2,'title', '$title')
-                ");
+            (?,2,'title', ?)
+                ",array($roomid,$title));
         $result = pdo_query("1","
             insert into roomwebstyle (roomid, seq, stylekey, styledata ) values
-            ($roomid,3,'subtitle', '$subtitle')
-                ");
+            (?,3,'subtitle', ?)
+                ",array($roomid,$subtitle));
         
         
         $result = pdo_query("1","
             insert into roomwebstyle (roomid, seq, stylekey, styledata ) values
-            ($roomid,4,'footer', '$footer')
-                ");
+            (?,4,'footer', ?)
+                ",array($roomid,$footer));
         $result = pdo_query("1","
             insert into roomwebstyle (roomid, seq, stylekey, styledata ) values
-            ($roomid,5,'analytics', '$analytics')
-                ");
+            (?,5,'analytics', ?)
+                ",array($roomid,$analytics));
         
         $result = pdo_query("1","
             insert into roomwebstyle (roomid, seq, stylekey, styledata ) values
-            ($roomid,6,'subtitle2', '$subtitle2')
-                ");
+            ($roomid,6,'subtitle2', )
+                ",array($roomid,$subtitle2));
         $result = pdo_query("1","
             insert into roomwebstyle (roomid, seq, stylekey, styledata ) values
-            ($roomid,7,'color', '$color')
-                ");
+            (?,7,'color', ?)
+                ",array($roomid,$color));
         $result = pdo_query("1","
             insert into roomwebstyle (roomid, seq, stylekey, styledata ) values
-            ($roomid,8,'trimcolor', '$trimcolor')
-                ");
+            (?,8,'trimcolor', ?)
+                ",array($roomid,$trimcolor));
         
     }
     if( $mode == 'D')

@@ -17,8 +17,8 @@ if(isset($_GET['n'])) {
 
 
 $result = pdo_query("1","
-        select sharelocal, providerid from shares where shareid = '$share' 
-        ");
+        select sharelocal, providerid from shares where shareid =  
+        ",array($share));
 
 if( !$row = pdo_fetch($result))
 {
@@ -38,15 +38,15 @@ $providerid = $row['providerid'];
 if( $n== "")
 {
     $result = pdo_query("1","
-            select filename, folder from photolib where filename= '$sharelocal'
-            ");
+            select filename, folder from photolib where filename= ?
+            ",array($sharelocal));
 }
 if( $n!= "")
 {
     $result = pdo_query("1","
-            select filename, folder  from photolib where album = '$sharelocal' and providerid=$providerid
+            select filename, folder  from photolib where album = ? and providerid=?
             order by filename desc limit $n, 1
-            ");
+            ",array($sharelocal,$providerid));
 }
 
 if( !$row = pdo_fetch($result))

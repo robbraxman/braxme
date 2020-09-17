@@ -50,8 +50,8 @@
             $result2 = pdo_query("1",
                 "
                     select count(*) as commenttotal from
-                    statuspost where parent!='Y' and shareid='$shareid'
-                ");
+                    statuspost where parent!='Y' and shareid=?
+                ",array($shareid));
             $row2 = pdo_fetch($result);
             $commentitems = $row2['commenttotal'];
             echo "$commentitems Comments";

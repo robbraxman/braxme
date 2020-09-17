@@ -164,8 +164,8 @@ require_once("internationalization.php");
     if( $mode == 'A'){
     
         $result = pdo_query("1","
-            select providername, replyemail from provider where providerid=$providerid
-            ");
+            select providername, replyemail from provider where providerid=?
+            ",array($providerid));
         if( $row = pdo_fetch($result)){
         
             $ownername =$row['providername'];
@@ -183,8 +183,8 @@ require_once("internationalization.php");
             $roomid = 0;
             //Find if the Room already exists
             $result = pdo_query("1","
-                select roomid from statusroom where room='$roomForSql' and owner=$providerid
-                ");
+                select roomid from statusroom where room=? and owner=?
+                ",array($roomForSql,$providerid));
             if( $row = pdo_fetch($result)){
             
                 $roomid = intval($row['roomid']);
@@ -217,13 +217,15 @@ require_once("internationalization.php");
             
             pdo_query("1","
                 insert into statusroom ( roomid, owner, providerid, status, createdate, creatorid ) values
-                ( $roomid,$providerid, $providerid, '', now(), $providerid )
-                ");
+                ( ?,?, ?, '', now(), ? )
+                ",array(
+                    $roomid,$providerid,$providerid,$providerid
+                ));
             if( $friendproviderid!=''){
             
                 $result = pdo_query("1","
-                    select providername, replyemail from provider where providerid=$friendproviderid
-                    ");
+                    select providername, replyemail from provider where providerid=?
+                    ",array($friendproviderid));
                 if( $row = pdo_fetch($result)){
                 
                     $friendemail =$row['replyemail'];
@@ -231,8 +233,8 @@ require_once("internationalization.php");
 
                 pdo_query("1","
                     insert into statusroom ( roomid, owner, providerid, status, createdate, creatorid ) values
-                    ( $roomid,$providerid, $friendproviderid, '',now(),$providerid )
-                    ");
+                    ( ?,?, ?, '',now(),? )
+                    ",array($roomid,$providerid,$friendproviderid,$providerid));
             }
             
             
@@ -312,8 +314,8 @@ require_once("internationalization.php");
     if( $mode == '' && intval($roomid)==0){
     
         $result = pdo_query("1","
-            select providername, replyemail from provider where providerid=$providerid
-            ");
+            select providername, replyemail from provider where providerid=?
+            ",array($providerid));
         if( $row = pdo_fetch($result)){
         
             $ownername =$row['providername'];
@@ -322,8 +324,8 @@ require_once("internationalization.php");
 
         //Find if the Room already exists
         $result = pdo_query("1","
-            select roomid from statusroom where (room='$roomForSql' and room!='') and owner=$providerid
-            ");
+            select roomid from statusroom where (room=? and room!='') and owner=?
+            ",array($roomForSql,$providerid));
         
         $roomid = 0;
         if( $row = pdo_fetch($result)){
@@ -343,8 +345,8 @@ require_once("internationalization.php");
                 }
                 pdo_query("1","
                     insert into statusroom ( roomid, room, owner, providerid, status, createdate, creatorid ) values
-                    ( $roomid, '$roomForSql',$providerid, $providerid,'', now(), $providerid )
-                    ");
+                    ( ?, ?,?, ?,'', now(), ? )
+                    ",array($roomid,$roomForSql,$providerid,$providerid,$providerid));
             }
         }
         

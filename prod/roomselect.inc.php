@@ -134,7 +134,7 @@ function UnreadRooms($providerid)
             left join roomhandle on roomhandle.roomid = statusroom.roomid 
             left join roominfo on roominfo.roomid = statusroom.roomid 
             left join provider on statusroom.owner = provider.providerid
-            where statusroom.providerid= $providerid
+            where statusroom.providerid= ?
             and ( datediff( now(), roominfo.lastactive)  < 2  )
             and roominfo.room!=''
             and (roominfo.rsscategory is null or roominfo.rsscategory ='')
@@ -144,7 +144,7 @@ function UnreadRooms($providerid)
             and roominfo.external !='Y'
             and (roominfo.adminroom !='Y' or roominfo.adminroom is null)
             order by statusroom.pin desc, statusreads.xaccode desc, roominfo.room asc         
-            ");
+            ",array($providerid));
     //            (select count(*) from statuspost where statuspost.roomid = roominfo.roomid and statuspost.providerid > 0  ) as postcount
 
     $count = 0;
@@ -291,7 +291,7 @@ function ActiveRooms($providerid)
             left join roomhandle on roomhandle.roomid = statusroom.roomid 
             left join roominfo on roominfo.roomid = statusroom.roomid 
             left join provider on statusroom.owner = provider.providerid
-            where statusroom.providerid= $providerid
+            where statusroom.providerid= ?
             and ( datediff( now(), roominfo.lastactive)  < 2 or statusroom.pin > 0 )
             and roominfo.room!=''
             and (roominfo.rsscategory is null or roominfo.rsscategory ='')
@@ -306,7 +306,7 @@ function ActiveRooms($providerid)
             )
             and (roominfo.adminroom !='Y' or roominfo.adminroom is null)
             order by statusroom.pin desc, roominfo.room asc         
-            ");
+            ",array($providerid));
 
     $count = 0;
     //        (select count(*) from statuspost where statuspost.roomid = roominfo.roomid and statuspost.providerid > 0 ) as postcount
@@ -437,11 +437,11 @@ function FeedRooms($providerid )
             left join roomhandle on roomhandle.roomid = statusroom.roomid 
             left join roominfo on roominfo.roomid = statusroom.roomid 
             left join provider on statusroom.owner = provider.providerid
-            where statusroom.providerid= $providerid
+            where statusroom.providerid= ?
             and roominfo.room!='' and roominfo.private='N'
             and roominfo.rsscategory is not null and roominfo.rsscategory !=''
             order by statusreads.xaccode desc, roominfo.room asc         
-            ");
+            ",array($providerid));
 
     $count = 0;
     //        and datediff( now(), roominfo.lastactive)  < 2
@@ -611,20 +611,20 @@ function AlphaRooms($providerid, $find )
             left join roominfo on roominfo.roomid = statusroom.roomid 
             left join provider on provider.providerid = statusroom.owner
             where 
-            statusroom.owner!=$providerid and
-            statusroom.providerid=$providerid and
+            statusroom.owner!=? and
+            statusroom.providerid=? and
             statusroom.roomid!=1 and
             roominfo.room!=''
             and 
-            ( roominfo.room like '%$find%' or 
-              roomhandle.handle like '%$find%' or
-              roominfo.roomdesc like '%$find%'
+            ( roominfo.room like ? or 
+              roomhandle.handle like ? or
+              roominfo.roomdesc like ?
             )
             and roominfo.profileflag !='Y'
-            and ( radiostation!='Y' or statusroom.owner = $providerid)
+            and ( radiostation!='Y' or statusroom.owner = ?)
 
             order by roominfo.room asc
-            ");
+            ",array($providerid,$providerid,"%".$find."%","%".$find."%","%".$find."%",$providerid));
 
 
         //    (select count(*) from statuspost where statuspost.roomid = roominfo.roomid and statuspost.providerid > 0 ) as postcount
@@ -775,24 +775,23 @@ function OwnedRooms($providerid, $find )
             left join roominfo on roominfo.roomid = statusroom.roomid 
             left join provider on provider.providerid = statusroom.owner
             where 
-            statusroom.owner=$providerid 
+            statusroom.owner=? 
             and
-            statusroom.providerid=$providerid 
+            statusroom.providerid=? 
             and statusroom.roomid!=1
             and roominfo.room!=''
             and 
-            ( roominfo.room like '%$find%' or 
-              roomhandle.handle like '%$find%' or
-              roominfo.roomdesc like '%$find%'
+            ( roominfo.room like ? or 
+              roomhandle.handle like ? or
+              roominfo.roomdesc like ?
             )
             and roominfo.profileflag !='Y'
-            and ( radiostation!='Y' or statusroom.owner = $providerid)
+            and ( radiostation!='Y' or statusroom.owner = ? )
 
             order by roominfo.room asc
-            ");
+            ",array($providerid,$providerid,"%".$find."%","%".$find."%","%".$find."%",$providerid));
 
 
-        //    (select count(*) from statuspost where statuspost.roomid = roominfo.roomid ) as postcount
 
 
         $lastroomid = '';
@@ -962,14 +961,14 @@ function OwnedRooms2($providerid, $find, $owned )
             left join roominfo on roominfo.roomid = statusroom.roomid 
             left join provider on provider.providerid = statusroom.owner
             where 
-            statusroom.providerid=$providerid 
+            statusroom.providerid=? 
             and statusroom.roomid!=1
             and roominfo.room!=''
             and 
-            ( roominfo.room like '%$find%' or 
-              roomhandle.handle like '%$find%' or
-              roominfo.roomdesc like '%$find%' or
-              (roomhandle.category like '%$find%' and roomhandle.category!= 'Private')
+            ( roominfo.room like ? or 
+              roomhandle.handle like ? or
+              roominfo.roomdesc like ? or
+              (roomhandle.category like ? and roomhandle.category!= 'Private')
             )
             and roominfo.profileflag !='Y'
             and ( radiostation!='Y' )
@@ -979,7 +978,7 @@ function OwnedRooms2($providerid, $find, $owned )
             )
             $ownedquery
             order by roominfo.room asc
-            ");
+            ",array($providerid,"%".$find."%","%".$find."%","%".$find."%","%".$find."%"));
 
 
         //    (select count(*) from statuspost where statuspost.roomid = roominfo.roomid  and statuspost.providerid > 0 ) as postcount

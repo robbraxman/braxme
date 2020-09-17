@@ -299,7 +299,7 @@ require_once("roomfunc.inc.php");
             (select 'Y' from statusreads st2 
                 where st2.shareid = statuspost.shareid and
                 st2.roomid = statuspost.roomid and
-                st2.xaccode ='X' and st2.providerid = $providerid
+                st2.xaccode ='X' and st2.providerid = ?
               ) as flagged,
 
 
@@ -314,19 +314,19 @@ require_once("roomfunc.inc.php");
             roominfo.anonymousflag, blocked1.blockee, blocked2.blocker,
             provider.profileroomid,
             (select providerid from roommoderator where roommoderator.roomid = statuspost.roomid
-             and roommoderator.providerid = $providerid) as moderator,
+             and roommoderator.providerid = ? ) as moderator,
             statuspost.commentcount, statuspost.title
             from statuspost
             left join provider on statuspost.providerid = provider.providerid
             left join roominfo on statuspost.roomid = roominfo.roomid
-            left join blocked blocked1 on blocked1.blockee = statuspost.providerid and blocked1.blocker = $providerid
-            left join blocked blocked2 on blocked2.blocker = statuspost.providerid and blocked2.blockee = $providerid
+            left join blocked blocked1 on blocked1.blockee = statuspost.providerid and blocked1.blocker = ?
+            left join blocked blocked2 on blocked2.blocker = statuspost.providerid and blocked2.blockee = ?
 
             where statuspost.parent = 'Y' and
-            statuspost.roomid  = $roomid
+            statuspost.roomid  = ?
             and '$roominfo->subscriptionpending'!='Y'
             order by  pin desc,  case when lastpostdate is null then postdate else lastpostdate end  desc  limit $limitstart, $limitend 
-    ");
+    ",array($proivderid,$providerid,$providerid,$providerid,$roomid));
     
     
     $postcount = 0;
@@ -890,7 +890,7 @@ function LastComment( $owner, $adminroom, $shareid, $handle, $providerid, $roomi
                                 (select 'Y' from statusreads st2 
                                     where st2.shareid = statuspost.shareid and
                                     st2.roomid = statuspost.roomid and
-                                    st2.xaccode ='X' and st2.providerid = $providerid
+                                    st2.xaccode ='X' and st2.providerid = ?
                                   ) as flagged,
                                     
 				statuspost.shareid, statuspost.roomid, statuspost.likes, statuspost.owner, 
@@ -901,19 +901,19 @@ function LastComment( $owner, $adminroom, $shareid, $handle, $providerid, $roomi
                                roominfo.anonymousflag, blocked1.blockee, blocked2.blocker,
                                provider.profileroomid,
                                 (select providerid from roommoderator where roommoderator.roomid = statuspost.roomid
-                                 and roommoderator.providerid = $providerid) as moderator
+                                 and roommoderator.providerid = ? ) as moderator
                                 from statuspost
 				left join provider on statuspost.providerid = provider.providerid
                                 left join roominfo on statuspost.roomid = roominfo.roomid
-                                left join blocked blocked1 on blocked1.blockee = statuspost.providerid and blocked1.blocker = $providerid
-                                left join blocked blocked2 on blocked2.blocker = statuspost.providerid and blocked2.blockee = $providerid
-				where parent!='Y' and shareid='$shareid'
+                                left join blocked blocked1 on blocked1.blockee = statuspost.providerid and blocked1.blocker = ?
+                                left join blocked blocked2 on blocked2.blocker = statuspost.providerid and blocked2.blockee = ?
+				where parent!='Y' and shareid=?
 
 				 order by  statuspost.postdate desc limit 5
             ) as s2
             order by postdate2 asc
 
-        "
+        ",array($providerid,$providerid,$providerid,$providerid,$shareid)
         );
             
     $i = 0;

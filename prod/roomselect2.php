@@ -78,7 +78,7 @@ require_once("lib_autolink.php");
             left join blocked blocked1 on blocked1.blockee = statuspost.providerid and blocked1.blocker = statusroom.providerid
             left join blocked blocked2 on blocked2.blocker = statuspost.providerid and blocked2.blockee = statusroom.providerid
             where 
-            statusroom.providerid = $providerid 
+            statusroom.providerid = ? 
             and            
             (
                 roominfo.profileflag!='Y' 
@@ -112,7 +112,7 @@ require_once("lib_autolink.php");
             
 
 
-    ");
+    ",array($providerid));
     $readonly = 'N';
     $page = 0;
     $sizing = RoomSizing();

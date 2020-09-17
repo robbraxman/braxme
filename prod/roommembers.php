@@ -104,19 +104,19 @@ require_once("internationalization.php");
             left join roommoderator on roommoderator.providerid = statusroom.providerid
                 and roommoderator.roomid = statusroom.roomid
             where 
-            (statusroom.roomid = $roomid  or '$roomid' = '0' )
+            (statusroom.roomid = ?  or ? = '0' )
             and provider.active = 'Y' and statusroom.roomid not in (select roomid from publicrooms )
-            and (providername like '%$filter%' or handle like '%$filter%' )
+            and (providername like ? or handle like ? )
             and
             ( statusroom.roomid in
-               (select roomid from statusroom s2 where s2.roomid = statusroom.roomid and s2.owner = $providerid )
+               (select roomid from statusroom s2 where s2.roomid = statusroom.roomid and s2.owner = ? )
               or
               statusroom.roomid in
-                (select roomid from roommoderator r2 where r2.roomid = statusroom.roomid and r2.providerid = $providerid )
+                (select roomid from roommoderator r2 where r2.roomid = statusroom.roomid and r2.providerid = ? )
             )
                
              order by  statusroom.roomid, name2 asc limit 500
-        ");
+        ",array($roomid,$roomid,"%".$filter."%","%".$filter."%",$providerid,$providerid));
     
     $lastroom = "";
     echo "<div style='padding:0;margin-auto;text-align:center'>";
@@ -269,7 +269,7 @@ require_once("internationalization.php");
                 and roommoderator.roomid = statusroom.roomid
             
             where
-            (statusroom.roomid = $roomid or '$roomid' = '0')
+            (statusroom.roomid =? or ? = '0')
                 and provider.active = 'Y'
             and
             ( statusroom.roomid not in
@@ -280,7 +280,7 @@ require_once("internationalization.php");
             )
             
             order by  statusroom.roomid asc, provider.providername asc limit 500
-        ");
+        ",array($roomid,$roomid));
     
     
 

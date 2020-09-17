@@ -156,10 +156,10 @@ function ShowMyProfile($providerid, $roomowner, $caller, $profileflag)
             select providername, avatarurl, replyemail, handle, publishprofile, publish, gift,
             blocked1.blockee, blocked2.blocker, provider.profileroomid, medal
             from provider 
-            left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = $providerid
-            left join blocked blocked2 on blocked2.blocker = provider.providerid and blocked2.blockee = $providerid
-            where providerid = $roomowner 
-                ");
+            left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = ?
+            left join blocked blocked2 on blocked2.blocker = provider.providerid and blocked2.blockee = ?
+            where providerid = ? 
+                ",array($providerid,$providerid,$roomowner));
     $providername = "Unknown";
     if($row = pdo_fetch($result)){
         $medal = $row['medal'];
@@ -246,7 +246,7 @@ function ShowMyPhotos($providerid, $watcherid, $caller)
     if($_SESSION['superadmin']!='Y'){
     //    return "";
     }
-    $result = pdo_query("1","select * from photolibshare where providerid = $providerid  limit 1");
+    $result = pdo_query("1","select * from photolibshare where providerid = ?  limit 1",array($providerid));
     if($row = pdo_fetch($result)){
         return "
                             <div class='photolibshare rounded' data-userid='$providerid' style='width:250px;cursor:pointer;padding-left:10px;background-color:$global_titlebar_color;color:white'>
@@ -284,7 +284,7 @@ function ShowMyRooms($providerid, $watcherid, $caller)
         from statusroom 
         left join  roominfo on statusroom.roomid = roominfo.roomid
         left join  roomhandle on statusroom.roomid = roomhandle.roomid 
-        where owner = $providerid and statusroom.providerid = statusroom.owner
+        where owner = ? and statusroom.providerid = statusroom.owner
         and roominfo.anonymousflag!='Y'
         and radiostation!='Y' and radiostation!='Q' and rsscategory = '' 
         and (
@@ -298,7 +298,7 @@ function ShowMyRooms($providerid, $watcherid, $caller)
 	    )
         and statusroom.roomid > 1
         order by roominfo.profileflag desc, roominfo.lastactive desc, roominfo.room asc
-    ");
+    ",array($providerid));
     while($row = pdo_fetch($result)){
         $room = $row['room'];
         $roomhandle = $row['handle'];
@@ -349,7 +349,7 @@ function ShowMyPrivateRooms($providerid, $watcherid, $caller)
         roominfo.photourl, roominfo.profileflag from statusroom 
         left join  roominfo on statusroom.roomid = roominfo.roomid
         left join  roomhandle on statusroom.roomid = roomhandle.roomid 
-        where owner = $providerid and statusroom.providerid = statusroom.owner
+        where owner = ? and statusroom.providerid = statusroom.owner
         and radiostation!='Y' and radiostation!='Q' and rsscategory = '' 
         and (
             roomhandle.handle is null or
@@ -359,7 +359,7 @@ function ShowMyPrivateRooms($providerid, $watcherid, $caller)
         and roominfo.profileflag!='Y'
         and statusroom.roomid > 1
         order by roominfo.profileflag desc, roominfo.room asc
-    ");
+    ",array($providerid));
     while($row = pdo_fetch($result)){
         $room = $row['room'];
         $roomhandle = $row['handle'];
@@ -650,13 +650,13 @@ function IsThereExistingChat($providerid, $recipientid )
         select chatid, keyhash from chatmaster 
         where 
         chatid in
-        (select chatid from chatmembers where chatmembers.providerid=$providerid
+        (select chatid from chatmembers where chatmembers.providerid=?
             and chatmaster.chatid = chatmembers.chatid )
         and chatid in    
-        (select chatid from chatmembers where chatmembers.providerid=$recipientid
+        (select chatid from chatmembers where chatmembers.providerid=?
             and chatmaster.chatid = chatmembers.chatid )
         and (select count(*) from chatmembers where chatmaster.chatid = chatmembers.chatid) = 2
-            ");
+            ",array($providerid,$recipientid));
     if($row = pdo_fetch($result)){
         $array['chatid'] = $row['chatid'];
         $array['keyhash'] = $row['keyhash'];
@@ -676,15 +676,15 @@ function ShowMyScore( $providerid)
     
     $result = pdo_query("1","
         SELECT score from provider
-        where providerid = $providerid 
-    ");
+        where providerid = ? 
+    ",array($providerid));
     if($row = pdo_fetch($result)){
         $score1 += intval($row['score']);
     }
     $result = pdo_query("1","
         SELECT count(*) as score from gifts
-        where owner = $providerid 
-    ");
+        where owner = ? 
+    ",array($providerid));
     if($row = pdo_fetch($result)){
         $score2 += intval($row['score']);
     }
@@ -718,8 +718,8 @@ function ShowMyFollowers( $providerid)
     
     $result = pdo_query("1","
         SELECT count(*) as count from followers
-        where providerid = $providerid 
-    ");
+        where providerid = ? 
+    ",array($providerid));
     if($row = pdo_fetch($result)){
         $followers += intval($row['count']);
     }
@@ -746,9 +746,9 @@ function ShowFollowing( $roomowner, $providerid )
         SELECT * 
         from followers
         left join provider on followers.followerid =provider.providerid
-        where followers.providerid = $roomowner  and followers.followerid=$providerid
+        where followers.providerid = ?  and followers.followerid=?
         and provider.active = 'Y'
-    ");
+    ",array($roomowner,$providerid));
     if($row = pdo_fetch($result)){
         $following = "<br><div class='smalltext managefriends' data-friendid='$roomowner' data-mode='UF' style='cursor:pointer;border-radius:5px;text-align:center;background-color:white;color:black;padding-top:5px;padding-bottom:5px;padding-left:20px;padding-right:20px;margin-top:5px'>Following</div>";
     }
@@ -778,8 +778,8 @@ function GetTechNotes( $otherid  )
             (select count(*) from chatmessage where chatmessage.providerid = provider.providerid) as chatcount,
             (select count(*) from filelib where filelib.providerid = provider.providerid and filelib.status='Y') as filecount
             
-            from provider where providerid = $otherid and superadmin is null and techsupport = ''
-            ");
+            from provider where providerid = ? and superadmin is null and techsupport = ''
+            ",array($otherid));
             //(select count(*) from chatmessage where chatmessage.providerid = provider.providerid) as chatcount,
             //(select count(*) from statuspost where statuspost.providerid = provider.providerid) as roomcount
     
@@ -803,8 +803,8 @@ function GetTechNotes( $otherid  )
         
         
         $result2 = pdo_query("1","   
-            select accountid, username, password, startdate, ip from bytzvpn where providerid = $otherid and status='Y'
-            ");
+            select accountid, username, password, startdate, ip from bytzvpn where providerid = ? and status='Y'
+            ",array($otherid));
         if($row2 = pdo_fetch($result)){
             $technotes .= "BytzVPN $row2[username] / $row2[password] ($row2[startdate]) $row2[ip]<br>";
             $technotes .= "<br><div class='vpnmanage divbutton4' data-accountid='$row2[accountid]' data-mode='E' >Edit VPN Account</div><br><br>";
@@ -815,8 +815,9 @@ function GetTechNotes( $otherid  )
         
         $i = 0;
         $result2 = pdo_query("1","   
-            select xacdate, item_name, payment_status, payment_amount,payer_email,paypalname,tracking,shipstatus, city, state, country from paypalipn where buyer = $otherid order by xacdate desc
-            ");
+            select xacdate, item_name, payment_status, payment_amount,payer_email,paypalname,tracking,shipstatus, 
+            city, state, country from paypalipn where buyer = ? order by xacdate desc
+            ",array($otherid));
         while($row2 = pdo_fetch($result)){
             if($i==0){
                 $technotes .= "STORE TRANSACTIONS<br>-----------------------<br>";
@@ -878,9 +879,9 @@ function GetTechNotes( $otherid  )
         
         
         $result = pdo_query("1","   
-            select platform, arn, token, registered, status, error from notifytokens where providerid = $otherid 
+            select platform, arn, token, registered, status, error from notifytokens where providerid = ? 
                 and status!='E' order by registered desc limit 5
-            ");
+            ",array($otherid));
         while($row = pdo_fetch($result)){
             $gcm = '';
             $apn = '';
@@ -905,11 +906,11 @@ function GetTechNotes( $otherid  )
             left join roomhandle on roominfo.roomid = roomhandle.roomid
              where roominfo.roomid in (
                 select roomid from statusroom where 
-                owner=$otherid and statusroom.roomid = roominfo.roomid and statusroom.owner = statusroom.providerid
+                owner=? and statusroom.roomid = roominfo.roomid and statusroom.owner = statusroom.providerid
              ) 
              and profileflag!='Y'
              order by external desc
-            ");
+            ",array($otherid));
         $technotes .= "<div class='smalltext'>Rooms<br>";
         while($row = pdo_fetch($result)){
             $public = '';
@@ -926,8 +927,8 @@ function GetTechNotes( $otherid  )
         }
         
         $result = pdo_query("1","   
-            select periscopestreamkey, youtubestreamkey, twitchstreamkey from restream where providerid =  $otherid         
-            ");
+            select periscopestreamkey, youtubestreamkey, twitchstreamkey from restream where providerid =  ?         
+            ",array($otherid));
         if($row = pdo_fetch($result)){
             $technotes .= "<b>Restream</b><br>";
             $technotes .= "Periscope=".$row['periscopestreamkey']." Youtube=".$row['youtubestreamkey']." Twitch=".$row['twitchstreamkey'].
@@ -940,8 +941,8 @@ function GetTechNotes( $otherid  )
             from notification 
             left join chatmaster on notification.chatid = chatmaster.chatid
             left join provider on notification.providerid = provider.providerid
-            where recipientid =  $otherid order by notifydate desc limit 100        
-            ");
+            where recipientid =  ? order by notifydate desc limit 100        
+            ",array($otherid));
         $technotes .= "<div class='smalltext2'>Notifications<br>";
         while($row = pdo_fetch($result)){
             $title = htmlentities( DecryptText( $row['title'], $row['encoding'],$row['chatid'] ),ENT_QUOTES);            
@@ -983,7 +984,7 @@ function ShowMyStore($owner)
         //return "";
     }
     $store = '';
-    $result = pdo_query("1","select store from provider where providerid = $owner ");
+    $result = pdo_query("1","select store from provider where providerid = ? ",array($owner));
     if($row = pdo_fetch($result)){
         $store = $row['store'];
     }
@@ -994,9 +995,9 @@ function ShowMyStore($owner)
     $roomid = '';
     $result = pdo_query("1","select handle from roomhandle where roomid in 
                 ( SELECT roomid FROM braxproduction.roominfo where store='Y' and external = 'Y' and roomid in 
-                  ( select roomid from statusroom where owner = $owner and owner = providerid ) 
+                  ( select roomid from statusroom where owner = ? and owner = providerid ) 
                 )
-            ");
+            ",array($owner));
     
     $handle = '';
     if($row = pdo_fetch($result)){

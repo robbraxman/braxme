@@ -27,7 +27,7 @@ require_once("internationalization.php");
 
     //echo "selected folder = $roomfolderid";
     
-    $result = pdo_query("1","select room, owner from statusroom where roomid=$roomid and owner=providerid limit 1");
+    $result = pdo_query("1","select room, owner from statusroom where roomid=? and owner=providerid limit 1",array($roomid));
     while( $row = pdo_fetch($result))
     {
         $room = $row['room'];
@@ -44,19 +44,22 @@ require_once("internationalization.php");
         
         pdo_query("1","
             insert into roomfilefolders (roomid, providerid, foldername, parentfolderid, createdate) values
-            ($roomid, $providerid, '--temp--',0, now() )
-            ");
+            (?, ?, '--temp--',0, now() )
+            ",array($roomid,$providerid)
+                );
         
         $result = 
-        pdo_query("1","
-            select folderid from roomfilefolders where roomid=$roomid and foldername='--temp--'
-                ");
+        pdo_query("1",
+            "
+            select folderid from roomfilefolders where roomid=? and foldername='--temp--'
+                ",array($roomid));
         if($row = pdo_fetch($result)){
         
-            pdo_query("1","
-                update roomfilefolders set foldername='$selectedfolder' where roomid=$roomid
+            pdo_query("1",
+                "
+                update roomfilefolders set foldername=? where roomid=?
                     and folderid = $row[folderid]
-                    ");
+                    ",array($selectedfolder,$roomid));
         }
         $statusMessage = "Folder $selectedfolder created<br>";
         
@@ -68,9 +71,10 @@ require_once("internationalization.php");
     }    
     if($mode == 'DF')
     {
-        pdo_query("1","
-            delete from roomfilefolders where roomid=$roomid and providerid=$providerid and folderid=$selectedfolderid
-                ");
+        pdo_query("1",
+            "
+            delete from roomfilefolders where roomid=? and providerid=? and folderid=?
+                ",array($roomid,$providerid,$selectedfolderid));
         
 
         $mode = "";
@@ -84,9 +88,9 @@ require_once("internationalization.php");
         
         $result = pdo_query("1",
             "
-                update roomfiles set folderid=$selectedfolderid where
-                    filename='$filename' and roomid=$roomid and providerid = $providerid
-            ");
+                update roomfiles set folderid=? where
+                    filename=? and roomid=? and providerid = ?
+            ",array($selectedfolderid,$filename,$roomid,$providerid);
         $filename = '';
         $mode = "";
         
@@ -97,7 +101,7 @@ require_once("internationalization.php");
     if($mode == 'S')
     {
         $selectedfolderid = $roomfolderid;
-        $result = pdo_query("1","select foldername from roomfilefolders where folderid=$roomfolderid ");
+        $result = pdo_query("1","select foldername from roomfilefolders where folderid=? ",array($roomfolderid));
         if($row = pdo_fetch($result)){
             $selectedfolder = $row['foldername'];
         }
@@ -111,29 +115,33 @@ require_once("internationalization.php");
         //exit();
         foreach($filenamelist as $filename){
             //var_dump( $filename )."<br>";
-            pdo_query("1","
+            pdo_query("1",
+                "
                 insert into roomfiles (roomid, providerid, filename, folderid, createdate, downloads)
                 values
-                ($roomid, $providerid, '$filename',$selectedfolderid, now(), 0 )
-                    ");
+                (?, ?, ?,?, now(), 0 )
+                    ",array($roomid,$providerid,$filename,$selectedfolderid));
         }
         //exit();
 
         $mode = "";
         
-        pdo_query("1"," 
+        pdo_query("1",
+            " 
             update statusroom set lastaccess = now()
-            where roomid = $roomid
-        ");
+            where roomid = ?
+        ",array($roomid));
     }
     if($mode == 'D')
     {
-        pdo_query("1","
-            delete from roomfiles where roomid=$roomid and 
-            providerid=$providerid and filename='$filename' and
-            folderid = $selectedfolderid
+        pdo_query("1",
+            "
+            delete from roomfiles where roomid=? and 
+            providerid=? and filename=? and
+            folderid = ?
             
-                ");
+                ",array($roomid,$providerid,$filename,$selectedfolderid)
+             );
 
         $mode = "";
     }
@@ -170,9 +178,10 @@ require_once("internationalization.php");
     if($mode=='D' && $filename!='')
     {
         
-        pdo_query("1","
-            delete from filelib where providerid=$providerid and filename='$filename' and status='Y'
-            ");
+        pdo_query("1",
+            "
+            delete from filelib where providerid=? and filename=? and status='Y'
+            ",array($providerid,$filename));
         
         deleteAWSObject($filename);
         //echo "Deleting '$bucket' '$filename<br>'";
@@ -184,9 +193,9 @@ require_once("internationalization.php");
         "
             select count(*) as total
             from filelib where 
-            filename in (select filename from roomfiles where roomid=$roomid )
+            filename in (select filename from roomfiles where roomid=? )
             and filetype!='mp3' and status='Y'
-        ");
+        ",array($roomid));
     if($row = pdo_fetch($result))
     {
         $nonmusictotal = $row['total'];
@@ -195,9 +204,9 @@ require_once("internationalization.php");
         "
             select count(*) as total
             from filelib where 
-            filename in (select filename from roomfiles where roomid=$roomid )
+            filename in (select filename from roomfiles where roomid=? )
             and filetype='mp3' and status='Y'
-        ");
+        ",array($roomid));
     if($row = pdo_fetch($result))
     {
         $musictotal = $row['total'];
@@ -397,11 +406,11 @@ require_once("internationalization.php");
             filelib.createdate as createdate2, filelib.encoding, filelib.providerid
             from filelib 
             left join roomfiles on roomfiles.filename = filelib.filename 
-                and roomfiles.folderid=$selectedfolderid
-            where roomfiles.roomid = $roomid and filelib.status = 'Y'
+                and roomfiles.folderid=?
+            where roomfiles.roomid = ? and filelib.status = 'Y'
             order by $sort_text
             $limit
-        ");
+        ",array($selectedfolderid,$roomid));
 
     echo "<div style='width:100%;padding:0;margin:auto;text-align:center;background-color:white;vertical-align:top'>";
     
@@ -626,10 +635,10 @@ function CreateFolderList( $roomid, $mode, $selectedfolder, $selectedfolderid, $
         $selectedfolderid = 0;
     }
     $result2 = pdo_query("1","
-        select distinct foldername, folderid from roomfilefolders where roomid = $roomid 
-            and parentfolderid=$selectedfolderid
+        select distinct foldername, folderid from roomfilefolders where roomid = ? 
+            and parentfolderid= ?
             order by foldername asc
-        ");
+        ",array($roomid,$selectedfolderid));
     $folderdiv = "";  
     $folderdiv2 = "";
     if($mode == 'CF')

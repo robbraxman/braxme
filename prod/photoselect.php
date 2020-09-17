@@ -54,9 +54,9 @@ require_once("internationalization.php");
     
     
     $result2 =pdo_query("1","
-        select count(*) as count from photolib where providerid = $providerid
-            and (album='$selectedalbum' or '' ='$selectedalbum')
-        ");
+        select count(*) as count from photolib where providerid = ?
+            and (album=? or '' =?)
+        ",array($providerid,$selectedalbum,$selectedalbum));
     $row2 = pdo_fetch($result);
     $total = $row2['count'];
 
@@ -227,11 +227,11 @@ require_once("internationalization.php");
         "
             select filename, alias, folder, album, title, createdate,
             aws_url, aws_expire, datediff(aws_expire, now()) as expire
-            from photolib where (providerid = $providerid or public='Y')
-            and (album = '$selectedalbum' or ('$selectedalbum' = '' and public!='Y' and album like 'upload-%' )  )
+            from photolib where (providerid = ? or public='Y')
+            and (album = ? or (? = '' and public!='Y' and album like 'upload-%' )  )
             and (hide is null or hide = 'N')
             order by createdate desc limit $pagestart, $max
-        ");
+        ",array($providerid,$selectedalbum,$selectedalbum));
     
     
     
@@ -340,11 +340,11 @@ function CreateAlbumList( $providerid, $selectedalbum, $selectedalbumHtml, $page
     $selectedalbumDisplay = DeconvertHTML($selectedalbum);
     $result2 = pdo_query("1","
         select distinct public, album from photolib where
-            ( ( providerid=$providerid and album!='' and album!='$selectedalbum' ) or public='Y')
+            ( ( providerid=? and album!='' and album!=? ) or public='Y')
             and album not like '* Artist%'
             and (hide is null or hide = 'N')
                 order by public asc, album asc
-        ");
+        ",array($providerid,$selectedalbum));
     
     $color = "#a1a1a4";;
     $colorpublic = $global_menu2_color;//'#49a942';

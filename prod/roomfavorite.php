@@ -12,11 +12,11 @@ $roomid = @tvalidator("PURIFY", $_POST['roomid'] );
 
 if($mode == 'A'){
     pdo_query("1","
-        insert into roomfavorites (providerid, roomid ) values ($providerid, $roomid )
-             ");
+        insert into roomfavorites (providerid, roomid ) values (?,? )
+             ",array($providerid,$roomid));
 }
 if($mode == 'D'){
     pdo_query("1","
-        delete from roomfavorites where providerid = $providerid and roomid = $roomid
-             ");
+        delete from roomfavorites where providerid = ? and roomid = ?
+             ",array($providerid,$roomid));
 }

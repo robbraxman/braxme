@@ -18,8 +18,8 @@ require_once("config-pdo.php");
     }
     
     $result = pdo_query("1",
-        "select private, external from roominfo where roomid=$roomid "
-        );
+        "select private, external from roominfo where roomid=? "
+        ,array($roomid));
     if($row = pdo_fetch($result)){
     
         $private = $row['private'];
@@ -31,8 +31,8 @@ require_once("config-pdo.php");
     $uniqid = str_replace('=','',base64_encode("$uniqid2"));
 
     $result = pdo_query("1",
-        "select handle from roomhandle where roomid=$roomid "
-        );
+        "select handle from roomhandle where roomid=? "
+        ,array($roomid));
     if($row = pdo_fetch($result)){
     
         $handle = $row['handle'];
@@ -56,8 +56,8 @@ require_once("config-pdo.php");
         $sharelink = "$rootserver/j/$uniqid";
         pdo_query("1"," 
             insert into roominvite (roomid, inviteid, expires, status )
-            values ($roomid, '$uniqid', date_add(now(),INTERVAL 2 DAY), 'Y')
-              ");
+            values (?, '$uniqid', date_add(now(),INTERVAL 2 DAY), 'Y')
+              ",array($roomid));
     } else {
         
         $sharelink = "$rootserver/$action/$handleshort";

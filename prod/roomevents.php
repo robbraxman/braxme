@@ -46,23 +46,22 @@ require_once("config-pdo.php");
     {
         if( $eventname !='' && $eventdate!='' )
         {
-            if($eventid == '')
-            {
+            if($eventid == ''){
+            
                 $result = pdo_query("1"," 
                 insert into events (roomid, eventname, eventdesc, eventdate, eventtime, providerid, createdate, status, notificationstatus, timezone )
                 values
-                    ($roomid,'$eventname', '$eventdesc', 
-                        date_add('$eventdate $eventtime',INTERVAL ($_SESSION[timezoneoffset])*(-1) HOUR), 
-                        '$eventtime', $providerid, now(), 'Y','', $_SESSION[timezoneoffset] )
-                       ");
-            }
-            else 
-            {
+                    (?,?, ?, 
+                        date_add(?,INTERVAL ($_SESSION[timezoneoffset])*(-1) HOUR), 
+                        ?, ?, now(), 'Y','', $_SESSION[timezoneoffset] )
+                       ",array($roomid,$eventname,$eventdesc,"$eventdate $eventtime",$eventtime,$providerid));
+            } else {
+                
                 $result = pdo_query("1"," 
-                update events set eventname = '$eventname', timezone = $_SESSION[timezoneoffset],
-                    eventdate=date_add('$eventdate $eventtime',INTERVAL ($_SESSION[timezoneoffset])*(-1) HOUR), eventtime='$eventtime', eventdesc='$eventdesc' 
-                    where eventid = $eventid and providerid = $providerid and roomid=$roomid
-                       ");
+                update events set eventname = ?, timezone = $_SESSION[timezoneoffset],
+                    eventdate=date_add(?,INTERVAL ($_SESSION[timezoneoffset])*(-1) HOUR), eventtime=?, eventdesc=? 
+                    where eventid = ? and providerid = ? and roomid=?
+                       ",array($eventname,"$eventdate $eventime",$eventtime,$eventdesc,$eventid,$providerid,$roomid));
             
             }
         $mode = '';
@@ -71,8 +70,8 @@ require_once("config-pdo.php");
     if( $mode == 'D')
     {
         $result = pdo_query("1"," 
-            delete from events where eventid = $eventid and providerid = $providerid and roomid=$roomid
-                   ");
+            delete from events where eventid = ? and providerid = ? and roomid=?
+                   ",array($eventid,$providerid,$roomid));
         $mode = '';
     }
     
@@ -92,8 +91,8 @@ require_once("config-pdo.php");
                 select date_format(date_add(eventdate,INTERVAL $_SESSION[timezoneoffset] HOUR),'%Y-%m-%d') as eventdate, 
                        date_format(date_add(eventdate,INTERVAL $_SESSION[timezoneoffset] HOUR),'%k:%i') as eventtime, 
                        eventname, eventdesc
-                from events where roomid=$roomid and eventid=$eventid and providerid=$providerid
-                    ");
+                from events where roomid=? and eventid=? and providerid=?
+                    ",array($roomid,$eventid,$providerid));
             if($row=pdo_fetch($result)){
                 $eventdate = "$row[eventdate]";
                 $eventtime = "$row[eventtime]";
@@ -198,10 +197,10 @@ $result = pdo_query("1","
         eventname, eventdesc, eventid, events.providerid, events.timezone, provider.providername, provider.name2 from 
         events 
         left join provider on provider.providerid = events.providerid
-        where roomid=$roomid
+        where roomid=?
         and eventdate > now()
         order by eventdate asc 
-        ");
+        ",array($roomid));
 while($row = pdo_fetch($result)){
     $delete = "";
     $edit = "";

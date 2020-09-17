@@ -34,14 +34,14 @@ function RoomPostNew(
             $result2 = pdo_query("1",
                 "
                     select count(*) as commentcount from
-                    statuspost where parent!='Y' and shareid='$shareid'
-                ");
+                    statuspost where parent!='Y' and shareid=?
+                ",array($shareid));
             if( $row2 = pdo_fetch($result)){
                 $commentcount = intval($row2['commentcount'])+1;
                 $result2 = pdo_query("1",
                     "
-                        update statuspost set commentcount = $commentcount where shareid='$shareid' and parent='Y'
-                    ");
+                        update statuspost set commentcount = ? where shareid=? and parent='Y'
+                    ",array($commentcount,$shareid));
             }
             
             
@@ -50,12 +50,12 @@ function RoomPostNew(
         $roomstyle = "";
         $result = pdo_query("1","
             select anonymousflag, adminonly, profileflag, roomstyle,
-            (select 'Y' from statusroom where statusroom.roomid = roominfo.roomid and owner = $providerid limit 1 )
+            (select 'Y' from statusroom where statusroom.roomid = roominfo.roomid and owner = ? limit 1 )
                as owner,
-            (select 'Y' from roommoderator where roommoderator.roomid = roominfo.roomid and roommoderator.providerid = $providerid)
+            (select 'Y' from roommoderator where roommoderator.roomid = roominfo.roomid and roommoderator.providerid = ?)
                as moderator
-            from roominfo where roomid = $roomid
-            ");
+            from roominfo where roomid = ?
+            ",array($providerid,$providerid,$roomid));
         
         if( $row = pdo_fetch($result)){
             
@@ -232,10 +232,15 @@ function RoomPostNew(
             (providerid, comment, postdate, shareid, parent, 
              owner, likes, roomid, postid,
              link, photo, video, encoding, anonymous, articleid, title, album ) values
-            ($posterid, '$encryptedcomment', now(), '$shareid','$parent', 
-             $owner, 0, $roomid,'$postid',
-              '','$photo','$video','$encoding','$anonymous', $articleid, '$title','$slideshow_album' )
-                ");
+            (?, ?, now(), ?,?, 
+             ?, 0, ?,?,
+              '',?,?,?,?,?,?,? )
+                ",array(
+                     $posterid, $encryptedcomment,$shareid,$parent, 
+                     $owner, 0, $roomid,$postid,
+                     $photo,$video,$encoding,$anonymous, $articleid, $title,$slideshow_album
+                    
+                ));
         if(!$result){
             /*
             echo "            
@@ -253,7 +258,7 @@ function RoomPostNew(
 
         }
         if($profileflag == 'Y'){
-            pdo_query("1","update provider set lastactive = now() where providerid = $posterid ");
+            pdo_query("1","update provider set lastactive = now() where providerid = ? ",array($posterid));
         }    
         
         FlagUnreadPost( $providerid, $shareid, $postid, $roomid, $anonymous, $mode, $articleid );
@@ -301,9 +306,9 @@ function RoomPostEdit(
 
         pdo_query("1","
             update statuspost
-            set title='$title', comment = '$encryptedcomment', encoding='$encoding'
-            where postid = '$postid'
-                ");
+            set title=?, comment = ?, encoding=?
+            where postid = ?
+                ",array($title,$encryptedcomment,$encoding,$postid));
 
         return true;
 }
@@ -328,8 +333,8 @@ function SharePost( $providerid, $articleid, $roomid, $room )
     
     $result = pdo_query("1","
         select comment, photo, encoding, providerid 
-        from statuspost where articleid = $articleid and providerid = 0
-        ");
+        from statuspost where articleid = ? and providerid = 0
+        ",array($articleid));
     
     if($row = pdo_fetch($result)){
         
@@ -349,11 +354,16 @@ function SharePost( $providerid, $articleid, $roomid, $room )
         owner, likes, roomid, postid,
         link, photo, video, encoding, anonymous, articleid ) 
 
-        select $providerid, '$encrypted', now(), '$shareid', 'Y',
-        $providerid, 0,  $roomid, '$postid',
-        '', '$encryptedphoto', '', '$_SESSION[responseencoding]', anonymous, articleid 
-        from statuspost where articleid = $articleid and providerid = 0 limit 1
-        ");
+        select ?, ?, now(), ?, 'Y',
+        ?, 0, ?, ?,
+        '', ?, '', '$_SESSION[responseencoding]', anonymous, articleid 
+        from statuspost where articleid = ? and providerid = 0 limit 1
+        ",array(
+            $providerid, $encrypted, $shareid,
+            $providerid, $roomid, $postid,
+            $encryptedphoto, $articleid 
+            
+        ));
 
     
     FlagUnreadPost( $providerid, $shareid, $postid, $roomid, '', 'P',"" );
@@ -560,8 +570,8 @@ function IsPhoto( $comment )
         $result = pdo_query("1",
             "
             select filetype from filelib where 
-            alias='$alias' and filetype in ('jpg','jpeg','png','gif') and status='Y'
-            " 
+            alias=? and filetype in ('jpg','jpeg','png','gif') and status='Y'
+            ",array($alias)
             );
         if($row = pdo_fetch($result)){
             return true;
@@ -588,9 +598,9 @@ function IsPhoto( $comment )
         $comment .= "&test=$alias";
         $result = pdo_query("1",
             "
-            select filetype from photolib where alias='$alias'
+            select filetype from photolib where alias=?
             and filetype in ('jpg','jpeg','png','gif') 
-            " 
+            ",array($alias)
             );
         if($row = pdo_fetch($result)){
             return true;
@@ -656,10 +666,10 @@ function GetSlideShowFirstImg($providerid, $album)
     $albumclean = tvalidator("PURIFY",html_entity_decode($album, ENT_QUOTES));
     
     $result = pdo_query("1","
-        select alias from photolib where (providerid=$providerid or album like '*%')
+        select alias from photolib where (providerid=? or album like '*%')
             and
-            album='$albumclean'  order by createdate asc
-            ");
+            album=?  order by createdate asc
+            ",array($providerid,$albumclean));
     if($row = pdo_fetch($result)){
         $alias = $row['alias'];
         return "$rootserver/$installfolder/sharedirect.php?a=$alias";
@@ -817,20 +827,20 @@ function RoomPostLike( $providerid, $shareid, $postid, $roomid)
 
     
         $result = pdo_query("1","
-            select * from statusreads where providerid=$providerid and shareid='$shareid' and postid='$postid' and xaccode='L'
-                ");
+            select * from statusreads where providerid=? and shareid=? and postid=? and xaccode='L'
+                ",array($providerid,$shareid,$postid));
         if(!$row = pdo_fetch($result)){
             pdo_query("1","
-                update statuspost set likes=likes+1 where shareid = '$shareid' and postid='$postid'
-                    ");
+                update statuspost set likes=likes+1 where shareid = ? and postid=?
+                    ",array($shareid,$postid));
 
             pdo_query("1","
                 insert into statusreads (providerid, shareid, postid, xaccode, actiontime, roomid ) values (
-                                        $providerid, '$shareid', '$postid', 'L', now(), $roomid )
-                    ");
+                                        ?, ?, ?, 'L', now(), ? )
+                    ",array($providerid,$shareid,$postid,$roomid));
             $result = pdo_query("1","
-                select providerid from statuspost where shareid='$shareid' and postid='$postid'
-                ");
+                select providerid from statuspost where shareid=? and postid=?
+                ",array($shareid,$postid));
             if( $row = pdo_fetch($result)){
                 $owner = $row['providerid'];   
             }
@@ -856,31 +866,33 @@ function RoomPostDelete( $providerid, $shareid, $postid, $roomid )
     //Is this a Parent Post and being deleted by Owner?
     $result = pdo_query("1","
         select parent from statuspost
-        where shareid='$shareid' and postid='$postid' and 
+        where shareid=? and postid=? and 
         parent='Y' and 
         ( 
-            providerid=$providerid or 
-            owner=$providerid or
+            providerid=? or 
+            owner=? or
             exists 
             ( select providerid from roommoderator 
-              where roomid=$roomid and providerid=$providerid 
+              where roomid=? and providerid=? 
             ) 
             or exists 
             (   select providerid from statusroom 
-                where roomid=$roomid and owner=$providerid 
+                where roomid=? and owner=? 
             ) 
             or 'Y' = '$_SESSION[superadmin]'
 
         )
-    ");
+    ",array(
+        $shareid,$postid,$providerid,$providerid,$roomid,$providerid,$roomid,$providerid
+    ));
     if($row = pdo_fetch($result)){
         $parent = $row['parent'];
 
         //Delete all posts for this thread if this is parent
         pdo_query("1","
             delete from statuspost
-                where shareid='$shareid'  
-                ");
+                where shareid=?  
+                ",array($shareid));
         
     } else {
         //deleting a non-parent post
@@ -888,8 +900,8 @@ function RoomPostDelete( $providerid, $shareid, $postid, $roomid )
         $result2 = pdo_query("1",
             "
                 select count(*) as commentcount from
-                statuspost where parent!='Y' and shareid='$shareid'
-            ");
+                statuspost where parent!='Y' and shareid=?
+            ",array($shareid));
         if( $row2 = pdo_fetch($result)){
             $commentcount = intval($row2['commentcount'])-1;
             if($commentcount < 0 ){
@@ -897,8 +909,8 @@ function RoomPostDelete( $providerid, $shareid, $postid, $roomid )
             }
             $result2 = pdo_query("1",
                 "
-                    update statuspost set commentcount = $commentcount where shareid='$shareid' and parent='Y'
-                ");
+                    update statuspost set commentcount = ? where shareid=? and parent='Y'
+                ",array($commencount,$shareid));
         }
         
     }
@@ -908,42 +920,44 @@ function RoomPostDelete( $providerid, $shareid, $postid, $roomid )
         delete from statuspost
         where   (
                     (
-                        providerid=$providerid or 
-                        owner=$providerid or
+                        providerid=? or 
+                        owner=? or
                         exists 
                         (select providerid from roommoderator 
-                         where roomid=$roomid and providerid=$providerid 
+                         where roomid=? and providerid=? 
                         ) or
                         exists 
                         (   select providerid from statusroom 
-                            where roomid=$roomid and owner=$providerid 
+                            where roomid=? and owner=? 
                         ) 
                     ) 
                     or 'Y' = '$_SESSION[superadmin]'
                 )
                 and shareid='$shareid' and postid='$postid' 
-            ");
+            ",array(
+                $providerid,$providerid,$roomid,$providerid,$roomid,$providerid
+            ));
     
 
     //Delete any statusreads of type R of mine since I've seen it
     pdo_query("1","
         delete from statusreads
-        where shareid ='$shareid' and providerid=$providerid
+        where shareid =? and providerid=?
         and xaccode='R'
-            ");
+            ",array($shareid,$providerid));
 
     pdo_query("1","
         delete from statusreads
         where shareid not in 
-            (select shareid from statuspost where shareid='$shareid' 
+            (select shareid from statuspost where shareid=? 
             and statusreads.postid = statuspost.postid )
-        and postid = '$postid'
-            ");
+        and postid = ?
+            ",array($shareid,$postid));
 
     pdo_query("1","
         insert into statusreads (providerid, shareid, postid, xaccode, actiontime, roomid ) values (
-                                $providerid, '$shareid', '$postid', 'D', now(), $roomid )
-            ");
+                                ?, ?, ?, 'D', now(), ? )
+            ",array($providerid,$shareid,$postid,$roomid));
 
     
 }
@@ -962,8 +976,8 @@ function FlagBumpPost( $providerid, $shareid, $postid, $roomid )
         pdo_query("1","
             insert into statusreads 
             (providerid, shareid, postid, xaccode, actiontime, roomid ) values
-            ( $providerid, '$shareid', '$postid', 'B', now(), $roomid )
-            ");
+            ( ?, ?, ?, 'B', now(), ? )
+            ",array($providerid,$shareid,$postid,$roomid));
 }
 /****************************************************************
  * 
@@ -980,13 +994,13 @@ function FlagMakePost( $providerid, $shareid, $postid, $roomid )
         pdo_query("1","
             insert into statusreads 
             (providerid, shareid, postid, xaccode, actiontime, roomid ) values
-            ( $providerid, '$shareid', '$postid', 'P', now(), $roomid )
-            ");
+            ( ?, ?, ?, 'P', now(), ? )
+            ",array($providerid,$shareid,$postid,$roomid));
     }
 
     pdo_query("1","
-        update roominfo set lastactive = now() where roomid = $roomid
-        ");
+        update roominfo set lastactive = now() where roomid = ?
+        ",array($roomid));
         
         
 }
@@ -1004,8 +1018,8 @@ function FlagBlockPost( $providerid, $shareid, $postid, $roomid )
     pdo_query("1","
         insert into statusreads 
         (providerid, shareid, postid, xaccode, actiontime, roomid ) values
-        ( $providerid, '$shareid', '$postid', 'X', now(), $roomid )
-        ");
+        ( ?, ?, ?, 'X', now(), ? )
+        ",array($providerid,$shareid,$postid,$roomid));
         
 }
 /****************************************************************
@@ -1020,8 +1034,8 @@ function FlagBlockPost( $providerid, $shareid, $postid, $roomid )
 function FlagUnreadPost( $providerid, $shareid, $postid, $roomid, $anonymous, $subtype, $articleid )
 {
     pdo_query("1","
-        delete from statusreads where shareid='$shareid' and xaccode='R'
-        ");
+        delete from statusreads where shareid=? and xaccode='R'
+        ",array($shareid));
     
     if(intval($articleid)==0){
         //RoomNotification($providerid, $roomid, $subtype, $shareid, $postid, $anonymous );
@@ -1030,8 +1044,8 @@ function FlagUnreadPost( $providerid, $shareid, $postid, $roomid, $anonymous, $s
 
     pdo_query("1"," 
         update statusroom set lastaccess = now()
-        where roomid = $roomid
-    ");
+        where roomid = ?
+    ",array($roomid));
 }
 /****************************************************************
  * 
@@ -1045,8 +1059,8 @@ function FlagUnreadPost( $providerid, $shareid, $postid, $roomid, $anonymous, $s
 function FlagReadPost( $shareid )
 {
     pdo_query("1","
-        delete from statusreads where shareid='$shareid' and xaccode='R'
-        ");
+        delete from statusreads where shareid=? and xaccode='R'
+        ",array($shareid));
     
 }
 /****************************************************************
@@ -1074,7 +1088,7 @@ function PinPost( $providerid, $shareid, $postid, $roomid )
                  ) 
             )
     
-        ");
+        ",array($postid, $providerid,$roomid,$providerid,$roomid,$providerid ));
         
 }
 function LockPost( $providerid, $shareid, $postid, $roomid )
@@ -1082,7 +1096,7 @@ function LockPost( $providerid, $shareid, $postid, $roomid )
     
     $result = pdo_query("1","
         select locked from statuspost where postid = '$postid' 
-            ");
+            ",array($postid));
     if($row = pdo_fetch($result)){
         $lock = 1;
         if($row['locked']==1){
@@ -1090,20 +1104,20 @@ function LockPost( $providerid, $shareid, $postid, $roomid )
         }
     
         pdo_query("1","
-            update statuspost set locked = $lock where postid = '$postid' and 
+            update statuspost set locked = $lock where postid = ? and 
                 (
-                    owner = '$providerid'
+                    owner = ?
                     or exists 
                      (   select providerid from roommoderator 
-                         where roomid=$roomid and providerid=$providerid 
+                         where roomid=? and providerid=? 
                      ) 
                     or exists 
                      (   select providerid from statusroom 
-                         where roomid=$roomid and owner=$providerid 
+                         where roomid=? and owner=? 
                      ) 
                 )
 
-            ");
+            ",array($postid,$providerid,$roomid,$providerid,$roomid,$providerid));
     }
         
 }
@@ -1120,19 +1134,19 @@ function LockPost( $providerid, $shareid, $postid, $roomid )
 function UnPinPost( $providerid, $shareid, $postid, $roomid )
 {
     pdo_query("1","
-        update statuspost set pin = 0 where postid = '$postid' and
+        update statuspost set pin = 0 where postid = ? and
             (
-                owner = '$providerid'
+                owner = ?
                 or exists 
                  (   select providerid from roommoderator 
-                     where roomid=$roomid and providerid=$providerid 
+                     where roomid=? and providerid=? 
                  ) 
                 or exists 
                  (   select providerid from statusroom 
-                     where roomid=$roomid and owner=$providerid 
+                     where roomid=? and owner=? 
                  ) 
             )
-        ");
+        ",array($postid,$providerid,$roomid,$providerid,$roomid,$providerid));
         
 }
 /****************************************************************
@@ -1319,8 +1333,8 @@ function RoomInfo($providerid, $roomid, $mainwidth, $page, $memberinfo)
     
     if($providerid!=''){
         pdo_query("1","
-            delete from statusreads where xaccode = 'R' and providerid = $providerid and roomid = $roomid
-        ");
+            delete from statusreads where xaccode = 'R' and providerid = ? and roomid = ?
+        ",array($providerid,$roomid));
     }
 
     $result = pdo_query("1","
@@ -1361,10 +1375,10 @@ function RoomInfo($providerid, $roomid, $mainwidth, $page, $memberinfo)
             
             from roominfo
             where 
-            roominfo.roomid=$roomid 
+            roominfo.roomid=?
             limit 1
 
-            ");
+            ",array($roomid));
 
     
     //<img src='../img/door-128.png' style='position:relative;top:5px;height:20px' />
@@ -1386,8 +1400,8 @@ function RoomInfo($providerid, $roomid, $mainwidth, $page, $memberinfo)
             provider.providername as ownername, 
             provider.avatarurl, provider.publishprofile,
             provider.handle as ownerhandle, provider.store
-            from provider where providerid = $ownerid
-                "
+            from provider where providerid = ?
+                ",array($ownerid)
                 );
         if($row2 = pdo_fetch($result)){
 
@@ -1725,18 +1739,18 @@ function MemberCheck($providerid, $roomid)
         $result = pdo_query("1","
             select statusroom.roomid, roominfo.room, roominfo.radiostation,
             statusroom.owner, provider.providername as ownername,
-            (select 'Y' from notifymute where notifymute.id = statusroom.roomid and idtype='R' and notifymute.providerid = $providerid ) as mute,
+            (select 'Y' from notifymute where notifymute.id = statusroom.roomid and idtype='R' and notifymute.providerid = ? ) as mute,
             (select groupname from groups where groups.groupid = roominfo.groupid ) as groupname,
             (select providerid from roommoderator where roommoderator.roomid = statusroom.roomid
-             and roommoderator.providerid = $providerid) as moderator,
+             and roommoderator.providerid = ?) as moderator,
             (select handle from roomhandle where roomhandle.roomid = statusroom.roomid) as handle,
             (select 'Y' from roomfavorites where roomfavorites.roomid = statusroom.roomid and roomfavorites.providerid = statusroom.providerid ) as favorite,
             roominfo.private, roominfo.anonymousflag, roominfo.adminonly, roominfo.adminroom, roominfo.showmembers,
             roominfo.sponsor, roominfo.profileflag,
             (select DATE_FORMAT(now(),'%Y%m%d' )) as today,
-            (select DATE_FORMAT(subscribedate,'%Y%m%d') from statusroom s2 where s2.roomid = statusroom.roomid and s2.providerid = $providerid limit 1 ) as subscribedate,
-            (select DATE_FORMAT(expiredate,'%Y%m%d') from statusroom s2 where s2.roomid = statusroom.roomid and s2.providerid = $providerid limit 1 ) as expiredate,
-            (select 'Y' from statusroom s2 where s2.roomid = statusroom.roomid and s2.providerid = $providerid limit 1 ) as member,
+            (select DATE_FORMAT(subscribedate,'%Y%m%d') from statusroom s2 where s2.roomid = statusroom.roomid and s2.providerid = ? limit 1 ) as subscribedate,
+            (select DATE_FORMAT(expiredate,'%Y%m%d') from statusroom s2 where s2.roomid = statusroom.roomid and s2.providerid = ? limit 1 ) as expiredate,
+            (select 'Y' from statusroom s2 where s2.roomid = statusroom.roomid and s2.providerid = ? limit 1 ) as member,
             (select 
                 DATE_FORMAT(date_add(createdate,INTERVAL $_SESSION[timezoneoffset]*60 MINUTE), '%b %d %a %h:%i %p')  
                 from roomfiles 
@@ -1744,14 +1758,14 @@ function MemberCheck($providerid, $roomid)
                 and timestampdiff( DAY, createdate, now() ) < 30
                 order by createdate desc limit 1 
             ) as roomfiles,
-            ( select 'Y' from statusreads where statusreads.providerid = $providerid
+            ( select 'Y' from statusreads where statusreads.providerid = ?
                 and xaccode = 'R' and datediff( now(), actiontime) < 2 and 
-                statusreads.roomid != $roomid limit 1 ) as unread
+                statusreads.roomid != ? limit 1 ) as unread
             from statusroom 
             left join roominfo on statusroom.roomid = roominfo.roomid
             left join provider on statusroom.owner = provider.providerid
             where statusroom.roomid=$roomid  and statusroom.owner = statusroom.providerid
-                ");
+                ",array($providerid,$providerid,$providerid,$providerid,$providerid,$providerid,$roomid));
         if($row = pdo_fetch($result)){
             $memberinfo['roomid'] = $row['roomid'];
             $memberinfo['roomforsql'] = tvalidator("PURIFY",$row['room']);
@@ -1825,7 +1839,8 @@ function DisplayNewPost($readonly, $providerid, $roomid, $handle )
     if( intval($roomid) > 0 ){
         $result = pdo_query("1","
                   select owner from statusroom 
-                  where roomid=$roomid  and owner=$providerid ");
+                  where roomid=?  and owner=? ",
+                array($roomid,$providerid));
         if($row = pdo_fetch($result)){
             $owner = true;
         }
@@ -1833,7 +1848,7 @@ function DisplayNewPost($readonly, $providerid, $roomid, $handle )
         $result = pdo_query("1","
                 select anonymousflag, adminroom, (select handle 
                 from roomhandle where roomhandle.roomid = roominfo.roomid ) as handle
-                from roominfo where roomid=$roomid ");
+                from roominfo where roomid=? ",array($roomid));
         if($row = pdo_fetch($result)){
             $roomanonymous = $row['anonymousflag'];
             $roomhandle = $row['handle'];
@@ -2168,8 +2183,8 @@ function ShareRoom ( $readonly, $caller, $providerid, $roomid, $style, $showroom
         from statusroom
         left join roomhandle on roomhandle.roomid = statusroom.roomid
         left join roominfo on roominfo.roomid = statusroom.roomid
-        where statusroom.roomid=$roomid and statusroom.owner=statusroom.providerid
-            ");
+        where statusroom.roomid=? and statusroom.owner=statusroom.providerid
+            ",array($roomid));
     if($row = pdo_fetch($result)){
         
         $handle = $row['handle'];
@@ -2796,24 +2811,24 @@ function RoomPosterInfo( $roomid, $providerid, $avatarurl, $adminroom, $private,
          return;
      }
      $result = pdo_query("1","
-         select priority from sponsor where sponsor = '$sponsor' 
-         ");
+         select priority from sponsor where sponsor = ? 
+         ",array($sponsor));
      if( $row = pdo_fetch($result)){
          $priority = $row['priority'];
 
          //Always apply sponsor
         if($priority == 1){
             pdo_query("1","
-                 update provider set sponsor = '$sponsor' 
-                 where providerid = $providerid 
-                ");
+                 update provider set sponsor = ? 
+                 where providerid = ?
+                ",array($sponsor,$providerid));
         } else 
         if($priority == 2){
             //Do not override existing sponsor
             pdo_query("1","
-                 update provider set sponsor = '$sponsor' 
-                 where sponsor = '' and providerid = $providerid 
-                ");
+                 update provider set sponsor = ? 
+                 where sponsor = '' and providerid = ? 
+                ",array($sponsor,$providerid));
         } else {
             
         }

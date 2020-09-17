@@ -562,18 +562,12 @@ function GetChildLinks($readonly, $roominfo, $caller )
     $result = pdo_query("1","
         select distinct roominfo.room, roominfo.roomid, roomhandle.handle from roominfo 
         left join roomhandle on roominfo.roomid = roomhandle.roomid
-        where parentroom='$handle' and '$handle'!=''  and roominfo.external!='Y' 
+        where parentroom=? and ?!=''  and roominfo.external!='Y' 
         and roomhandle.handle!=''
         and roominfo.roomid in (select roomid from statusroom where statusroom.owner =  $roominfo->ownerid)
         
         order by roominfo.childsort desc, roominfo.room asc
-    ");
-    /*
-        and roomid in (select roomid from statusroom where 
-        statusroom.owner = statusroom.providerid and statusroom.owner = $roominfo->ownerid and 
-        roominfo.roomid = statusroom.roomid )
-     * 
-     */
+    ",array($handle,$handle));
     
     while($row = pdo_fetch($result)){
         $room = $row['room'];

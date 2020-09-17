@@ -39,10 +39,10 @@ require_once("internationalization.php");
             left join provider on provider.providerid = statusreads.providerid
             left join roominfo on roominfo.roomid = statusreads.roomid
             left join statuspost on statuspost.owner = statusreads.providerid and statusreads.shareid = statuspost.shareid 
-            left join blocked blocked1 on blocked1.blockee = statuspost.providerid and blocked1.blocker = $providerid
-            where statusreads.shareid = '$shareid' and statusreads.xaccode in ('L','C','D','B','P')
+            left join blocked blocked1 on blocked1.blockee = statuspost.providerid and blocked1.blocker = ?
+            where statusreads.shareid = ? and statusreads.xaccode in ('L','C','D','B','P')
             order by actiontime2 desc limit 100
-        ");
+        ",array($providerid,$shareid));
         $activity = "";
         while( $row2 = pdo_fetch($result))
         {
@@ -87,16 +87,16 @@ require_once("internationalization.php");
     $sizing = RoomSizing();
 
     pdo_query("1","
-        delete from statusreads where shareid='$shareid' and xaccode='R'
-        ");
+        delete from statusreads where shareid=? and xaccode='R'
+        ",array($shareid));
     
     
     $result2 = pdo_query("1",
         "
             select count(*) as count
             from statuspost
-            where parent!='Y' and shareid='$shareid'
-        ");
+            where parent!='Y' and shareid=?
+        ",array($shareid));
     $row2 = pdo_fetch($result);
     $iCount = $row2['count'];
             
@@ -132,19 +132,19 @@ require_once("internationalization.php");
                 roominfo.anonymousflag, blocked1.blockee, blocked2.blocker,
                 provider.profileroomid,
                 (select providerid from roommoderator where roommoderator.roomid = statuspost.roomid
-                 and roommoderator.providerid = $providerid) as moderator
+                 and roommoderator.providerid = ? ) as moderator
 
                 from statuspost
                 left join provider on statuspost.providerid = provider.providerid
                 left join roominfo on statuspost.roomid = roominfo.roomid
-                left join blocked blocked1 on blocked1.blockee = statuspost.providerid and blocked1.blocker = $providerid
-                left join blocked blocked2 on blocked2.blocker = statuspost.providerid and blocked2.blockee = $providerid
-                where parent!='Y' and shareid='$shareid'
+                left join blocked blocked1 on blocked1.blockee = statuspost.providerid and blocked1.blocker = ?
+                left join blocked blocked2 on blocked2.blocker = statuspost.providerid and blocked2.blockee = ?
+                where parent!='Y' and shareid=?
 
                  order by  statuspost.postdate  desc $limitsql
             ) as s2
             order by postdate2 asc
-        ");
+        ",array($providerid,$providerid,$providerid,$shareid));
             
     $i = 0;
     $page = 0;

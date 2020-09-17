@@ -17,15 +17,11 @@ require_once("roommanage.inc.php");
     $inviteid = @tvalidator("PURIFY",$_POST['inviteid']);
     
     
-    //$result = pdo_query("1",
-    //    "
-    //    update provider set newbie='N' where providerid = $providerid and newbie='Y'
-    //    ");
     
     
     $result = pdo_query("1",
-            "select roomid, timestampdiff(HOUR, now(), expires) as diff from roominvite where inviteid = '$inviteid'
-            "
+            "select roomid, timestampdiff(HOUR, now(), expires) as diff from roominvite where inviteid = ?
+            ",array($inviteid)
             );
     $diffval = -1;
     //$diffval = 0;
@@ -90,16 +86,16 @@ require_once("roommanage.inc.php");
         $result = pdo_query("1"," 
             select statusroom.roomid, roominfo.private, roominfo.room, 
             roominfo.groupid, provider.handle, roominfo.external, roominfo.featured,
-            (select 'Y' from groupmembers where providerid =$providerid and groupmembers.groupid = roominfo.groupid ) as groupmember,
+            (select 'Y' from groupmembers where providerid =? and groupmembers.groupid = roominfo.groupid ) as groupmember,
             statusroom.owner, blocked.blockee,
-            (select 'Y' from statusroom s2 where providerid=$providerid and statusroom.roomid = s2.roomid ) as existing
+            (select 'Y' from statusroom s2 where providerid= ? and statusroom.roomid = s2.roomid ) as existing
             from statusroom
             left join roomhandle on roomhandle.roomid = statusroom.roomid
             left join roominfo on roominfo.roomid = statusroom.roomid
             left join provider on provider.providerid = statusroom.owner
-            left join blocked on blocked.blocker = statusroom.owner and blocked.blockee = $providerid
-            where (roomhandle.handle = '$handle' or statusroom.roomid = $roomid ) and statusroom.providerid = statusroom.owner
-                   ");
+            left join blocked on blocked.blocker = statusroom.owner and blocked.blockee = ?
+            where (roomhandle.handle = ? or statusroom.roomid = ? ) and statusroom.providerid = statusroom.owner
+                   ",array($providerid,$providerid,$providerid,$handle,$roomid));
             
         
         if($row = pdo_fetch($result)){
@@ -339,7 +335,7 @@ function ConfigureSponsor($mode, $providerid, $hashtag)
         return;
     }
 
-    $result = pdo_query("1","select partitioned, industry from sponsor where sponsor='$hashtag' ");
+    $result = pdo_query("1","select partitioned, industry from sponsor where sponsor=? ",array($hashtag));
     if($row = pdo_fetch($result)){
         if($row['partitioned']=='Y'){
             /*
@@ -355,7 +351,7 @@ function ConfigureSponsor($mode, $providerid, $hashtag)
         }
         pdo_query("1"," 
             update provider set industry = '$row[industry]' 
-            where providerid = $providerid ");
+            where providerid = ? ",array($providerid));
 
     }
 

@@ -122,12 +122,12 @@ class SignUp
         }
         pdo_query("1"," 
             insert ignore into iphash ( ip, activitydate, lastaction, icount )
-            values( '$iphash', now(), null, 0 )
-            ");
+            values( ?, now(), null, 0 )
+            ",array($iphash));
         
         $result = pdo_query("1","
-            select lastaction from iphash where ip = '$iphash' 
-                ");
+            select lastaction from iphash where ip = ? 
+                ",array($iphash));
         if( $row = pdo_fetch($result)){
             $lastaction = $row['lastaction'];
         }
@@ -135,38 +135,38 @@ class SignUp
         
         if($deviceid!=''){
             pdo_query("1"," 
-                update iphash set deviceid='$deviceid' where deviceid is null and ip = '$iphash'
-                ");
+                update iphash set deviceid=? where deviceid is null and ip = ?
+                ",array($deviceid,$iphash));
         }
         if($lastuser!=''){
             pdo_query("1"," 
-                update iphash set lastuser='$lastuser' where lastuser is null and ip = '$iphash'
-                ");
+                update iphash set lastuser=? where lastuser is null and ip = ?
+                ",array($lastuser,$iphash));
             //Connect this account to other user.
             pdo_query("1"," 
-                update provider set iphash2 ='$iphash', multi=multi+1 where handle='$lastuser' and active='Y' 
-                ");
+                update provider set iphash2 =?, multi=multi+1 where handle=? and active='Y' 
+                ",array($iphash,$lastuser));
             
         }
         if($timezone!=''){
             pdo_query("1"," 
-                update iphash set timezone='$timezone' where timezone is null and ip = '$iphash'
-                ");
+                update iphash set timezone=? where timezone is null and ip = ?
+                ",array($timezone,$iphash));
         }
         if($signupcookie!=''){
             pdo_query("1"," 
-                update iphash set signupcookie='$signupcookie' where signupcookie is null and ip = '$iphash'
-                ");
+                update iphash set signupcookie=? where signupcookie is null and ip = ?
+                ",array($signupcookie,$iphash));
         }
         if($innerwidth!=''){
             pdo_query("1"," 
-                update iphash set innerwidth='$innerwidth' where innerwidth is null and ip = '$iphash'
-                ");
+                update iphash set innerwidth=? where innerwidth is null and ip = ?
+                ",array($innerwidth,$iphash));
         }
         if($innerheight!=''){
             pdo_query("1"," 
-                update iphash set innerheight='$innerheight' where innerheight is null and ip = '$iphash'
-                ");
+                update iphash set innerheight=? where innerheight is null and ip = ?
+                ",array($innerheight,$iphash));
         }
         
         
@@ -174,28 +174,28 @@ class SignUp
         pdo_query("1"," 
             update iphash set icount = icount+1, lastaction = now() 
                 where 
-                (   ip = '$iphash' or 
-                    (deviceid='$deviceid' and '$deviceid'!='') or 
-                    (lastuser='$lastuser' and '$lastuser'!='') 
+                (   ip = ? or 
+                    (deviceid=? and ?!='') or 
+                    (lastuser=? and ?!='') 
                 )
-            ");
+            ",array($iphash,$deviceid,$deviceid,$lastuser,$lastuser));
         
         $result = pdo_query("1","
-            select icount from iphash where ip = '$iphash' and datediff('$lastaction', lastaction)<1
+            select icount from iphash where ip = ? and datediff(?, lastaction)<1
                 and icount > 2
-                ");
+                ",array($iphash,$lastaction));
         if( $row = pdo_fetch($result)){
             $icount = $row['icount'];
             pdo_query("1"," 
-                update iphash set ipattacker = '$ip' where ip = '$iphash' and ipattacker is null
-                ");
+                update iphash set ipattacker = ? where ip = ? and ipattacker is null
+                ",array($ip,$iphash));
             
                 return $icount;
         }
         
         pdo_query("1"," 
-            update iphash set icount = 1 where ip = '$iphash' and datediff(activitydate, lastaction)>0
-            ");
+            update iphash set icount = 1 where ip = ? and datediff(activitydate, lastaction)>0
+            ",array($iphash));
         return true;
         
     }
@@ -240,9 +240,13 @@ class SignUp
         
         $result = pdo_query("1"," 
             insert ignore into csvsignup ( email, sms, name, handle, ownerid, roomid, temppassword, sponsor, companyname, uploaded, status )
-            values ('$this->replyemail','$this->replysms',
-            '$this->providername','$this->handle',$_SESSION[pid],$this->roomid,'$this->password', '$this->sponsor','$this->companyname', now(),'U' )
-            ");
+            values (?,?,
+            ?,?,$_SESSION[pid],?,?, ?,?, now(),'U' )
+            ",array(
+                $this->replyemail,$this->replysms,
+                $this->providername,$this->handle, $this->roomid, $this->password, $this->sponsor,$this->companyname
+                
+            ));
         if($result){
             return true;
         }
@@ -524,33 +528,50 @@ class SignUp
              roomcreator, broadcaster, web, store, hardenter
              ) values (
               'Y',
-              $this->providerid, now(), '$this->providername', '$this->name2', 
-              '$this->companyname', '$this->handle', '$this->active',  
-              '$this->replyemail','$this->loginid', 
-              '$this->avatarurl', '$this->enterprise', '$this->industry', 
-               $this->inactivitytimeout, '$this->verified','$this->invitedemail','N',
-              '$this->invitesource','$this->invitesource','$this->notifications', '$this->publish',
-               $this->contractperiod,  '$this->contracttype','$this->dealer','$this->dealeremail',
+              ?,now(),?,?,
+              ?,?,?,
+              ?,?,
+              ?,?,?,
+              ?,?,?,'N',
+              ?,?,?,?,
+              ?,?,?,?,
               'N', 'N','Y', 'Y',
-              '$this->serverhost',  '$this->allowtexting', $this->msglifespan,
-              '$this->sponsor', '$this->roomdiscovery', '$this->onetimeflag', $this->eowner, '$this->sponsorlist',
-              'std', '$this->language', '$this->roomhandle','$appname','$this->iphash', '$this->iphash2', '$this->timezone', '$this->ipsource',
-              '$this->trackerid','$this->roomcreator','$this->broadcaster', '$this->web', '$this->store', '$this->hardenter'
-            )"
+              ?,?,?,
+              ?,?,?,?,?,
+              'std',?,?,'$appname',?,?,?,?,
+              ?,?,?,?,?,?,
+            )",array(
+              $this->providerid, $this->providername, $this->name2, 
+              $this->companyname, $this->handle, $this->active,  
+              $this->replyemail, $this->loginid, 
+              $this->avatarurl, $this->enterprise, $this->industry, 
+              $this->inactivitytimeout, $this->verified, $this->invitedemail,
+              $this->invitesource,$this->invitesource,$this->notifications, $this->publish,
+              $this->contractperiod,  $this->contracttype,$this->dealer,$this->dealeremail,
+              $this->serverhost,  $this->allowtexting, $this->msglifespan,
+              $this->sponsor, $this->roomdiscovery, $this->onetimeflag, $this->eowner, $this->sponsorlist,
+              $this->language, $this->roomhandle,$appname,$this->iphash, $this->iphash2, $this->timezone', '$this->ipsource,
+              $this->trackerid,$this->roomcreator,$this->broadcaster, $this->web, $this->store, $this->hardenter
+                
+            )
         );
         if(!$result){
             return false;
         }
         if($this->termsofuse=='Y'){
-            pdo_query("1","update provider set termsofuse = now() where providerid=$this->providerid ");
+            pdo_query("1","update provider set termsofuse = now() where providerid=? ",array($this->providerid));
         }
         
         $result = pdo_query("1", 
-          " delete from staff where providerid=$this->providerid and loginid='$this->loginid' ");
+          " delete from staff where providerid=? and loginid=? ",array($this->providerid,$this->loginid));
 
         $result = pdo_query("1", 
           " insert into staff (providerid, loginid, adminright, emailalert, workgroup, staffname, active, email) values  " .
-          " ($this->providerid, '$this->loginid', 'Y',  'Y', 'admin', '$this->providername','Y', '$this->replyemail' )");
+          " (?, ?, 'Y',  'Y', 'admin', ?,'Y', ? )",
+                array(
+                    $this->providerid,$this->loginid,$this->providername,$this->replyemail
+                    
+                ));
     
         if( "$this->password"!=""){
         
@@ -559,27 +580,27 @@ class SignUp
              " 
                 update staff set 
                 pwd_ver = 3, 
-                pwd_hash = '$pwd_hash',
+                pwd_hash = ?,
                 fails = 0,
-                onetimeflag='$this->onetimeflag'
-                where providerid='$this->providerid' and loginid='$this->loginid' 
+                onetimeflag=?
+                where providerid=? and loginid=? 
 
-             ");
+             ",array($pwd_hash,$this->onetimeflag,$this->providerid,$this->loginid));
         }
     
         //Create encrypted SMS
         pdo_query("1","
-            delete from sms where providerid = $this->providerid
-            ");
+            delete from sms where providerid = ?
+            ",array($this->providerid));
     
         if($this->replysms!=''){
             $sms_encrypted = EncryptText($this->replysms, $this->providerid);
             pdo_query("1","
                 insert into sms (providerid, sms, encoding ) values 
                 (
-                    $this->providerid, '$sms_encrypted','$_SESSION[responseencoding]'
+                    ?, ?,'$_SESSION[responseencoding]'
                 )
-            ");
+            ",array($this->providerid, $sms_encrypted));
         }
 
     
@@ -588,8 +609,8 @@ class SignUp
             $result = pdo_query("1", 
               " 
                   insert into msgplan (providerid, planid, datestart, dateend, count, active, created )
-                  values ($this->providerid, 'STD',now(), now(), 1, 'N', now() )
-              ");
+                  values (?, 'STD',now(), now(), 1, 'N', now() )
+              ",array($this->providerid));
 
         }        
         //Invitation - Add Email if Missing so invite can be sent with SMS only
@@ -597,9 +618,9 @@ class SignUp
         
             $result = pdo_query("1", 
                 "
-                update invites set email = '$this->replyemail' where sms='$this->replysms'
+                update invites set email = ? where sms=?
                 and email = '' and status='Y'
-                "
+                ",array($this->replyemail,$this->replysms)
               );
         }
         //Invitation Code
@@ -616,8 +637,8 @@ class SignUp
                 "
                 select roomid, 
                 (select owner from statusroom where roomhandle.roomid = statusroom.roomid limit 1 ) as owner
-                from roomhandle where handle='$this->roomhandle' 
-                "
+                from roomhandle where handle=?
+                ",array($this->roomhandle)
               );
             if($row = pdo_fetch($result)){
             
@@ -652,8 +673,9 @@ class SignUp
 
         }
         
-        pdo_query("1","insert into handle (handle, email, providerid) values ('$this->handle', '$this->replyemail',$this->providerid) ");
-        $result = pdo_query("1","select * from provider where providerid = $this->providerid and active='Y' ");
+        pdo_query("1","insert into handle (handle, email, providerid) values (?,?,?) ",
+                array($this->handle,$this->replyemail,$this->providerid));
+        $result = pdo_query("1","select * from provider where providerid = ? and active='Y' ",array($this->providerid));
         if($row = pdo_fetch($result)){
             $this->SendSignUpEmail();
         }
@@ -669,8 +691,8 @@ class SignUp
             $inactivitytimeout, $pin, $colorscheme, $gift, $wallpaper, $hardenter )
     {
         $result = pdo_query("1","
-            select handle, replyemail, verified from provider where providerid = $providerid
-                ");
+            select handle, replyemail, verified from provider where providerid = ?
+                ",array($providerid));
         if($row = pdo_fetch($result)){
             $this->orig_handle = $row['handle'];
             $origemail = $row['replyemail'];
@@ -723,7 +745,7 @@ class SignUp
         $this->companyname = $companyname;
         $this->loginid = strtolower( $loginid);
         
-        $result = pdo_query("1","select superadmin from provider where providerid = $this->providerid ");
+        $result = pdo_query("1","select superadmin from provider where providerid = ? ",array($this->providerid));
         if($row = pdo_fetch($result)){
             $this->superadmin = $row['superadmin'];
         }
@@ -814,23 +836,36 @@ class SignUp
         
         $result = pdo_query("1", 
           " update provider " .
-          " set verified='$this->verified', providername= '$this->providername', ".
-          " name2='$this->name2', companyname= '$this->companyname', handle='$this->handle', ".
-          " replyemail='$this->replyemail', alias = '$this->alias', positiontitle='$this->positiontitle', " .
-          " industry='$this->industry', msglifespan=$this->msglifespan, ".
-          " active='$this->active', featureemail='$this->enable_email', ".
-          " notifications='$this->notifications', notificationflags='$this->notificationflags', ".
-          " inactivitytimeout=$this->inactivitytimeout, ".
-          " sponsor='$this->sponsor', gift='$this->gift',  ".
-          " publish='$this->publish', publishprofile='$this->publishprofile', roomdiscovery='$this->roomdiscovery',  ".      
-          " streamingaccount='$this->streamingaccount', sponsorlist='$this->sponsorlist', hardenter='$this->hardenter' ".
-          " where providerid=$this->providerid "
+          " set verified=?, providername= ?, ".
+          " name2=?, companyname= ?, handle=?, ".
+          " replyemail=?, alias = ?, positiontitle=?, " .
+          " industry=?, msglifespan=?, ".
+          " active=?, featureemail=?, ".
+          " notifications=?, notificationflags=?, ".
+          " inactivitytimeout=?, ".
+          " sponsor=?, gift=?,  ".
+          " publish=?, publishprofile=?, roomdiscovery=?,  ".      
+          " streamingaccount=?, sponsorlist=?, hardenter=? ".
+          " where providerid=?",
+                array($this->verified,$this->providername,
+                    $this->name2,,$this->companyname,,$this->handle,
+                    $this->replyemail,$this->alias,$this->positiontitle,
+                    $this->industry,$this->msglifespan,
+                    $this->active,$this->enable_email,
+                    $this->notifications,$this->notificationflags,
+                    $this->inactivitytimeout,
+                    $this->sponsor,$this->gift,
+                    $this->publish,$this->publishprofile,$this->roomdiscovery,
+                    $this->streamingaccount,$this->sponsorlist,$this->hardenter,
+                    $this->providerid
+                  )
           );
         
         //Create encrypted SMS
         pdo_query("1","
             delete from sms where providerid = $this->providerid
-            ");
+            ",array($this->providerid
+                    ));
 
         if($this->replysms!=''){
             $sms_encrypted = EncryptText($this->replysms, $this->providerid);
@@ -838,39 +873,40 @@ class SignUp
             pdo_query("1","
                 insert into sms (providerid, sms, encoding ) values 
                 (
-                    $this->providerid, '$sms_encrypted','$_SESSION[responseencoding]'
+                    ?, ?,'$_SESSION[responseencoding]'
                 )
-            ");
+            ",array($this->providerid,$sms_encrypted));
         }
         
-        pdo_query("1","delete from timeout where providerid = $this->providerid ");
+        pdo_query("1","delete from timeout where providerid = ? ",array($this->providerid));
 
         if($this->pin!=''){
-            pdo_query("1","insert into timeout (providerid, pin, encoding ) values ($this->providerid, '$this->pin', 'PLAINTEXT' ) ");
+            pdo_query("1","insert into timeout (providerid, pin, encoding ) values (?, ?, 'PLAINTEXT' ) ",
+                    array($this->providerid,$this->pin));
 
         }
         
         $result = pdo_query("1",
             "
-            update contacts set handle ='$this->handle', targetproviderid=$this->providerid  where handle='$this->orig_handle' and '$this->orig_handle'!=''
-            "
+            update contacts set handle =?, targetproviderid=?  where handle=? and ? !=''
+            ",array($this->handle,$this->providerid,$this->orig_handle,$this->orig_handle)
         );
 
         $result = pdo_query("1", 
-            " update staff set staffname='$this->providername' where loginid='admin' and providerid=$this->providerid " 
-          );
+            " update staff set staffname=? where loginid='admin' and providerid=? " 
+          ,array($this->providername,$this->providerid));
         
         //Account Termination Cleanup
         if($this->active == 'N'){
-            pdo_query("1","delete from invites where email='$this->replyemail' and chatid is not null ");
-            pdo_query("1","delete from handle where providerid = $this->providerid  ");
+            pdo_query("1","delete from invites where email=? and chatid is not null ",array($this->replyemail));
+            pdo_query("1","delete from handle where providerid = ?  ",array($this->providerid));
              
-            pdo_query("1","update iphash set icount = icount-1 where iphash = (select iphash2 from provider where providerid = $this->providerid) ");
+            pdo_query("1","update iphash set icount = icount-1 where iphash = (select iphash2 from provider where providerid = ? ) ",array($this->providerid));
              
         }
          
         if($this->enterprise != ''){
-            pdo_query("1","update provider set enterprise = '$this->enterprise' where providerid = $this->providerid ");
+            pdo_query("1","update provider set enterprise = ? where providerid = ? ",array($this->enterprise,$this->providerid));
         }
          
          //Check Email
@@ -879,47 +915,48 @@ class SignUp
              
             $result = pdo_query("1",
                 "
-                update provider set replyemail = '$this->newemail', verified='N', verifiedemail='' where providerid = $this->providerid and active='Y'
-                "
+                update provider set replyemail = ?, verified='N', verifiedemail='' where providerid = ? and active='Y'
+                ",array($this->newemail,$this->providerid)
             );
             $result = pdo_query("1",
                 "
-                update staff set email = '$this->newemail' where providerid = $this->providerid and email='$this->replyemail' and active='Y'
-                "
+                update staff set email = ? where providerid = ? and "
+                    . "email=? and active='Y'
+                ",array($this->newemail,$this->providerid,$this->replyemail)
             );
             $result = pdo_query("1",
                 "
-                update appidentity set replyemail = '$this->newemail' where  replyemail='$this->replyemail'
-                "
+                update appidentity set replyemail = ? where  replyemail=?
+                ",array($this->newemail,$this->replyemail)
             );
             $result = pdo_query("1",
                 "
-                update invites set email = '$this->newemail' where  email='$this->replyemail'
-                "
+                update invites set email = ? where  email=?
+                ",array($this->newemail,$this->replyemail)
             );
             $result = pdo_query("1",
                 "
-                update contacts set email = '$this->newemail', targetproviderid=$this->providerid where  email='$this->replyemail'
-                "
+                update contacts set email = ?, targetproviderid=? where  email=?
+                ",array($this->newemail,$this->providerid,$this->replyemail)
             );
             $result = pdo_query("1",
                 "
-                delete from verification where email='$this->replyemail'
-                "
+                delete from verification where email=?
+                ",array($this->replyemail)
             );
         }
         if( $this->enterprise == 'Y'){
-            $result = pdo_query("1", "select * from msgplan where providerid = $this->providerid ");
+            $result = pdo_query("1", "select * from msgplan where providerid = ? ",array($this->providerid));
             if(!$row = pdo_fetch($result)){
 
                 $result = pdo_query("1", 
                   " 
                       insert into msgplan (providerid, planid, datestart, dateend, count, active, created )
-                      values ($this->providerid, 'STD',now(), now(), 1, 'N', now() )
-                  ");
+                      values (?, 'STD',now(), now(), 1, 'N', now() )
+                  ",array($this->providerid));
 
             } else {
-                pdo_query("1","update msgplan set active='N' where active='F' and providerid = $this->providerid");
+                pdo_query("1","update msgplan set active='N' where active='F' and providerid = ? ",array($this->providerid));
 
             }
 
@@ -936,7 +973,7 @@ class SignUp
         $partitioned = "";
         //If not enterprise - see if sponsor requires partitioning
         $result = pdo_query("1", 
-          " select partitioned, industry from sponsor where sponsor = '$this->sponsor' " 
+          " select partitioned, industry from sponsor where sponsor = ? ",array($this->sponsor) 
           );
         if($row = pdo_fetch($result)){
             $partitioned = $row['partitioned'];
@@ -1008,7 +1045,7 @@ class SignUp
         $roomdiscovery = $this->roomdiscovery;
         //If not enterprise - see if sponsor requires partitioning
         $result = pdo_query("1", 
-          " select partitioned, industry from sponsor where sponsor = '$this->sponsor' " 
+          " select partitioned, industry from sponsor where sponsor = ? ",array($this->sponsor) 
           );
         if($row = pdo_fetch($result)){
             $partitioned = $row['partitioned'];
@@ -1056,10 +1093,10 @@ class SignUp
             $providerid = $highid;
         }
 
-        $result = pdo_query("1", "update parms set val1 = $providerid where parmkey='SUBSCRIBER' and parmcode='ID' ");
+        $result = pdo_query("1", "update parms set val1 = ? where parmkey='SUBSCRIBER' and parmcode='ID' ",array($providerid));
 
-        pdo_query("1","delete from handle where providerid=$providerid");
-        pdo_query("1","insert into handle (handle, email, providerid) values ('$this->handle', '$this->replyemail',$this->providerid) ");
+        pdo_query("1","delete from handle where providerid=? ",array($providerid));
+        pdo_query("1","insert into handle (handle, email, providerid) values (?, ?,?) ",array($this->handle,$this->replyemail,$this->providerid));
         
         
         return $providerid;
@@ -1215,7 +1252,8 @@ class SignUp
         //$this->handle = preg_replace('/[^\da-z0-9]/i', '', $this->handle);        
         
         if($providerid != null && $providerid!= ''){
-            $result = pdo_query("1","select handle from provider where handle='$this->handle' and providerid!= $providerid and active='Y' ");
+            $result = pdo_query("1","select handle from provider where handle=? and "
+                    . "providerid!= ? and active='Y' ",array($this->handle,$providerid));
             if($row = pdo_fetch($result)){
                 return false;
             }
@@ -1250,7 +1288,7 @@ class SignUp
             }
              * 
              */
-            $result = pdo_query("1","select handle from provider where handle='$this->handle' and active = 'Y' ");
+            $result = pdo_query("1","select handle from provider where handle=? and active = 'Y' ",array($this->handle));
             if($row = pdo_fetch($result)) {
                 $this->StoreError("Duplicate Handle Error");
                 return false;
@@ -1297,7 +1335,7 @@ class SignUp
         }
         
         $result = pdo_query("1",
-                "select providerid from provider where replyemail='$this->replyemail' and active='Y' "
+                "select providerid from provider where replyemail=? and active='Y' ",array($this->replyemail)
                 );
         if( $row = pdo_fetch($result)){
             if($this->overwrite == 'Y'){
@@ -1315,7 +1353,7 @@ class SignUp
     {
         
         $result = pdo_query("1",
-                "select providerid from provider where replyemail='$this->newemail' and active='Y' "
+                "select providerid from provider where replyemail=? and active='Y' ",array($this->newemail)
                 );
         if( $row = pdo_fetch($result)){
             return false;
@@ -1329,8 +1367,8 @@ class SignUp
         
         
         $result = pdo_query("1",
-                "update provider set active='N' where replyemail='$this->replyemail' and active='Y' "
-                );
+                "update provider set active='N' where replyemail=? and active='Y' "
+                ,array($this->replyemail));
         return true;
     }    
     
@@ -1338,8 +1376,8 @@ class SignUp
         
         
         $result = pdo_query("1",
-                "select providerid from provider where providerid='$this->providerid' and active='Y' "
-                );
+                "select providerid from provider where providerid=? and active='Y' "
+                ,array($this->providerid));
         if( $row = pdo_fetch($result)){
             
             return true;
@@ -1353,8 +1391,8 @@ class SignUp
             return true;
         }
         $result = pdo_query("1",
-                "update invites set email='$this->replyemail' where inviteid='$inviteid' "
-                );
+                "update invites set email=? where inviteid=? "
+                ,array($this->replyemail,$inviteid));
         
         return true;
     }    
@@ -1379,8 +1417,8 @@ class SignUp
         $signupverificationkey = uniqid("", true);
         pdo_query("1", 
                 "insert into verification (type, providerid, verificationkey, loginid, email, createdate ) values (".
-                " 'ACCOUNT', $this->providerid, '$signupverificationkey', 'admin', '$this->replyemail', now() ) "
-                );
+                " 'ACCOUNT',?, ?, 'admin', ?, now() ) "
+                ,array($this->providerid,$signupverificationkey,$this->replyemail));
         
         $message = 
                 "<html><body>".
@@ -1441,8 +1479,8 @@ class SignUp
         $signupverificationkey = uniqid("", true);
         pdo_query("1", 
                 "insert into verification (type, providerid, verificationkey, loginid, email, createdate ) values (".
-                " 'ACCOUNT', $this->providerid, '$signupverificationkey', 'admin', '$this->newemail', now() ) "
-                );
+                " 'ACCOUNT', ?, ?, 'admin', ?, now() ) "
+                ,array($this->providerid,$signupverificationkey,$this->newemail));
         
         $message = 
                 "<html><body>".

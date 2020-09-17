@@ -13,19 +13,19 @@ $max = 50;
     if( $collection != "" && $mode =='D')
     {
         pdo_query("1","
-            delete from sharecollection where providerid=$providerid
-            and collection = '$collection'
-            ");
+            delete from sharecollection where providerid=?
+            and collection = ?
+            ",array($providerid, $collection));
         
         pdo_query("1","
-            delete from shares where providerid=$providerid and sharetype='A'
-            and collection = '$collection'
-            ");
+            delete from shares where providerid=? and sharetype='A'
+            and collection = ?
+            ",array($providerid,$collection));
         
         pdo_query("1","
-            delete from shares where providerid=$providerid and sharetype='W'
-            and sharelocal = '$collection'
-            ");
+            delete from shares where providerid=? and sharetype='W'
+            and sharelocal = ?
+            ",array($providerid,$collection));
         
         
         $collection = "";
@@ -35,10 +35,10 @@ $max = 50;
 
         $result = pdo_query("1","
             select url
-            from sharecollection where providerid=$providerid
-            and collection='$collection' and collection in (select sharelocal
-            from shares where providerid=$providerid)
-         ");
+            from sharecollection where providerid=?
+            and collection=? and collection in (select sharelocal
+            from shares where providerid=? )
+         ",array($providerid,$collection,$providerid));
         if( $row = pdo_fetch($result))
         {
             $url = $row[url];
@@ -55,24 +55,24 @@ $max = 50;
                 shareid, shareto, shareexpire, sharetitle, platform, 
                 securetype, proxyfilename, collection )
                 values
-                ('', $providerid, now(), 'W', '$collection', '$linkid', 
+                ('', ?, now(), 'W', ?, ?, 
                     'Web', date_add( now(), INTERVAL 1095 DAY), 
-                    '$collection','Web','$securetype','$proxyfilename','' )
-             ");
+                    ?,'Web',?,?,'' )
+             ",array($providerid,$collection,$linkid,$collection,$securetype,$proxyfilename));
             
         }
         
         
         
         pdo_query("1","
-            delete from sharecollection where providerid=$providerid
-            and collection = '$collection'
-            ");
+            delete from sharecollection where providerid=?
+            and collection = ?
+            ",array($providerid,$collection));
         
         pdo_query("1","
-            delete from shares where providerid=$providerid
-            and collection = '$collection' and sharetype='A'
-            ");
+            delete from shares where providerid=?
+            and collection = ? and sharetype='A'
+            ",array($providerid,$collection));
         
         /*
         pdo_query("1","
@@ -97,18 +97,20 @@ $max = 50;
                     shareid, shareto, shareexpire, sharetitle, platform, 
                     securetype, proxyfilename, collection )
                     values
-                    ('', $providerid, now(), 'A', '$album', '$linkid1', 
+                    ('', ?, now(), 'A', ?, ?, 
                         'Unspecified', date_add( now(), INTERVAL 1095 DAY), 
-                        '$album','','$securetype','$proxyfilename','$collection' )
-                 ");
+                        ?,'',?,?,? )
+                 ",array($providerid,$album,$linkid1,$album,$securetyype,$proxyfilename,$collection));
                 
                 
                 pdo_query("1","
                     insert into sharecollection
                     (providerid, collection, album, url, url1, seq, description ) 
                     values
-                    ($providerid, '$collection', '$album','$url','$url1', $i, '$description' ) 
-                    ");
+                    (?, ?, ?,?,?,?, ? ) 
+                    ",array(
+                        $providerid, $collection, $album,$url,$url1, $i, $description  
+                    ));
             }
         }
         
@@ -121,9 +123,9 @@ $max = 50;
         $description = "";
 
         $result2 = pdo_query("1","
-                select distinct album from photolib where providerid = $providerid and 
+                select distinct album from photolib where providerid = ? and 
                 album!='' and album!='All'  order by album asc
-                ");
+                ",array($providerid));
         $albumselect .= "<option value=''>Select</option>";
         while( $row2 = pdo_fetch($result))
         {
@@ -154,9 +156,9 @@ $max = 50;
         
         
         $result = pdo_query("1","
-                select distinct album from photolib where providerid = $providerid and 
+                select distinct album from photolib where providerid = ? and 
                 album!='' and album!='All'  order by album asc
-                ");
+                ",array($providerid));
         $albumselect .= "<option value=''></option>";
         while( $row = pdo_fetch($result))
         {
@@ -286,9 +288,9 @@ $(document).ready( function() {
             <td class="dataarea">
             <?php
             $result = pdo_query("1","
-                select distinct collection from sharecollection where providerid=$providerid
+                select distinct collection from sharecollection where providerid=?
                     order by collection asc
-                ");
+                ",array($providerid));
             while($row = pdo_fetch($result))
             {
                 echo "

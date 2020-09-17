@@ -49,8 +49,8 @@ if($k !==''){
     $subtitle = "A privacy enhanced social group on the $appname platform";
     $share = '';
     $result = pdo_query("1",
-            "select roomid, timestampdiff(HOUR, now(), expires) as diff from roominvite where inviteid = '$k'
-            "
+            "select roomid, timestampdiff(HOUR, now(), expires) as diff from roominvite where inviteid = ?
+            ",array($k)
             );
     $diffval = -1;
     //$diffval = 0;
@@ -85,8 +85,8 @@ if($r !==''){
     $result = pdo_query("1","
         select providername from provider where
         providerid in (select owner from statusroom where roomid in
-           (select roomid from roomhandle where handle='#$r') and owner = providerid )
-            ");
+           (select roomid from roomhandle where handle=?) and owner = providerid )
+            ",array("#$r"));
     if($row = pdo_fetch($result)){
         $ownername = ucfirst($row['providername']);
     }
@@ -137,11 +137,11 @@ $result = pdo_query("1","
            left join roominfo on roominfo.roomid = statusroom.roomid
            left join provider on provider.providerid = statusroom.owner
            left join sponsor on sponsor.sponsor = roominfo.sponsor
-           where (roomhandle.handle='$share' or statusroom.roomid='$i')
+           where (roomhandle.handle=? or statusroom.roomid=?)
            and statusroom.owner=statusroom.providerid
            $privateQuery
 
-        ");
+        ",array($share,$i));
 
 
 if( !$row = pdo_fetch($result)){
@@ -230,7 +230,7 @@ if($row['photourl2']!=''){
 
 
 
-pdo_query("1","insert into landing (createdate, landingcode, mobile, target) values (now(), '$share', 'X','share' ) ");
+pdo_query("1","insert into landing (createdate, landingcode, mobile, target) values (now(), ?, 'X','share' ) ",array($share));
 
 $shareopentitle = "Invitation to $appname";
 $sharelink = "$rootserver/$installfolder/roominvite.php?i=$i&r=$r";

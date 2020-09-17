@@ -12,13 +12,13 @@ header("Content-Type: application/octet-stream");
 if( $alias == ''){
 
     $result = pdo_query("1","
-            select filename, filetype, folder, title, comment, views, likes from photolib where filename='$share' and (providerid=$_SESSION[pid] or providerid=0 )
-            ");
+            select filename, filetype, folder, title, comment, views, likes from photolib where filename=? and (providerid=$_SESSION[pid] or providerid=0 )
+            ",array($share));
 } else {
     
     $result = pdo_query("1","
-            select filename, filetype, folder, title, comment, views, likes from photolib where alias='$alias' and providerid=$_SESSION[pid] 
-            ");
+            select filename, filetype, folder, title, comment, views, likes from photolib where alias=? and providerid=$_SESSION[pid] 
+            ",array($alias));
 }
 if( !$row = pdo_fetch($result)){
 

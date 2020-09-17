@@ -86,12 +86,12 @@ $time2 = microtime(true);
         left join roomhandle on roomhandle.roomid = statusroom.roomid 
         left join roominfo on roominfo.roomid = statusroom.roomid 
         where 
-        ( statusroom.providerid=$providerid or 
+        ( statusroom.providerid=? or 
           statusroom.roomid in (select roomid from publicrooms) 
         )
         and roominfo.profileflag !='Y'
         order by roominfo.room asc
-    ");
+    ",array($providerid));
 
     
     

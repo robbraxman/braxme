@@ -25,8 +25,8 @@ require("validsession.inc.php");
     SaveLastFunction($providerid,"R", 0);
 
     $result = pdo_query("1","
-        select roomdiscovery, sponsor, roomfeed from provider where providerid = $providerid 
-        ");
+        select roomdiscovery, sponsor, roomfeed from provider where providerid = ? 
+        ",array($providerid));
     $roomdiscovery = '';
     if($row = pdo_fetch($result)){
         $roomdiscovery = $row['roomdiscovery'];
@@ -41,12 +41,12 @@ require("validsession.inc.php");
     
     $result = pdo_query("1",
         "
-        update notification set displayed = 'Y' where notifytype='RP' and displayed!='Y' and recipientid=$providerid
-        ");
+        update notification set displayed = 'Y' where notifytype='RP' and displayed!='Y' and recipientid=?
+        ",array($providerid));
     $result = pdo_query("1",
         "
-        update alertrefresh set lastnotified = null where providerid=$providerid and deviceid = '$_SESSION[deviceid]'
-        ");
+        update alertrefresh set lastnotified = null where providerid=? and deviceid = '$_SESSION[deviceid]'
+        ",array($providerid));
 
 
     $lock =  "<img class='icon15' src='../img/Lock-2_120px.png' style='top:3px;opacity:.3' title='Private Room' />";

@@ -135,7 +135,7 @@
             (select 'Y' from statusreads st2 
                 where st2.shareid = statuspost.shareid and
                 st2.roomid = statuspost.roomid and
-                st2.xaccode ='X' and st2.providerid = $providerid
+                st2.xaccode ='X' and st2.providerid = ?
               ) as flagged,
 
 
@@ -150,21 +150,21 @@
             roominfo.anonymousflag, blocked1.blockee, blocked2.blocker,
             provider.profileroomid,
             (select providerid from roommoderator where roommoderator.roomid = statuspost.roomid
-             and roommoderator.providerid = $providerid) as moderator,
+             and roommoderator.providerid = ? ) as moderator,
             statuspost.commentcount, statuspost.title
             from statuspost
             left join provider on statuspost.providerid = provider.providerid
             left join roominfo on statuspost.roomid = roominfo.roomid
-            left join blocked blocked1 on blocked1.blockee = statuspost.providerid and blocked1.blocker = $providerid
-            left join blocked blocked2 on blocked2.blocker = statuspost.providerid and blocked2.blockee = $providerid
+            left join blocked blocked1 on blocked1.blockee = statuspost.providerid and blocked1.blocker = ?
+            left join blocked blocked2 on blocked2.blocker = statuspost.providerid and blocked2.blockee = ?
 
             where statuspost.parent = 'Y' and
-            statuspost.roomid  = $roomid
-            and statuspost.title like '%$find%'
-            and statuspost.shareid like '$shareid%'
+            statuspost.roomid  = ?
+            and statuspost.title like ?
+            and statuspost.shareid like ?
             and '$roominfo->subscriptionpending'!='Y'
             order by  pin desc, lastpostdate  desc  limit $limitstart, $limitend 
-    ");
+    ",array($providerid,$providerid,$providerid,$providerid,$roomid."%".$find."%",$sharid."%"));
     
     
     $postcount = 0;

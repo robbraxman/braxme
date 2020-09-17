@@ -26,7 +26,7 @@ require("aws.php");
     $timezoneoffset = @tvalidator("PURIFY",$_POST['timezoneoffset']);
     
     
-    $result = pdo_query("1","select room from statusroom where roomid=$roomid and owner=providerid limit 1");
+    $result = pdo_query("1","select room from statusroom where roomid=? and owner=providerid limit 1",array($roomid));
     while( $row = pdo_fetch($result))
     {
         $room = $row['room'];
@@ -75,10 +75,10 @@ require("aws.php");
                 date_format( date_add(createdate,INTERVAL ($timezoneoffset)*60 MINUTE),'%b %d, %y %h:%i%p') as createdate,
                 createdate as createdate2, encoding, providerid
                 from filelib where 
-                filename in (select filename from roomfiles where roomid=$roomid  and filelib.filename=roomfiles.filename )
+                filename in (select filename from roomfiles where roomid=?  and filelib.filename=roomfiles.filename )
                 and filetype='mp3' and status='Y'                   
                 order by $sort_text
-            ");
+            ",array($roomid));
         
         
         echo "<div style='padding:0;margin:auto;text-align:center;background-color:$backgroundcolor'>";
@@ -169,11 +169,11 @@ require("aws.php");
                 date_format( date_add(createdate,INTERVAL ($timezoneoffset)*60 MINUTE),'%b %d, %y %h:%i%p') as createdate,
                 createdate as createdate2, encoding, providerid
                 from filelib where 
-                filename in (select filename from roomfiles where roomid=$roomid and filelib.filename=roomfiles.filename )
+                filename in (select filename from roomfiles where roomid=? and filelib.filename=roomfiles.filename )
                 and filetype in ('jpg','png','tif','gif')
                 and status='Y'
                 order by $sort_text
-            ");
+            ",array($roomid));
 
         echo "<div style='padding:0;margin:auto;text-align:center;background-color:$backgroundcolor'>";
     
@@ -243,11 +243,11 @@ require("aws.php");
                 date_format( date_add(createdate,INTERVAL ($timezoneoffset)*60 MINUTE),'%b %d, %y %h:%i%p') as createdate,
                 createdate as createdate2, encoding, providerid
                 from filelib where 
-                filename in (select filename from roomfiles where roomid=$roomid and filelib.filename=roomfiles.filename )
+                filename in (select filename from roomfiles where roomid=? and filelib.filename=roomfiles.filename )
                 and filetype in ('pdf')
                 and status='Y'
                 order by $sort_text
-            ");
+            ",array($roomid));
 
         echo "<div style='padding:0;margin:auto;text-align:center;background-color:$backgroundcolor'>";
     

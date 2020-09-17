@@ -71,16 +71,16 @@ $category = $argv[1];
             if( $invitetype == 'R')
             {
                 pdo_query("1","
-                    update invites set retries=retries+1 where providerid=$providerid and
-                        email='$inviteemail' and roomid=$roomid
-                        ");
+                    update invites set retries=retries+1 where providerid=? and
+                        email=? and roomid=?
+                        ",array($providerid,$inviteemail,$roomid));
             }
             if( $invitetype == 'C')
             {
                 pdo_query("1","
-                    update invites set retries=retries+1 where providerid=$providerid and
-                        email='$inviteemail' and chatid=$chatid
-                        ");
+                    update invites set retries=retries+1 where providerid=? and
+                        email=? and chatid=?
+                        ",array($providerid,$inviteemail,$chatid));
             }
 
            HandleAlert($providerid, $providername, $inviteemail, $invitename, $replyemail, $companyname, $invitetype, $room );
@@ -94,14 +94,10 @@ $category = $argv[1];
         if($err == true)
         {
             pdo_query("1","
-                update invites set retries=99999 where providerid=$providerid and
-                    email='$inviteemail' and roomid=$roomid
-                    ");
+                update invites set retries=99999 where providerid=? and
+                    email=? and roomid=?
+                    ",array($providerid,$inviteemail,$roomid));
             
-            echo "
-                update invites set retries=99999 where providerid=$providerid and
-                    email='$inviteemail' and roomid=$roomid
-                        ";
             
         }
         
@@ -118,8 +114,8 @@ $category = $argv[1];
         $invitationUrl = "$rootserver/$installfolder/invite.php?invite=$inviteemail&name=$invitenameEncode";
        
         $result2 = pdo_query("1","
-            select * from provider where replyemail='$inviteemail' and active='Y' limit 1
-            ");
+            select * from provider where replyemail=? and active='Y' limit 1
+            ",array($inviteemail));
         
         //User Never Signed Up
         if(!$row2 = pdo_fetch($result))

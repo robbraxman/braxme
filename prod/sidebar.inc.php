@@ -20,16 +20,17 @@ require_once("internationalization.php");
         
             "
             select lastnotified from alertrefresh 
-            where providerid = $providerid 
+            where providerid = ? 
             and deviceid = '$_SESSION[deviceid]'
             and lastnotified is null
-            "
+            ",array($providerid)
         );
         if($row = pdo_fetch($result)){
             
             if($write ){
             
-                pdo_query("1","update alertrefresh set lastnotified = now() where providerid = $providerid and deviceid = '$_SESSION[deviceid]' and lastnotified is null  ");
+                pdo_query("1","update alertrefresh set lastnotified = now() "
+                        . "where providerid = ? and deviceid = '$_SESSION[deviceid]' and lastnotified is null  ",array($providerid));
             }
         
             $notificationstatus = "Y";
@@ -45,12 +46,12 @@ require_once("internationalization.php");
         $result = pdo_query("1",
         
             "
-            select * from notification where recipientid = $providerid and displayed = 'N' and 
+            select * from notification where recipientid = ? and displayed = 'N' and 
                 notifytype = 'CP' and (notifysubtype is null or notifysubtype = 'CY') 
                 and chatid not in (select chatid from chatmaster where radiostation='Y')
                 
                 limit 1
-            "
+            ",array($providerid)
         );
         if($row = pdo_fetch($result))
         {
@@ -67,9 +68,9 @@ require_once("internationalization.php");
         $result = pdo_query("1",
         
             "
-            select * from notification where recipientid = $providerid and displayed = 'N' and 
+            select * from notification where recipientid = ? and displayed = 'N' and 
                 notifytype = 'RP' limit 1
-            "
+            ",array($providerid)
         );
         if($row = pdo_fetch($result))
         {
@@ -89,10 +90,10 @@ require_once("internationalization.php");
             "
             select broadcaster from chatmaster where status='Y' and radiostation='Y' 
             and chatid in (select chatid from chatmembers where chatmaster.chatid = chatmembers.chatid 
-            and chatmembers.providerid = $providerid )
+            and chatmembers.providerid = ? )
             and chatmaster.adminstation !='Y'
                 
-            "
+            ",array($providerid)
         );
         $count = 0;
         while($row = pdo_fetch($result))
@@ -140,8 +141,8 @@ require_once("internationalization.php");
             left join appidentity on appmeetup.appname = appidentity.appname
             and appmeetup.appidentity = appidentity.appidentity
             left join provider on appidentity.replyemail = provider.replyemail
-            where providerid = $providerid and appmeetup.status = 'Y'
-            "
+            where providerid = ? and appmeetup.status = 'Y'
+            ",array($providerid)
         );
         if($row = pdo_fetch($result))
         {
@@ -188,17 +189,17 @@ require_once("internationalization.php");
              chatmaster.encoding,
              chatmaster.lastmessage,
              DATE_FORMAT(date_add(
-                 chatmaster.lastmessage, interval ($timezone)*(60) MINUTE), '%b %d %h:%i%p') as lastmessage2,
+                 chatmaster.lastmessage, interval (?)*(60) MINUTE), '%b %d %h:%i%p') as lastmessage2,
 
              (select count(*) from chatmembers 
                  where chatmembers.chatid = chatmaster.chatid ) as membercount,
 
              (select timestampdiff(SECOND, lastread, chatmaster.lastmessage ) from chatmembers 
-                 where providerid = $providerid and
+                 where providerid = ? and
                       chatmembers.chatid = chatmaster.chatid) as diff, 
 
              (select lastread from chatmembers 
-                 where providerid = $providerid and
+                 where providerid = ? and
                       chatmembers.chatid = chatmaster.chatid) as lastread,
 
              (select count(*) from chatmessage 
@@ -207,12 +208,12 @@ require_once("internationalization.php");
 
              (select count(*) from chatmessage 
                  where chatmaster.chatid = chatmessage.chatid and 
-                 chatmessage.providerid != $providerid and status='Y') as chatcountc,
+                 chatmessage.providerid != ? and status='Y') as chatcountc,
 
              (select
              chatmembers.techsupport from chatmembers 
              where chatmaster.chatid = chatmembers.chatid and
-             chatmembers.providerid = $providerid ) as techsupport,
+             chatmembers.providerid = ? ) as techsupport,
 
              chatmaster.keyhash,
              provider.providername
@@ -221,7 +222,7 @@ require_once("internationalization.php");
              left join provider on chatmaster.broadcaster = provider.providerid
              where chatmaster.status='Y' and chatmaster.chatid in 
              (select chatid from chatmembers 
-             where providerid = $providerid and status='Y' )
+             where providerid = ? and status='Y' )
              and radiostation in ('Y','Q')
             and chatmaster.adminstation !='Y'
              
@@ -230,13 +231,13 @@ require_once("internationalization.php");
                /*
                or
                 (select timestampdiff(SECOND, lastread, chatmaster.lastmessage ) from chatmembers 
-                    where providerid = $providerid and
+                    where providerid = ? and
                          chatmembers.chatid = chatmaster.chatid
                 ) > 0
                 */
              )
              order by lastmessage desc
-             "
+             ",array($timezone,$providerid,$providerid,$providerid,$providerid,$providerid,$providerid)
 
          );
         $count = 0;
@@ -330,9 +331,7 @@ require_once("internationalization.php");
              "
             SELECT providerid, username, startdate 
             FROM braxproduction.bytzvpn where (status='Y' and datediff( date_add( startdate, interval  365 day), curdate() ) < 30
-            and providerid = $providerid ) "
-             //   . "or $providerid = 690001027
-             //"
+            and providerid = $providerid ) ",array($providerid)
 
          );
         if($row = pdo_fetch($result)){
@@ -403,24 +402,24 @@ require_once("internationalization.php");
              select provider.providerid, tokens, provider.providername, provider.avatarurl, provider.profileroomid,
              tokens.method, tokens.xacdate,
              DATE_FORMAT(date_add(tokens.xacdate, 
-             interval ($timezone)*(60) MINUTE), '%m/%d/%y %h:%i%p') as xacdate2 
+             interval (?)*(60) MINUTE), '%m/%d/%y %h:%i%p') as xacdate2 
              from tokens
              left join provider on tokens.providerid = provider.providerid
              where
-             tokens.owner = $providerid
+             tokens.owner = ?
              and datediff(now(),tokens.xacdate)<1
              union
              select provider.providerid, '0' as tokens, provider.providername, provider.avatarurl, provider.profileroomid,
              gifts.method,  gifts.xacdate,
              DATE_FORMAT(date_add(gifts.xacdate,
-             interval ($timezone)*(60) MINUTE), '%m/%d/%y %h:%i%p') as xacdate2 
+             interval (?)*(60) MINUTE), '%m/%d/%y %h:%i%p') as xacdate2 
              from gifts
              left join provider on gifts.providerid = provider.providerid
              where
-             gifts.owner =  $providerid 
+             gifts.owner =  ? 
              and datediff(now(),gifts.xacdate)<1
              order by xacdate desc
-             "
+             ",array($timezone,$providerid,$timezone,$providerid)
 
          );
         $count = 0;
@@ -548,19 +547,19 @@ require_once("internationalization.php");
                 from notification
                 left join provider on provider.providerid = notification.providerid
                 left outer join roominfo on notification.roomid = roominfo.roomid 
-                left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = $providerid
-                left join blocked blocked2 on blocked2.blocker = provider.providerid and blocked2.blockee = $providerid
+                left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = ?
+                left join blocked blocked2 on blocked2.blocker = provider.providerid and blocked2.blockee = ?
                 
                 where
                 datediff(curdate(), notification.notifydate) < 30 and
-                notification.recipientid = $providerid
+                notification.recipientid = ?
                 and notification.notifytype in ('RP','RL','CP')
                 and notifymethod is not null
                 and blocked1.blockee is null and blocked2.blocker is null
                 and (notification.notifyread is null or notification.notifyread = '')
                 and provider.active = 'Y'
                 order by livechannel desc, notification.notifydate desc limit 100
-            ");
+            ",array($providerid,$providerid,$providerid));
         $i1 = 0;
         $lastnotifydate = '';
         $lastnotifytype = '';
@@ -768,7 +767,7 @@ require_once("internationalization.php");
         //if($_SESSION['inforequest']!='Y'){
         //    return "";
         //}
-        $result = pdo_query("1","select * from credentialformtrigger where providerid = $providerid ");
+        $result = pdo_query("1","select * from credentialformtrigger where providerid = ? ",array($provider));
         if(!$row = pdo_fetch($result)){
             return "";
         }
