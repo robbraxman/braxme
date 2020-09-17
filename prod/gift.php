@@ -7,7 +7,7 @@ require_once("crypt-pdo.inc.php");
 require_once("notify.inc.php");
 
 //$mode = @tvalidator("PURIFY", $_GET['mode'] );
-$owner = @tvalidator("PURIFY", $_POST['account'] );
+$owner = @tvalidator("ID", $_POST['account'] );
 $mode = @tvalidator("PURIFY", $_POST['mode'] );
 //$tokens = 1;
 

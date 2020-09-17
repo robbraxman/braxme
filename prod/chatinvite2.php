@@ -3,10 +3,10 @@ session_start();
 require_once("config-pdo.php");
 
     $providerid = tvalidator("ID",$_POST['providerid']);
-    $mode = tvalidator("PURIFY",$_POST[mode]);
-    $email = tvalidator("PURIFY",$_POST[email]);
-    $name = tvalidator("PURIFY",$_POST[name]);
-    $sms = tvalidator("PURIFY",$_POST[sms]);
+    $mode = tvalidator("PURIFY",$_POST['mode']);
+    $email = tvalidator("EMAIL",$_POST['email']);
+    $name = tvalidator("PURIFY",$_POST['name']);
+    $sms = tvalidator("PURIFY",$_POST['sms']);
     $name = ucwords($name);
     
     if( $sms!='')

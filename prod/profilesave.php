@@ -98,7 +98,7 @@ require ("crypt-pdo.inc.php");
     
     //$stdSmsMsg = mysql_escape_string($_POST[stdsmsmsg]);
     
-    $providerid = @tvalidator("PURIFY","$_SESSION[pid]");
+    $providerid = @tvalidator("ID","$_SESSION[pid]");
     $loginid = @tvalidator("PURIFY",$_SESSION['loginid']);
     $replysms = @tvalidator("PURIFY","$_POST[replysms]");
     $replyemail = @tvalidator("PURIFY",strtolower("$_POST[replyemail]"));
@@ -109,8 +109,8 @@ require ("crypt-pdo.inc.php");
     
     //Check for Change in REPLY EMAIL - Important!
     $result = pdo_query("1", 
-            "select replyemail, verified, handle from provider where providerid=$providerid "
-            );
+            "select replyemail, verified, handle from provider where providerid=? "
+            ,array($providerid));
     $row = pdo_fetch($result);
     $orig_replyemail = $row['replyemail'];
     $orig_handle = $row['handle'];
@@ -267,8 +267,8 @@ require ("crypt-pdo.inc.php");
         
         //Create encrypted SMS
         pdo_query("1","
-            delete from sms where providerid = $providerid
-            ");
+            delete from sms where providerid = ?
+            ",array($providerid));
 
         if($replysms!=''){
             $sms_encrypted = EncryptText($replysms, $providerid);

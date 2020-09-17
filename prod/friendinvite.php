@@ -8,7 +8,7 @@ require ("SmsInterface.inc");
     $mode = @tvalidator("PURIFY",$_POST['mode']);
     $caller = @tvalidator("PURIFY",$_POST['caller']);
     $roomid = intval(@tvalidator("ID",$_POST['roomid']));
-    $inviteemail = @tvalidator("PURIFY",$_POST['inviteemail']);
+    $inviteemail = @tvalidator("EMAIL",$_POST['inviteemail']);
     $invitesms = @tvalidator("PURIFY",$_POST['invitesms']);
     $invitename = @tvalidator("PURIFY",$_POST['invitename']);
     $invitemsg = @tvalidator("PURIFY",$_POST['invitemsg']);
@@ -16,8 +16,8 @@ require ("SmsInterface.inc");
     $inviteroomname = "";
     $inviteroomnameForSql = "";
     $result = pdo_query("1","
-        select roomid, room from statusroom where owner=$providerid and roomid=$roomid
-        ");
+        select roomid, room from statusroom where owner=? and roomid=?
+        ",array($providerid,$roomid));
     if( $row = pdo_fetch($result)){
     
         //$inviteroomname='';
@@ -27,8 +27,8 @@ require ("SmsInterface.inc");
     }
     
     $result = pdo_query("1","
-        select replyemail from provider where providerid=$providerid and active='Y' and replyemail like '%.account@brax.me'
-        ");
+        select replyemail from provider where providerid=? and active='Y' and replyemail like '%.account@brax.me'
+        ",array($providerid));
     if( $row = pdo_fetch($result)){
         EmailNotValid();
         exit();
@@ -37,8 +37,8 @@ require ("SmsInterface.inc");
     
     
     $result = pdo_query("1","
-        select count(*) as count from statusroom where owner=$providerid
-        ");
+        select count(*) as count from statusroom where owner=?
+        ",array($providerid));
     $owned=0;
     if( $row = pdo_fetch($result)){
     
@@ -69,8 +69,8 @@ require ("SmsInterface.inc");
         
         
         $result = pdo_query("1","
-            select providername, replyemail from provider where providerid='$providerid'
-            ");
+            select providername, replyemail from provider where providerid=?
+            ",array($providerid));
         if($row = pdo_fetch($result)){
         
             
@@ -82,8 +82,8 @@ require ("SmsInterface.inc");
         $invitationUrl = "$rootserver/invite/$inviteid";
         
         $result2 = pdo_query("1","
-            select providername, providerid, replyemail from provider where replyemail='$inviteemail' and active='Y' limit 1
-            ");
+            select providername, providerid, replyemail from provider where replyemail=? and active='Y' limit 1
+            ",array($inviteemail));
         $member = false;
         if($row2 = pdo_fetch($result)){
         
@@ -111,8 +111,8 @@ require ("SmsInterface.inc");
 
             pdo_query("1","
                 insert into statusroom ( roomid, room, owner, providerid, status, createdate, creatorid ) values
-                ( $roomid, '$inviteroomnameForSql',$providerid, $row2[providerid],'',now(),$providerid )
-                ");
+                ( ?, ?,$providerid, $row2[providerid],'',now(),? )
+                ",array($roomid,$inviteroomnameForSql,$providerid));
             
             
         } else {

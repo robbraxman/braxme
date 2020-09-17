@@ -4,9 +4,9 @@ header('X-Frame-Options: SAMEORIGIN');
 require_once("config-pdo.php");
 require_once("aws.php");
 
-$providerid = @tvalidator("PURIFY",$_GET['pid']);
+$providerid = @tvalidator("ID",$_GET['pid']);
 if($providerid == ''){
-    $providerid = @tvalidator("PURIFY",$_POST['pid']);
+    $providerid = @tvalidator("ID",$_POST['pid']);
 }
 $backgroundcolor = @tvalidator("PURIFY",$_SESSION['webbackgroundcolor']);
 if($backgroundcolor ==''){

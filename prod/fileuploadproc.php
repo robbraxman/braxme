@@ -14,7 +14,7 @@ echo "<div class='statustitle'>Upload Status</div>";
 
 $_SESSION[sessionid] = uniqid("", false);
 
-$providerid = rtrim(tvalidator("PURIFY", "$_SESSION[pid]"));
+$providerid = rtrim(tvalidator("ID", "$_SESSION[pid]"));
 $loginid = tvalidator("PURIFY", "$_SESSION[loginid]");
 $subject = tvalidator("PURIFY", "$_POST[subject]");
 $uploadtype = tvalidator("PURIFY", "$_POST[uploadtype]");

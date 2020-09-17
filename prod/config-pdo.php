@@ -165,24 +165,27 @@ require('colorscheme.php');
             return "";
         }
         if($type == 'ID'){
-        
-            if(val($string)==0){
-                return 0;
-            }
-            if(val($string)> 9999999999){
-                return 0;
-            }
+
+            return filter_var(val($string), FILTER_VALIDATE_INT, array("options" => array("min_range" => 0,"max_range" => 9999999999)) );
             
         }
-
-            //$clean_html = $purifier->purify($dirty_html);
-            if( isset($string)){
-
-                return $purifier->purify( mysqli_real_escape_string($dbconnect1, $string));
-                //return mysql_real_escape_string($string);
-            } else {
+        if($type == 'EMAIL'){
+            return filter_var($string, FILTER_SANITIZE_EMAIL);
+        }
+        if($type== 'ASCII'){
+            //if not ASCII return blank
+            if( ( bool ) ! preg_match( '/[\\x80-\\xff]+/' , $string )){
                 return "";
-            }
+            }            
+        }
+        //Purify
+        if( isset($string)){
+
+            return $purifier->purify( mysqli_real_escape_string($dbconnect1, $string));
+            //return mysql_real_escape_string($string);
+        } else {
+            return "";
+        }
 
     }
     function mysql_safe_string_unstripped($string)

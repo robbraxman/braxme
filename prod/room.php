@@ -27,7 +27,7 @@ require_once("roomfunc.inc.php");
     $link = @tvalidator("PURIFY",$_POST['link']);
     $photo = @tvalidator("PURIFY",$_POST['photo']);
     $video = @tvalidator("PURIFY",$_POST['video']);
-    $friendproviderid = @tvalidator("PURIFY",$_POST['friendproviderid']);
+    $friendproviderid = @tvalidator("ID",$_POST['friendproviderid']);
     $anonymous = @tvalidator("PURIFY",$_POST['anonymous']);
     $parent = @tvalidator("PURIFY",$_POST['parent']);
     $shareid = @tvalidator("PURIFY",$_POST['shareid']);

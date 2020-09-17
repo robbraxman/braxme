@@ -6,7 +6,7 @@ require ("SmsInterface.inc");
 
     $providerid = tvalidator("ID",$_POST['providerid']);
     $mode = tvalidator("PURIFY",$_POST[mode]);
-    $email = tvalidator("PURIFY",$_POST[email]);
+    $email = tvalidator("EMAIL",$_POST[email]);
     $name = tvalidator("PURIFY",$_POST[name]);
     
     $result = pdo_query("1","

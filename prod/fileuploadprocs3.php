@@ -14,13 +14,13 @@ echo "<div class='statustitle'>Upload Status</div>";
 
 $_SESSION['sessionid'] = uniqid("", false);
 
-$providerid = rtrim(@tvalidator("PURIFY", "$_SESSION[pid]"));
+$providerid = rtrim(@tvalidator("ID", "$_SESSION[pid]"));
 $loginid = @tvalidator("PURIFY", "$_SESSION[loginid]");
 $subject = @tvalidator("PURIFY", "$_POST[subject]");
 $uploadtype = @tvalidator("PURIFY", "$_POST[uploadtype]");
 $folder = @tvalidator("PURIFY", "$_POST[folder]");
 $sendemail = @tvalidator("PURIFY", "$_POST[sendemail]");
-$chatid = @tvalidator("PURIFY", "$_POST[chatid]");
+$chatid = @tvalidator("ID", "$_POST[chatid]");
 $passkey64 = @tvalidator("PURIFY", "$_POST[passkey64]");
 
 

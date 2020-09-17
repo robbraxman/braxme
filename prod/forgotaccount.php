@@ -4,7 +4,7 @@ require_once("config-pdo.php");
 
 $_SESSION[returnurl]="<a href='login.php'>Login</a>";
 
-$email = tvalidator("PURIFY",$_POST['email']);
+$email = tvalidator("EMAIL",$_POST['email']);
 $name = strtolower(tvalidator("PURIFY", "$_POST[name]"));
 
     //Validation Checks
@@ -19,9 +19,10 @@ $name = strtolower(tvalidator("PURIFY", "$_POST[name]"));
             "SELECT staff.providerid, staff.loginid, staff.adminright, staff.email, ".
             " provider.verifiedemail from staff ".
             "left join provider on staff.providerid = provider.providerid ".
-            " where staff.email ='$email' and provider.providername = '$name' ".
+            " where staff.email =? and provider.providername = ? ".
             " and staff.adminright = 'Y' ".
-            "order by staff.adminright desc  "
+            "order by staff.adminright desc  ",
+            array($email,$name)
             );
     
     

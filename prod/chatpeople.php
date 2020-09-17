@@ -5,7 +5,7 @@ require_once("config-pdo.php");
 
     $providerid = @tvalidator("ID",$_POST['providerid']);
     $find = rtrim(@tvalidator("PURIFY",$_POST['find']));
-    $chatid = rtrim(@tvalidator("PURIFY",$_POST['chatid']));
+    $chatid = rtrim(@tvalidator("ID",$_POST['chatid']));
     
     SaveLastFunction($_SESSION['pid'],"C", $chatid);
 

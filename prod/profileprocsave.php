@@ -5,14 +5,14 @@ require_once("config-pdo.php");
 require_once("signupfunc.php");
 
 
-    $providerid = @tvalidator("PURIFY","$_POST[providerid]");
+    $providerid = @tvalidator("ID","$_POST[providerid]");
     $providername = ucwords(@tvalidator("PURIFY",$_POST['providername']));
     $name2 = ucwords(@tvalidator("PURIFY",$_POST['name2']));
     $alias = ucwords(@tvalidator("PURIFY",$_POST['alias']));
     $positiontitle = ucwords(@tvalidator("PURIFY",$_POST['positiontitle']));
     $password = @tvalidator("PURIFY","$_POST[password]");
     $replysms = @tvalidator("PURIFY",$_POST['replysms']);
-    $replyemail = strtolower(@tvalidator("PURIFY",$_POST['replyemail']));
+    $replyemail = strtolower(@tvalidator("EMAIL",$_POST['replyemail']));
     $handle = @tvalidator("PURIFY",$_POST['handle']);
     $welcome = @tvalidator("PURIFY",$_POST['welcome']);
     $inactivitytimeout = intval(@tvalidator("PURIFY",$_POST['inactivitytimeout']))*60;

@@ -42,11 +42,11 @@ require_once("internationalization.php");
         //exit();
     }
 
-    $providerid = @tvalidator("PURIFY","$_POST[providerid]");
+    $providerid = @tvalidator("ID","$_POST[providerid]");
     $providername = ucwords(stripslashes(@tvalidator("PURIFY",$_POST['providername'])));
     $password = @tvalidator("PURIFY","$_POST[password]");
     $replysms = @tvalidator("PURIFY",$_POST['replysms']);
-    $replyemail = strtolower(@tvalidator("PURIFY",$_POST['replyemail']));
+    $replyemail = strtolower(@tvalidator("EMAIL",$_POST['replyemail']));
     $handle = @tvalidator("PURIFY",$_POST['handle']);
     $loginid = @tvalidator("PURIFY",$_POST['loginid']);
 

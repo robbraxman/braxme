@@ -7,7 +7,7 @@ require("aws.php");
     $braxinfo = "<img class='info_file' src='../img/info-yellow-128.png' style='float:right;cursor:pointer;position:relative;top:3px;height:25px;width:auto;padding-left:20px;padding-top:0;padding-right:2px;padding-bottom:0px;' />";
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
-    $providerid = tvalidator("PURIFY",$_SESSION[pid]);
+    $providerid = tvalidator("ID",$_SESSION[pid]);
     $page = tvalidator("PURIFY",$_POST[page]);
     $mode = tvalidator("PURIFY",$_POST[mode]);
     $filename = tvalidator("PURIFY",$_POST[filename]);
@@ -36,8 +36,8 @@ require("aws.php");
     {
         
         pdo_query("1","
-            delete from filelib where providerid=$providerid and filename='$filename' and status='Y'
-            ");
+            delete from filelib where providerid=? and filename=? and status='Y'
+            ",array($providerid,$filename));
         
         deleteAWSObject($filename);
         //echo "Deleting '$bucket' '$filename<br>'";
@@ -50,7 +50,7 @@ require("aws.php");
     //*************************************************************
 
     
-    $page = intval(tvalidator("PURIFY",$_POST[page]));
+    $page = intval(tvalidator("ID",$_POST[page]));
     if( $page == 0)
         $page = 1;
     $pagenext = intval($page)+1;
@@ -128,8 +128,8 @@ require("aws.php");
     $result = pdo_query("1",
         "
             select sum(filesize) as totalsize
-            from filelib where providerid = $providerid and status='Y'
-        ");
+            from filelib where providerid = ? and status='Y'
+        ",array($providerid));
     $row = pdo_fetch($result);
     $totalsize = round($row[totalsize]/1000000,1);
     
@@ -138,10 +138,10 @@ require("aws.php");
             select origfilename, filename, folder, alias, views, filetype, filesize, title,
             date_format( date_add(createdate,INTERVAL $_SESSION[timezoneoffset] HOUR),'%m/%d/%y %h:%i %p') as createdate,
             createdate as createdate2
-            from filelib where providerid = $providerid and status='Y'
+            from filelib where providerid = ? and status='Y'
             order by $sort_text
             limit $pagestart, $max
-        ");
+        ",array($providerid));
 
     echo "
             <tr class='gridstdborder gridcelltitle' style='background-color:whitesmoke;color:gray'>

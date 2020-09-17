@@ -7,9 +7,9 @@ require ("notify.inc.php");
 require("chat.inc.php");
 
     $providerid = @tvalidator("ID",$_POST['providerid']);
-    $recipientid = @tvalidator("PURIFY",$_POST['recipientid']);
+    $recipientid = @tvalidator("ID",$_POST['recipientid']);
     $mode = @tvalidator("PURIFY",$_POST['mode']);
-    $email = @tvalidator("PURIFY",$_POST['email']);
+    $email = @tvalidator("EMAIL",$_POST['email']);
     $name = @tvalidator("PURIFY",$_POST['name']);
     $sms = @tvalidator("PURIFY",$_POST['sms']);
     //$passkey64 = @tvalidator("PURIFY",$_POST['passkey64']);

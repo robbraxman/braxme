@@ -6,7 +6,7 @@ require_once("config-pdo.php");
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
     $providerid = @tvalidator("ID",$_POST['providerid']);
     $roomid = @tvalidator("ID",$_POST['roomid']);
-    $groupid = @tvalidator("PURIFY",$_POST['groupid']);
+    $groupid = @tvalidator("ID",$_POST['groupid']);
     $sponsor = @tvalidator("PURIFY",$_POST['sponsor']);
     $filter = @tvalidator("PURIFY",$_POST['filter']);
     $caller = @tvalidator("PURIFY",$_POST['caller']);

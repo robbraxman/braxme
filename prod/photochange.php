@@ -4,7 +4,7 @@ require("validsession.inc.php");
 require_once("config-pdo.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
-    $providerid = tvalidator("PURIFY",$_SESSION[pid]);
+    $providerid = tvalidator("ID",$_SESSION[pid]);
     $filename = tvalidator("PURIFY",$_POST[filename]);
     $xaccode = tvalidator("PURIFY",$_POST[xaccode]);
     $value = tvalidator("PURIFY",$_POST[value]);

@@ -4,7 +4,7 @@ require_once("config-pdo.php");
 require_once("crypt-pdo.inc.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
-    $providerid = @tvalidator("PURIFY",$_POST['c']);
+    $providerid = @tvalidator("ID",$_POST['c']);
     $callingid = @tvalidator("PURIFY",$_POST['a']);
     $mode = @tvalidator("PURIFY",$_POST['mode']);
     $chatid = @tvalidator("ID",$_POST['chatid']);

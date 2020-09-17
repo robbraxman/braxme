@@ -8,7 +8,7 @@ $temp = rand ( 100000 , 999999 );
 $_SESSION['temporarypassword'] = $temp;
 
 $pid = tvalidator("PURIFY",$_POST['pid']);
-$providerid = tvalidator("PURIFY", "$_POST[pid]");
+$providerid = tvalidator("ID", "$_POST[pid]");
 $loginid = tvalidator("PURIFY",$_POST['loginid']);
 
     //Validation Checks
@@ -25,7 +25,8 @@ $loginid = tvalidator("PURIFY",$_POST['loginid']);
 
     
     $result = pdo_query("1", 
-            "SELECT email from staff where providerid = $providerid and loginid = '$loginid'  "
+            "SELECT email from staff where providerid = ? and loginid = ?  ",
+                array($providerid,$loginid)
             );
     
     if ($row = pdo_fetch($result)) 
@@ -41,10 +42,10 @@ $loginid = tvalidator("PURIFY",$_POST['loginid']);
             $result = pdo_query("1",
                     "update staff set 
                      pwd_ver = 3,
-                     pwd_hash = '$pwd_hash',
+                     pwd_hash = ?,
                      fails = 0,
-                     where providerid = $providerid and loginid = '$loginid'
-                    "
+                     where providerid = ? and loginid = ?
+                    ",array($pwd_hash,$providerid,$loginid)
                 );
             
             //echo "password:$_SESSION[temporarypassword]/$row[email]";

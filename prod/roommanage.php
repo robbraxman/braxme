@@ -12,7 +12,7 @@ require_once("internationalization.php");
     
     $mode = @tvalidator("PURIFY",$_POST['mode']);
     $roomid = stripslashes(@tvalidator("ID",$_POST['roomid']));
-    $friendproviderid = @tvalidator("PURIFY",$_POST['friendproviderid']);
+    $friendproviderid = @tvalidator("ID",$_POST['friendproviderid']);
     $handle = strtolower(stripslashes(@tvalidator("PURIFY",$_POST['handle'])));
     $newroom = @tvalidator("PURIFY",stripslashes($_POST['newroom']));
     $filter = @tvalidator("PURIFY",stripslashes($_POST['filter']));

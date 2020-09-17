@@ -11,7 +11,7 @@ include("lib_autolink.php");
     $providerid = tvalidator("ID",$_POST['providerid']);
     $message = @mysql_safe_string_unstripped($_POST['message']);
     $chatid = tvalidator("ID",$_POST['chatid']);
-    $msgid = tvalidator("PURIFY",$_POST['msgid']);
+    $msgid = tvalidator("ID",$_POST['msgid']);
     $img = tvalidator("PURIFY",$_POST['img']);
     $url = tvalidator("PURIFY",$_POST['url']);
     $mode = tvalidator("PURIFY",$_POST['mode']);

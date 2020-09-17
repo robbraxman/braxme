@@ -8,7 +8,7 @@ require_once("notifyfunc.php");
     $temp = rand ( 100000 , 999999 );
     $_SESSION['temporarypassword'] = $temp;
 
-    $providerid = @tvalidator("PURIFY", "$_REQUEST[pid]");
+    $providerid = @tvalidator("ID", "$_REQUEST[pid]");
     $loginid = @tvalidator("PURIFY", "$_REQUEST[l]");
     $sig = @tvalidator("PURIFY", "$_REQUEST[s]");
     $origproviderid = $providerid;
@@ -20,7 +20,10 @@ require_once("notifyfunc.php");
     //if( strpos( (string) $providerid,"@")!==false ){
     
         $result = pdo_query("1", 
-           "select providerid, verified, replyemail, handle from provider where (providerid=$providerid or replyemail = '$providerid' or handle='$providerid') and active='Y'  "
+           "select providerid, verified, replyemail, handle from provider "
+                . "where (providerid=? or replyemail = ? "
+                . "or handle=?) and active='Y'  ",
+                array($providerid,$providerid,$providerid)
           );
         
         if ($row = pdo_fetch($result)) {
@@ -54,8 +57,8 @@ require_once("notifyfunc.php");
             SELECT staff.email, provider.verified 
             from staff 
             left join provider on staff.providerid = provider.providerid
-            where staff.providerid = $providerid and staff.loginid = '$loginid'  
-            ");
+            where staff.providerid = ? and staff.loginid = ?  
+            ",array($providerid,$logind));
     
 
     if ($row = pdo_fetch($result)) {
@@ -73,17 +76,17 @@ require_once("notifyfunc.php");
                     "
                         update staff set 
                         pwd_ver = 3,
-                        pwd_hash = '$pwd_hash',
+                        pwd_hash = ?,
                         fails=0,
                         onetimeflag='Y'
-                        where providerid= $providerid and loginid = '$loginid'
-                    "
+                        where providerid= ? and loginid = ?
+                    ",array($pwd_hash, $providerid,$loginid)
                 );
             pdo_query("1", 
                 "insert into forgotlog (email,loginid, createdate, status, ip, temppassword) values 
-                 ('$providerid','$loginid', now(), 'Y','$ip','$_SESSION[temporarypassword]'
+                 (?,?, now(), 'Y',?,'$_SESSION[temporarypassword]'
                      ) 
-                "
+                ",array($providerid,$loginid,$ip)
               );
             
             //$result = pdo_query("1",

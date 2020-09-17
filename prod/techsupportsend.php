@@ -62,7 +62,7 @@ function StatusMessage( $status, $level )
        
         if( $_POST[recipientemail]!='' )
         {
-            $recipientemail = stripslashes(tvalidator("PURIFY",$_POST[recipientemail]));
+            $recipientemail = stripslashes(tvalidator("EMAIL",$_POST[recipientemail]));
             $recipientname = stripslashes(tvalidator("PURIFY",$_POST[recipientname]));
             $message = stripslashes(tvalidator("PURIFY",$_POST[message]));
 

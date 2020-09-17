@@ -15,7 +15,7 @@ require_once("signupfunc.php");
 </head>
 <?php
 
-    $providerid = tvalidator("PURIFY","$_SESSION[pid]");
+    $providerid = tvalidator("ID","$_SESSION[pid]");
 
     $avatarurl = tvalidator("PURIFY","$_POST[avatarurl]");
     

@@ -19,7 +19,7 @@ require_once("aws.php");
     $_SESSION['temporarypassword'] = substr( $temp, 5, 8 );
     $session = session_id();
     
-    $providerid = @tvalidator("PURIFY", "$_POST[pid]");
+    $providerid = @tvalidator("ID", "$_POST[pid]");
     $loginid = @tvalidator("PURIFY", "$_POST[l]");
     $ip = tvalidator("PURIFY",$_SERVER['REMOTE_ADDR']);
     //$ip = "test";
@@ -30,8 +30,8 @@ require_once("aws.php");
         $result = pdo_query("1", 
            "select providerid, verified, replyemail, handle from 
             provider where (
-            replyemail = '$providerid' or handle='$providerid') 
-            and active='Y'  "
+            replyemail = ? or handle=?) 
+            and active='Y'  ",array($providerid,$providerid)
           );
         if($row = pdo_fetch($result)){
             $providerid = $row['providerid'];
@@ -66,8 +66,8 @@ require_once("aws.php");
     $result = pdo_query("1", 
             "
              select count(*) as count from forgotlog where datediff(createdate, now())= 0
-             and ip = '$ip' 
-            "
+             and ip = ? 
+            ",array($ip)
           );
     if($row = pdo_fetch($result) ){
         if( intval($row['count'])  > 500 ){
@@ -81,8 +81,8 @@ require_once("aws.php");
         select providerid, 
         (select sms from sms where provider.providerid = sms.providerid ) as smsencrypted,
         (select encoding from sms where provider.providerid = sms.providerid ) as smsencoding
-        from provider where providerid=$providerid and active='Y'  
-      ");
+        from provider where providerid=? and active='Y'  
+      ",array($providerid));
 
 
     if ($row = pdo_fetch($result)){
@@ -118,12 +118,12 @@ require_once("aws.php");
                 from staff 
                 left join provider on provider.providerid = staff.providerid
                 left join sms on provider.providerid = sms.providerid
-                where staff.providerid = $providerid and staff.loginid = '$loginid'  
+                where staff.providerid = ? and staff.loginid = ?  
                 and staff.email in 
                 (select email from verification where verifieddate is not null 
                 and staff.email = verification.email
                 )
-            "
+            ",array($providerid,$loginid)
     );
     
     if ($row = pdo_fetch($result)){
@@ -195,7 +195,11 @@ require_once("aws.php");
         
         publishSMSNotification( "BraxMe", $message, $sms );
         
-        pdo_query("1","insert into smslog (providerid, recipientid, sms, sentdate, source) values ($providerid, $providerid '$sms', now(),'$notifytype' )");
+        pdo_query("1","insert into smslog (providerid, recipientid, sms, sentdate, source) "
+                . "values (?, ?, ?, now(),? )",
+                array(
+                    $providerid,$providerid,$sms,$notifytype
+                ));
         return true;
     }        
 ?>

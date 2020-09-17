@@ -6,7 +6,7 @@ require_once("config-pdo.php");
 
 $max = 50;
 
-    $providerid = tvalidator("PURIFY",$_SESSION[pid]);
+    $providerid = tvalidator("ID",$_SESSION[pid]);
     $collection = tvalidator("PURIFY",$_POST[collection]);
     $description = tvalidator("PURIFY",$_POST[description]);
     $mode = tvalidator("PURIFY",$_POST[mode]);

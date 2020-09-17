@@ -3,7 +3,7 @@ session_start();
 require_once("config-pdo.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
-    $providerid = @tvalidator("PURIFY",$_POST['c']);
+    $providerid = @tvalidator("ID",$_POST['c']);
     $callingid = @tvalidator("PURIFY",$_POST['a']);
     $mode = @tvalidator("PURIFY",$_POST['mode']);
     

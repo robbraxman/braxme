@@ -9,7 +9,7 @@ require_once("notify.inc.php");
 
     $providerid = tvalidator("ID",$_POST['providerid']);
     $mode = @tvalidator("PURIFY",$_POST['mode']);
-    $friendproviderid = @tvalidator("PURIFY",$_POST['friendid']);
+    $friendproviderid = @tvalidator("ID",$_POST['friendid']);
     $caller = @tvalidator("PURIFY",$_POST['caller']);
     $filter = @tvalidator("PURIFY",$_POST['filter']);
     $friendlevel = @tvalidator("PURIFY",$_POST['friendlevel']);

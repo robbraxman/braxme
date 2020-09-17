@@ -9,7 +9,7 @@ require_once("crypt-pdo.inc.php");
 require_once("internationalization.php");
 require("htmlhead.inc.php");
 
-    $providerid = tvalidator("PURIFY",$_POST['pid']);
+    $providerid = tvalidator("ID",$_POST['pid']);
     $loginid = tvalidator("PURIFY",$_POST['loginid']);
 
 
@@ -341,9 +341,9 @@ $(document).ready( function()
             bandwidthplan, active,
             storage
             from msgplan
-            where providerid=$providerid 
+            where providerid=? 
             order by dateend desc limit 1
-    ");
+    ",array($providerid));
     $startdate = '1900-01-01';
     if($row = pdo_fetch($result)){
         $expiredays = $row['expiredays'];
@@ -387,13 +387,13 @@ $(document).ready( function()
     $filesize = 0;
     $bandwidth = 0;
     $result3 = pdo_query("1","select round(sum(filesize)/1000000000,2) as filesize from filelib 
-            where providerid = $providerid ");
+            where providerid = ? ",array($providerid));
     if($row3 = pdo_fetch($result3)){
         $filesize = $row3['filesize'];
     }
 
     $result = pdo_query("1","select round(sum(views*filesize)/1000000000,2) as bandwidth from fileviews 
-            where providerid = $providerid and viewdate >= '$startdate' ");
+            where providerid = ? and viewdate >= ? ",array($providerid,$startdate));
     if($row3 = pdo_fetch($result)){
         $bandwidth = $row3['bandwidth'];
     }
@@ -402,9 +402,9 @@ $(document).ready( function()
     //BYTZ VPN Subscription info
     $result3 = pdo_query("1"," 
         select username, password, datediff( date_add(startdate, interval 1 year), now() ) as expiredays, ip 
-        from bytzvpn where providerid = $providerid and status='Y' 
+        from bytzvpn where providerid = ? and status='Y' 
         order by startdate desc limit 1
-        ");
+        ",array($providerid));
     if($row3 = pdo_fetch($result3)){
         $bytzvpnusername= $row3['username'];
         $bytzvpnpassword = $row3['password'];
@@ -428,8 +428,8 @@ $(document).ready( function()
 
     
     $result = pdo_query("1","
-            select auth_hash from staff where loginid = '$_SESSION[loginid]' and providerid = $providerid 
-                ");
+            select auth_hash from staff where loginid = '$_SESSION[loginid]' and providerid = ? 
+                ",array($providerid));
       
     $row = pdo_fetch($result);
     if(!$row) {
@@ -458,7 +458,7 @@ $(document).ready( function()
             "(select sum(tokens) from tokens where tokens.providerid = provider.providerid and dc='C') as tokenspaid, " .
             "(select sum(tokens) from tokens where tokens.providerid = provider.providerid and dc='D' and tokens.method!='TEST') as tokensbought, " .
             "store, web, roomcreator, broadcaster, allowiot, hardenter ".
-            "from provider where providerid=$providerid order by providerid desc ");
+            "from provider where providerid=? order by providerid desc ",array($providerid));
 
   
       
