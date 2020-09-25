@@ -40,7 +40,7 @@ if($mode == ''){
     $publishchecked = "";
     $result = pdo_query("1"," 
         select publishprofile, publish from provider where providerid = $_SESSION[pid]
-            ");
+            ",null);
     if($row = pdo_fetch($result)){
         $bio = $row['publishprofile'];
         $publish = $row['publish'];

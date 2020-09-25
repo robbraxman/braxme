@@ -90,15 +90,15 @@ $upload_hdr = "upload-zone/files";
                 insert into chatmessage ( chatid, providerid, message, msgdate, encoding, status)
                 values
                 ( $chatid, $providerid, \"$encode\", now(), '$_SESSION[responseencoding]', 'Y' );
-            ");
+            ",null);
         $result = pdo_query("1",
             "
             update chatmembers set lastmessage=now(), lastread=now() where providerid= $providerid and chatid=$chatid and status='Y'
-            ");
+            ",null);
         $result = pdo_query("1",
             "
             update chatmaster set lastmessage=now() where chatid=$chatid 
-            ");
+            ",null);
         ChatNotificationRequest($providerid, $chatid, $encodeshort, $_SESSION['responseencoding'],'P');
 
         SaveLastFunction($providerid,"C", "$chatid");
@@ -115,7 +115,7 @@ $upload_hdr = "upload-zone/files";
             "
                 select room from statusroom
                 where roomid = $roomid limit 1
-            ");
+            ",null);
         if( $row = pdo_fetch($result)){
         
             $roomForSql = addslashes($row['room']);
@@ -130,7 +130,7 @@ $upload_hdr = "upload-zone/files";
                 select providerid,
                 (select anonymousflag from roominfo where roominfo.roomid = statusroom.roomid ) as anonymousflag
                 from statusroom where roomid = $roomid 
-            ");
+            ",null);
         while( $row = pdo_fetch($result)){
         
             $notifytype = 'RP';
@@ -163,7 +163,7 @@ $upload_hdr = "upload-zone/files";
         if( $img!=''){
         
             $imgurl = "$rootserver/$installfolder/sharedirect.php?a=$img";
-            pdo_query("1","update provider set avatarurl='$imgurl', lastactive=now() where providerid=$providerid ");
+            pdo_query("1","update provider set avatarurl='$imgurl', lastactive=now() where providerid=$providerid ",null);
         }
         
         SaveLastFunction($providerid,"A", "");

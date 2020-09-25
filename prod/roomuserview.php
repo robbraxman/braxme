@@ -88,6 +88,7 @@ function MyProfileOutput(
                 </span><br><br>";
     }
  
+    $medalstatus = "";
     if($medal == 1){
        $medalstatus = "<span class='mainfont' style='color:$global_profiletext_color;;margin:auto;vertical-align:top;;padding-right:30px;padding-top:10px;;margin:0'>
                             <img class='icon15' src='$iconsource_braxcheck_common' /> Trusted $appname Resource<br><br></span>";
@@ -763,6 +764,8 @@ function GetTechNotes( $otherid  )
 {
     global $rootserver;
     global $installfolder;
+    global $admintestaccount;
+    
     if($otherid == $admintestaccount){
         return "";
     }
@@ -805,7 +808,7 @@ function GetTechNotes( $otherid  )
         $result2 = pdo_query("1","   
             select accountid, username, password, startdate, ip from bytzvpn where providerid = ? and status='Y'
             ",array($otherid));
-        if($row2 = pdo_fetch($result)){
+        if($row2 = pdo_fetch($result2)){
             $technotes .= "BytzVPN $row2[username] / $row2[password] ($row2[startdate]) $row2[ip]<br>";
             $technotes .= "<br><div class='vpnmanage divbutton4' data-accountid='$row2[accountid]' data-mode='E' >Edit VPN Account</div><br><br>";
         } else {
@@ -818,7 +821,7 @@ function GetTechNotes( $otherid  )
             select xacdate, item_name, payment_status, payment_amount,payer_email,paypalname,tracking,shipstatus, 
             city, state, country from paypalipn where buyer = ? order by xacdate desc
             ",array($otherid));
-        while($row2 = pdo_fetch($result)){
+        while($row2 = pdo_fetch($result2)){
             if($i==0){
                 $technotes .= "STORE TRANSACTIONS<br>-----------------------<br>";
             }
@@ -852,15 +855,15 @@ function GetTechNotes( $otherid  )
         $technotes .= "AllowIOT $row[allowiot]<br>";
         
         $result2 = pdo_query("1","   
-            select distinct module from iotdata where handle = '$row[handle]'
-            ");
-        while($row2 = pdo_fetch($result)){
+            select distinct module from iotdata where handle = ?
+            ",array($row['handle']));
+        while($row2 = pdo_fetch($result2)){
             $technotes .= "-- IOT $row2[module] - ";
             
             $result3 = pdo_query("1","   
                 select checkin from iotdevices where handle = '$row[handle]' and module='$row2[module]'
                 order by checkin desc limit 1
-                ");
+                ",null);
             if($row3 = pdo_fetch($result3)){
                 $technotes .= $row3['checkin']."<br>";
             }
@@ -870,8 +873,8 @@ function GetTechNotes( $otherid  )
         
         $result2 = pdo_query("1","   
             select providername, handle, createdate, lastaccess from provider where iphash2 = '$row[iphash2]' and '$row[iphash2]'!='' and active='Y'
-            ");
-        while($row2 = pdo_fetch($result)){
+            ",null);
+        while($row2 = pdo_fetch($result2)){
             $technotes .= "$row2[providername] $row2[handle] $row2[createdate] $row2[lastaccess]<br>";
         }
         $technotes .= "<br><br>";

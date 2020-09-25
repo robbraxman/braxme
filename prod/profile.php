@@ -399,6 +399,7 @@ $(document).ready( function()
     }
 
     $bytzvpn = '';
+    $bytzbraxwifi = '';
     //BYTZ VPN Subscription info
     $result3 = pdo_query("1"," 
         select username, password, datediff( date_add(startdate, interval 1 year), now() ) as expiredays, ip 

@@ -124,45 +124,6 @@ require_once("crypt-pdo.inc.php");
             limit 200
             ",array($find."%","%".$find."%",$find,$providerid,$providerid,$find,"@".$find));
         
-        /*
-        $result = pdo_query("1",
-           "
-            select distinct 
-                provider.providername as name, provider.replyemail, 
-                provider.handle, provider.avatarurl, 
-                provider.providerid, provider.companyname
-            from provider where active='Y' and provider.termsofuse is not null
-            and (provider.providername like '$find%' or provider.handle like '%$find%' )
-            and
-            ( 
-                ( (provider.handle = '$find' or provider.handle = '@$find') and trim('$find')!='')
-
-                or
-                (provider.publish='Y'  ) 
-
-                or
-                (trim('$find') != '' and providerid in 
-
-                (select providerid from groupmembers where groupid in
-
-                 (select groupid from groupmembers where providerid = $providerid )
-
-                    and groupmembers.providerid = provider.providerid
-                    )
-                )
-                or
-                ( trim('$find') != '' and providerid in 
-                   (select targetproviderid from contacts 
-                   where contacts.providerid = $providerid)
-                )
-
-            ) 
-            $order
-            limit 200
-            "
-        );
-         * 
-         */
     } else {
         $result = pdo_query("1",
            "
@@ -174,7 +135,7 @@ require_once("crypt-pdo.inc.php");
             and sponsor = '$_SESSION[sponsor]' and enterprise ='Y' and (sponsorlist='Y' or sponsorlist is null)
             $order
             limit 200
-            ");
+            ",null);
         
     }
 

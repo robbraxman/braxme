@@ -87,7 +87,7 @@ require ("aws.php");
     {
         
         $result2 = pdo_query("1","select arn, platform, token from notifytokens where providerid=? and token!='' and arn='' and status='Y' ",array($recipientid));
-        while($row2 = pdo_fetch($result))
+        while($row2 = pdo_fetch($result2))
         {   
             //blank ARN so HOLD OFF
             return false;
@@ -124,7 +124,7 @@ require ("aws.php");
             and provider.active='Y'
             
             ",array($recipientid));
-        while($row2 = pdo_fetch($result))
+        while($row2 = pdo_fetch($result2))
         {
             if( $row2['arn']=='')
             {

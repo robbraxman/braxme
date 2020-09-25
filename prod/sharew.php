@@ -13,7 +13,7 @@ if( $view!=='N')
     $displaylink = "";
     $result2 = pdo_query("1","
         update shares set views=views+1 where shareid='$share' 
-        ");
+        ",null);
 }
 else 
 {
@@ -41,7 +41,7 @@ else
 
 $result = pdo_query("1","
         select avatarurl from provider where providerid= $providerid
-            ");
+            ",null);
 if($row = pdo_fetch($result))
     $avatarurl = $row['avatarurl'];
 
@@ -49,7 +49,7 @@ if($row = pdo_fetch($result))
 $result = pdo_query("1","
         select url, album, url1, seq, description from sharecollection
         where providerid = $providerid and collection='$collection'
-            ");
+            ",null);
 
 while( $row = pdo_fetch($result))
 {

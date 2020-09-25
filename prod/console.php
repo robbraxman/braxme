@@ -382,51 +382,6 @@ if($_SESSION['enterprise']=='Y'){
     <INPUT class='timestamp' TYPE='hidden' NAME='timestamp' value='' >
     </FORM>
 
-    <FORM id="contactbook" name='contactbook'  ACTION="contactbooklist.php" METHOD="POST" target=functioniframe >
-    <INPUT TYPE="hidden" NAME="pid" value='<?=$_SESSION['pid']?>' >
-     <INPUT TYPE="hidden" NAME="loginid" value='admin' >
-     <INPUT TYPE="hidden" NAME="returnurl" value='<a href=login.php>Login</a>' >
-    <INPUT class='timestamp' TYPE='hidden' NAME='timestamp' value='' >
-    </FORM>
-
-    <FORM id="contactenterprise" name='contactbook'  ACTION="contactenterprise.php" METHOD="POST" target=functioniframe >
-    <INPUT TYPE="hidden" NAME="pid" value='<?=$_SESSION['pid']?>' >
-     <INPUT TYPE="hidden" NAME="loginid" value='admin' >
-     <INPUT TYPE="hidden" NAME="returnurl" value='<a href=login.php>Login</a>' >
-    <INPUT class='timestamp' TYPE='hidden' NAME='timestamp' value='' >
-    </FORM>
-    
-    <FORM id="contactsms" name='contactbook'  ACTION="contactsms.php" METHOD="POST" target=functioniframe >
-    <INPUT TYPE="hidden" NAME="pid" value='<?=$_SESSION['pid']?>' >
-     <INPUT TYPE="hidden" NAME="loginid" value='admin' >
-     <INPUT TYPE="hidden" NAME="returnurl" value='<a href=login.php>Login</a>' >
-    <INPUT class='timestamp' TYPE='hidden' NAME='timestamp' value='' >
-    </FORM>
-    
-    <!--
-    <FORM id="addressbookedit" name='addressbookedit'  ACTION="addressbookedit.php" METHOD="POST" target=functioniframe >
-    <INPUT TYPE="hidden" NAME="pid" value='<?=$_SESSION['pid']?>' >
-     <INPUT TYPE="hidden" NAME="loginid" value='admin' >
-     <INPUT TYPE="hidden" NAME="returnurl" value='<a href=login.php>Login</a>' >
-    <INPUT class='timestamp' TYPE='hidden' NAME='timestamp' value='' >
-    </FORM>
-    -->
-
-    <FORM id="imapsetup" name='imapsetup'  ACTION="imapsetup.php" METHOD="POST"   >
-    <INPUT TYPE="hidden" NAME="pid" value='<?=$_SESSION['pid']?>' >
-     <INPUT TYPE="hidden" NAME="loginid" value='admin' >
-     <INPUT TYPE="hidden" NAME="returnurl" value='<a href=login.php>Login</a>' >
-    <INPUT class='timestamp' TYPE='hidden' NAME='timestamp' value='' >
-    </FORM>
-
-    <FORM id="imapsetup1" name='imapsetup'  ACTION="imapsetup.php" METHOD="POST"   >
-    <INPUT TYPE="hidden" NAME="pid" value='<?=$_SESSION['pid']?>' >
-     <INPUT TYPE="hidden" NAME="loginid" value='admin' >
-     <INPUT TYPE="hidden" NAME="returnurl" value='<a href=login.php>Login</a>' >
-    <INPUT TYPE='hidden' NAME='timestamp' value='' >
-    <INPUT class='timestamp' TYPE='hidden' NAME='timestamp' value='' >
-    </FORM>
-
 
     <form class='avatarform' id='avatarform' action='avatarform.php' method=POST target='functioniframe'>
     <INPUT TYPE="hidden" NAME="pid" value='<?=$_SESSION['pid']?>' >
@@ -507,7 +462,7 @@ if($_SESSION['enterprise']=='Y'){
     <INPUT TYPE='hidden' NAME='pid' value='<?=$_SESSION['pid']?>' >
     </FORM>
     
-    <FORM id='signupform' name='signupform'  ACTION='signupenterprise.php' METHOD='POST' target='functioniframe'  >
+    <FORM id='signupform' name='signupform'  ACTION='signup.php' METHOD='POST' target='functioniframe'  >
     <INPUT TYPE='hidden' NAME='pid' value='<?=$_SESSION['pid']?>' >
     </FORM>
     

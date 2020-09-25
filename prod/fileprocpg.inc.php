@@ -76,7 +76,7 @@ function ProcessUpload( $providerid, $encoding, $uploadtype )
                         ( providerid, filename, origfilename, folder, filesize, filetype, title, createdate, alias, encoding, fileencoding, status )
                         values
                         ( $providerid, '$attachmentfilename','$origfilename', '',$filesize, '$filenameext','$origfilename', now(), '$alias', 'PLAINTEXT','$fileencoding','Y' ) 
-                     "
+                     ",null
              );
             LogDebug($providerid, "3-file: ( $providerid, '$attachmentfilename','$origfilename', '',$filesize, '$filenameext','$origfilename', now(), '$alias' ) ");
 

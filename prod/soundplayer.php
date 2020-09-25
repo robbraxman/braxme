@@ -44,11 +44,11 @@ if($row = pdo_fetch($result)){
 }
     pdo_query("1","
         update filelib set views=views+1 where filename='$row[filename]' and providerid=$row[providerid]
-        ");
+        ",null);
     pdo_query("1","
         insert into fileviews (filename, providerid, viewdate, filesize, views, status )
         values ('$row[filename]', $row[providerid], now(), $row[filesize], 1, 'Y' )
-        ");
+        ",null);
 
 
 //**************************************************

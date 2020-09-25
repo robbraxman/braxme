@@ -15,7 +15,7 @@ $inline = @tvalidator("PURIFY", $_GET['i'] );
         from filelib 
         left join provider on filelib.providerid = provider.providerid
         where filelib.alias='$alias' and filelib.status='Y'
-        ");
+        ",null);
     if( !$row = pdo_fetch($result)){
     
         echo "File Not Found";
@@ -35,12 +35,12 @@ $inline = @tvalidator("PURIFY", $_GET['i'] );
     
     pdo_query("1","
         update filelib set views=views+1 where filename='$row[filename]' and providerid=$row[providerid]
-        ");
+        ",null);
     
     pdo_query("1","
         insert into fileviews (filename, providerid, viewdate, filesize, views, status )
         values ('$row[filename]', $row[providerid], now(), $row[filesize], 1, 'Y' )
-        ");
+        ",null);
     
 
     $filename = "$rootserver/$installfolder/$row[folder]$row[filename]";

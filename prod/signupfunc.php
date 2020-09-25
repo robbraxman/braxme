@@ -263,7 +263,7 @@ class SignUp
         $result = pdo_query("1"," 
             select id, name, email, sms,handle,  temppassword, ownerid, roomid, sponsor, companyname  from csvsignup
             where status='N'  $limit
-            ");
+            ",null);
         while($row = pdo_fetch($result)){
             
             $ownerid = $row['ownerid'];
@@ -304,7 +304,7 @@ class SignUp
                 echo $this->DisplayErrors();
                   echo "Error - ".$row['name']."<br>";
                 $errorcount++;
-                pdo_query("1","update csvsignup set status='E', error='$this->error1' where status='N' and id = $row[id] ");
+                pdo_query("1","update csvsignup set status='E', error='$this->error1' where status='N' and id = $row[id] ",null);
                 
             }
             
@@ -348,7 +348,7 @@ class SignUp
         }
 
         $this->providerid = $providerid;
-        if($providerid == ''){
+        if(intval($providerid) == 0){
             $this->providerid = $this->GetProviderid();
         }
         
@@ -515,7 +515,8 @@ class SignUp
         
         $result = pdo_query("1", 
             "insert into provider 
-            ( newbie, providerid, createdate, providername, name2, 
+            ( newbie, 
+             providerid, createdate, providername, name2, 
              companyname, handle, active, 
              replyemail, loginid, 
              avatarurl, enterprise, industry,  
@@ -528,19 +529,19 @@ class SignUp
              roomcreator, broadcaster, web, store, hardenter
              ) values (
               'Y',
-              ?,now(),?,?,
-              ?,?,?,
-              ?,?,
-              ?,?,?,
-              ?,?,?,'N',
-              ?,?,?,?,
-              ?,?,?,?,
-              'N', 'N','Y', 'Y',
-              ?,?,?,
-              ?,?,?,?,?,
-              'std',?,?,'$appname',?,?,?,?,
-              ?,?,?,?,?,?,
-            )",array(
+             ?,now(),?,?,
+             ?,?,?,
+             ?,?,
+             ?,?,?,
+             ?,?,?,'N',
+             ?,?,?,?,
+             ?,?,?,?,
+             'N', 'N','Y', 'Y',
+             ?,?,?,?,?,?,?,?,
+             'std',?,?,'$appname',?,?,?,?,?,
+             ?,?,?,?,?
+            )"
+            ,array(
               $this->providerid, $this->providername, $this->name2, 
               $this->companyname, $this->handle, $this->active,  
               $this->replyemail, $this->loginid, 
@@ -550,11 +551,14 @@ class SignUp
               $this->contractperiod,  $this->contracttype,$this->dealer,$this->dealeremail,
               $this->serverhost,  $this->allowtexting, $this->msglifespan,
               $this->sponsor, $this->roomdiscovery, $this->onetimeflag, $this->eowner, $this->sponsorlist,
-              $this->language, $this->roomhandle,$appname,$this->iphash, $this->iphash2, $this->timezone', '$this->ipsource,
-              $this->trackerid,$this->roomcreator,$this->broadcaster, $this->web, $this->store, $this->hardenter
-                
+              $this->language, $this->roomhandle,$this->iphash, $this->iphash2, $this->timezone, $this->ipsource,
+              $this->trackerid,
+              $this->roomcreator,$this->broadcaster, $this->web, $this->store, $this->hardenter
             )
         );
+        
+
+         
         if(!$result){
             return false;
         }
@@ -848,7 +852,7 @@ class SignUp
           " streamingaccount=?, sponsorlist=?, hardenter=? ".
           " where providerid=?",
                 array($this->verified,$this->providername,
-                    $this->name2,,$this->companyname,,$this->handle,
+                    $this->name2,$this->companyname,$this->handle,
                     $this->replyemail,$this->alias,$this->positiontitle,
                     $this->industry,$this->msglifespan,
                     $this->active,$this->enable_email,
@@ -863,7 +867,7 @@ class SignUp
         
         //Create encrypted SMS
         pdo_query("1","
-            delete from sms where providerid = $this->providerid
+            delete from sms where providerid = ?
             ",array($this->providerid
                     ));
 
@@ -871,7 +875,7 @@ class SignUp
             $sms_encrypted = EncryptText($this->replysms, $this->providerid);
             //$sms_decrypted = DecryptText($sms_encrypted, $_SESSION['responseencoding'], $providerid);
             pdo_query("1","
-                insert into sms (providerid, sms, encoding ) values 
+                insert ignore into sms (providerid, sms, encoding ) values 
                 (
                     ?, ?,'$_SESSION[responseencoding]'
                 )
@@ -1069,7 +1073,7 @@ class SignUp
     {
         $providerid = 0;
         $result = pdo_query("1",
-            "select max(val1)+1 as maxid from parms where parmkey='SUBSCRIBER' AND PARMCODE='ID' "
+            "select max(val1)+1 as maxid from parms where parmkey='SUBSCRIBER' AND PARMCODE='ID' ",null
         );
         if( $row = pdo_fetch($result)){
             
@@ -1077,7 +1081,7 @@ class SignUp
         }
 
 
-        $result = pdo_query("1", "select max(providerid)+1 as providerid from provider ");
+        $result = pdo_query("1", "select max(providerid)+1 as providerid from provider ",null);
         if( $row = pdo_fetch($result)){
             
             $highid = $row['providerid'];
@@ -1085,7 +1089,7 @@ class SignUp
 
         if( $providerid == 0 ){
             
-            $result = pdo_query("1", "insert into parms (parmkey, parmcode, val1, val2 ) values ('SUBSCRIBER','ID', $highid, 0 )");
+            $result = pdo_query("1", "insert into parms (parmkey, parmcode, val1, val2 ) values ('SUBSCRIBER','ID', $highid, 0 )",null);
         }
 
         if( $highid > $providerid){
@@ -1096,7 +1100,7 @@ class SignUp
         $result = pdo_query("1", "update parms set val1 = ? where parmkey='SUBSCRIBER' and parmcode='ID' ",array($providerid));
 
         pdo_query("1","delete from handle where providerid=? ",array($providerid));
-        pdo_query("1","insert into handle (handle, email, providerid) values (?, ?,?) ",array($this->handle,$this->replyemail,$this->providerid));
+        pdo_query("1","insert ignore into handle (handle, email, providerid) values (?, ?,?) ",array($this->handle,$this->replyemail,$this->providerid));
         
         
         return $providerid;

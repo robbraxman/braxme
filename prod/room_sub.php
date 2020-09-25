@@ -29,7 +29,7 @@ require_once("internationalization.php");
         $result2 = pdo_query("1",
         "
             select distinct statuspost.anonymous, provider.providerid, provider.providername, provider.alias, statusreads.xaccode, 
-            statusreads.actiontime as actiontime2, provider.name2, provider.active, provider.medal
+            statusreads.actiontime as actiontime2, provider.name2, provider.active, provider.medal,
             DATE_FORMAT(date_add(statusreads.actiontime, INTERVAL $_SESSION[timezoneoffset]*60 MINUTE), '%m/%d/%y %a %h:%i %p') as actiontime,
             (select 'Y' from publicrooms where publicrooms.roomid = statusreads.roomid ) as public,
             provider.handle,
@@ -44,7 +44,7 @@ require_once("internationalization.php");
             order by actiontime2 desc limit 100
         ",array($providerid,$shareid));
         $activity = "";
-        while( $row2 = pdo_fetch($result))
+        while( $row2 = pdo_fetch($result2))
         {
             
             $postername = $row2['providername'];
@@ -97,7 +97,7 @@ require_once("internationalization.php");
             from statuspost
             where parent!='Y' and shareid=?
         ",array($shareid));
-    $row2 = pdo_fetch($result);
+    $row2 = pdo_fetch($result2);
     $iCount = $row2['count'];
             
 
@@ -149,7 +149,7 @@ require_once("internationalization.php");
     $i = 0;
     $page = 0;
     //echo "<br>";
-    while($row2 = pdo_fetch($result))
+    while($row2 = pdo_fetch($result2))
     {
         $comment = FormatComment("", $row2['postid'],$row2['owner'], $row2['roomid'], $row2['encoding'], 
                 $row2['comment'], '',$row2['photo'], $row2['album'], $row2['video'], $row2['link'], "","N",  

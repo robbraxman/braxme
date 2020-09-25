@@ -459,7 +459,7 @@ require_once("config-pdo.php");
     $result = pdo_query("1","
         select appname, appidentity from appmeetup where replyemail = '$_SESSION[replyemail]'
             and status in ('Y','X')
-            ");
+            ",null);
     $count = 0;
     while($row = pdo_fetch($result)){
         if($count == 0){

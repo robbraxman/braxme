@@ -92,7 +92,7 @@ require_once("internationalization.php");
     pdo_query("1","
         update photolib set public='Y', providerid=0 where 
         ( album like '* Public%' or album = '* Artist Submission')  
-        ");
+        ",null);
     pdo_query("1","
         update photolib set public='N', providerid=? where album not like '* Public%'        
         and owner = ?
@@ -314,7 +314,7 @@ require_once("internationalization.php");
     $result2 =pdo_query("1","
         select sum(filesize) as filesize, count(*) as count from photolib where owner = ? and public!='Y'
         ",array($providerid));
-    $row2 = pdo_fetch($result);
+    $row2 = pdo_fetch($result2);
     $totalsize = round(($row2['filesize']/1000000),1);
     $totalAll = $row2['count'];
     
@@ -327,10 +327,10 @@ require_once("internationalization.php");
         (
            public = 'Y' and album=?
         )
-        ",array($providerid,$selectedalbum,$selectedalbum));
+        ",array($providerid,$selectedalbum,$selectedalbum,$selectedalbum));
          
     
-    $row2 = pdo_fetch($result);
+    $row2 = pdo_fetch($result2);
     $total = $row2['count'];
     
     $firstphoto = "";
@@ -343,7 +343,7 @@ require_once("internationalization.php");
                 providerid = $providerid
                 and album='$selectedalbum'  
                     ",array($providerid,$selectedalbum));
-        if($row2 = pdo_fetch($result))
+        if($row2 = pdo_fetch($result2))
             $firstphoto = $row2['filename'];
                 
         
@@ -838,7 +838,7 @@ require_once("internationalization.php");
           )
         {
             $result2 = pdo_query("1","select body from profile where providerid=? ",array($owner));
-            if( $row2 = pdo_fetch($result)){
+            if( $row2 = pdo_fetch($result2)){
                $profile = base64_decode($row2['body']);
             }
             echo "
@@ -1577,9 +1577,9 @@ function CreateAlbumList( $providerid, $selectedalbum, $selectedalbumHtml, $page
             left join photolibshare on photolibshare.providerid = photolib.providerid and photolibshare.album = photolib.album
             where
             ( ( photolib.providerid=? and photolib.album!='' and photolib.album!=? ) or photolib.public='Y')
-            ? and (hide is null or hide='N')
+            $albumexclude and (hide is null or hide='N')
             order by photolib.public asc, photolib.album asc
-        ",$providerid,$selectedalbumSql,$albumexclude);
+        ",array($providerid,$selectedalbumSql));
     
     
     $color = $global_titlebar_alt_color;//'#a1a1a4';
@@ -1617,7 +1617,7 @@ function CreateAlbumList( $providerid, $selectedalbum, $selectedalbumHtml, $page
     $foldercount = 0;
     
 
-    while( $row2 = pdo_fetch($result)){
+    while( $row2 = pdo_fetch($result2)){
 
         $shareflag = '';
         if($row2['sharetype']=="F" || $row2['sharetype']=='C'  || $row2['sharetype']=='A'){
@@ -1782,7 +1782,7 @@ function AlbumMenu($providerid, $selectedalbum, $page)
     
     $albumselect .= "
             <option value='(New)' selected='selected'>(New)</option>";
-    while( $row2 = pdo_fetch($result)){
+    while( $row2 = pdo_fetch($result2)){
 
         $albumitem = ConvertHTML($row2['album']);
         $albumitem2 = DeconvertHTML($row2['album']);
@@ -1825,7 +1825,7 @@ function AlbumMenu($providerid, $selectedalbum, $page)
             "data-album=''>________________</li>";
 
     
-    while( $row2 = pdo_fetch($result)){
+    while( $row2 = pdo_fetch($result2)){
 
         $albumitem = ConvertHTML($row2['album']);
         $albumitem2 = DeconvertHTML($row2['album']);

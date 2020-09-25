@@ -3,7 +3,7 @@ session_start();
 if(!isset($_SESSION['validsession'])){
     exit();
 }
-require("../config.php");
+require("../config-pdo.php");
 $uploadtips = '';
 if( @tvalidator("PURIFY",$_SESSION['photouser'])=='N')
 {

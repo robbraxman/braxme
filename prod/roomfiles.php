@@ -90,7 +90,7 @@ require_once("internationalization.php");
             "
                 update roomfiles set folderid=? where
                     filename=? and roomid=? and providerid = ?
-            ",array($selectedfolderid,$filename,$roomid,$providerid);
+            ",array($selectedfolderid,$filename,$roomid,$providerid));
         $filename = '';
         $mode = "";
         
@@ -715,7 +715,7 @@ function CreateFolderList( $roomid, $mode, $selectedfolder, $selectedfolderid, $
         </div> 
             ";
     $foldercount = 0;
-    while( $row2 = pdo_fetch($result)){
+    while( $row2 = pdo_fetch($result2)){
     
         $foldername_short = substr($row2['foldername'],0,15);
         if(strlen($row2['foldername'])>15){

@@ -10,7 +10,7 @@ $result = pdo_query("1","
         select provider.providername, notifytokens.token, notifytokens.platform, notifytokens.registered, notifytokens.providerid from notifytokens 
         left join provider on notifytokens.providerid = provider.providerid
         where notifytokens.arn='' and (notifytokens.status='Y' or notifytokens.status='E')
-        ");
+        ",null);
 while($row = pdo_fetch($result))
 {
     $token = $row['token'];
@@ -28,12 +28,12 @@ while($row = pdo_fetch($result))
         $arn = createSnsPlatformEndpoint( "$apn", "$gcm" );
         echo "arn=$arn";
         if( $arn!=''){
-            pdo_query("1","update notifytokens set arn='$arn', status='Y' where providerid=$providerid and token='$token' ");
+            pdo_query("1","update notifytokens set arn='$arn', status='Y' where providerid=$providerid and token='$token' ",null);
         }
     } catch (Exception $e) {
         echo 'Caught exception: ',  $e->getMessage(), "\n";
         $errsql = htmlentities($e->getMessage(), ENT_COMPAT);
-        pdo_query("1","update notifytokens set status='E', error = '$errsql' where providerid=$providerid and token='$token' ");
+        pdo_query("1","update notifytokens set status='E', error = '$errsql' where providerid=$providerid and token='$token' ",null);
     } 
     echo "<br>";
 }

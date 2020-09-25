@@ -32,7 +32,7 @@ require_once("config-pdo.php");
                         where imap_msgqueue.providerid=$providerid and imap_msgqueue.imapbox=$imapitem
                         and imap_msgqueue.seen=0 and imap_msgqueue.deleted!=1 and xaccode is null and datediff(now(),imap_msgqueue.msgdate) <= 0 
                         and imap_msgqueue.folder='INBOX' and imap_msgqueue.syncflag!='U'
-                        ");
+                        ",null);
                 $alert = "";
                 if($row2 = pdo_fetch($result2))
                 {

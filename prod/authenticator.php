@@ -10,7 +10,7 @@ $secret = $ga->createSecret();
 $auth_hash = '';
 $result = pdo_query("1","
     select auth_hash from staff 
-    where loginid = '$_SESSION[loginid]' and providerid = $_SESSION[pid] ");
+    where loginid = '$_SESSION[loginid]' and providerid = $_SESSION[pid] ",null);
 if( $row = pdo_fetch($result)){
     $auth_hash = $row['auth_hash'];
 }

@@ -41,7 +41,7 @@ $upload_hdr = 'photolib';
         exit();
     
     SaveLastFunction($providerid,"A", "");
-    pdo_query("1","update provider set avatarurl='$rootserver/$installfolder/sharedirect.php?a=$img' where providerid=$providerid ");
+    pdo_query("1","update provider set avatarurl='$rootserver/$installfolder/sharedirect.php?a=$img' where providerid=$providerid ",null);
             
         
     //ReturnToMessageEntry();

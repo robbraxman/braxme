@@ -30,7 +30,7 @@ function BatchSendText()
         $result = pdo_query("1","
             select id, ownerid, message, sms from csvtext where status='N'
             limit 100
-            ");
+            ",null);
         while($row = pdo_fetch($result)){
             
             $payload = EncryptChat ($row['message'],"0","" );
@@ -44,7 +44,7 @@ function BatchSendText()
             $payload, $payloadsms,
             $encoding, "", $row['sms'] );
             
-            pdo_query("1","update csvtext set status='Y' where id=$row[id] and status='N' ");
+            pdo_query("1","update csvtext set status='Y' where id=$row[id] and status='N' ",null);
         }
         
 }
@@ -131,7 +131,7 @@ function ChatNotificationRequest($providerid, $chatid, $encodeshort, $encoding, 
     
     //Photo upload
     if($subtype == 'P'){
-        $result = pdo_query("1","select radiostation from chatmaster where chatid=? and radiostation='Y",array($chatid));
+        $result = pdo_query("1","select radiostation from chatmaster where chatid=? and radiostation='Y'",array($chatid));
         if( $row = pdo_fetch($result)){
             return;
         }
@@ -406,7 +406,7 @@ function NotificationRequestLoop()
 
     $result = pdo_query("1","
         update notifyrequest set status = 'P' where status = 'N'
-    ");
+    ",null);
     
     $result = pdo_query("1","
         select requestid,
@@ -416,10 +416,10 @@ function NotificationRequestLoop()
         from notifyrequest 
         where status = 'P' 
         order by requestdate asc
-    ");
+    ",null);
     while($row = pdo_fetch($result)){
         //Mark it so it doesn't get called again
-        pdo_query("1","update notifyrequest set status='Y' where requestid= $row[requestid]");
+        pdo_query("1","update notifyrequest set status='Y' where requestid= $row[requestid]",null);
         
         //if(ThrottleCheck( $row['chatid'], $row['roomid'], $row['requestid'])){
             

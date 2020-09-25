@@ -21,7 +21,7 @@ $category = $argv[1];
              and invites.status = 'Y'
              and retries < 5 
              and invites.chatid is null
-             ");   
+             ",null);   
     }
     if( $category == 'C')
     {
@@ -34,7 +34,7 @@ $category = $argv[1];
                      where invites.email not in (select replyemail from provider where active='Y')
              and roomid = 0 and retries < 20
              and chatid in (select chatid from chatmessage where chatmessage.chatid = invites.chatid )
-             ");   
+             ",null);   
     }
     
      while( $row = pdo_fetch($result))
@@ -118,7 +118,7 @@ $category = $argv[1];
             ",array($inviteemail));
         
         //User Never Signed Up
-        if(!$row2 = pdo_fetch($result))
+        if(!$row2 = pdo_fetch($result2))
         {
         
             if( $invitetype == 'R')

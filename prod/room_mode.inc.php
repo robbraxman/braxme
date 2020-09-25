@@ -52,7 +52,7 @@
                     select count(*) as commenttotal from
                     statuspost where parent!='Y' and shareid=?
                 ",array($shareid));
-            $row2 = pdo_fetch($result);
+            $row2 = pdo_fetch($result2);
             $commentitems = $row2['commenttotal'];
             echo "$commentitems Comments";
             exit();
@@ -72,8 +72,9 @@
     }
     if( $mode == 'P'){
     
-        if( $roomid =='' || $roomid == 'All ')
+        if( $roomid =='' || $roomid == 'All '){
             exit();
+        }
         RoomPost( $mode, $providerid, $shareid, $roomid, $title, $comment, $video, $photo, $link, $anonymous,0);
     }
     if( $mode == 'R'){

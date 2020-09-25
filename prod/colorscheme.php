@@ -37,6 +37,13 @@ if($color_scheme=='std' || $color_scheme == ''){
     $color_scheme = 'metal night';
     $wallpaper_scheme = 'default';
 }
+if(!isset($_SESSION['devicecode'])){
+    $_SESSION['devicecode']='';
+}
+if($_SESSION['devicecode']=='androidteink'){
+    $color_scheme = "bluesmoke";
+    $wallpaper_scheme = "none";
+}
  
 $global_textcolor = 'black';
 $global_textcolor2 = 'gray';
@@ -422,8 +429,8 @@ if($color_scheme == 'bluesmoke' ){
     $global_banner_color = 'black';//gray
     $global_menu_color = 'whitesmoke';//gray
     $global_menu2_color = '#3e4749';//gray
-    $global_profile_color = '#1b1b1b';//
-    $global_profiletext_color = 'white';//
+    $global_profile_color = 'white';//
+    $global_profiletext_color = 'black';//
     $global_background = 'white';
     $global_web_background = 'whitesmoke';
     $global_titlebar_alt_color = '#3e4749';//gray
@@ -431,7 +438,7 @@ if($color_scheme == 'bluesmoke' ){
     $global_bottombar_color = '#2b2b2b';//dark gray
     $global_separator_color = "#67809F"; //
     $global_activetextcolor = '#67809F'; 
-    $global_activetextcolor_reverse = 'gold'; 
+    $global_activetextcolor_reverse = '#67809F'; 
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-lightblue-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-lightblue-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_heart = "<img class='icon15' title='Liked' src='../img/heart-lightblue-128.png' style='position:relative;top:8px;' />";
@@ -673,6 +680,7 @@ if($icon_scheme == 'white'){
     $icon_braxlock =    "<img class='icon30' src='../img/brax-lock-128.png' />";
 
     $icon_braxcar =    "<img class='icon30'  title='Car' src='../img/brax-car-white-128.png'  />";
+    $icon_braxstore =    "<img class='icon30'  title='Car' src='../img/brax-store-round-white.png'  />";
    
     $iconsource_braxrestart_common = "../img/Restart-White-128.png";
 }
@@ -706,6 +714,7 @@ if($icon_scheme == 'black'){
     $icon_braxlogout =    "<img class='icon30' src='../img/logout-circle-128.png' />";
     
     $icon_braxcar =    "<img class='icon30'  title='Car' src='../img/brax-car-black-128.png'  />";
+    $icon_braxstore =    "<img class='icon30'  title='Car' src='../img/brax-store-round-black.png'  />";
     
     //$icon_braxstop =    "<img class='icon25' src='../img/Stop-Music_120px.png'  />";
     //$icon_braxlogout =    "<img class='icon25' src='../img/logout-black-128.png' />";

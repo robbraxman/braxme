@@ -127,7 +127,7 @@ $max = 50;
                 album!='' and album!='All'  order by album asc
                 ",array($providerid));
         $albumselect .= "<option value=''>Select</option>";
-        while( $row2 = pdo_fetch($result))
+        while( $row2 = pdo_fetch($result2))
         {
             $albumselect .= "<option value='$row2[album]'>$row2[album]</option>";
         }
@@ -143,11 +143,11 @@ $max = 50;
         $result2 = pdo_query("1","
                 select album,seq, url, description from sharecollection where providerid=$providerid 
                     and collection = '$collection' order by seq asc
-                ");
+                ",null);
         
         for($i=0;$i<=$max;$i++) $album_selected[$i]="";
         
-        while( $row2 = pdo_fetch($result))
+        while( $row2 = pdo_fetch($result2))
         {
             $album_selected[$row2[seq]]="<option value='$row2[album]' selected=selected>$row2[album]</option>";
             $url="$row2[url]";

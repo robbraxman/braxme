@@ -1,9 +1,11 @@
 <?php
+
 require_once('localsettings/secure/localsettings.php');
 
     if($batchruns !='Y') {
 
         if(!isset($_SERVER['HTTPS'])) {
+            //echo "HTTPS access required";
             exit();
         }
         if(BotCheck()){
@@ -17,6 +19,7 @@ require('colorscheme.php');
     $purifierconfig = HTMLPurifier_Config::createDefault();
     $purifier = new HTMLPurifier($purifierconfig);
 
+    
     function pdo_sql_connect( $connectnum, $sqlurl, $usr, $pwd, $database  )
     {
 
@@ -45,7 +48,7 @@ require('colorscheme.php');
     $dbconnect6 = pdo_sql_connect( "6", $_SESSION['sqlurl6'], $_SESSION['sqlusr6'], $_SESSION['sqlpwd6'], $_SESSION['database6'] );
     $dbconnect_news = pdo_sql_connect( "news", $_SESSION['sqlurl_news'], $_SESSION['sqlusr_news'], $_SESSION['sqlpwd_news'], $_SESSION['database_news'] );
 
-    
+
 /*******************
  * BRAXPRODUCTION SHARD 1
  *******************/
@@ -69,6 +72,10 @@ require('colorscheme.php');
             exit();
         }
         
+        if(!isset($varlist)){
+            $varlist = null;
+        }
+        
         $stmt = $db_pdo[$connect]->prepare($query);
         $stmt->execute($varlist);
         if(!$stmt){
@@ -85,27 +92,27 @@ require('colorscheme.php');
         {
             return false;
         }
-        if($stmt->rowcount() == 0){
-        //    return false;
-        }
+        //if($stmt->rowCount() == 0){
+            //return false;
+        //}
         
         $row =  $stmt->fetch(PDO::FETCH_ASSOC);
         return $row;
     }
     function pdo_fetch_row($stmt ){
         
-        if($stmt->rowcount() == 0){
+        //if($stmt->rowCount() == 0){
         //    return false;
-        }
+        //}
         
         $row =  $stmt->fetch(PDO::FETCH_NUM);
         return $row;
         
     }
     function pdo_fetch_array($stmt ){
-        if($stmt->rowcount() == 0){
-            return false;
-        }
+        //if($stmt->rowCount() == 0){
+            //return false;
+        //}
         
         return $stmt->fetchAll();
         
@@ -159,14 +166,17 @@ require('colorscheme.php');
     function tvalidator($type,$string)
     {
         global $purifier;
-        global $dbconnect1;
+        
+        if(!isset($string)){
+            return;
+        }
         
         if(TrapJs($string)){
             return "";
         }
         if($type == 'ID'){
 
-            return filter_var(intval($string), FILTER_VALIDATE_INT, array("options" => array("min_range" => 0,"max_range" => 9999999999)) );
+            return filter_var(intval($string), FILTER_VALIDATE_INT);//, array("options" => array("min_range" => 0,"max_range" => 9999999999)) );
             
         }
         if($type == 'EMAIL'){
@@ -178,52 +188,23 @@ require('colorscheme.php');
                 return "";
             }            
         }
-        //Purify
-        if( isset($string)){
-
-            return $purifier->purify( mysqli_real_escape_string($dbconnect1, $string));
-            //return mysql_real_escape_string($string);
-        } else {
-            return "";
+        if($type== 'PURIFY'){
+            return $purifier->purify( $string);
         }
 
     }
-    function mysql_safe_string_unstripped($string)
+    function escape_for_sql($string)
     {
-        global $dbconnect1;
         
             if( isset($string)){
-
-                    return mysqli_real_escape_string($dbconnect1, $string);
+                    $tmp = urldecode($string);
+                    $tmp = str_replace("\n","\\n",$tmp);
+                    return $tmp;
             } else {
                 return "";
             }
 
     }
-    function mysql_isset_safe_string($isset, $string)
-    {
-        global $purifier;
-        global $dbconnect1;
-        
-        if(TrapJs($string)){
-            return "";
-        }
-        
-        if(!$isset){
-
-            return "";
-        }
-        
-            
-        return $purifier->purify( mysqli_real_escape_string($dbconnect1, $string));
-        //return (mysql_real_escape_string($string));
-
-    }
-
-    //function mysql_fetch_assoc($connect)
-    //{
-    //    return mysql_fetch_assoc($connect);
-    //}
 
     function SaveLastFunction( $providerid, $func, $parm1 )
     {
@@ -269,11 +250,15 @@ require('colorscheme.php');
             $arr['parm1']='';
             return (object) $arr;
         }
-        $deviceid = tvalidator("PURIFY",$_SESSION['deviceid']);
+        if(isset($_SESSION['deviceid'])){
+            $deviceid = tvalidator("PURIFY",$_SESSION['deviceid']);
+        } else {
+            $deviceid = '';
+        }
 
-        $result = do_query("1","
+        $result = pdo_query("1","
             select timestampdiff(SECOND, funcdate, now()) as elapsed, func, parm1 from lastfunc where providerid= ?
-                and deviceid='? order by funcdate desc",
+                and deviceid=? order by funcdate desc",
                 array($providerid, $deviceid)
                );
 

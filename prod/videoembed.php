@@ -40,7 +40,7 @@ else
 
 pdo_query("1","
     update filelib set views=views+1 where filename='$row[filename]' and providerid=$row[providerid]
-    ");
+    ",null);
 
 
 //**************************************************

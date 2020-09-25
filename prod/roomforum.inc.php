@@ -121,7 +121,7 @@
             select statuspost.anonymous, statuspost.encoding, statuspost.postid, 
             statuspost.pin, statuspost.locked,
             providername, provider.name2, statuspost.comment, statuspost.link, 
-            provider.active,
+            provider.active, provider.medal,
             statuspost.photo, statuspost.album, statuspost.video,  statuspost.videotitle, statuspost.roomid,
             avatarurl, alias, statuspost.providerid, statuspost.articleid,
             DATE_FORMAT(date_add(statuspost.postdate,INTERVAL $_SESSION[timezoneoffset]*60 MINUTE), 
@@ -164,7 +164,7 @@
             and statuspost.shareid like ?
             and '$roominfo->subscriptionpending'!='Y'
             order by  pin desc, lastpostdate  desc  limit $limitstart, $limitend 
-    ",array($providerid,$providerid,$providerid,$providerid,$roomid."%".$find."%",$sharid."%"));
+    ",array($providerid,$providerid,$providerid,$providerid,$roomid,"%".$find."%",$shareid."%"));
     
     
     $postcount = 0;
@@ -196,7 +196,7 @@
         
         $posterobj = RoomPosterInfo($row['roomid'], $row['owner'], $row['avatarurl'], $memberinfo->adminroom, $memberinfo->private,
                 $row['anonymous'], $row['anonymousflag'], $row['providername'], $row['name2'], 
-                $row['alias'], $row['handle'], $row['blockee'], $row['blocker'] );
+                $row['alias'], $row['handle'], $row['blockee'], $row['blocker'],$row['medal'] );
         $avatarurl = RootServerReplace(HttpsWrapper($posterobj->avatar));
         $postername = $posterobj->name;
         

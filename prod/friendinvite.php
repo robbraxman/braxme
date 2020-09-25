@@ -58,14 +58,14 @@ require ("SmsInterface.inc");
         $result = pdo_query("1","
             insert into invites (providerid, name, email, sms, contactlist, roomid, invitedate, status, retries, inviteid )
             values ( $providerid, '$invitename', '$inviteemail', '$invitesms', '', $roomid, now(), 'Y', 0, '$inviteid' )
-            ");
+            ",null);
 
         
         
         $result = pdo_query("1","
             insert into contacts (providerid, contactname, email, sms, friend, imapbox ) values
             ($providerid, '$invitename', '$inviteemail', '$invitesms', '', null  )
-                ");
+                ",null);
         
         
         $result = pdo_query("1","

@@ -92,7 +92,7 @@ require_once("config-pdo.php");
     $result = pdo_query("1","
         select styledata, stylekey, seq 
         from roomwebstyle where roomid=$roomid order by seq asc
-            ");
+            ",null);
     while($row = pdo_fetch($result)){
         if($row['stylekey']=='backgroundcolor')
         {

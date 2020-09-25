@@ -651,7 +651,6 @@ function SetSaveStreamFilter( $fp ){
 //*********************************************************************************
 //*********************************************************************************
 //*********************************************************************************
-
     function RetrieveSecretKey( $encoding )
     {
         global $lastencoding;
@@ -666,23 +665,28 @@ function SetSaveStreamFilter( $fp ){
             return $site_key1;
         }
         
+        /* The actual live version of Brax.Me has a separate Key Server 
+         * operating like a Black Box which will supply a key for 
+         * encoding value. For testing just use a fixed key here so
+         * you don't need a Key Server
+         */
+        
+        $site_key1 = "A-Fake-Key-For-Testing";
+        $keyCache[$encoding]="$site_key1";
+        $keyQueryCount++;
+        //error_log("$encoding [$site_key1) $keyQueryCount");
+        return $site_key1;
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         //See if already in Cache
-        
-        
-        /*
-        try {
-            $site_key1 = $keyCache[$encoding];
-            if($site_key1 !=''){
-            
-                $keyCacheCount++;
-                return $site_key1;
-            }
-        }  catch( Exception $e){
-            
-        }
-        */
-        
-          
          
         
         /* Speed Implementation Tip for Future 
@@ -700,18 +704,6 @@ function SetSaveStreamFilter( $fp ){
          * of a key lookup prevents decryption
           */
         
-        //We cache JSKEY
-        /*
-        if($encoding == 'js' && isset($_SESSION['jskey']) ){
-            $site_key1 = $_SESSION['jskey'];
-            return $site_key1;
-        }
-        if(isset($_SESSION[$encoding])){
-            $site_key1 = $_SESSION[$encoding];
-            return $site_key1;
-        }
-         * 
-         */
         if($encoding!='js' && isset($_SESSION[$encoding])){
             $site_key1 = $_SESSION[$encoding];
             return $site_key1;
@@ -724,17 +716,17 @@ function SetSaveStreamFilter( $fp ){
         //if(intval($random) % 2 == 0){
         if( $random == 1 || $random == 2 ){ 
             
-            $ch = curl_init('https://crypt.braxvpc.me/prod/get1timepad.php');
+            $ch = curl_init('https://vpcinstance/prod/get1timepad.php');
             
         } else 
         if( $random == 3 || $random == 4 ){ 
             
-            $ch = curl_init('https://crypt.braxvpc.me/prod/get1timepad.php');
+            $ch = curl_init('https://vpcinstance/prod/get1timepad.php');
             
         } else 
         if( $random == 5 || $random == 6 ){ 
             
-            $ch = curl_init('https://crypt.braxvpc.me/prod/get1timepad.php');
+            $ch = curl_init('https://vpcinstance/prod/get1timepad.php');
             
         } 
         
@@ -745,7 +737,7 @@ function SetSaveStreamFilter( $fp ){
 
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 
-            $data_string = "encoding=$encoding&apikey=FyUbSACtui877tooj";
+            $data_string = "encoding=$encoding&apikey=authorizationkey";
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
 
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -781,6 +773,8 @@ function SetSaveStreamFilter( $fp ){
         return $site_key1;
         
     }
+
+
 
     function GenerateRandomNumberMail()
     {

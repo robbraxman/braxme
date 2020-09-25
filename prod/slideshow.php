@@ -47,7 +47,7 @@ $slideseconds = "8000"; //milliseconds
 $sort = "order by createdate asc";
 $result = pdo_query("1","
         select sortorder, slideseconds from slideshowpref where providerid = $providerid
-        ");
+        ",null);
 if($row = pdo_fetch($result)){
     if($row['sortorder']=='asc'){
         $sort = "order by createdate desc";
@@ -62,7 +62,7 @@ $result = pdo_query("1","
         from photolib where
         providerid=$providerid and album='$album'
         $sort
-        ");
+        ",null);
 $count = 0;
 $showbulletnavigator = "2";
 while($row = pdo_fetch($result)){

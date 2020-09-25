@@ -231,7 +231,7 @@ require_once("roomselect.inc.php");
                 where public = 'Y' and category not in ('Private')
                 $agequery
                 order by category
-                ");
+                ",null);
             echo "
                   <div class='roomdiscover tapped2' data-category=''
                     style='display:inline;cursor:pointer;border:0px solid lightgray;

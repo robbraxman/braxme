@@ -12,7 +12,7 @@ $result = pdo_query("1",
 );
 $result = pdo_query("1", 
         //Message is no longer used by any
-      "delete from msgmain where sessionid not in (select sessionid from msgto where msgto.sessionid = msgmain.sessionid ) and sessionid ='$sessionid' "
+      "delete from msgmain where sessionid not in (select sessionid from msgto where msgto.sessionid = msgmain.sessionid ) and sessionid ='$sessionid' ",null
 );
 
 

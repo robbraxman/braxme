@@ -24,7 +24,7 @@ require_once("room.inc.php");
 
         $result = pdo_query("1","
             select count(*) as total from statusroom where roomid=?  
-            ",$roomid);
+            ",array($roomid));
         $row = pdo_fetch($result);
         $membercount = $row['total'];
         

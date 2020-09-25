@@ -8,7 +8,7 @@ $timestamp = time();
 
 $result = pdo_query("1",
 
-    "select id, providerid, requestdate, requesttype, status from batchrequest where status='N' "
+    "select id, providerid, requestdate, requesttype, status from batchrequest where status='N' ",null
 );
 
 while( $row = pdo_fetch($result))
@@ -16,10 +16,10 @@ while( $row = pdo_fetch($result))
     if($row['requesttype']=='SHARECONTACTSROOM'){
         ShareContactsRoom($row['providerid']);
     }
-    pdo_query("1","update batchrequest set status='Y' where id = $row[id]");
+    pdo_query("1","update batchrequest set status='Y' where id = $row[id]",null);
 }
 
-pdo_query("1","delete from batchrequest where status='Y' ");
+pdo_query("1","delete from batchrequest where status='Y' ",null);
 
 
 function ShareContactsRoom($providerid)

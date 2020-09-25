@@ -126,7 +126,9 @@ function ProcessUpload( $providerid, $encoding )
 
                                         $result = pdo_query("1", 
                                                 "insert into attachments ( sessionid, item, attachfilename, origfilename, providerid, encoding, filesize, filetype ) ". 
-                                                " values ( '$_SESSION[sessionid]', $UploadNo, '$_SESSION[attachmentfilename]', '$origfilename', $providerid, '$encoding', $fsize, '$filenameext' )"
+                                                " values ( '$_SESSION[sessionid]', $UploadNo, '$_SESSION[attachmentfilename]', "
+                                                . "'$origfilename', $providerid, '$encoding', $fsize, '$filenameext' )",null
+                                                   
                                          );
                                         /*
                                         echo

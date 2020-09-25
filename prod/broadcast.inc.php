@@ -174,7 +174,7 @@
                 if($parmkey =='ROOM') {
                     $result = pdo_query("1","
                         select max(roomid)+1 as maxval from statusroom
-                        ");
+                        ",null);
                     if( $row = pdo_fetch($result)){
                     
                         $maxval =intval($row['maxval']);

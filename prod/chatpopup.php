@@ -8,15 +8,6 @@ require_once("config-pdo.php");
     $mode = @tvalidator("PURIFY",$_POST['mode']);
     
     $mobilesize = $_SESSION['mobilesize'];
-    /*
-    if($mobilesize == 'Y'){
-        $width = intval($_SESSION['innerwidth']);
-        $height = $width*(9/16);
-        $height .= "px";
-        $width .= "px";
-    } else
-     * 
-     */
     if(intval($_SESSION['innerwidth'])<768){
         $width = intval($_SESSION['innerwidth']);
         $height = $width*(9/16);
@@ -195,7 +186,7 @@ require_once("config-pdo.php");
 
         pdo_query("1",
             "
-            insert into broadcastlog 
+            insert ignore into broadcastlog 
             (providerid, chatid, broadcastdate, mode, broadcastid, chatcount ) 
             values 
             ( ?, ?, now(), 'V', $row[broadcastid], 0 )

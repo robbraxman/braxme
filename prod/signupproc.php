@@ -105,12 +105,15 @@ require_once("internationalization.php");
 
     $icount = $signup->IPHashCheck($timezone, $deviceid, $lastuserdecrypted,$signupcookie, $innerwidth, $innerheight);
     
+    /*
     if(!$customsite){
         if($icount > 2 && $trackerid == ''){
             echo "<h2 style='padding:20px;font-family:helvetica'><img src='$applogo' style='height:50px' /><br><br>What are you up to?<br>You're acting suspiciously.<br>Fingerprinted ($icount).</h2>";
             exit();
         }
     }
+     * 
+     */
     //
     
     //Password Single Use Only
@@ -313,6 +316,7 @@ require_once("internationalization.php");
         global $global_textcolor;
         global $menu_login;
         global $menu_signupsuccess;
+        global $menu_signupsuccess2;
         global $menu_download;
         global $loginlink;
         global $applogo;

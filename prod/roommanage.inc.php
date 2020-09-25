@@ -445,7 +445,7 @@ require_once("chat.inc.php");
         while( $row = pdo_fetch($result)){
             
             pdo_query("1","
-                insert into chatmembers 
+                insert ignore into chatmembers 
                 ( chatid, providerid, status, lastactive, lastmessage, lastread, techsupport, mute )
                 values
                 ( ?, ?,'Y', 0, 0, '20000101', 'N','')
@@ -631,6 +631,8 @@ require_once("chat.inc.php");
         global $global_titlebar_color;
         global $enterpriseapp;
         global $menu_room;
+        global $menu_manageroomedit;
+        global $menu_manageroomcreate;
         
         if($_SESSION['store']=='N' && $store == 'Y'){
             $store = 'N';
@@ -960,7 +962,7 @@ require_once("chat.inc.php");
         }
         $result = pdo_query("1","
                 select roomhandle.handle from roomhandle where community='Y' 
-                ");
+                ",null);
         $selectcommunityoptions = "<option value=''>- No Community Link -</option>";
         while($row = pdo_fetch($result)){
             $selectcommunityoptions .= "<option value='$row[handle]'>$row[handle]</option>";
@@ -1496,7 +1498,7 @@ require_once("chat.inc.php");
                 if($parmkey =='ROOM') {
                     $result = pdo_query("1","
                         select max(roomid)+1 as maxval from roominfo
-                        ");
+                        ",null);
                     if( $row = pdo_fetch($result)){
                     
                         $maxval =intval($row['maxval']);
@@ -1649,9 +1651,9 @@ require_once("chat.inc.php");
             set room = ?, roomdesc=?, photourl=?, photourl2=?,
             anonymousflag=?, external=?, organization=?,
             private=?,contactexchange='N',adminonly=?,
-            notifications=?',showmembers=?, soundalert=?,
+            notifications=?,showmembers=?, soundalert=?,
             sharephotoflag=?,rsscategory=?, groupid=?,
-            rsssource=?', rsssourceid='', radiostation=?, sponsor=?, 
+            rsssource=?, rsssourceid='', radiostation=?, sponsor=?, 
             parentroom=?, childsort=?, profileflag=?, 
             roominvitehandle=?, webcolorscheme=?, webtextcolor =?,
             webpublishprofile=?, webflags=?, searchengine=?, 
@@ -2289,7 +2291,7 @@ require_once("chat.inc.php");
                 
                 $result = pdo_query("news","
                     select failreason from rss_sources where id = $row[rsssourceid] 
-                ");
+                ",null);
                 if($row = pdo_fetch($result)){
                     if($row['failreason']!=''){
                         $roomdata['failreason'] = "Feed Error: ".$row['failreason'];

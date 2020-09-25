@@ -75,7 +75,7 @@ require_once("config-pdo.php");
             
         $search
         $orderby
-        "
+        ",null
     );
     
     

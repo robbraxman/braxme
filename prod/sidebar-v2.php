@@ -207,7 +207,7 @@ require("nohost.php");
                 (select 'Y' from statusroom where roomid=12802 and statusroom.providerid = provider.providerid ) as braxtips 
                 from provider where providerid = ?
                 ",array($providerid));
-        if( $row2 = pdo_fetch($result)){
+        if( $row2 = pdo_fetch($result2)){
             //$logo = "Sponsored by<br><img src='../img/dteenergy-logo.png' style='height:80px;max-width:80%'/>";
             $braxtips = $row2['braxtips'];
             $roomdiscovery = $row2['roomdiscovery'];
@@ -245,7 +245,7 @@ require("nohost.php");
             $result2 = pdo_query("1","
                     select logo, boxcolor, partitioned, roomid, roomhashtag, format,
                     live  from sponsor where sponsor = '$_SESSION[sponsor]' ");
-            if( $row2 = pdo_fetch($result)){
+            if( $row2 = pdo_fetch($result2)){
                 //$logo = "Sponsored by<br><img src='../img/dteenergy-logo.png' style='height:80px;max-width:80%'/>";
                 $boxcolor = "$row2[boxcolor]";      
                 $homeroomid = $row2['roomid'];
@@ -743,68 +743,19 @@ require("nohost.php");
             global $alertlive;
             global $alertchat;
             global $alertroom;
-            
+            global $admintestaccount;
 
             $sidemenu = MenuItem( "S", $braxnotifications, "$menu_home", "", "tilebutton", "", 2, false );
             $sidemenu .= "<br>";
 
-            if($customsite == false && $_SESSION['industry']=='radiology'){
-                //$topmenu .= MenuItem( "T", $braxdoctor, "HL7 Orders", "", "hl7orders", "", 1 );
-                //$topmenu .= MenuItem( "T", $braxreports, "HL7 Reports", "", "hl7reports", "", 1 );
-
-                $sidemenu .= MenuItem( "S", $braxdoctor, "HL7 Orders", "", "hl7orders mainbutton", "", 1, false );
-                $sidemenu .= MenuItem( "S", $braxreports, "HL7 Reports", "", "hl7reports mainbutton", "", 1, false );
-            }
             $sidemenu .= MenuItem( "S", $braxmeetup, "$menu_people", "", "meetuplist mainbutton", "", 2, $bold );
             $sidemenu .= MenuItem( "S", $braxchat, "$menu_chats", "$alertchat", "selectchatlist mainbutton", "data-mode='CHAT'", 3, $bold );
             $sidemenu .= MenuItem( "S", $braxrooms, "$menu_rooms", "$alertroom", "roomselect mainbutton", "data-mode='FEED' data-roomid='0'", 3, $bold );
 
-            if($_SESSION['industry']=='casemanagement'  ){
-                $sidemenu .= MenuItem( "S", $braxidentity, "Case Mgt", "", "caseselect mainbutton", "", 2, $bold );
-            }
-            if($_SESSION['industry']=='medical'  ){
-                $sidemenu .= MenuItem( "S", $braxidentity, "Patients", "", "caseselect mainbutton", "", 2, $bold );
-            }
-            if($_SESSION['industry']=='project'  ){
-                $sidemenu .= MenuItem( "S", $braxidentity, "Project", "", "caseselect mainbutton", "", 2, $bold );
-            }
-            if($_SESSION['industry']=='drugabuse'  ){
-                $sidemenu .= MenuItem( "S", $braxidentity, "Facilities", "", "caseselect mainbutton", "", 2, $bold );
-            }
-            if($_SESSION['industry']=='staffing'  ){
-                $sidemenu .= MenuItem( "S", $braxidentity, "Jobs", "", "caseselect mainbutton", "", 2, $bold );
-            }
-            if($_SESSION['industry']=='peo'  ){
-                $sidemenu .= MenuItem( "S", $braxidentity, "Companies", "", "caseselect mainbutton", "", 2, $bold );
-            }
-
             $sidemenu .= "<br><br>";
             $sidemenu .= MenuItem( "S", $braxphotos, "$menu_myphotos", "", "photolibrary mainbutton", "", 2, false );
             $sidemenu .= MenuItem( "S", $braxdocs, "$menu_myfiles", "", "doclib mainbutton", "", 2, false );
-            if($_SESSION['allowiot']=='Y'  ){
-                $sidemenu .= MenuItem( "S", $braxsecurity, "SecureNet", "", "homeiot mainbutton", "", 2, $bold );
-            }
-            if($_SESSION['sponsor']==''){
-                if( $customsite == false){ 
-                $sidemenu .= MenuItem( "S", $braxlive, "$menu_live", "$alertlive", "selectchatlist mainbutton", "data-mode='LIVE'", 1, $bold );
-                }
-            } else {
-                if($sponsorlive == '1'){
-                    if( $customsite == false){ 
-                        $sidemenu .= MenuItem( "S", $braxlive, "$menu_live", "$alertlive", "selectchatlist mainbutton", "data-mode='LIVE'", 1, $bold );
-                    }
-                }
-                if($sponsorlive == '2'){
-                    if( $customsite == false){ 
-                        $sidemenu .= MenuItem( "S", $braxlive, "$menu_live", "$alertlive", "selectchatlist mainbutton", "data-mode='LIVE'", 1, $bold );
-                    }
-                }
-
-            }
             $sidemenu .= "<br><br>";
-            if($_SESSION['sponsor']==''){
-                $sidemenu .= MenuItem( "S", $braxstore, "$menu_store", "", "userstore mainbutton", "data-owner='$admintestaccount'", 1, $bold );
-            } 
             
             
 

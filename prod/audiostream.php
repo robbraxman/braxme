@@ -17,7 +17,7 @@ if($chatid > 0){
         "select broadcastid from broadcastlog  
          where 
          chatid = $chatid and mode='B' order by broadcastid desc limit 1
-        "
+        ",null
         );
     if($row = pdo_fetch($result)){
 

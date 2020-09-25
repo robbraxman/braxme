@@ -204,7 +204,7 @@ require_once("notify.inc.php");
                 pdo_query("1",
                     "
                         update chatmaster set keyhash='$hash' where chatid=$chatid 
-                    ");
+                    ",null);
             }
             
             //Encrypted Title
@@ -275,7 +275,7 @@ require_once("notify.inc.php");
                 insert into chatmembers ( chatid, providerid, status, lastactive, techsupport ) 
                 values
                 ( ?, ?, 'Y', now(),? );
-        ",$array($chatid,$recipientid,$techsupport));
+        ",array($chatid,$recipientid,$techsupport));
         
         if($techsupport == 'Y'){
             

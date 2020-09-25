@@ -39,7 +39,7 @@ $bot = BotDetected();
     {
         $result = pdo_query("1","
             delete from shareposts where shareid='$share' and ip='$ip' and postid='$i'
-            ");
+            ",null);
 
 
     }
@@ -53,7 +53,7 @@ $bot = BotDetected();
             pdo_query("1","
                 insert into shareposts (shareid, ip, postdate, comment,name, device, email ) values
                 ('$share','$ip',now(), '$c','$n','$d','$e' )
-                ");
+                ",null);
         }
     }
     else
@@ -61,7 +61,7 @@ $bot = BotDetected();
     {
         pdo_query("1","
             update shares set likes=likes+1 where shareid='$share'
-        ");
+        ",null);
     }
 /******************************************************
  * END - ACTION PROCESSING
@@ -78,7 +78,7 @@ if( $view!=='N')
     {
         $result2 = pdo_query("1","
             update shares set views=views+1 where shareid='$share' 
-            ");
+            ",null);
     }
 }
 else 
@@ -92,7 +92,7 @@ else
 
 $result = pdo_query("1","
         select count(*) as count from shares where shareid='$share'
-        ");
+        ",null);
 $row = pdo_fetch($result);
 if(intval($row['count']) == 0)
 {
@@ -143,44 +143,6 @@ $pageenddisplay = $pagestart+$max;
 //*******************************************************************
 //*******************************************************************
 //*******************************************************************
-/*
-$result2 = pdo_query("1","
-    select name, ip,comment, postid,
-    DATE_FORMAT( postdate, '%Y-%m-%d %H:%i') as postdate,
-    DATE_FORMAT( postdate, '%m/%d/%y %h:%i %p') as fpostdate
-    from shareposts where shareid='$share' order by postdate asc
-    ");
-$comments = "<table class='comments gridstdborder' style='width:100%;margin:auto;'> 
-            <tr style='background-color:steelblue'>
-                <td style='text-align:center;background-color:darkgray;color:white;padding:10px'>
-                Private Comments
-                </td>
-             </tr>";
-while( $row2 = pdo_fetch($result))
-{
-    $action = "&nbsp;&nbsp;&nbsp;<div 
-            class='delete' 
-            style='display:inline;cursor:pointer;color:steelblue;font-weight:bold'
-            data-ip='$row2[ip]'
-            data-function='socialpost.php'
-            data-postid='$row2[postid]'>
-            Delete</div>";
-    $poster = $row2[name];
-    if( $poster == "")
-        $poster = "$row2[ip]";
-    $comments .=
-            "<tr>
-                <td class='commentline'
-                    style='overflow:scroll;text-align:left;width:100%;background-color:white;padding:5px;border-style:solid;border-width:5px 5px 5px 5px;border-color:whitesmoke'>
-                       <span style='font-weight:bold;color:steelblue'>$poster</span>
-                       $row2[comment]<br>
-                       <span style='font-weight:normal;color:gray'>$row2[fpostdate]</span>
-                       <span class='action' style='display:none;font-weight:normal;color:gray'>$action</span>
-                </td>
-             </tr>";
-}
-$comments .= "</table>";
-*/
 //*******************************************************************
 //*******************************************************************
 //*******************************************************************
@@ -193,7 +155,7 @@ $result = pdo_query("1","
         from shares where
         shareid ='$share'
             order by shareid desc
-            ");
+            ",null);
 
 
 
@@ -261,7 +223,7 @@ $result = pdo_query("1","
         from photolib where album = '$sharelocal'
         and providerid = $providerid 
         order by filename asc limit $pagestart, $max
-        ");
+        ",null);
 
 
 $arraycount=0;
@@ -304,8 +266,8 @@ else
 
 $result2 = pdo_query("1","
            select likes from shares where shareid='$share'
-        ");
-$row2 = pdo_fetch($result);
+        ",null);
+$row2 = pdo_fetch($result2);
 $likes = $row2['likes'];
 
 //**************************************************
@@ -356,7 +318,7 @@ $likes = $row2['likes'];
         DATE_FORMAT( postdate, '%m/%d/%y %h:%i %p') as fpostdate
         from shareposts where shareid='$share' order by postdate asc
     ");
-    while( $row2 = pdo_fetch($result))
+    while( $row2 = pdo_fetch($result2))
     {
         $action = "&nbsp;&nbsp;&nbsp;<div 
                 class='delete' 
@@ -604,7 +566,7 @@ if( $view == 'N')
         select ip, device, views, 
         DATE_FORMAT( lastread, '%m/%d/%y %h:%i %p') as lastread
         from sharereads where shareid='$share'
-        ");
+        ",null);
     
     
     while($row= pdo_fetch($result))

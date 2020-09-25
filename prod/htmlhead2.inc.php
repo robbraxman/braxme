@@ -34,9 +34,9 @@ echo "<link rel='stylesheet' href='$rootserver/libs/alertify.js-0.3.10/themes/al
 echo "<link rel='stylesheet' href='$rootserver/libs/alertify.js-0.3.10/themes/alertify.default.css' />\r\n";
 echo "<script src='$rootserver/libs/alertify.js-0.3.10/src/alertify.js'></script>\r\n";
 
-echo "<link rel='stylesheet' href='$rootserver/libs/jquery-1.11.1/jquery-ui.css'>";
-echo "<script src='$rootserver/libs/jquery-1.11.1/jquery.min.js' ></script>";
-echo "<script src='$rootserver/libs/jquery-1.11.1/jquery-ui.js' ></script>";
+echo "<link rel='stylesheet' href='$rootserver/libs/jquery-1.12.1/jquery-ui.css'>";
+echo "<script src='$rootserver/libs/jquery-1.12.1/jquery.min.js' ></script>";
+echo "<script src='$rootserver/libs/jquery-1.12.1/jquery-ui.min.js' ></script>";
 
 
 echo "<script src='$rootserver/libs/ckeditor/ckeditor.js?$randomid'></script>";

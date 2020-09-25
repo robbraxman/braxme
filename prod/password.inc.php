@@ -29,7 +29,8 @@ require_once 'authenticator/GoogleAuthenticator.php';
          * Has User Logged In? Exit Otherwise
          * 
          ******************************************/
-
+        
+        
         if(  ( !isset($_SESSION['pid']) && !isset($_POST['pid']) ) || 
              ( !isset($_SESSION['logintoken']) && !isset($_POST['password']) &&
                !isset($_SESSION['pwd_hash'] )
@@ -49,9 +50,14 @@ require_once 'authenticator/GoogleAuthenticator.php';
          * If No Session, then User just logged in
          * 
          ******************************************/
-
-        $pid = @$_SESSION['pid'];
-        $password = '';
+        if(isset($_SESSION['pid'])){
+            $pid = @$_SESSION['pid'];
+            $password = '';
+        } else {
+            //If user just logged in, this is @username, not account
+            $pid = $_POST['pid'];
+            
+        }
 
 
         /******************************************
@@ -60,14 +66,14 @@ require_once 'authenticator/GoogleAuthenticator.php';
          * 
          ******************************************/
         
-        //No PID Username
-        if( $pid == '' ){
-            $pid = @tvalidator("PURIFY",$_POST['pid']);
-        }
 
         if(  $pid =='' ){
         
-            $_SESSION['fails']=intval($_SESSION['fails'])+1;
+            if(isset($_SESSION['fails'])){
+                $_SESSION['fails']=intval($_SESSION['fails'])+1;
+            } else {
+                $_SESSION['fails']=0;
+            }
             if( intval( $_SESSION['fails'] > 10 )){
 
                 echo "<html>";
@@ -100,7 +106,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
 
         if( isset($_SESSION['pid'])){
 
-            $pid = rtrim(tvalidator("ID",$_SESSION[pid]));
+            $pid = rtrim(tvalidator("PURIFY",$_SESSION['pid']));
             $loginid = rtrim(@tvalidator("PURIFY", "$_SESSION[loginid]"));
             $password = "";
             if($loginid == ''){
@@ -113,8 +119,10 @@ require_once 'authenticator/GoogleAuthenticator.php';
 
             $_SESSION['timeoutcheck']=time();
 
-            $pid = rtrim(tvalidator("ID","$_POST[pid]"));
-            $_SESSION['pid'] = tvalidator("ID",$_POST['pid']);
+            $pid = rtrim(tvalidator("PURIFY","$_POST[pid]"));
+            $_SESSION['pid'] = tvalidator("PURIFY",$_POST['pid']);
+            
+            
             $_SESSION['logintoken']=session_id();
             $_SESSION['pwd_hash'] = session_id();
             $_SESSION['loginid'] = tvalidator("PURIFY",$_POST['loginid']);
@@ -147,7 +155,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
             $_SESSION['remote_addr'] = $_SERVER['REMOTE_ADDR'];
             $loginid = $_SESSION['loginid'];
 
-            $password = rtrim(mysql_safe_string_unstripped( "$_POST[password]"));
+            $password = rtrim(escape_for_sql( "$_POST[password]"));
             
             //Password in Local Storage
             $clientstoredpassword = tvalidator("PURIFY",$_POST['stored']);
@@ -186,10 +194,11 @@ require_once 'authenticator/GoogleAuthenticator.php';
 
         /******************************************
          * 
-         * Convert Email to PID / Convert HANDLE to PID
+         * Convert @username to PID / Convert HANDLE to PID
          * 
          ******************************************/
         $providerid =  ConvertPidToAccount( $pid );
+        //From Here on this is now a numeric pid.
         $_SESSION['pid'] = $providerid;
         
         AddLoginToRoom($providerid, $roomhandle, $roomstorehandle);
@@ -214,7 +223,6 @@ require_once 'authenticator/GoogleAuthenticator.php';
             }
             InitializeLanguage($providerid);
             InitializeAccountSessionVars($providerid, $loginid);
-            InitializeImapSessionVars($providerid);
 
 
 
@@ -226,34 +234,10 @@ require_once 'authenticator/GoogleAuthenticator.php';
             if( $_SESSION['logintoken']!=session_id()){
 
                 echo "Security Token Error ($providerid)<br>";
-                
-                /*
-                echo "Token: $_SESSION[logintoken]<br>";
-                echo "Session ID : ".session_id();
-                 * 
-                 */
                 exit();
             }
             InitializeAccountSessionVars($providerid, $loginid);
 
-            //Cross Site Detection
-            /*
-            if( $_SESSION['remote_addr'] != $_SERVER['REMOTE_ADDR']){
-                echo "";
-                echo "<div class='pagetitle2a' style='padding:20px;max-width:500px'>
-                        <div class='pagetitle'><b>Possible Cross Site Request Forgery</b></div><br>                 
-                        We detected a change in your IP Address. This may be due to something
-                        as simple as switching your VPN on and off. But to prevent Cross Site 
-                        Request Forgery (CSRF), we request that you click on restart.
-                        <br><br><br>
-                        <a href='$rootserver/l.php' style='text-decoration:none'><div class='divbuttontext'>Restart</div></a> 
-                      </div>
-                     ";
-
-                exit();
-
-            }
-            */
 
         }
 
@@ -329,7 +313,6 @@ require_once 'authenticator/GoogleAuthenticator.php';
             $_SESSION['onetimeflag']='';
 
             
-            //echo "<script>alert('Alert $admintestaccount');</script>";
             //Google Authenticator Validation
             if($row['auth_hash']!=''){
 
@@ -449,7 +432,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
             and active='Y' 
            ", array($providerid, $loginid)     
           );
-        if( $row = pdo_fetch("1",$result)){
+        if( $row = pdo_fetch($result)){
             
             if($row['fails']>10) {
                FailsError( $providerid, $row['fails'], $row['auth_hash'] );
@@ -480,7 +463,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
         if($_SESSION['mobile']=='Y'){
            echo "Restart the App from Home Screen";
         }  else  {
-           echo "<br><br><a href='$rootserver/$startupphp?&h=$roomhandle&v=$version'>Login to your Account</a>";
+           echo "<br><br><a href='$rootserver/$startupphp?&h=&v='>Login to your Account</a>";
         }
         echo "<br><br>";
 
@@ -665,7 +648,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
                select adminright from staff where loginid=? and providerid = ? ",
                 array($loginid, $providerid)
             );
-        if ($row = pdo_fetch("1",$result)){ 
+        if ($row = pdo_fetch($result)){ 
             $_SESSION['admin'] = $row['adminright'];
         }
                    
@@ -699,7 +682,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
                where provider.providerid = ? and provider.active='Y' ",
                 array($providerid)
             );
-        if ($row = pdo_fetch("1",$result)){ 
+        if ($row = pdo_fetch($result)){ 
         
             if($row['active']=='N'){
             
@@ -709,13 +692,14 @@ require_once 'authenticator/GoogleAuthenticator.php';
             pdo_query("1","
                 insert ignore into alertrefresh ( deviceid, providerid, lastnotified ) 
                 values ( ?, ?, null );
-                    ", array($_SESSION[deviceid],$providerid));
+                    ", array($_SESSION['deviceid'],$providerid));
             
             $_SESSION['companyname']='';
             if($row['companyname']!=''){
             
                 $_SESSION['companyname']=$row['companyname'];
             }
+            $_SESSION['newuser'] ='N';
             $_SESSION['pid']=$providerid;
             $_SESSION['pinlock']=$row['pinlock'];
             $_SESSION['providername']=$row['providername'];
@@ -813,41 +797,11 @@ require_once 'authenticator/GoogleAuthenticator.php';
             
             
                 $_SESSION['enterprise']='Y';
-                /*
-                echo "<html><title>Login Message</title>";
-                echo "<meta name='viewport' content='width=device-width, initial-scale=1'>";
-                echo "<head><link rel='styleSheet' href='$rootserver/$installfolder/app.css' type='text/css'></head>";
-                echo "<body class='appbody'>";
-                echo "<img class='viewlogomsg' src='$rootserver/img/lock.png' style='height:40px'><br>";
-                echo "<br><h2>Enterprise Account</h2>";
-                echo "This is an enterprise account. Please use the enterprise <a href='$rootserver/prod/loginb.php'>login</a> to enter the app.";
-                echo "</body></html>";
-                exit();
-                 * 
-                 */
                 
             if($_SESSION['enterprise']=='Y' && $row['enterprise']!=='Y'){
             
-                /*
-                echo "<html><title>Login Message</title>";
-                echo "<meta name='viewport' content='width=device-width, initial-scale=1'>";
-                echo "<head><link rel='styleSheet' href='$rootserver/$installfolder/app.css' type='text/css'></head>";
-                echo "<body class='appbody'>";
-                echo "<img class='viewlogomsg' src='$rootserver/img/lock.png' style='height:40px'><br>";
-                echo "<br><h2>Non-Enterprise Account</h2>";
-                echo "This is not a valid enterprise account. Please use the regular <a href='$rootserver'>login</a> to enter the app.";
-                echo "</body></html>";
-                exit();
-                 * 
-                 */
                 
             }
-            //if(!isset($_SESSION['enterprise'])){
-            //    $_SESSION['enterprise']='N';
-            //}
-            //if(isset($_POST['enterprise'])){
-            //    $_SESSION['enterprise'] = $_POST['enterprise'];
-            //}
             $_SESSION['enterprise']=$row['enterprise'];
             $_SESSION['enterprisehost']=$row['enterprisehost'];
             
@@ -859,30 +813,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
             $_SESSION['mobilesize']='Y';
             
            if( $row['verified']!='Y'){
-           
-               /*
-                echo "<html><title>Login Message</title>";
-                echo "<meta name='viewport' content='width=device-width, initial-scale=1'>";
-                echo "<head><link rel='styleSheet' href='$rootserver/$installfolder/app.css' type='text/css'></head>";
-                echo "<body class='appbody'>";
-                echo "<img class='viewlogomsg' src='$rootserver/img/lock.png' style='height:40px'><br>";
-                echo "<br><h2>Please Respond to Verification Email</h2>";
-                echo "We apologize for this inconvenience but this security procedure is for your protection. ";
-                echo "<br><b>Please respond to the email sent to confirm your identify</b>";
-                echo "<h2>No Email?</h2>";
-                echo "Can't find the email? Please check the email address:";
-                echo "<br><b>$email</b><br>Also, please check your Spam/Junk Mail folder.<br><br>";
-                echo "If the email is incorrect, please Set-Up the account again. On Mobile, please delete the App and reinstall.";
-                echo "<br><br>After you've performed the verification step, you will be able to Log in.<br><br>";
-                if( $_SESSION[mobile]!='Y')
-                {
-                    echo "<a href=$rootserver/l.php>Login to Your Account</a>";
-                }
-                echo "<br>";
-                echo "</body></html>";
-                exit();
-                * 
-                */
+               //Future Warning for unverified email
                
            }
             
@@ -905,144 +836,6 @@ require_once 'authenticator/GoogleAuthenticator.php';
         
     }
     
-    function InitializeImapSessionVars($providerid)
-    {
-    
-        /******************************************
-         * 
-         * Retrieve IMAP Stuff
-         * 
-         ******************************************/
-
-        $result = pdo_query("1", "
-            select name, hostname, 
-            username, password, smtp_username, smtp_password, 
-            options, port, encoding, 
-            hostnamesmtp, portsmtp, optionssmtp, email, mailname, contactlist
-            from
-            imap where providerid = ? order by item asc
-            ",array($providerid));
-        $i = 0;
-        $_SESSION['imapcount']=0;
-        while( $row = pdo_fetch($result)){
-        
-            $_SESSION['imap_host'][$i] = "{".$row['hostname'].":".$row['port'].$row['options']."}";
-            $_SESSION['imap_host_srv'][$i] = "{".$row['hostname']."}";
-            $_SESSION['imap_options'][$i] = "$row[options]";
-
-            $_SESSION['imap_username'][$i] = "$row[username]";
-            $_SESSION['imap_password_encrypted'][$i] = "$row[password]";
-
-            if(rtrim($row['smtp_username'])!==''){
-            
-                $_SESSION['imap_smtp_username'][$i] = "$row[smtp_username]";
-                $_SESSION['imap_smtp_password_encrypted'][$i] = "$row[smtp_password]";
-            } else {
-                
-                $_SESSION['imap_smtp_username'][$i] = "$row[username]";
-                $_SESSION['imap_smtp_password_encrypted'][$i] = "$row[password]";
-            }
-
-
-            $_SESSION['imap_name'][$i] = "$row[name]";
-            $_SESSION['imap_encoding'][$i] = "$row[encoding]";
-
-            //$imap_password_decrypted = DecryptResponse( $_SESSION['imap_password_encrypted'][$i], $_SESSION['imap_encoding'][$i], "$providerid", $_SESSION['imap_name'][$i]);
-
-            //$_SESSION['imap_password'][$i] = "$imap_password_decrypted";
-
-            $_SESSION['imap_smtp_host'][$i] = "$row[hostnamesmtp]";
-            $_SESSION['imap_smtp_port'][$i] = "$row[portsmtp]";
-            $_SESSION['imap_smtp_options'][$i] = "$row[optionssmtp]";
-
-            $_SESSION['imap_smtp_email'][$i] = "$row[email]";
-            $_SESSION['imap_smtp_mailname'][$i] = "$row[mailname]";
-
-            $_SESSION['imap_inbox'][$i] = false;
-            $_SESSION['imap_nmsgs'][$i] = 0;
-            $_SESSION['imap_contactlist'][$i] = "$row[contactlist]";
-
-            $i++;
-
-
-        }
-        $_SESSION['imapcount']=$i;
-        $_SESSION['newuser'] = "1";
-        if( $i > 0){
-            $_SESSION['newuser'] = "0";
-        }
-
-        $result = pdo_query("1", "
-            select name, hostnamesmtp, portsmtp, optionssmtp, 
-            username, mailname, email, password, smtp_username, smtp_password, name, encoding
-            from imap where providerid = ? and defaultsmtp='Y' order by item asc
-            ",array($providerid));
-        if( $row = pdo_fetch($result)){
-        
-            $_SESSION['smtp_name'] = "$row[name]";
-            $_SESSION['smtp_host'] = "$row[hostnamesmtp]";
-            $_SESSION['smtp_port'] = "$row[portsmtp]";
-            $_SESSION['smtp_email'] = "$row[email]";
-            $_SESSION['smtp_mailname'] = "$row[mailname]";
-            $_SESSION['smtp_encoding']= $row['encoding'];
-
-            $_SESSION['smtp_username'] = "$row[username]";
-            $_SESSION['smtp_password_encrypted'] = "$row[password]";
-
-            if($row['smtp_username']!==''){
-            
-                $_SESSION['smtp_username'] = "$row[smtp_username]";
-            }
-            if($row['smtp_password']!==''){
-            
-                $_SESSION['smtp_password_encrypted'] = "$row[smtp_password]";
-            }
-
-            //$smtp_password_decrypted = DecryptResponse( $_SESSION['smtp_password_encrypted'], $_SESSION['smtp_encoding'], "$providerid", $_SESSION['smtp_name']);
-            //$_SESSION['smtp_password'] = $smtp_password_decrypted; 
-
-            $_SESSION['smtp_options'] = "$row[optionssmtp]";
-
-
-        } else {
-        
-            $result = pdo_query("1", "
-                select name, hostnamesmtp, portsmtp, optionssmtp, 
-                username, password, smtp_username, smtp_password, 
-                mailname, email, name, encoding
-                from imap where providerid = ? and hostnamesmtp!='' order by item asc
-                ",array($providerid));
-            if( $row = pdo_fetch( $result)){
-            
-                $_SESSION['smtp_name'] = "$row[name]";
-                $_SESSION['smtp_host'] = "$row[hostnamesmtp]";
-                $_SESSION['smtp_port'] = "$row[portsmtp]";
-
-                $_SESSION['smtp_username'] = "$row[username]";
-                $_SESSION['smtp_password_encrypted'] = "$row[password]";
-
-                if($row['smtp_username']!==''){
-                
-                    $_SESSION['smtp_username'] = "$row[smtp_username]";
-                }
-                if($row['smtp_password']!==''){
-                
-                    $_SESSION['smtp_password_encrypted'] = "$row[smtp_password]";
-                }
-
-                $_SESSION['smtp_email'] = "$row[email]";
-                $_SESSION['smtp_mailname'] = "$row[mailname]";
-
-                $_SESSION['smtp_encoding']= $row['encoding'];
-                //$smtp_password_decrypted = DecryptResponse( $_SESSION['smtp_password_encrypted'], $_SESSION['smtp_encoding'], "$providerid", $_SESSION['smtp_name']);
-                //$_SESSION['smtp_password'] = $smtp_password_decrypted; 
-
-                $_SESSION['smtp_options'] = "$row[optionssmtp]";
-            }
-
-
-        }    
-    }
 
 function InitializeLanguage($providerid)
 {
@@ -1069,7 +862,7 @@ function AddLoginToRoom($providerid, $roomhandle, $roomstorehandle)
         ( select owner from statusroom where statusroom.roomid = roomhandle.roomid and 
           statusroom.owner = statusroom.providerid ) as owner 
         from roomhandle where handle='#$roomhandle'
-        ");
+        ",null);
     if( $row = pdo_fetch($result)){
         $roomid = $row['roomid'];
         $owner = $row['owner'];

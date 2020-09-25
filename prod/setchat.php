@@ -14,14 +14,14 @@ $invitename = tvalidator("PURIFY",$_GET['n']);
 $invitesms = tvalidator("PURIFY",$_POST['s']);
 
 $providerid = 0;
-$result = pdo_query("1", "select max(val1)+1 as maxid from parms where parmkey='SUBSCRIBER' AND PARMCODE='ID' ");
+$result = pdo_query("1", "select max(val1)+1 as maxid from parms where parmkey='SUBSCRIBER' AND PARMCODE='ID' ",null);
 if( $row = pdo_fetch($result))
 {
     $providerid =$row['maxid'];
 }
 
 
-$result = pdo_query("1", "select max(providerid)+1 as providerid from provider ");
+$result = pdo_query("1", "select max(providerid)+1 as providerid from provider ",null);
 if( $row = pdo_fetch($result))
 {
     $highid = $row['providerid'];
@@ -29,7 +29,7 @@ if( $row = pdo_fetch($result))
 
 if( $providerid == 0 )
 {
-    $result = pdo_query("1", "insert into parms (parmkey, parmcode, val1, val2 ) values ('SUBSCRIBER','ID', $highid, 0 )");
+    $result = pdo_query("1", "insert into parms (parmkey, parmcode, val1, val2 ) values ('SUBSCRIBER','ID', $highid, 0 )",null);
 }
 
 if( $highid > $providerid)
@@ -37,7 +37,7 @@ if( $highid > $providerid)
     $providerid = $highid;
 }
 
-$result = pdo_query("1", "update parms set val1 = $providerid where parmkey='SUBSCRIBER' and parmcode='ID' ");
+$result = pdo_query("1", "update parms set val1 = $providerid where parmkey='SUBSCRIBER' and parmcode='ID' ",null);
 
 $result = pdo_query("1", "
         select providername, companyname from provider where providerid =
@@ -47,7 +47,7 @@ $result = pdo_query("1", "
             order by invitedate desc limit 1
         ) 
         and active='Y'
-        ");
+        ",null);
 if( $row = pdo_fetch($result))
 {
     $inviter = $row['providername'];

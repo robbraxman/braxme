@@ -440,7 +440,7 @@
         $result = pdo_query("1",
             "
             update chatmessage set flag='$action' where msgid=$msgid and chatid=$chatid
-            ");
+            ",null);
         
         pdo_query("1","
             update chatmembers set lastread=now()-1000  where  chatid=? and status='Y'

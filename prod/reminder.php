@@ -24,7 +24,7 @@ if($batchruns!='Y')
             left join chatmessage on chatmembers.chatid = chatmessage.chatid
             where lastread < msgdate
             and datediff( curdate(), msgdate)<3
-        ");
+        ",null);
     while( $row = pdo_fetch($result))
     {
         $providerid = $row['providerid'];
@@ -78,7 +78,7 @@ if($batchruns!='Y')
               )
               and datediff( now(), statuspost.postdate ) <= 3
              )
-         ");    
+         ",null);    
     if($row = pdo_fetch($result))
     {
         $providerid = $row['providerid'];
@@ -108,7 +108,7 @@ if($batchruns!='Y')
             SELECT roomid FROM statusroom  where
             createdate > curdate()  and creatorid!=providerid 
             )
-         ");    
+         ",null);    
     if($row = pdo_fetch($result))
     {
         $providerid = $row['providerid'];
@@ -116,7 +116,7 @@ if($batchruns!='Y')
             insert into alerts (providerid, alerttype, alertdate, status )
             values
             ($providerid, 'RoomJ', now(), 'N' )
-            ");
+            ",null);
     }
     
     /******
@@ -134,7 +134,7 @@ if($batchruns!='Y')
             left join msgmain on msgmain.sessionid = msgto.sessionid
             where readtime is null and msgto.replyflag!='Y'
             and datediff(now(), msgmain.createtime) <=1
-         "
+         ",null
      );
     if($row = pdo_fetch($result))
     {
@@ -143,7 +143,7 @@ if($batchruns!='Y')
             insert into alerts (providerid, alerttype, alertdate, status )
             values
             ($providerid, 'SecureSent', now(), 'N' )
-            ");
+            ",null);
     }
     /******
      * 
@@ -159,7 +159,7 @@ if($batchruns!='Y')
             left join msgmain on msgmain.sessionid = msgto.sessionid
             where readtime is null and msgto.replyflag='Y'
             and datediff(now(), msgmain.createtime) <=1
-         "
+         ",null
      );
     if($row = pdo_fetch($result))
     {
@@ -168,7 +168,7 @@ if($batchruns!='Y')
             insert into alerts (providerid, alerttype, alertdate, status )
             values
             ($providerid, 'SecureInbox', now(), 'N' )
-            ");
+            ",null);
     }
     
     
@@ -180,7 +180,7 @@ if($batchruns!='Y')
             where datediff( curdate(), alertdate) < 1
             and provider.replyemail in (select email from verification 
             where verification.email = provider.replyemail and verifieddate is not null)
-         ");   
+         ",null);   
      while( $row = pdo_fetch($result))
      {
          $providerid = $row['providerid'];
@@ -196,8 +196,8 @@ if($batchruns!='Y')
          
          $result2 = pdo_query("1","
             select alerttype from alerts where providerid=$providerid and status='N'
-            ");   
-         while( $row2 = pdo_fetch($result))
+            ",null);   
+         while( $row2 = pdo_fetch($result2))
          {
              if( $row2['alerttype']=='Chat')
                  $chatalert = 'Y';

@@ -15,7 +15,10 @@ require_once("internationalization.php");
     
     SaveLastFunction($providerid,"V", "$userid"); //View Shared Photos
     
-    $mode = tvalidator("PURIFY",$_POST['mode']);
+    $mode = "";
+    if(isset($_POST['mode'])){
+        $mode = tvalidator("PURIFY",$_POST['mode']);
+    }
     if($mode == 'F'){
         pdo_query("1","update provider set photosharelevel = 'F' where providerid = ? ",array($providerid));
     }
@@ -117,7 +120,7 @@ require_once("internationalization.php");
         ",array($userid,$userid,$sharelevel,$selectedalbumSql,$selectedalbumSql));
          
     
-    $row2 = pdo_fetch($result);
+    $row2 = pdo_fetch($result2);
     $total = $row2['count'];
     
     

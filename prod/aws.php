@@ -4,7 +4,7 @@ use Aws\Common\Aws;
 
 // Create the AWS service builder, providing the path to the config file
 //$aws = Aws::factory("localsettings/aws-config-pdo.php");
-$aws = Aws::factory("$_SERVER[DOCUMENT_ROOT]"."/prod/localsettings/secure/aws-config-pdo.php");
+$aws = Aws::factory("$_SERVER[DOCUMENT_ROOT]"."/prod/localsettings/secure/aws-config.php");
 $s3Client = $aws->get('s3');
 $s3Client->setRegion('us-west-2');
 $s3Client->registerStreamWrapper();
@@ -449,7 +449,7 @@ function putAWSObject( $filename, $filepath )
     unlink($filepath);
     
     $aws_url = getAWSObjectUrl( $filename );
-    pdo_query("1","update photolib set aws_url='$aws_url' where filename='$filename' ");
+    pdo_query("1","update photolib set aws_url='$aws_url' where filename='$filename' ",null);
     
     return $result;
 

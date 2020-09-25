@@ -173,7 +173,7 @@ require("chat.inc.php");
                         (replyemail='$email' and '$email'!='') or 
                         (handle='$handle' and '$handle'  !='') 
                     )
-                    ");
+                    ",null);
             if($row = pdo_fetch($result)){
 
                 
@@ -195,6 +195,7 @@ require("chat.inc.php");
                 /* Invitee is an Existing Account */
 
                 //Search for Duplicate Chat
+                $msg = "";
                 if( !$chatid = EstablishChatSession($providerid, $row['handle'], $passkey, $title, $techsupport, $lifespan, "","" )){
                     $msg .= "&nbsp;&nbsp;Existing Chat Session Found";
                     $alert = 'Y';

@@ -24,7 +24,7 @@ require_once("signupfunc.php");
     if( $avatarurl!='')
     {
         $result = pdo_query("1", 
-                " update provider set avatarurl='$avatarurl' where providerid=$providerid "
+                " update provider set avatarurl='$avatarurl' where providerid=$providerid ",null
                 );
         echo "Saved";
     }

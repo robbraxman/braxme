@@ -96,7 +96,7 @@ $(document).ready( function() {
         {
             var username = $('#pid').val();
             username = username.replace(/[^a-z0-9 ]/gi, "");  
-            if(username !=''){
+            if(username !==''){
                 $('#pid').val('@'+username.replace(" ",""));
             }
             
@@ -120,7 +120,6 @@ $(document).ready( function() {
             
             $('form').prop('action',"console.php");
             $('.loginstatus').html('<b>Connecting...</b>');
-
             var providerid = $('#pid').val();
             if( providerid.indexOf("@") >= 0 ){
             } else {
@@ -251,7 +250,6 @@ $(document).ready( function() {
         visitortime = new Date();
         $('#timezone').val(-visitortime.getTimezoneOffset()/60);
         $('form#Login').submit();
-        
     } else {
         $('body').show();
         

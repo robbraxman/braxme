@@ -36,7 +36,7 @@ $result = pdo_query("1","
             and notification.recipientid = $providerid
             and notification.notifytype in ('RP','RL','CP')
             order by notification.notifydate desc
-        ");
+        ",null);
 $i1 = 0;
 $lastnotifytype = '';
 $lastid = '';

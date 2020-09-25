@@ -116,14 +116,14 @@ $caller = @tvalidator("PURIFY", $_SESSION['caller'] );
                 insert into chatmembers ( chatid, providerid, status, lastmessage, lastread, lastactive, techsupport, mute, broadcaster)
                 values
                 ( $chatid, $autochatuserid, 'Y', now(), now(), now(), null, null, null )
-            ");
+            ",null);
         
         pdo_query("1",
             "
                 insert into chatmembers ( chatid, providerid, status, lastmessage, lastread, lastactive, techsupport, mute, broadcaster)
                 values
                 ( $chatid, $providerid,     'Y', now(), now(), now(), null, null, null )
-            ");
+            ",null);
 
         $message = $welcome;
         $encode = EncryptChat ($message,"$chatid","" );
@@ -134,7 +134,7 @@ $caller = @tvalidator("PURIFY", $_SESSION['caller'] );
                 insert into chatmessage ( chatid, providerid, message, msgdate, encoding, status)
                 values
                 ( $chatid, $autochatuserid, \"$encode\", now(), '$_SESSION[responseencoding]', 'Y' );
-            ");
+            ",null);
         $result = pdo_query("1",
             "
             update chatmembers set lastmessage=now(), lastread=now() where providerid= ? and chatid=? and status='Y'

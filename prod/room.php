@@ -22,7 +22,7 @@ require_once("roomfunc.inc.php");
     $roomid = @tvalidator("ID",$_POST['roomid']);
     
     $mode = @tvalidator("PURIFY",$_POST['mode']);
-    $comment = @mysql_safe_string_unstripped($_POST['comment']);
+    $comment = @escape_for_sql($_POST['comment']);
     $title = @tvalidator("PURIFY",$_POST['title']);
     $link = @tvalidator("PURIFY",$_POST['link']);
     $photo = @tvalidator("PURIFY",$_POST['photo']);
@@ -101,7 +101,7 @@ require_once("roomfunc.inc.php");
         SaveLastFunction($providerid,"U", $roomid);
         
     }
-
+    
     
     /**********************************************
      * 
@@ -326,7 +326,7 @@ require_once("roomfunc.inc.php");
             statuspost.roomid  = ?
             and '$roominfo->subscriptionpending'!='Y'
             order by  pin desc,  case when lastpostdate is null then postdate else lastpostdate end  desc  limit $limitstart, $limitend 
-    ",array($proivderid,$providerid,$providerid,$providerid,$roomid));
+    ",array($providerid,$providerid,$providerid,$providerid,$roomid));
     
     
     $postcount = 0;
@@ -885,14 +885,14 @@ function LastComment( $owner, $adminroom, $shareid, $handle, $providerid, $roomi
             (
 				select statuspost.anonymous, statuspost.encoding, postid, providername, statuspost.comment, statuspost.link, statuspost.photo, statuspost.album, 
                                 statuspost.video, statuspost.videotitle,
-				avatarurl, alias, statuspost.providerid, provider.name2, statuspost.postdate as postdate2, provider.active, provider.medal,
+				avatarurl, alias, statuspost.providerid, provider.name2, statuspost.postdate as postdate2,
 				DATE_FORMAT(date_add(statuspost.postdate, INTERVAL $_SESSION[timezoneoffset]  HOUR), '%m/%d/%y %h:%i%p') as postdate, 
                                 (select 'Y' from statusreads st2 
                                     where st2.shareid = statuspost.shareid and
                                     st2.roomid = statuspost.roomid and
                                     st2.xaccode ='X' and st2.providerid = ?
                                   ) as flagged,
-                                    
+                                provider.active, provider.medal,   
 				statuspost.shareid, statuspost.roomid, statuspost.likes, statuspost.owner, 
 				(select 'Y' from publicrooms where statuspost.roomid = publicrooms.roomid 
 				 ) as public,            
@@ -917,7 +917,7 @@ function LastComment( $owner, $adminroom, $shareid, $handle, $providerid, $roomi
         );
             
     $i = 0;
-    while($row2 = pdo_fetch($result)){
+    while($row2 = pdo_fetch($result2)){
 
         $comment = FormatComment( "", $row2['postid'], $row2['owner'], $roomid, $row2['encoding'], 
                 $row2['comment'], '', $row2['photo'], $row2['album'], $row2['video'], $row2['link'], "","N",  

@@ -18,7 +18,7 @@ if($caller == ''){
             left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = $providerid
             left join blocked blocked2 on blocked2.blocker = provider.providerid and blocked2.blockee = $providerid
             where providerid = $userid 
-                ");
+                ",null);
     $providername = "Unknown";
     if($row = pdo_fetch($result)){
         $providername = $row['providername'];
@@ -49,7 +49,7 @@ if($caller == ''){
         $mytools = ShowMyTools($userid, $providerid);
         $myrooms = ShowMyRooms($userid, $providerid, $caller );
         $myprivaterooms = ShowMyPrivateRooms($userid, $providerid, $caller );
-        $buttons = UserButtons( $providerid, $userid, $row['handle'], $row['providername'], $row['source'], $row['replyemail'], $row['blockee'] );
+        $buttons = UserButtons( $providerid, $userid, $row['handle'], $row['providername'], '', $row['replyemail'], $row['blockee'] );
     }
     $privacymessage = "";
     
@@ -175,7 +175,7 @@ function ShowMyRooms($providerid, $watcherid, $caller)
     $result = pdo_query("1","
         select roomid from roominfo where profileflag ='Y' and profileflag is not null 
         and roomid in (select roomid from statusroom 
-        where providerid = $providerid and providerid = owner) ");
+        where providerid = $providerid and providerid = owner) ",null);
     if($row = pdo_fetch($result)){
         $roomid = $row['roomid'];
         if($providerid != $watcherid){
@@ -223,7 +223,7 @@ function ShowMyRooms($providerid, $watcherid, $caller)
 	    )
         and statusroom.roomid > 1
         order by roominfo.profileflag desc, roominfo.lastactive desc, roominfo.room asc
-    ");
+    ",null);
     while($row = pdo_fetch($result)){
         $room = $row['room'];
         $roomhandle = $row['handle'];
@@ -283,7 +283,7 @@ function ShowMyPrivateRooms($providerid, $watcherid, $caller)
         and roominfo.profileflag!='Y'
         and statusroom.roomid > 1
         order by roominfo.profileflag desc, roominfo.room asc
-    ");
+    ",null);
     while($row = pdo_fetch($result)){
         $room = $row['room'];
         $roomhandle = $row['handle'];

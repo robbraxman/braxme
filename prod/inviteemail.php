@@ -21,14 +21,14 @@ $apn = @tvalidator("PURIFY",$_POST['apn']);
 
 
 $providerid = 0;
-$result = pdo_query("1", "select max(val1)+1 as maxid from parms where parmkey='SUBSCRIBER' AND PARMCODE='ID' ");
+$result = pdo_query("1", "select max(val1)+1 as maxid from parms where parmkey='SUBSCRIBER' AND PARMCODE='ID' ",null);
 if( $row = pdo_fetch($result))
 {
     $providerid =$row['maxid'];
 }
 
 
-$result = pdo_query("1", "select max(providerid)+1 as providerid from provider ");
+$result = pdo_query("1", "select max(providerid)+1 as providerid from provider ",null);
 if( $row = pdo_fetch($result))
 {
     $highid = $row['providerid'];
@@ -36,7 +36,7 @@ if( $row = pdo_fetch($result))
 
 if( $providerid == 0 )
 {
-    $result = pdo_query("1", "insert into parms (parmkey, parmcode, val1, val2 ) values ('SUBSCRIBER','ID', $highid, 0 )");
+    $result = pdo_query("1", "insert into parms (parmkey, parmcode, val1, val2 ) values ('SUBSCRIBER','ID', $highid, 0 )",null);
 }
 
 if( $highid > $providerid)
@@ -56,7 +56,7 @@ if($landing == '')
 {
     $landing = 'Unk';
 }
-pdo_query("1","insert into landing (createdate, landingcode, mobile, target ) values (now(), '$landing','$mobileflag','signup' ) ");
+pdo_query("1","insert into landing (createdate, landingcode, mobile, target ) values (now(), '$landing','$mobileflag','signup' ) ",null);
 
 
 ?>

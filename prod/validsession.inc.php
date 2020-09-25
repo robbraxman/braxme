@@ -7,7 +7,7 @@ if(!isset($_SESSION['validsession'])){
     }
     $ip = tvalidator("PURIFY",$_SERVER['REMOTE_ADDR']);
     pdo_query("1"," 
-        INSERT INTO attacker (ip, ip2, accessdate, accesscount ) values
+        INSERT ignore INTO attacker (ip, ip2, accessdate, accesscount ) values
         (?,?,now(), 0 )
             
         ",array($ip,$ip2));

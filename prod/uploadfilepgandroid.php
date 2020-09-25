@@ -56,15 +56,15 @@ $today = date("M-d-y",time()+$_SESSION['timezone']*60*60);
                 insert into chatmessage ( chatid, providerid, message, msgdate, encoding, status)
                 values
                 ( $chatid, $providerid, \"$encode\", now(), '$_SESSION[responseencoding]', 'Y' );
-            ");
+            ",null);
         $result = pdo_query("1",
             "
             update chatmembers set lastmessage=now(), lastread=now() where providerid= $providerid and chatid=$chatid and status='Y'
-            ");
+            ",null);
         $result = pdo_query("1",
             "
             update chatmaster set lastmessage=now() where chatid=$chatid 
-            ");
+            ",null);
         
         ChatNotificationRequest($providerid, $chatid, $encodeshort, $_SESSION[responseencoding],'');
         SaveLastFunction($providerid,"C", "$chatid");
@@ -77,7 +77,7 @@ $today = date("M-d-y",time()+$_SESSION['timezone']*60*60);
             "
                 select room from statusroom
                 where roomid = $roomid limit 1
-            ");
+            ",null);
         if( $row = pdo_fetch($result))
         {
             $roomForSql = addslashes($row['room']);
@@ -92,7 +92,7 @@ $today = date("M-d-y",time()+$_SESSION['timezone']*60*60);
                 select providerid,
                 (select anonymousflag from roominfo where roominfo.roomid = statusroom.roomid ) as anonymousflag
                 from statusroom where roomid = $roomid 
-            ");
+            ",null);
         while( $row = pdo_fetch($result))
         {
             $notifytype = 'RP';

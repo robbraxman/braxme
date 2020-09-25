@@ -10,7 +10,7 @@
     $result = pdo_query("1", "
             SELECT active, announcement from 
             service where msglevel='STATUS' /*sysdown*/
-            ");
+            ",null);
     if(!$result)
     {
         echo "<br>SQL Execute Error<br>";

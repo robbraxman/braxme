@@ -9362,7 +9362,7 @@ $(document).ready( function() {
                 if( ok ){
                     AbortAjax();
                     $.ajax({
-                        url: rootserver+'contactbooksave.php',
+                        url: rootserver+'block.php',
                         context: document.body,
                         type: 'POST',
                         data: 
@@ -9390,7 +9390,7 @@ $(document).ready( function() {
                 if( ok ){
                     AbortAjax();
                     $.ajax({
-                        url: rootserver+'contactbooksave.php',
+                        url: rootserver+'block.php',
                         context: document.body,
                         type: 'POST',
                         data: 

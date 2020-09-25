@@ -284,7 +284,7 @@ require_once("config-pdo.php");
                 (select count(*) from statuspost where statuspost.providerid = provider.providerid) as roomcount
 
                 from provider where providerid = $otherid and superadmin is null and techsupport = ''
-                ");
+                ",null);
         if($row = pdo_fetch($result)){
             $technotes .= "<div class='smalltext' style='padding:10px'>";
             $technotes .= "Name $row[providername] - $otherid chatID $chatid<br>";

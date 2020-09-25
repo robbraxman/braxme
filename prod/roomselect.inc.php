@@ -1199,7 +1199,7 @@ function DiscoverRooms($providerid, $find, $roomdiscovery )
                 roominfo.external = 'N' 
             )
             order by roominfo.room asc
-            ");
+            ",null);
 
 
 
@@ -1401,7 +1401,7 @@ function FavoriteRooms($providerid, $find, $owned )
             and
             statusroom.providerid = $providerid
             order by roominfo.room asc
-            ");
+            ",null);
 
 
 
@@ -1619,7 +1619,7 @@ function WebsiteRooms($providerid, $find )
                 ( statusroom.owner = statusroom.providerid and roominfo.external = 'Y' and provider.enterprise ='Y' )
             )
             order by roominfo.room asc
-            ");
+            ",null);
 
 
 
@@ -1821,7 +1821,7 @@ function TrendingRooms($providerid, $roomdiscovery)
             and (roominfo.rsscategory is null or roominfo.rsscategory = '')
             and (select count(*) from statuspost where roominfo.roomid = statuspost.roomid ) > 1
             order by featured desc, rss, postcount desc, roominfo.room asc limit 30
-            ");
+            ",null);
     } else {
         $result = pdo_query("1","
             select distinct roomhandle.roomid, statusroom.owner,
@@ -1869,7 +1869,7 @@ function TrendingRooms($providerid, $roomdiscovery)
             and (roominfo.rsscategory is null or roominfo.rsscategory = '')
             and (select count(*) from statuspost where roominfo.roomid = statuspost.roomid ) > 1
             order by rss, postcount desc, roominfo.room asc limit 20
-            ");        
+            ",null);        
     }
 
     
@@ -2050,7 +2050,7 @@ function RadioRooms($providerid, $roomdiscovery, $mode)
             $member
             $adultfilter
             order by radiostation desc, member asc, roomhandle.handle asc
-            ");
+            ",null);
     } else {
         $result = pdo_query("1","
             select distinct roomhandle.roomid, statusroom.owner,
@@ -2089,7 +2089,7 @@ function RadioRooms($providerid, $roomdiscovery, $mode)
             and statusroom.owner = statusroom.providerid
             and roominfo.groupid in (select groupid from groupmembers where providerid =$providerid)
             order by radiostation desc, member asc, roomhandle.handle asc
-            ");        
+            ",null);        
     }
 
     
@@ -2212,8 +2212,8 @@ function RadioRooms($providerid, $roomdiscovery, $mode)
                     <br>
             ";
             $action = "";
-            $result2 = pdo_query("1","select chatid from chatspawned where roomid='$row[roomid]' ");
-            if($row2 = pdo_fetch($result)){
+            $result2 = pdo_query("1","select chatid from chatspawned where roomid='$row[roomid]' ",null);
+            if($row2 = pdo_fetch($result2)){
                 $chatid = $row2['chatid'];
             }
             
@@ -2332,7 +2332,7 @@ function CommunityRooms($providerid, $find )
                 ( statusroom.owner = statusroom.providerid and roomhandle.community = 'Y' )
             )
             order by roominfo.room asc
-            ");
+            ",null);
 
 
 
@@ -2532,7 +2532,7 @@ function JoinCommunity($providerid, $roomdiscovery, $preformat, $postformat)
             roomhandle.community='Y'
             and (roominfo.rsscategory is null or roominfo.rsscategory = '')
             order by featured desc, roominfo.room asc 
-            ");
+            ",null);
 
         /*
             and

@@ -13,7 +13,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
 
         pdo_query("1","
             update staff set auth_hash=null, encoding=null 
-            where loginid = '$_SESSION[loginid]' and providerid = $_SESSION[pid] ");
+            where loginid = '$_SESSION[loginid]' and providerid = $_SESSION[pid] ",null);
         
         $arr = array('msg'=> "Deleted Authenticator",
                      'error'=> "N",

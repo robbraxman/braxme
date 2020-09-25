@@ -9,14 +9,36 @@ include("lib_autolink.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
     $providerid = tvalidator("ID",$_POST['providerid']);
-    $message = @mysql_safe_string_unstripped($_POST['message']);
+    $message = @escape_for_sql($_POST['message']);
     $chatid = tvalidator("ID",$_POST['chatid']);
     $msgid = tvalidator("ID",$_POST['msgid']);
-    $img = tvalidator("PURIFY",$_POST['img']);
-    $url = tvalidator("PURIFY",$_POST['url']);
-    $mode = tvalidator("PURIFY",$_POST['mode']);
-    $action = tvalidator("PURIFY",$_POST['action']);
-    $popupurl = tvalidator("PURIFY",$_POST['popupurl']);
+
+    
+    if(isset($_POST['img'])){
+        $img = tvalidator("PURIFY",$_POST['img']);
+    } else {
+        $img = "";
+    }
+    if(isset($_POST['url'])){
+        $url = tvalidator("PURIFY",$_POST['url']);
+    } else {
+        $url = "";
+    }
+    if(isset($_POST['mode'])){
+        $mode = tvalidator("PURIFY",$_POST['mode']);
+    } else {
+        $mode = "";
+    }
+    if(isset($_POST['action'])){
+        $action = tvalidator("PURIFY",$_POST['action']);
+    } else {
+        $action = "";
+    }
+    if(isset($_POST['popupurl'])){
+        $popupurl = tvalidator("PURIFY",$_POST['popupurl']);
+    } else {
+        $popupurl = "";
+    }
     
     $radio = @tvalidator("PURIFY",$_POST['radio']);
     $passkey = DecryptE2EPasskey(@tvalidator("PURIFY",$_POST['passkey64']),$providerid);

@@ -18,7 +18,7 @@ $landing = @tvalidator("PURIFY",$_GET['l']);
 if( $landing!='')
 {
     $mobileflag = 'X';
-    pdo_query("1","insert into landing (createdate, landingcode, mobile, target) values (now(), '$landing', '$mobileflag','home' ) ");
+    pdo_query("1","insert into landing (createdate, landingcode, mobile, target) values (now(), '$landing', '$mobileflag','home' ) ",null);
 }
 
 $maxwidth = 'width:1000px;max-width:80%;margin:auto';

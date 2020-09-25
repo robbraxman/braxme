@@ -30,24 +30,6 @@ require_once("internationalization.php");
     //find First Album if Album is blank
     if( $selectedalbum == '' )
     {
-        /*
-        $result2 =pdo_query("1","
-            select album from photolib where (providerid = $providerid )
-                and album!='' and album not like '*%'
-                order by createdate desc limit 1
-            ");
-        if( $row2 = pdo_fetch($result))
-        {
-            $selectedalbum = tvalidator("PURIFY",$row2['album']);
-            $selectedalbumHtml = htmlentities(stripslashes($row2['album']),ENT_QUOTES);
-        }
-        else
-        {
-            $selectedalbum = "(Select Album)";
-            $selectedalbumHtml = "(Select Album)";
-        }
-         * 
-         */
     }
     
     
@@ -57,7 +39,7 @@ require_once("internationalization.php");
         select count(*) as count from photolib where providerid = ?
             and (album=? or '' =?)
         ",array($providerid,$selectedalbum,$selectedalbum));
-    $row2 = pdo_fetch($result);
+    $row2 = pdo_fetch($result2);
     $total = $row2['count'];
 
     //*************************************************************
@@ -382,7 +364,7 @@ function CreateAlbumList( $providerid, $selectedalbum, $selectedalbumHtml, $page
     $foldercount = 0;
     
 
-    while( $row2 = pdo_fetch($result)){
+    while( $row2 = pdo_fetch($result2)){
     
         $foldername_short = substr($row2['album'],0,25);
         if(strlen($row2['album'])>25){

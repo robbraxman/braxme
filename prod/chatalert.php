@@ -55,9 +55,9 @@ require_once('internationalization.php');
         
     }
     
-    $replyemail = @mysql_isset_safe_string(isset($_SESSION['replyemail']),$_SESSION['replyemail']);
-    $force = @mysql_isset_safe_string(isset($_POST['force']),$_POST['force']);
-    $passkey = @mysql_isset_safe_string(isset($_POST['passkey']),$_POST['passkey']);
+    $replyemail = @tvalidator("EMAIL",$_SESSION['replyemail']);
+    $force = @tvalidator("PURIFY",$_POST['force']);
+    $passkey = @escape_for_sql($_POST['passkey']);
     
     $timezoneoffset = $_SESSION['timezoneoffset'];
     $scroll = "";

@@ -45,7 +45,7 @@ require ("aws.php");
                 from notification
                 where notification.status='N' 
                 order by recipientid
-                    ");
+                    ",null);
             while( $row = pdo_fetch($result)){
 
                 NotifyRun($row['recipientid'] );
@@ -138,7 +138,7 @@ require ("aws.php");
             }
             //if Followed Only - ignore non followed
             if(strstr($row['notificationflags'],"F")!==false && $row['followed']!=='Y'){
-                pdo_query("1","update notification set notifymethod='F', status='Y' where notifyid = $row[notifyid]");
+                pdo_query("1","update notification set notifymethod='F', status='Y' where notifyid = $row[notifyid]",null);
                 continue;
             }
 
@@ -199,16 +199,16 @@ require ("aws.php");
                 $result2 = pdo_query("1","
                     select owner from chatmaster where chatid=$party->chatid
                     and owner = $party->recipientid
-                    ");
-                if($row2 = pdo_fetch($result)){
+                    ",null);
+                if($row2 = pdo_fetch($result2)){
                     
                     $party->chatowner = true;
                 }
                 $result2 = pdo_query("1","
                     select inviteid from invites where chatid=$party->chatid
                     and providerid = $party->providerid
-                    ");
-                if($row2 = pdo_fetch($result)){
+                    ",null);
+                if($row2 = pdo_fetch($result2)){
                     
                     $party->inviteid = $row2['inviteid'];
                 }
@@ -234,8 +234,8 @@ require ("aws.php");
                     left join roominfo on statusroom.roomid = roominfo.roomid
                     where statusroom.roomid = $party->roomid
                     and statusroom.owner = statusroom.providerid
-                    ");
-                if($row2 = pdo_fetch($result)){
+                    ",null);
+                if($row2 = pdo_fetch($result2)){
                     
                     $party->room = $row2['room'];
                     $party->anonymous = $row2['anonymousflag'];
@@ -289,7 +289,7 @@ require ("aws.php");
             }
 
             //Single Pass Only - Remove regardless of Status
-            pdo_query("1","update notification set notifymethod='$notifymethod', status='Y' where notifyid = $party->notifyid");
+            pdo_query("1","update notification set notifymethod='$notifymethod', status='Y' where notifyid = $party->notifyid",null);
             //echo "notifyid=$notifyid";
             
             $lastnotifytype = $row['notifytype'];
@@ -309,7 +309,7 @@ require ("aws.php");
             return true;
         }
         
-        $result2 = pdo_query("1","select arn, platform, token from notifytokens where providerid=$party->recipientid and token!='' and arn='' and status='Y' ");
+        $result2 = pdo_query("1","select arn, platform, token from notifytokens where providerid=$party->recipientid and token!='' and arn='' and status='Y' ",null);
         while($row2 = pdo_fetch($result))
         {   
             //blank ARN so HOLD OFF
@@ -335,20 +335,20 @@ require ("aws.php");
         
         //Disabled Notifications by Type
         if($notifytype == 'CP' && $notifysubtype == 'LV' && strstr($notificationflags,"L")!==false){
-            pdo_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid ");
+            pdo_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid ",null);
             return true;
         }
         if($notifytype == 'CP' && $notifysubtype != 'LV' && strstr($notificationflags,"C")!==false){
-            pdo_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid ");
+            pdo_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid ",null);
             return true;
         }
         if(($notifytype == 'RP' || $notifytype == 'TK')  && strstr($notificationflags,"R")!==false){
-            pdo_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid ");
+            pdo_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid ",null);
             return true;
         }
         
         if(($notifytype == 'CI' )  && strstr($notificationflags,"S")!==false){
-            pdo_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid ");
+            pdo_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid ",null);
             return true;
         }
         
@@ -377,7 +377,7 @@ require ("aws.php");
             notification where recipientid = $recipientid and providerid = $providerid
             and notifytype='$notifytype' and recipientid!=providerid
             order by notifydate desc limit 1
-                ");
+                ",null);
         if($row = pdo_fetch($result)){
             
             $timelimit = 60 * 5; //5 minutes
@@ -427,8 +427,8 @@ require ("aws.php");
             where notifytokens.providerid=$recipientid and notifytokens.arn!='' and notifytokens.status in ('Y','E') 
             and provider.active='Y'
             
-            ");
-        while($row2 = pdo_fetch($result)){
+            ",null);
+        while($row2 = pdo_fetch($result2)){
             
             if( $row2['arn']==''){
                 //arn pending
@@ -475,7 +475,7 @@ require ("aws.php");
             }
             
             //Trigger Refresh
-            pdo_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid  and lastnotified is not null");
+            pdo_query("1","update alertrefresh set lastnotified = null where providerid = $recipientid  and lastnotified is not null",null);
             
             /*
              * Issue with Chrome Notifications for Future:
@@ -497,14 +497,14 @@ require ("aws.php");
                 $notifyresult = publishSnsNotification("$arn",$msgjson, $jsonflag);
                 if($notifyresult){
                     $success++;
-                    pdo_query("1","update notifytokens set status='Y', error='OK' where arn='$arn' and providerid=$recipientid ");
+                    pdo_query("1","update notifytokens set status='Y', error='OK' where arn='$arn' and providerid=$recipientid ",null);
                 }
             }
             catch (Exception $err) {
                 
                 echo "SNS Error $err<br>";
                 $errsql = tvalidator("PURIFY","{$err->getMessage()}");
-                pdo_query("1","update notifytokens set status='E', error='$errsql' where arn='$arn' and providerid=$recipientid ");
+                pdo_query("1","update notifytokens set status='E', error='$errsql' where arn='$arn' and providerid=$recipientid ",null);
             }
         }
         if($success > 0 ){
@@ -590,7 +590,7 @@ require ("aws.php");
                 providerid=$providerid and roomid=$roomid
                 and lastemail is not null and
                 timestampdiff(HOUR, lastemail, now() )< 4
-            ");
+            ",null);
             if($row = pdo_fetch($result))
             {
                 //Do not re-email -- too frequent
@@ -616,7 +616,7 @@ require ("aws.php");
                 notifytype ='CP' and 
                 displayed = 'N' and status='Y' and
                 timestampdiff(HOUR, notifydate, now() )< 4
-            ");
+            ",null);
             if($row = pdo_fetch($result)){
             
                 //Do not re-email -- too frequent
@@ -634,7 +634,7 @@ require ("aws.php");
                 notifytype ='CP' and 
                 displayed = 'Y' and status='Y' and
                 timestampdiff(MINUTE, notifydate, now() )< 60
-            ");
+            ",null);
             if($row = pdo_fetch($result)){
             
                 
@@ -656,7 +656,7 @@ require ("aws.php");
                 pdo_query("1"," 
                     update statusroom set lastemail=now() where 
                     providerid=$providerid and roomid=$roomid
-                        ");
+                        ",null);
             }
         }
         //SendMail("0", "$subject", "$message", "$message", "$party->name", "rob@bytz.io" );

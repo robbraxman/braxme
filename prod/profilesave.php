@@ -79,9 +79,6 @@ require ("crypt-pdo.inc.php");
 
        
 
-    //echo "$_POST[accountnote]";
-    //$accountnote = mysqli_escape_string( $link, $_POST[accountnote]);
-    //$accountnote = mysql_escape_string( $_POST[accountnote]);
     $accountnote = @tvalidator("PURIFY",$_POST['accountnote']);
 
     $result = pdo_query("1", "SELECT active, announcement from service where msglevel='STATUS' /*test1*/");
@@ -96,7 +93,6 @@ require ("crypt-pdo.inc.php");
     
     }
     
-    //$stdSmsMsg = mysql_escape_string($_POST[stdsmsmsg]);
     
     $providerid = @tvalidator("ID","$_SESSION[pid]");
     $loginid = @tvalidator("PURIFY",$_SESSION['loginid']);
@@ -122,7 +118,7 @@ require ("crypt-pdo.inc.php");
     
         $result = pdo_query("1", 
                 "insert into verification (type, providerid, verificationkey, loginid, email, createdate ) values (".
-                " 'ACCOUNT', $providerid, '$signupverificationkey', '$loginid', '$replyemail', now() ) "
+                " 'ACCOUNT', $providerid, '$signupverificationkey', '$loginid', '$replyemail', now() ) ",null
                 );
     }
     
@@ -154,7 +150,7 @@ require ("crypt-pdo.inc.php");
     if( $handle!='@' && $active=='Y') //Check for Unique Handle
     {
         pdo_query("1","insert into handle (handle, email, providerid) values ('$handle', '$replyemail',$providerid) ");
-        $result = pdo_query("1","select handle from handle where handle='$handle' ");
+        $result = pdo_query("1","select handle from handle where handle='$handle' ",null);
         if($row = pdo_fetch($result))
         {
             $handle = $row['handle'];
@@ -278,26 +274,26 @@ require ("crypt-pdo.inc.php");
                 (
                     $providerid, '$sms_encrypted','$_SESSION[responseencoding]'
                 )
-            ");
+            ",null);
         }
         
         
         $result = pdo_query("1",
             "
             update contacts set handle ='$handle' where handle='$orig_handle' and '$orig_handle'!=''
-            "
+            ",null
         );
 
         $result = pdo_query("1", 
-            " update staff set staffname='$providername' where loginid='admin' and providerid=$providerid " 
+            " update staff set staffname='$providername' where loginid='admin' and providerid=$providerid ",null 
           );
         
     //Account Termination Cleanup
     if($active == 'N'){
-        pdo_query("1","delete from invites where email='$replyemail' and chatid is not null ");
+        pdo_query("1","delete from invites where email='$replyemail' and chatid is not null ",null);
     }
     if($enterprise != ''){
-        pdo_query("1","update provider set enterprise = '$enterprise' where providerid = $providerid ");
+        pdo_query("1","update provider set enterprise = '$enterprise' where providerid = $providerid ",null);
     }
     
     $errorstate = true;
@@ -359,7 +355,7 @@ require ("crypt-pdo.inc.php");
         {
             echo "<br><h3>You changed your 'Reply Email'.</h3><br>";
             echo "Verification Email sent to $replyemail failed. Your Reply Email was restored to the original.";
-            $result = pdo_query("1", "update provider set verified='Y', replyemail = '$orig_replyemail' where providerid=$providerid ");
+            $result = pdo_query("1", "update provider set verified='Y', replyemail = '$orig_replyemail' where providerid=$providerid ",null);
         }
 
         

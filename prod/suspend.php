@@ -11,7 +11,7 @@ $providerid = tvalidator("PURIFY", $_POST[providerid]);
     if( $suspendsms == 'is')
     {
         $result = pdo_query("1",
-            "select suspendsms from provider where providerid = $providerid "
+            "select suspendsms from provider where providerid = $providerid ",null
         );
         $row = pdo_fetch($result);
         echo "$row[suspendsms]";
@@ -20,7 +20,7 @@ $providerid = tvalidator("PURIFY", $_POST[providerid]);
     if( $suspendemail == 'is')
     {
         $result = pdo_query("1",
-            "select suspendemail from provider where  providerid = $providerid "
+            "select suspendemail from provider where  providerid = $providerid ",null
         );
         $row = pdo_fetch($result);
         echo "$row[suspendemail]";
@@ -31,14 +31,14 @@ $providerid = tvalidator("PURIFY", $_POST[providerid]);
     if( $suspendsms!='' )
     {
         $result = pdo_query("1",
-            "update provider set suspendsms='$suspendsms' where providerid = $providerid "
+            "update provider set suspendsms='$suspendsms' where providerid = $providerid ",null
         );
         echo "Suspend SMS= $suspendsms";
     }
     if( $suspendemail!='' )
     {
         $result = pdo_query("1",
-            "update provider set suspendemail='$suspendemail' where providerid = $providerid "
+            "update provider set suspendemail='$suspendemail' where providerid = $providerid ",null
         );
         echo "Suspend Email= $suspendemail";
     }

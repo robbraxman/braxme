@@ -2,6 +2,20 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/F:/NetbeansProjects/Brax.Me-Open-Source/prod/signupproc.php</file>
+            <file>file:/F:/NetbeansProjects/Brax.Me-Open-Source/prod/room_sub.php</file>
+            <file>file:/F:/NetbeansProjects/Brax.Me-Open-Source/prod/friendsearch.php</file>
+            <file>file:/F:/NetbeansProjects/Brax.Me-Open-Source/prod/signupfunc.php</file>
+            <file>file:/F:/NetbeansProjects/Brax.Me-Open-Source/prod/chatsend.php</file>
+            <file>file:/F:/NetbeansProjects/Brax.Me-Open-Source/prod/config-pdo.php</file>
+            <file>file:/F:/NetbeansProjects/Brax.Me-Open-Source/prod/room_mode.inc.php</file>
+            <file>file:/F:/NetbeansProjects/Brax.Me-Open-Source/prod/localsettings/localsettings.php</file>
+            <file>file:/F:/NetbeansProjects/Brax.Me-Open-Source/prod/profilesave.php</file>
+            <file>file:/F:/NetbeansProjects/Brax.Me-Open-Source/prod/room.inc.php</file>
+            <file>file:/F:/NetbeansProjects/Brax.Me-Open-Source/prod/room.php</file>
+            <file>file:/F:/NetbeansProjects/Brax.Me-Open-Source/prod/console.php</file>
+            <file>file:/F:/NetbeansProjects/Brax.Me-Open-Source/prod/keypad.php</file>
+        </group>
     </open-files>
 </project-private>

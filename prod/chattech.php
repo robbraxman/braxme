@@ -55,7 +55,7 @@ require_once("internationalization.php");
             provider.avatarurl, provider.createdate, provider.techname
             from provider where techsupport = 'Y' and active='Y' 
             order by providerid desc
-        "
+        ",null
             
 
         );

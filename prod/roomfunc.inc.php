@@ -647,7 +647,6 @@ function TopBarButtons($readonly, $memberinfo, $providerid, $roomid, $showmember
     
     
     $accessbuttons1 =  TopButtons($roomid, $memberinfo, $showmembers, $readonly, $roomOwner_profileflag );
-    $enterprise = EnterpriseButtons($providerid, $memberinfo, $roomid, $readonly, $roomOwner_profileflag );
     $shareoptions = ShareOptions($readonly, $roomOwner_profileflag );
     $leaveroombutton =  LeaveRoomButton($readonly, $providerid, $roomid, $roomOwner_profileflag, $memberinfo, $sponsor);
  
@@ -656,13 +655,11 @@ function TopBarButtons($readonly, $memberinfo, $providerid, $roomid, $showmember
             $avatarbutton
             <span class='nonmobile' style='vertical-align:top'>
             $accessbuttons1
-            $enterprise
             $shareoptions
             $leaveroombutton
             </span>
             <span class='formobile' style='padding-left:0px;padding-right:10px'>
             $accessbuttons1
-            $enterprise
             $shareoptions
             $leaveroombutton
             </span>

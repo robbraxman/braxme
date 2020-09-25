@@ -731,10 +731,6 @@ function DisplayChatMembers(
     }
     
     
-    $stealth = '';
-    if($_SESSION['superadmin']=='Y'){
-        $stealth = '';
-    }
         /*
          * 
          *  Search for Regular Members in Chat
@@ -746,9 +742,9 @@ function DisplayChatMembers(
              from chatmembers
              left join provider on chatmembers.providerid = provider.providerid
              where chatmembers.providerid !=? and 
-             chatmembers.chatid = ? and provider.active='Y' ?
+             chatmembers.chatid = ? and provider.active='Y' 
              order by chatmembers.lastmessage desc limit 4
-            ",array($providerid, $chatid, $stealth)
+            ",array($providerid, $chatid )
         );
         
         $avatar = "";
@@ -927,7 +923,7 @@ function DisplayChatMembers(
             
                  "
                  select name, email from invites where providerid=? and chatid=? limit 1
-                 ",array($provierid,$chatid)
+                 ",array($providerid,$chatid)
             );
             if($row2 = pdo_fetch($result2)){
                 $avatar = "$rootserver/img/newbie2.jpg";
@@ -1113,7 +1109,10 @@ function DisplayChatMembersMobile(
     
     $tmp = explode('~',$chatmemberraw);
     $chatmembername = $tmp[0];
-    $avatarurl = $tmp[1];
+    $avatarurl = "";
+    if(isset($tmp[1])){
+        $avatarurl = $tmp[1];
+    }
     
     $backgroundcolor = "$global_background";
     $list = "";

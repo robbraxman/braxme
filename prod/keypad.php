@@ -15,7 +15,12 @@ $gcm = tvalidator("PURIFY",$_POST['gcm']);
 pdo_query("1","update provider set pinlock = 'Y' where providerid = ?",array($providerid));
 $_SESSION['pinlock']='Y';
 
-$start = $rootserver."/".$startupphp."?s=$_SESSION[source]&v=$version&apn=$apn&gcm=$gcm";
+$source = "";
+if(isset($_SESSION['source'])){
+    $source = $_SESSION['source'];
+}
+
+$start = $rootserver."/".$startupphp."?s=$source&v=$version&apn=$apn&gcm=$gcm";
 if(!isset($_SESSION['pid'])){
     header("location: $start");
     //exit();

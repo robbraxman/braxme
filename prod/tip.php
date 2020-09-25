@@ -15,7 +15,7 @@ SaveLastTip( "$nexttip",$providerid);
 
 function SaveLastTip($tip, $providerid)
 {
-    pdo_query("1","update provider set lasttip=$tip where providerid=$providerid");
+    pdo_query("1","update provider set lasttip=$tip where providerid=$providerid",null);
 }
 
 ?>

@@ -1,7 +1,7 @@
 <?php
 session_start();
 require("../validsession.inc.php");
-require("../config.php");
+require("../config-pdo.php");
 $uploadtips = '';
 if( @tvalidator("PURIFY",$_SESSION['photouser'])=='N')
 {

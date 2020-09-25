@@ -104,7 +104,7 @@ require_once("notify.inc.php");
                         values
                         ( $providerid, '$aws_filename','$duplicatechecked_origfilename', 
                           '$filefolder',$folderid, $fsize, '$filenameext','$encrypted_title', now(), '$alias','$encoding','$fileencoding','Y' ) 
-                     "
+                     ",null
              );
             putAWSObject("$aws_filename",$physical_filename );
             
@@ -114,7 +114,7 @@ require_once("notify.inc.php");
                 insert into roomfiles (roomid, providerid, filename, folderid, createdate, downloads)
                 values
                 ($roomid, $providerid, '$aws_filename',0, now(), 0 )
-                    ");
+                    ",null);
 
 
     }
@@ -151,7 +151,7 @@ require_once("notify.inc.php");
             $result = pdo_query("1", 
                     "  update filelib set filesize = $fsize, fileencoding = '$fileencoding'
                        where filename = '$aws_filename'
-                     "
+                     ",null
              );
             deleteAWSObject( $aws_filename );
             putAWSObject("$aws_filename",$physical_filename );
@@ -173,7 +173,7 @@ require_once("notify.inc.php");
                         select * from filelib 
                         where providerid = $providerid and origfilename = '$filename_encrypted' and status='Y'
                         and folderid = $folderid
-                     "
+                     ",null
              );
             if(!$row = pdo_fetch($result)){
                 $matched = false;

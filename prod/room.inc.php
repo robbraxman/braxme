@@ -36,7 +36,7 @@ function RoomPostNew(
                     select count(*) as commentcount from
                     statuspost where parent!='Y' and shareid=?
                 ",array($shareid));
-            if( $row2 = pdo_fetch($result)){
+            if( $row2 = pdo_fetch($result2)){
                 $commentcount = intval($row2['commentcount'])+1;
                 $result2 = pdo_query("1",
                     "
@@ -237,7 +237,7 @@ function RoomPostNew(
               '',?,?,?,?,?,?,? )
                 ",array(
                      $posterid, $encryptedcomment,$shareid,$parent, 
-                     $owner, 0, $roomid,$postid,
+                     $owner, $roomid,$postid,
                      $photo,$video,$encoding,$anonymous, $articleid, $title,$slideshow_album
                     
                 ));
@@ -322,7 +322,6 @@ function RoomPost(
         $mode, $providerid, $shareid, $roomid, $title, $comment, 
         $video, $photo, $link, $anonymous, $articleid );
         
-        return;
 }
 function SharePost( $providerid, $articleid, $roomid, $room )
 {
@@ -902,7 +901,7 @@ function RoomPostDelete( $providerid, $shareid, $postid, $roomid )
                 select count(*) as commentcount from
                 statuspost where parent!='Y' and shareid=?
             ",array($shareid));
-        if( $row2 = pdo_fetch($result)){
+        if( $row2 = pdo_fetch($result2)){
             $commentcount = intval($row2['commentcount'])-1;
             if($commentcount < 0 ){
                 $commentcount = 0;
@@ -1403,7 +1402,7 @@ function RoomInfo($providerid, $roomid, $mainwidth, $page, $memberinfo)
             from provider where providerid = ?
                 ",array($ownerid)
                 );
-        if($row2 = pdo_fetch($result)){
+        if($row2 = pdo_fetch($result2)){
 
             $ownername2 = $row2['ownername'];
             $ownername = "Moderated by ".rtrim($row2['ownername']);
@@ -1636,7 +1635,7 @@ function RoomInfo($providerid, $roomid, $mainwidth, $page, $memberinfo)
                 from roomhandle 
                 left join roominfo on roomhandle.roomid = roominfo.roomid
                 where roomhandle.handle = '$row[parentroom]' and roominfo.external!='Y'
-                ");
+                ",null);
             if($row = pdo_fetch($result)){
                 $parentroomid = $row['roomid'];
             }
@@ -1826,6 +1825,7 @@ function MemberCheck($providerid, $roomid)
 function DisplayNewPost($readonly, $providerid, $roomid, $handle )
 {
     global $menu_newtopic;
+    global $admintestaccount;
     
     $owner = false;
     $roomanonymous = '';
@@ -1968,14 +1968,14 @@ function DisplayNewPost($readonly, $providerid, $roomid, $handle )
 function DetermineRoomStage()
 {
     if( $_SESSION['roomuser']!=''){
-        $result = pdo_query("1","select count(*) as count from statusroom where owner = $_SESSION[pid]  ");
+        $result = pdo_query("1","select count(*) as count from statusroom where owner = $_SESSION[pid]  ",null);
         $row = pdo_fetch($result);
         if( intval($row['count']) == 0){
             $_SESSION['roomuser'] = 'N';
         } else 
         if( intval($row['count']) == 1){
             $_SESSION['roomuser'] = '1';
-            $result = pdo_query("1","select count(*) as count from statuspost where owner = $_SESSION[pid]  ");
+            $result = pdo_query("1","select count(*) as count from statuspost where owner = $_SESSION[pid]  ",null);
             $row = pdo_fetch($result);
             if(intval($row['count']>0) )
             {
@@ -1987,7 +1987,7 @@ function DetermineRoomStage()
     }
         
     if( $_SESSION['roomuser']=='N' ){
-        $result = pdo_query("1","select count(*) as count from statusroom where providerid = $_SESSION[pid]  ");
+        $result = pdo_query("1","select count(*) as count from statusroom where providerid = $_SESSION[pid]  ",null);
         $row = pdo_fetch($result);
         if( intval($row['count']) > 0){
             $_SESSION['roomuser'] = 'M';
@@ -2396,8 +2396,9 @@ function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, 
         $inphoto =='' && 
         $invideo == '' && 
         $incomment!=''){
-        $owner = true;
+            $owner = true;
     }
+    
     $page = "0";
     
     $decryptedpost = DecryptPost( $incomment, $encoding, $providerid, "");
@@ -2447,7 +2448,7 @@ function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, 
 
         $photolink = RootServerReplace(WrapPhoto($photo));
         
-
+        $slideshowalbum = "";
         //slideshow
         if($album!=''){
             
@@ -2527,7 +2528,6 @@ function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, 
 
     //if( $parent == 'Y' ){
     if(true){
-        $class='';
         $tmp = html_entity_decode( $decryptedpost, ENT_QUOTES);
         //$tmp = $decryptedpost;
         if($tmp!=''){
@@ -2747,6 +2747,7 @@ function RoomPosterInfo( $roomid, $providerid, $avatarurl, $adminroom, $private,
 {
         global $rootserver;
         global $appname;
+        global $admintestaccount;
         
         $poster = array();
 

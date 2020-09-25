@@ -30,7 +30,7 @@ require_once("htmlhead-open.inc.php");
             where public = 'Y' and
             roomhandle.handle not in ('#braxme')
             order by rank desc, handle asc limit 500
-            ");
+            ",null);
     
     while($row = pdo_fetch($result))
     {

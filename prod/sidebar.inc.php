@@ -590,11 +590,11 @@ require_once("internationalization.php");
                 $notifytype = "Room";
                 
                 
-                $result2 = pdo_query("1","select comment, encoding, providerid, owner, shareid from statuspost where postid = '$row[reference]' ");
+                $result2 = pdo_query("1","select comment, encoding, providerid, owner, shareid from statuspost where postid = ? ",array($row['reference']));
                 $postactive = false;
                 $notifyComment = "";
                 $shareid = '';
-                if($row2 = pdo_fetch($result)){
+                if($row2 = pdo_fetch($result2)){
                     
                     $shareid = $row2['shareid'];
                     $notifyComment = strip_tags( html_entity_decode(DecryptPost($row2['comment'],$row2['encoding'],$row2['owner'],"" )));
@@ -674,9 +674,9 @@ require_once("internationalization.php");
                 }
                 
                 
-                $result2 = pdo_query("1","select status, keyhash, title, radiotitle, encoding, broadcaster from chatmaster where chatid = $row[chatid] and status='Y' ");
+                $result2 = pdo_query("1","select status, keyhash, title, radiotitle, encoding, broadcaster from chatmaster where chatid = ? and status='Y' ",array($row['chatid']));
                 $postactive = false;
-                if($row2 = pdo_fetch($result)){
+                if($row2 = pdo_fetch($result2)){
                     $postactive = true;
                 }
                 $title = DecryptText($row2['title'], $row2['encoding'],$row['chatid']);

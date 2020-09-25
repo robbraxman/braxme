@@ -24,7 +24,7 @@ require("validsession.inc.php");
     
     SaveLastFunction($_SESSION['pid'],"W", 0);
 
-    $result = pdo_query("1","select enterpriselist, partitioned from sponsor where sponsor='$_SESSION[sponsor]' ");
+    $result = pdo_query("1","select enterpriselist, partitioned from sponsor where sponsor='$_SESSION[sponsor]' ",null);
     $enterprise = $_SESSION['enterprise'];
     $partitioned = "";
     if($row = pdo_fetch($result)){
@@ -118,7 +118,7 @@ require("validsession.inc.php");
         $roomdiscovery = "Y";
         $result = pdo_query("1","
                    select roomdiscovery from provider where providerid = $_SESSION[pid]
-                       ");
+                       ",null);
         if($row = pdo_fetch($result)){
             $roomdiscovery = $row['roomdiscovery'];
         }
@@ -127,7 +127,7 @@ require("validsession.inc.php");
         $enterprise = "";
         $partitioned = "";
         $result = pdo_query("1","select enterpriselist, communitylist, partitioned
-                   from sponsor where sponsor='$_SESSION[sponsor]' ");
+                   from sponsor where sponsor='$_SESSION[sponsor]' ",null);
         if($row = pdo_fetch($result)){
             $enterprise = $row['enterpriselist'];
             $community = $row['communitylist'];
@@ -1384,7 +1384,7 @@ require("validsession.inc.php");
             (select count(*) from provider p2 where p2.iphash2 = provider.iphash2 and active='Y') > 1 
             ) and active='Y' and (ipsource!='whitelist' or ipsource is null)
             order by provider.lastaccess desc limit 1000
-                ");
+                ",null);
         $count = 0;
         while($row = pdo_fetch($result)){
             
@@ -1501,7 +1501,7 @@ require("validsession.inc.php");
             provider.banid, provider.iphash2, provider.appname, provider.joinedvia
             from provider  where active='Y' and handle not like '@braxdemo%'
             order by provider.createdate desc limit 200
-                ");
+                ",null);
         $count = 0;
         while($row = pdo_fetch($result)){
             
@@ -1517,9 +1517,9 @@ require("validsession.inc.php");
             }
             
             $blocked = "";
-            if($row['blockee']!=''){
-                $blocked = "<div class='smalltext'  style='color:firebrick;cursor:pointer'>Blocked</div>";
-            }
+            //if($row['blockee']!=''){
+            //    $blocked = "<div class='smalltext'  style='color:firebrick;cursor:pointer'>Blocked</div>";
+            //}
 
              $avatar = RootServerReplace($row['avatarurl']);
              if($avatar == "$rootserver/img/faceless.png" || $avatar == ''){
@@ -1630,7 +1630,7 @@ require("validsession.inc.php");
             left join provider on blockee = provider.providerid
             where provider.active = 'Y'
             order by blockedname, blockername
-        ");
+        ",null);
 
     
     while ($row = pdo_fetch($result)) 

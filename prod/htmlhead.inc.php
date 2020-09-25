@@ -40,7 +40,7 @@ echo "<script src='$rootserver/$installfolder/passwordcheck.js?$randomid'></scri
 
 echo "<link rel='stylesheet' href='$rootserver/libs/jquery-1.12.1/jquery-ui.css'>";
 echo "<script src='$rootserver/libs/jquery-1.12.1/jquery.min.js' ></script>";
-echo "<script src='$rootserver/libs/jquery-1.12.1/jquery-ui.js' ></script>";
+echo "<script src='$rootserver/libs/jquery-1.12.1/jquery-ui.min.js' ></script>";
 
 
 //echo "<link rel='styleSheet' href='$rootserver/$installfolder/app.css' type='text/css'/>\r\n";

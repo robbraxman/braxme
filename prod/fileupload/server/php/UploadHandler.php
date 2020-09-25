@@ -24,7 +24,7 @@ session_start();
  * except for the BraxMode setting in $this->options[braxmode] FILES or PHOTOS
  * Both reuse the /prod/fileuploadserver/php/files area
  */
-require("../../../config.php");
+require("../../../config-pdo.php");
 require("../../../aws.php");
 require("../../../fileuploadfuncs.php");
 /*** end Brax.Me ***/
