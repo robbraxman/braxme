@@ -3006,7 +3006,7 @@ function SafeUrl($url)
     
     //Deprecated by Google so no longer used. Need a local version in V4 API of Safebrowsing
 
-    $apikey = "AIzaSyDd_Y3cZI4MRmEFA4vnqzlfoKEM8LTBWjs";
+    $apikey = "";
     $encoded_url = urlencode($url);
     
     $api = "https://sb-ssl.google.com/safebrowsing/api/lookup?client=CLIENT&key=$apikey&appver=1.1&pver=3.1&url=$encoded_url";    
