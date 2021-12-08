@@ -3,6 +3,7 @@ require_once("notify.inc.php");
 require_once('simple_html_dom.php');
 require_once("lib_autolink.php");
 require_once("roommanage.inc.php");
+require_once("profanity.php");
 
 function RoomPostNew( 
         $mode, $providerid, $shareid, $roomid, $title, $comment, 
@@ -48,14 +49,20 @@ function RoomPostNew(
         }
         $profileflag = "";
         $roomstyle = "";
+        $restricted = "";
+        $blocked = "";
+        $roomowner = "";
         $result = pdo_query("1","
-            select anonymousflag, adminonly, profileflag, roomstyle,
+            select private, anonymousflag, adminonly, profileflag, roomstyle,
             (select 'Y' from statusroom where statusroom.roomid = roominfo.roomid and owner = ? limit 1 )
                as owner,
+            (select owner from statusroom where statusroom.roomid = roominfo.roomid and owner = ? limit 1 )
+               as roomowner,
             (select 'Y' from roommoderator where roommoderator.roomid = roominfo.roomid and roommoderator.providerid = ?)
-               as moderator
+               as moderator,
+            (select restricted from provider where providerid = ? ) as restricted
             from roominfo where roomid = ?
-            ",array($providerid,$providerid,$roomid));
+            ",array($providerid, $providerid, $providerid, $providerid, $roomid));
         
         if( $row = pdo_fetch($result)){
             
@@ -68,8 +75,26 @@ function RoomPostNew(
             }
             $profileflag = $row['profileflag'];
             $roomstyle = $row['roomstyle'];
+            $private = $row['private'];
+            $roomowner = $row['roomowner'];
+            $restricted = $row['restricted'];
+            $roomownerflag = $row['owner'];
         }
 
+        $result = pdo_query("1","
+            select 'Y' as blockstatus from blocked where blockee=? and blocker in
+            (select owner from statusroom where roomid=?  )
+            ",array($providerid, $roomid));
+        
+        if( $row = pdo_fetch($result)){
+            
+            $blocked = $row['blockstatus'];
+        }
+
+        if(($blocked == 'Y') || ( $restricted == 'Y' && $roomowner!='Y' && $private!='Y') || ($profileflag == 'Y' && $roomownerflag!='Y' && $mode == 'P')){
+            return false;
+        }
+        
         $postid = uniqid("A", true);
         
         $title = rtrim(ltrim($title));
@@ -77,6 +102,17 @@ function RoomPostNew(
         $video = rtrim(ltrim($video));
         $link = rtrim(ltrim($link));
         $slideshow = "";
+        
+        if($private !='Y'){
+        
+            $testcomment = ProfanityCheck($title.$comment);
+            if($testcomment!=$title.$comment){
+                $comment = $testcomment;
+                $video = "";
+                $link = "";
+                $title = "";
+            }
+        }
         
         //if($comment == 'stfu'){
         //    $comment = "I am zucking idiot. I'm sorry";
@@ -217,7 +253,7 @@ function RoomPostNew(
         }
          * 
          */
-        if($photo!=''){
+        if($photo!='' && $encoding!='BASE64' && $encoding!='PLAINTEXT'){
             $photo = EncryptPost($photo, "$providerid","");
         }
         //$room = tvalidator("PURIFY",$room);
@@ -909,7 +945,7 @@ function RoomPostDelete( $providerid, $shareid, $postid, $roomid )
             $result2 = pdo_query("1",
                 "
                     update statuspost set commentcount = ? where shareid=? and parent='Y'
-                ",array($commencount,$shareid));
+                ",array($commentcount,$shareid));
         }
         
     }
@@ -1074,16 +1110,16 @@ function FlagReadPost( $shareid )
 function PinPost( $providerid, $shareid, $postid, $roomid )
 {
     pdo_query("1","
-        update statuspost set pin = 10 where postid = '$postid' and 
+        update statuspost set pin = 10 where postid = ? and 
             (
-                owner = '$providerid'
+                owner = ?
                 or exists 
                  (   select providerid from roommoderator 
-                     where roomid=$roomid and providerid=$providerid 
+                     where roomid=? and providerid=? 
                  ) 
                 or exists 
                  (   select providerid from statusroom 
-                     where roomid=$roomid and owner=$providerid 
+                     where roomid=? and owner=? 
                  ) 
             )
     
@@ -1094,7 +1130,7 @@ function LockPost( $providerid, $shareid, $postid, $roomid )
 {
     
     $result = pdo_query("1","
-        select locked from statuspost where postid = '$postid' 
+        select locked from statuspost where postid = ? 
             ",array($postid));
     if($row = pdo_fetch($result)){
         $lock = 1;
@@ -1520,33 +1556,7 @@ function RoomInfo($providerid, $roomid, $mainwidth, $page, $memberinfo)
                 
             }
             
-            $tokenpay = "        
-                <tr>
-                    <td>
-                        <br><center>
-                        <span class='mainfont' style='color:$global_textcolor'>$tokenpaymsg
-                            <br>
-                                Subscribe Paypal $subscriptionusd  $subscriptionperiod
-                            
-                        </span><br><br><br>
-                            <form id='fmPaypal' method='post' action= 'https://www.sandbox.paypal.com/cgi-bin/webscr'>
-                                    <input type='hidden' name='cmd' value='_xclick'>
-                                    <input type='hidden' name='currency_code' value='USD'>
-                                    <input type='hidden' name='business' value='rob@brax.me'>
-                                    <input type='hidden' name='item_name' value='Room/$roomid'>
-                                    <input type='hidden' name='item_number' value='$_SESSION[pid]'>
-                                    <input type='hidden' name='amount' value='$subscriptionusd'>
-                                    <input type='hidden' name='no_shipping' value='1'>
-                                    <input type='hidden' name='tax' value='0'>
-                                    <input type='hidden' name='return' value='$rootserver/$installfolder/paypalreturn.php?mode=1' />
-                                    <input type='hidden' name='cancel_return' value='$rootserver/$installfolder/paypalreturn.php?mode=cancel1' />
-                                    <input type='image' src='https://www.paypalobjects.com/en_US/i/btn/btn_subscribeCC_LG.gif' border='0' name='submit' alt='PayPal - The safer, easier way to pay online!'  style='height:47px'>
-                                    <img alt='' border='0' src='https://www.paypalobjects.com/en_US/i/scr/pixel.gif' width='1' height='1'>
-                            </form>
-                           </center><br><br>
-                    </td>
-                </tr>
-                ";
+            $tokenpay = "";
         }
 
         
@@ -1732,6 +1742,7 @@ function MemberCheck($providerid, $roomid)
     $memberinfo['sponsor']="";
     $memberinfo['subscribedate']="";
     $memberinfo['today']='';
+    $memberinfo['favorite']='';
     
     if(intval($roomid) > 0){
         //Find Room Owner
@@ -1826,6 +1837,7 @@ function DisplayNewPost($readonly, $providerid, $roomid, $handle )
 {
     global $menu_newtopic;
     global $admintestaccount;
+    global $iconsource_braxadd_common;
     
     $owner = false;
     $roomanonymous = '';
@@ -1859,16 +1871,16 @@ function DisplayNewPost($readonly, $providerid, $roomid, $handle )
     $add = "";
     if(($adminroom!='Y' && $roomid !='All') || $providerid==$admintestaccount){
         $add =  "       
-                <center>
-                <input class='newroompost makecommenttop mainfont' data-shareid='' readonly=readonly placeholder='$menu_newtopic' style='cursor:pointer;background-color:white;height:35px;width:95%;min-width:50%;max-width:95%;padding:5px' />
-                </center>
+                <span class='newroompost makecommenttop mainfont' data-shareid=''  placeholder='$menu_newtopic' style='padding-left:10px;cursor:pointer;background-color:transparent;' >
+                    <img class='icon25' src='$iconsource_braxadd_common' style='cursor:pointer;' />
+                </Span>
                 ";
         if($_SESSION['superadmin']=='Y'){
             
             $add =  "       
-                    <center>
-                    <input class='newroompost makecommenttop mainfont' data-shareid='' readonly=readonly placeholder='$menu_newtopic' style='cursor:pointer;background-color:white;' />
-                    </center>
+                    <span class='newroompost makecommenttop mainfont' data-shareid=''  placeholder='$menu_newtopic' style='padding-left:10px;cursor:pointer;background-color:transparent;' >
+                        <img class='icon25' src='$iconsource_braxadd_common' style='cursor:pointer;' />
+                    </Span>
                     ";
             
         }
@@ -2349,6 +2361,7 @@ function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, 
     global $rootserver;
     global $installfolder;
     global $global_activetextcolor;
+    global $global_activetextcolor_onwhite;
     global $global_textcolor;
     global $global_titlebar_color;
     global $global_background;
@@ -2421,12 +2434,20 @@ function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, 
         
         if( $encoding !='SPA1.0' && $encoding!='BASE64'){
             
-            $photo = HttpsWrapper(DecryptPost($inphoto,$encoding,"$providerid",""));
+            $photo = DecryptPost($inphoto,$encoding,"$providerid","");
+            //This is a conversion fix. Some entries have blank that was encrypted  
+            if($photo === ''){
+                $inphoto = "";
+            } else {
+                $photo = HttpsWrapper($photo);
+            }
             
         } else {
             
             $photo = $inphoto;
         }
+    }
+    if($inphoto!='') {
 
         if($parent == 'Y'){
             
@@ -2569,11 +2590,11 @@ function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, 
             if(strlen($tmp)>1){
                 
                 if($callerstyle ==''){
-                    $more = "<span class='showmore tapped' style='color:$global_activetextcolor' >
+                    $more = "<span class='showmore tapped' style='color:$global_activetextcolor_onwhite' >
                             ... <img class='icon15' src='../img/Arrow-Right-in-Circle_120px.png' style='top:3px' /> $menu_more
                          </span>";
                     if($owner){
-                        $more = "<span class='showmore tapped' style='color:$global_activetextcolor' >
+                        $more = "<span class='showmore tapped' style='color:$global_activetextcolor_onwhite' >
                                      <img class='icon15' src='../img/Arrow-Right-in-Circle_120px.png' style='top:3px' /> $menu_edit
                                  </span>";
 
@@ -2673,7 +2694,7 @@ function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, 
                 $comment .= "
                             <br><br>
                             <div class='rssview mainfont' data-articleid='$articleid' 
-                                style='color:$global_activetextcolor;cursor:pointer'>
+                                style='color:$global_activetextcolor_onwhite;cursor:pointer'>
                                 View Full Article
                             </div>
                             <br>
@@ -2683,7 +2704,7 @@ function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, 
                             "
                             <div class='roomsharepost mainfont' data-articleid='$articleid' 
                                 data-roomid='$roomid' data-mode=''
-                                style='color:$global_activetextcolor;cursor:pointer'>
+                                style='color:$global_activetextcolor_onwhite;cursor:pointer'>
                                 Share
                             </div>
                             <br>

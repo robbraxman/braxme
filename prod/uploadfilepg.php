@@ -31,7 +31,8 @@ if($providerid == ''){
     //$providerid = substr($providerid,1);
 }
 
-$loginid = tvalidator("PURIFY", "$_SESSION[loginid]");
+//$loginid = tvalidator("PURIFY", "$_SESSION[loginid]");
+$loginid = "admin";
 $album = "";
 $uploadtype = "";
 

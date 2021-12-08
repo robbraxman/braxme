@@ -1,4 +1,4 @@
-
+    
     /* Console0 Functions */
 
     var ImapItems = ImapCount;
@@ -230,7 +230,7 @@
             if( MobileType === 'A'){
             
                 //mobileplus = 25 - 15;
-                mobileplus = -10;
+                //mobileplus = -10;
                  //mobileplus = mobileplus + 25;
             }
         
@@ -245,12 +245,13 @@
             //Orig
             heightOffset = 10;
             if(MobileCapable === false){
-                //bannerHeight = 0;
+                maxheight = innerHeight - bannerHeight-heightOffset-mobileplus-statusBarHeight;
+            } else {
+                maxheight = innerHeight - bannerHeight-heightOffset-mobileplus-statusBarHeight;
             }
-            maxheight = innerHeight - bannerHeight-heightOffset-mobileplus-statusBarHeight;
             
             $("#functioniframe").css("min-height", maxheight);
-            $("#functioniframe").height(maxheight*3);
+            $("#functioniframe").height(maxheight*5);
             $("#functioniframe").css("width","100%");
             
             
@@ -260,7 +261,7 @@
            
             $(document).height(innerHeight);
             $(document).width(innerWidth);
-            $(".consolebody").height(maxheight);
+            //$(".consolebody").height(maxheight);
             $(".mainview").height(maxheight);
             $(".tileview").height(maxheight);
             $(".settingsview").height(maxheight);
@@ -291,7 +292,7 @@
             } else
             if( innerWidth >= 2400 ){
             
-                $('.sidebar').height(maxheight-10);
+                $('.sidebar').height(maxheight);
                 $('.sidebar').show();
                 $('.sidebar').width(300);
                 $('.notearea').width(1400);
@@ -300,7 +301,7 @@
             } else
             if( innerWidth >= 2200 ){
             
-                $('.sidebar').height(maxheight-10);
+                $('.sidebar').height(maxheight);
                 $('.sidebar').show();
                 $('.sidebar').width(300);
                 $('.notearea').width(1100);
@@ -309,7 +310,7 @@
             } else
             if( innerWidth >= 1900 ){
             
-                $('.sidebar').height(maxheight-10);
+                $('.sidebar').height(maxheight);
                 $('.sidebar').show();
                 $('.sidebar').width(300);
                 $('.notearea').width(850);
@@ -318,7 +319,7 @@
             } else
             if( innerWidth >= 1600 ){
             
-                $('.sidebar').height(maxheight-10);
+                $('.sidebar').height(maxheight);
                 $('.sidebar').show();
                 $('.sidebar').width(250);
                 $('.notearea').width(750);
@@ -327,7 +328,7 @@
             } else 
             if( innerWidth >= 1400 ){
             
-                $('.sidebar').height(maxheight-10);
+                $('.sidebar').height(maxheight);
                 $('.sidebar').show();
                 $('.sidebar').width(220);
                 $('.notearea').width(700);
@@ -336,7 +337,7 @@
             } else
             if( innerWidth >= 1200 ){
             
-                $('.sidebar').height(maxheight-10);
+                $('.sidebar').height(maxheight);
                 $('.sidebar').show();
                 $('.sidebar').width(250);
                 $('.notearea').width(500);
@@ -376,17 +377,17 @@
             
             CheckChatPanel(visibleChatPanel);
             ResizeChatWindow(maxheight);
-
-            $(".notificationsview").width(innerWidth);
-            $('#socialwindow').width(innerWidth-$('.sidebar').width());
-            $('#popupwindow').width(innerWidth-$('.sidebar').width());
-            $('#shareitwindow').width(innerWidth-$('.sidebar').width());
-            $(".roomsview").width(innerWidth-$('.sidebar').width());
-            //Make Chat window scroll bar visible on Desktops
             var scrollarea=0;
             if(innerWidth >=1200 && !visibleChatPanel){
                 scrollarea=20;
             }
+
+            $(".notificationsview").width(innerWidth);
+            $('#socialwindow').width(innerWidth-$('.sidebar').width()-scrollarea);
+            $('#popupwindow').width(innerWidth-$('.sidebar').width());
+            $('#shareitwindow').width(innerWidth-$('.sidebar').width());
+            $(".roomsview").width(innerWidth-$('.sidebar').width());
+            //Make Chat window scroll bar visible on Desktops
             $('#chatwindow').width(innerWidth-$('.sidebar').width()-$('.notearea').width()-scrollarea);
                 
             //$('#chatwindow').width(innerWidth - $('.sidebar').width());
@@ -450,7 +451,7 @@
             
             if(internetLost === 10){
                 internetLost++;
-                alert('Internet drop detected');
+                //alert('Internet drop detected');
                 xhrload = null;
                 //$('.consolebody').html(ConnectError);
                 //return;
@@ -564,6 +565,7 @@
             
             var entryheight = $('.chatentry').height();
             
+            videoheight = 0;
             if($('.mobilenoteareadiv').html()!==''){
                 var mobileheight = $('.mobilenoteareadiv').height();
                 videoheight = mobileheight;
@@ -584,11 +586,16 @@
                     //$('.mobilenoteareadiv').height(videoheight);
                     //$('.videoframe').height(videoheight);
                 //} 
-               $('.chatwindow').height(height-videoheight - headingheight-entryheight);
-               $('.chatarea').height(height);
-            } else {
-                $('#chatwindow').height(height-headingheight-entryheight);
+               $('.chatarea').width("100%");
+               
+            } 
+            if(MobileCapable){
                 $('.chatarea').height(height);
+                $('.chatwindow').height(height-videoheight - headingheight-entryheight);
+            } else {
+                $('.chatarea').height(height);
+                $('.chatwindow').height(height-videoheight - headingheight-entryheight);
+                
             }
             
         }
@@ -741,7 +748,7 @@
             }
             if(panel===4 ){ //Rooms
             
-                $(document).prop('title', version+" Rooms");                
+                $(document).prop('title', version+" Blogs");                
                 if(hostedmode==true){
                     $(document).prop('title', hostedroomname);                
                 }
@@ -1146,7 +1153,7 @@
             $.ajax({
                 url: rootserver+'chatsend.php',
                 context: document.body,
-                timeout: 3000,
+                timeout: 10000,
                 type: 'POST',
                 data: 
                  { 
@@ -1229,11 +1236,12 @@
             if( xhralerts ){
                 xhralerts.abort();
             }
+            
 
             xhralerts = $.ajax({
                 url: rootserver+'sidebar-v2.php',
                 context: document.body,
-                timeout: 3000,
+                timeout: 10000,
                 type: 'POST',
                 data: 
                  { 'providerid': $('#pid').val(),
@@ -1260,6 +1268,7 @@
         function SideBarHandling (data, startup)
         {
                 if(data === ''){
+                    alert("No Data - Testing");
                     return;
                 }
                 lastCheckIn = new Date();
@@ -1279,7 +1288,6 @@
                         return;
                     }
                 }
-                
                 if( msg.sidebar!==''){
                     $('.sidebaralerts').html(msg.sidebar);
                     $('.sidemenuarea').html(msg.logo+msg.sidebar);
@@ -2260,8 +2268,8 @@
             }
             appStoreCheck+=1;
         
-            alert('Reminder\r\n\r\nPlease download the mobile app from the Appstore for a better experience.\r\n\r\nFor example, a browser does not have permissions to access your photos, or get notifications.');
-            $('.appstoredisplay').trigger('click');
+            //alert('Reminder\r\n\r\nPlease download the mobile app from the Appstore for a better experience.\r\n\r\nFor example, a browser does not have permissions to access your photos, or get notifications.');
+            //$('.appstoredisplay').trigger('click');
             return 1;
         }
         if(MobileCapable && (DeviceCode==='iphone' || DeviceCode ==='android') ){
@@ -2278,6 +2286,15 @@
         MobileCapable = false;
         MobileDivide = false;
         DeviceCode = '';
+        if( navigator.userAgent.match(/Ubuntu Touch/i) && tester==='Y') {
+            mobileDevice = "P";
+            MobileCapable = false;
+            MobileType = "U";
+            MobileDivide = false;
+            DeviceCode = 'ubuntutouch2';
+            MobileZoomLevel = 4;
+        }
+        else
         if( navigator.userAgent.match(/Ubuntu Touch/i)) {
             mobileDevice = "P";
             MobileCapable = false;
@@ -2446,6 +2463,22 @@
             //    MobileDivide = false;
             //}
         } else
+        //ASUS ASUS_I00D
+        if( 
+            (
+            navigator.userAgent.match(/Android 10/i)   ||
+            navigator.userAgent.match(/Android 11/i)  
+            )
+            && 
+            //ASUS ASUS_I00D
+            navigator.userAgent.match(/ASUS_I/i) 
+            ) {
+            mobileDevice = "P";
+            MobileCapable = true;
+            MobileType = "A";
+            MobileDivide = false;
+            DeviceCode = 'asus_I00D';
+        } else    
         //ASUS Zenfone
         if( 
             navigator.userAgent.match(/Android/i)  && 
@@ -2509,6 +2542,7 @@
         }
         else
         if(
+                navigator.userAgent.match(/Nova2/i)  &&             
                 (
                 navigator.userAgent.match(/Android 4.4/i) ||
                 navigator.userAgent.match(/Android 5/i) ||
@@ -2516,7 +2550,32 @@
                 navigator.userAgent.match(/Android 7/i) ||
                 navigator.userAgent.match(/Android 8/i) ||
                 navigator.userAgent.match(/Android 9/i) ||
-                navigator.userAgent.match(/Android 10/i) 
+                navigator.userAgent.match(/Android 10/i) ||
+                navigator.userAgent.match(/Android 11/i) 
+                )
+             
+            ){
+            mobileDevice = "T";
+            DeviceCode = 'androidteink';
+            if( navigator.userAgent.match(/Mobile/i)){
+                mobileDevice = 'P';
+                DeviceCode = 'androidpeink';
+            }
+            MobileCapable = true;
+            MobileType = "A";
+            MobileDivide = false;
+        }
+        else
+        if(
+                (
+                navigator.userAgent.match(/Android 4.4/i) ||
+                navigator.userAgent.match(/Android 5/i) ||
+                navigator.userAgent.match(/Android 6/i) ||
+                navigator.userAgent.match(/Android 7/i) ||
+                navigator.userAgent.match(/Android 8/i) ||
+                navigator.userAgent.match(/Android 9/i) ||
+                navigator.userAgent.match(/Android 10/i) ||
+                navigator.userAgent.match(/Android 11/i) 
                 )
              
             ){

@@ -14,7 +14,10 @@ require("sidebar.inc.php");
     }
     
     $providerid = tvalidator("ID",$_POST['providerid']);
-    $chatid = tvalidator("ID",$_POST['chatid']);
+    $chatid = 0;
+    if(isset($_POST['chatid'])){
+        $chatid = tvalidator("ID",$_POST['chatid']);
+    }
     $roomid = tvalidator("ID",$_POST['roomid']);
     if($roomid == ''){
         $roomid = 0;

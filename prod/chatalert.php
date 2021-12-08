@@ -79,6 +79,7 @@ require_once('internationalization.php');
     $owner = $chatobj->owner;
     $archive = $chatobj->archive;
     $title = $chatobj->title;
+    $roomdesc = $chatobj->roomdesc;
     $archivemode = $chatobj->archivemode;
     $broadcaster = $chatobj->broadcaster;
     $broadcasterid = $chatobj->broadcasterid;
@@ -95,6 +96,9 @@ require_once('internationalization.php');
     $passkey64 = $chatobj->passkey64;
 
     if($providerid == $chatobj->roomowner){
+        $enableAdminDeleteMode = true;
+    }
+    if($providerid == $chatobj->moderator){
         $enableAdminDeleteMode = true;
     }
     
@@ -216,7 +220,7 @@ require_once('internationalization.php');
         
     } else {
         
-        $lock = "<img class='icon15' src='../img/password-128-white.png' style='padding-right:2px;padding-bottom:0px;' /> E2E ";
+        $lock = "<img class='icon15' src='../img/password-128-white.png' style='padding-right:2px;padding-bottom:0px;' /> PrivateKey ";
         SaveLastFunction($providerid,"","");
         
     }
@@ -342,7 +346,7 @@ require_once('internationalization.php');
         $chatmsgobj =  ShowChatMessages(
                         $chatid, $providerid, $limit, $passkey, $passkey64, 
                         $chatparty, $togglemsg, $togglemsgmembers, $script, $more, $owner, 
-                        $hidemode, $membercount, $chatobj->mute );
+                        $hidemode, $membercount, $chatobj->mute, $chatobj );
         
         $chat = $chatmsgobj->chat;
         $count = $chatmsgobj->count;
@@ -681,7 +685,9 @@ function IsValidChat($chatid, $providerid, $passkey)
         (select broadcastid from broadcastlog where mode='V' and broadcastlog.chatid = chatmaster.chatid and broadcastdate2 is null and broadcastlog.providerid = ? order by broadcastid desc limit 1 ) as viewerbroadcastid,
         chatmaster.broadcaster as broadcasterid, chatmaster.radiotitle,
         (select photourl from roominfo where roominfo.roomid = chatmaster.roomid) as photourl,
+        (select roomdesc from roominfo where roominfo.roomid = chatmaster.roomid) as roomdesc,
         (select owner from statusroom where statusroom.roomid = chatmaster.roomid and statusroom.providerid = statusroom.owner) as roomowner,
+        (select providerid from roommoderator where roommoderator.roomid = chatmaster.roomid and roommoderator.providerid = $providerid) as moderator,
         blocked1.blockee, blocked2.blocker,
         chatmaster.hidemode, chatmaster.question
         from chatmaster 
@@ -740,7 +746,7 @@ function IsValidChat($chatid, $providerid, $passkey)
                 <br><br>
                 Or enter the E2E secret key if you know it.
                 <br><br>
-                <div class='pagetitle3 divbutton setchatsession' data-chatid='$chatid' data-mode='CHAT' data-keyhash='$row[keyhash]' data-error='Y' style='background-color:$global_titlebar_color;color:white' >Enter E2E Secret Key</div> 
+                <div class='pagetitle3 divbutton setchatsession' data-chatid='$chatid' data-mode='CHAT' data-keyhash='$row[keyhash]' data-error='Y' style='background-color:$global_titlebar_color;color:white' >Enter Secret Key</div> 
                 <div class='pagetitle3 divbutton selectchatlist' data-chatid='$chatid' data-mode='CHAT' data-keyhash='$row[keyhash]' data-error='Y' style='background-color:$global_titlebar_color;color:white' >Back</div> 
             </div>
                 ",
@@ -774,6 +780,8 @@ function IsValidChat($chatid, $providerid, $passkey)
     $array['archive'] = $row['archive'];
     $array['owner'] = $row['owner'];
     $array['roomowner'] = $row['roomowner'];
+    $array['roomdesc'] = $row['roomdesc'];
+    $array['moderator'] = $row['moderator'];
     $array['broadcaster'] = $row['broadcaster'];
     $array['broadcasterid'] = $row['broadcasterid'];
     $array['broadcastid'] = $row['broadcastid'];
@@ -801,7 +809,6 @@ function IsValidChat($chatid, $providerid, $passkey)
     $array['photourl'] = $row['photourl'];
     
     
-    
     return (object) $array;
     
 }
@@ -825,7 +832,7 @@ function E2EVerify($chatid, $providerid, $keyhash, $passkey )
                 <br><br>
                 Please ask a chat member to re-add you to this chat. This will resend the key to your device.
                 <br><br>
-                <div class='divbutton setchatsession' data-chatid='$chatid' data-keyhash='$keyhash' data-error='Y' style='background-color:$global_titlebar_color;color:white' >Enter E2E Secret Key</div> ",
+                <div class='divbutton setchatsession' data-chatid='$chatid' data-keyhash='$keyhash' data-error='Y' style='background-color:$global_titlebar_color;color:white' >Enter Secret Key</div> ",
                          'scroll'=> "N",
                          'error'=> ""
                         );
@@ -1010,16 +1017,18 @@ function GetOtherPartyName($chatid, $providerid)
         return (object) $array;
     
 }
-function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $chatparty, $togglemsg, $togglemsgmembers, $script, $more, $owner, $hidemode, $membercount, $mute  )
+function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $chatparty, $togglemsg, $togglemsgmembers, $script, $more, $owner, $hidemode, $membercount, $mute, $chatobj  )
 {
     global $timezoneoffset;
     global $rootserver;
     global $enableAdminDeleteMode;      
     global $global_separator_color;
     global $global_activetextcolor;
+    global $global_activetextcolor_reverse;
     global $global_textcolor2;
     global $global_background;
     global $global_background2;
+    global $global_bottombar_color;
     global $backgroundcolor;
     global $textcolor;
     global $textcolor2;
@@ -1049,11 +1058,12 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
     $chat = "";
     $count = 0;
     $replyicon = "<img class='icon15' src='../img/reply.png' style='z-index:2' title='Reply to' />";
+    $roomdesc = $chatobj->roomdesc;
 
     
     $chat .= "
             $script
-            <div class='inputfocuscontent2' style='background-color:transparent;color:$textcolor;position:relative;top:0px;padding:0px;margin:0;width:100%;'>
+            <div class='inputfocuscontent2' style='overflow-y:hidden;background-color:transparent;color:$textcolor;position:relative;top:0px;padding:0px;margin:0;width:100%;'>
                 $chatparty
                 <br>
                 <div class='smalltext' style='display:inline;color:$textcolor;padding-top:5px;padding-left:20px;padding-right:10px'>
@@ -1101,77 +1111,49 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
         $hidemodefilter = " and chatmessage.providerid in ($providerid, $owner ) ";
     }
 
-    if($_SESSION['superadmin']!='X'){
-        //shadow banning test
-        $result = pdo_query("1",
-            "
-            select * from
-            (
-                select distinct chatmessage.message, chatmessage.encoding, chatmessage.msgid,
-                DATE_FORMAT(date_add(chatmessage.msgdate, interval (?)*(60) MINUTE), 
-                '%m/%d/%y %h:%i:%s%p') as msgdate, 
-                chatmembers.techsupport, chatmessage.flag,
-                chatmessage.providerid, chatmessage.chatid,
-                provider.providername, provider.avatarurl, chatmaster.owner,
-                provider.medal,
+    $result = pdo_query("1",
+        "
+        select * from
+        (
+            select distinct chatmessage.message, chatmessage.encoding, chatmessage.msgid,
+            DATE_FORMAT(date_add(chatmessage.msgdate, interval (?)*(60) MINUTE), 
+            '%m/%d/%y %h:%i:%s%p') as msgdate, 
+            chatmembers.techsupport, chatmessage.flag,
+            chatmessage.providerid, chatmessage.chatid,
+            provider.providername, provider.avatarurl, chatmaster.owner,
+            provider.medal,
 
-                staff.staffname as name, blocked1.blockee, blocked2.blocker, provider.profileroomid,
-                ban.banid
+            staff.staffname as name, blocked1.blockee, blocked2.blocker, provider.profileroomid,
+            ban.banid
 
-                from chatmessage 
-                left join chatmembers on chatmembers.chatid = chatmessage.chatid and chatmembers.providerid = chatmessage.providerid
-                left join chatmaster on chatmessage.chatid = chatmaster.chatid 
-                left join provider on provider.providerid = chatmessage.providerid and provider.active='Y'
-                left join staff on staff.providerid = chatmessage.providerid and
-                   staff.loginid = chatmessage.loginid
-                left join blocked blocked1 on blocked1.blockee = chatmessage.providerid and blocked1.blocker = ? 
-                left join blocked blocked2 on blocked2.blocker = chatmessage.providerid and blocked2.blockee = ?
-                left join ban on ban.banid = provider.banid and ban.chatid = chatmaster.chatid
-                where chatmessage.chatid = ? and chatmessage.status='Y'  and 
-                blocked1.blockee is null and blocked2.blocker is null 
-                $lifespanfilter
-                $hidemodefilter
-                and (ban.banid is null or (ban.banid = ? and ban.chatid = ?) or '$_SESSION[superadmin]'='Y' )
+            from chatmessage 
+            left join chatmembers on chatmembers.chatid = chatmessage.chatid and chatmembers.providerid = chatmessage.providerid
+            left join chatmaster on chatmessage.chatid = chatmaster.chatid 
+            left join provider on provider.providerid = chatmessage.providerid and provider.active='Y'
+            left join staff on staff.providerid = chatmessage.providerid and
+               staff.loginid = chatmessage.loginid
+            left join blocked blocked1 on blocked1.blockee = chatmessage.providerid and blocked1.blocker = ? 
+            left join blocked blocked2 on blocked2.blocker = chatmessage.providerid and blocked2.blockee = ?
+            left join ban on ban.banid = provider.banid and ban.chatid = chatmaster.chatid
+            where chatmessage.chatid = ? and chatmessage.status='Y'  and 
+            blocked1.blockee is null and blocked2.blocker is null 
+            $lifespanfilter
+            $hidemodefilter
+            and (ban.banid is null or (ban.banid = ? and ban.chatid = ?) or '$_SESSION[superadmin]'='Y' )
+            and 
+            ( 
+                (
+                chatmessage.providerid not in (select blockee from blocked where (blocker=? or blocker=0) )
+                and 
+                chatmessage.providerid not in (select blocker from blocked where blockee=? )
+                ) or chatmessage.providerid = ? or 'Y'='$_SESSION[superadmin]'
+            )
+            and chatmessage.loginid is not null
 
-                order by chatmessage.msgid desc limit $limit 
-             ) as t order by msgid asc
-            ",array($timezoneoffset,$providerid,$providerid,$chatid,$_SESSION['banid'],$chatid));
+            order by chatmessage.msgid desc limit $limit 
+         ) as t order by msgid asc
+        ",array($timezoneoffset,$providerid,$providerid,$chatid,$_SESSION['banid'],$chatid,$providerid,$providerid,$providerid));
         
-    } else {
-    
-        $result = pdo_query("1",
-            "
-            select * from
-            (
-                select distinct chatmessage.message, chatmessage.encoding, chatmessage.msgid,
-                DATE_FORMAT(date_add(chatmessage.msgdate, interval (?)*(60) MINUTE), 
-                '%m/%d/%y %h:%i:%s%p') as msgdate, 
-                chatmembers.techsupport, chatmessage.flag,
-                chatmessage.providerid, chatmessage.chatid,
-                provider.providername, provider.avatarurl, chatmaster.owner,
-                provider.medal,
-
-                staff.staffname as name, blocked1.blockee, blocked2.blocker, provider.profileroomid,
-                ban.banid
-
-                from chatmessage 
-                left join chatmembers on chatmembers.chatid = chatmessage.chatid and chatmembers.providerid = chatmessage.providerid
-                left join chatmaster on chatmessage.chatid = chatmaster.chatid 
-                left join provider on provider.providerid = chatmessage.providerid and provider.active='Y'
-                left join staff on staff.providerid = chatmessage.providerid and
-                   staff.loginid = chatmessage.loginid
-                left join blocked blocked1 on blocked1.blockee = chatmessage.providerid and blocked1.blocker = ? 
-                left join blocked blocked2 on blocked2.blocker = chatmessage.providerid and blocked2.blockee = ? 
-                left join ban on ban.banid = provider.banid and ban.chatid = chatmaster.chatid
-                where chatmessage.chatid = ? and chatmessage.status='Y'  and 
-                blocked1.blockee is null and blocked2.blocker is null 
-                $lifespanfilter
-                $hidemodefilter
-
-                order by chatmessage.msgid desc limit $limit 
-             ) as t order by msgid asc
-            ",array($timezoneoffset,$providerid,$providerid,$chatid));
-    }
 
     $count = 0;
 
@@ -1182,7 +1164,7 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
         $dataname = $row['name'];
         
         if($row['providername']!=$row['name']){
-            $row['name'] = "$row[providername]/$row[name]";
+            $row['name'] = "$row[providername]";
         }
         $avatarurl = RootServerReplace($row['avatarurl']);
         if( $row['techsupport']=='Y'){
@@ -1344,8 +1326,9 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
 
         $count++;
     }
-
-    
+    if($roomdesc!=''){
+        $chat .= "<div class='smalltext2' id=chatbottom style='padding-top:10px;padding-left:20px;padding-right;20px;background-color:$global_bottombar_color;color:$global_activetextcolor_reverse'><b>Chat Topic: $roomdesc</b> </div>";
+    }
     $chat .= "</div>";
     //$chat .= "<div class='smalltext2' id=chatbottom style='float:left;background-color:$global_background;display:inline;color:transparent'>.</div>";
     $array['chat']=$chat;
@@ -1457,7 +1440,7 @@ function MemberList($chatid, $providerid, $title, $keyhash, $streaming )
                     <div class='smalltext addchatsession'
                         data-chatid='$chatid' data-providerid='$row[otherid]' data-mode='S'
                         style='cursor:pointer;color:gold;padding-top:0px'>
-                        Resend E2E Key
+                        Resend Private Key
                     </div> 
                     ";
         }
@@ -2006,6 +1989,9 @@ function MobileMenu(
         global $menu_members;
     
         $chat = "";
+        if(!isset($_SESSION['sizing'])){
+            return;
+        }
         
         if($_SESSION['sizing'] < 450){
             $iconwidth = '320px';
@@ -2130,8 +2116,10 @@ function MobileMenu(
 
                     ";
         $buttonsharefile = "
-                <table class='gridnoborder smalltext fileselect tapped' 
-                        data-target='#chatmessage' data-link='' data-caller='chat'  
+                <table class='gridnoborder smalltext doclib tapped' 
+                        data-roomfolderid='0' data-sort=''
+                        data-target='#chatmessage' data-link='' data-folderid='0'
+                        data-folder='' data-mode='' data-page=1 data-caller='chat'  
                         data-passkey64='$passkey64'                             
                         id='fileselect'
                         title='Share File from My Files'
@@ -2192,6 +2180,25 @@ function MobileMenu(
            
 
                     ";
+        $buttonpin = "
+                <table class='gridnoborder smalltext chatpin tapped' 
+                    title='Pin' data-chatid='$chatid'
+                    style='vertical-align:top;color:black;padding-top:10px;height:40px'>
+                <tr>
+                    <td>
+                        <img class='icon30 tapped'  
+                            src='../img/pin-black-512.png'
+                            style='cursor:pointer;position:relative;top:0px' />
+                    </td>
+                    <td class='mainfont' style='padding-right:10px;padding-left:10px;vertical-align:center'>
+                            Pin
+                    </td>
+                </tr>
+                </table>
+           
+
+                    ";
+        
         
         //Removing these functions during a broadcast to save space for smaller phone
         $buttontakephoto = "";
@@ -2238,6 +2245,8 @@ function MobileMenu(
                 </tr>
                 </table>
                     ";
+        } else {
+            $buttonpin = "";
         }
         $buttonstream = "";
         if(($radiostation=='Y') 
@@ -2298,6 +2307,7 @@ function MobileMenu(
                         $buttonsharefile
                         $buttonupload 
                         $buttontakephoto 
+                        $buttonpin
                             </td>
                         </tr>
                     </table>
@@ -2332,7 +2342,7 @@ function DesktopMenu( $providerid, $chatid, $passkey64, $keyhash, $archive,
         global $menu_chat;
         global $menu_leave;
         global $menu_refresh;
-        
+        global $menu_pin;
         
         $chat = "<div style='verticsl-align:top'>";
     
@@ -2427,11 +2437,13 @@ function DesktopMenu( $providerid, $chatid, $passkey64, $keyhash, $archive,
                     </div>
 
                     <div class='smalltext2 chatbutton tapped' >
-                        <img id='fileselect' class='fileselect icon25'  src='../img/brax-doc-round-black-128.png' 
+                        <img id='fileselect' class='doclib icon25'  src='../img/brax-doc-round-black-128.png' 
                              style='top:0px' 
                              title='Share File' alt='Webpage Link' 
-                             data-target='#chatmessage' data-link='' data-caller='chat'  
-                             data-passkey64='$passkey64'                             
+                            data-roomfolderid='0' data-sort=''
+                            data-target='#chatmessage' data-link='' data-folderid='0'
+                            data-folder='' data-mode='' data-page=1 data-caller='chat'  
+                            data-passkey64='$passkey64'                             
                              />
                              <br>
                           $menu_sharefile
@@ -2471,6 +2483,7 @@ function DesktopMenu( $providerid, $chatid, $passkey64, $keyhash, $archive,
                     </div>
                     ";
         if($_SESSION['enterprise']=='Y' || $_SESSION['superadmin']=='Y'){
+            /*
         $chat .= "
                     <div class='smalltext2 chatbutton tapped' style='' >
                             <img class='chatformrequest icon25' src='../img/credentials-128.png'
@@ -2485,6 +2498,8 @@ function DesktopMenu( $providerid, $chatid, $passkey64, $keyhash, $archive,
                         <br>Request
                     </div>
                     ";
+             * 
+             */
         }
         $chat .= "
                     
@@ -2517,6 +2532,19 @@ function DesktopMenu( $providerid, $chatid, $passkey64, $keyhash, $archive,
                     </div>
                     ";
         }
+        $chat .= "
+
+            <div class='smalltext2 chatbutton tapped' style='' >
+                    <img class='chatpin icon25' src='../img/pin-512.png'
+                        style='top:0px' 
+                        title='Pin Chat'
+                    data-chatid='$chatid' 
+                    />
+                <br>Pin
+                <br>
+                <br>
+            </div>
+            ";
                 
                 
         
@@ -2549,7 +2577,7 @@ function AutoEndBroadcast($chatid)
             elapsed = time_to_sec(timediff( now(), broadcastdate ))
             where broadcastid = $row[broadcastid]
             and mode = 'B' and broadcastdate2 is null
-            ");
+            ",null);
             
             
     }

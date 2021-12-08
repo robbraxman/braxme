@@ -20,6 +20,7 @@ $customsite = false;
 $applogo = "https://brax.me/img/logo-b2.png";
 $domainsuffix = "brax.me";
 $admintestaccount = 0;
+$serverencryptionkey = "someserverkey"; //For General encryption use
 //Color Specifics
 $icon_braxmenu =    "<img class='icon25'  title='Main Menu' src='../img/brax-menu-round-white-128.png' />";
 $icon_braxlive =    "<img class='icon25'  title='Live' src='../img/brax-live-round-white-128.png' />";

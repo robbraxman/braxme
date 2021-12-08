@@ -70,7 +70,7 @@ require_once("roommanage.inc.php");
         
         $handle = str_replace(" ","", $handle);
 
-        if($handle == '' || $handle =='#'){
+        if(($handle == '' || $handle =='#')&& $roomid == 0){
             $msg =  "Room handle not specified";
             $arr = array('roomid'=> "",
                          'inforequest'=> "N",

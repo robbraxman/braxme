@@ -41,7 +41,9 @@ require_once("internationalization.php");
         $selectedalbum = DeconvertHTML(tvalidator("PURIFY",$_POST['album']));
         $selectedalbumHtml = ConvertHTML($selectedalbum);
         $selectedalbumSql = tvalidator("PURIFY",$selectedalbum);
-        $origalbum = DeconvertHTML(tvalidator("PURIFY",$_POST['origalbum']));
+        if(isset($_POST['origalbum'])){
+            $origalbum = DeconvertHTML(tvalidator("PURIFY",$_POST['origalbum']));
+        }
         //echo $selectedalbum;
     }
     
@@ -163,7 +165,7 @@ require_once("internationalization.php");
                 where owner= ?  
                 and public='N' and (hide='Y')
                 
-            ",array($provider));
+            ",array($providerid));
         $selectedalbum = "";
         $selectedalbumHtml = "";
         $selectedalbumSql = "";
@@ -406,7 +408,9 @@ require_once("internationalization.php");
         
             deleteAWSObject($deletefilename);
         }
-        
+        $deletefilename = "";
+        $showfilename = "";
+        $save = "";
         
         //unlink("$folder$deletefilename");
     }
@@ -537,8 +541,15 @@ require_once("internationalization.php");
                 </div>
                 &nbsp;
                 <div class='textphoto tapped' style='display:inline-block;background-color:transparent;'>
-                    <img class='icon30' title='Text to Pic Converter' src='$iconsource_braxtextphoto_common' style='margin-left:0px;margin-bottom:20px;margin-right:0px' />
+                    <img class='icon30' title='Text to Pic Converter' src='$iconsource_braxtextphoto_common' style='margin-left:0px;margin-bottom:20px;margin-right:20px' />
                 </div>
+                <!--
+                &nbsp;
+                <div class='smalltext2 showhidden tapped' 
+                    style='color:$global_textcolor;display:inline-block;background-color:transparent'>
+                    <img class='icon30' title='Show Albums' src='$iconsource_braxalbum_common'  style='margin-left:0px;margin-bottom:20px;margin-right:0px'='' />
+                </div>
+                -->
                 <br>
             </span>
             <span class=nonmobile>
@@ -553,6 +564,14 @@ require_once("internationalization.php");
                     <img class='icon30' title='Text to Pic Converter' src='$iconsource_braxtextphoto_common' style='' />
                     <br><br>Text2Pic
                 </div>
+                <!--
+                &nbsp;
+                <div class='smalltext2 showhidden tapped' 
+                    style='color:$global_textcolor;display:inline-block;height:40px;width:45px;text-align:center;cursor:pointer'>
+                    <img class='icon30' title='Show Albums' src='$iconsource_braxalbum_common' style='' />
+                    <br><br>Albums
+                </div>
+                -->
                 
                 <br><br>
             </span>
@@ -591,7 +610,62 @@ require_once("internationalization.php");
         //Photo Display
         /*
          * *******************************
+         * 
          */
+        $result = pdo_query("1",
+            "
+                select filename
+                from photolib where 
+                ( (providerid = ? or public='Y')
+                  and 
+                    (   album = ? 
+                        or 
+                        (? = '' 
+                          and public!='Y' 
+                          and 
+                             ( 
+                               album like 'upload-%' 
+                               or
+                               album =  'new' 
+                               or
+                               (
+                                    album ='Textpics'
+                                    and datediff( now(), createdate ) < 2
+                               )
+                             )
+                         ) 
+                    )
+                )
+                and photoid < (select photoid from photolib where filename='$showfilename' and providerid = ?)
+
+                order by photoid desc limit 1
+            ",array($providerid,$selectedalbumSql,$selectedalbumSql, $providerid));
+        $shownextfilename = $showfilename;
+        if($row = pdo_fetch($result)){
+            $shownextfilename = $row['filename'];
+        }  
+        
+        
+        echo "
+            <tr style='background-color:white;max-width:100%;padding:0;margin:0'>
+                <td style='position:relative;background-color:$global_background;max-width:100%;padding:0;margin:0'>
+
+
+                    <img class='gridnoborder photounselect tapped2'  src='$showfilenameUrl' 
+                        title='Tap on photo to return to album'
+                        style='z-index:1;cursor:pointer;position:relative;top;0;left:0px;max-width:$picwidth1;height:auto;padding:0;margin:0' 
+                        data-deletefilename='' data-filename='' data-album='$selectedalbumHtml' data-page='$page' />
+                    <img class='icon15 photounselect' src='../img/arrowhead-down-gray-128.png' style='z-index:100;padding:10px;position:absolute;top:0px;left:0;background-color:white;opacity:.5' />        
+                    <img class='icon15 photolibrary' data-album='$selectedalbumHtml' data-filename='$shownextfilename' src='../img/arrow-stem-right-gray-128.png' style='z-index:100;padding:10px;position:absolute;top:0;right:0;background-color:white;opacity:.5' />        
+                    <span class='formobile'>
+                    <a href='$resizeshare' style='text-decoration:none;' target='_blank'>
+                        <img class='icon15 photolibrary' data-album='$selectedalbumHtml' data-filename='$shownextfilename' src='../img/find-circle-01-128.png' style='z-index:100;padding:10px;position:absolute;top:50px;right:0;background-color:white;opacity:.5' />        
+                    </a>
+                    </span>
+
+                </td>
+            </tr>
+            ";
         if( ($public !='Y') 
          ||
         ( $_SESSION['superadmin']=='Y')
@@ -655,14 +729,14 @@ require_once("internationalization.php");
                                 &nbsp;
                                 &nbsp;
                             ";
-            if($_SESSION['mobilecapable']=='N'){
-                echo "
+                if($_SESSION['mobilecapable']=='N'){
+                    echo "
                             <a href='$rootserver/$installfolder/sharedownload.php?p=$row[filename]' style='text-decoration:none'>
                                 <img class='icon30' title='Download Photo' src='$iconsource_braxdownload_common'  />
                             </a>
                             ";
-            } else {
-                echo "
+                } else {
+                    echo "
                                 
                             <img class='downloadimg icon30' data-imgid='download_img1' src='$iconsource_braxdownload_common' style=''  style='margin-left:10px'/>
                                 ";
@@ -676,7 +750,7 @@ require_once("internationalization.php");
                                 style='display:none' />
                             <br><br>
                             &nbsp;
-
+                            
                             <div class='photogotoalbum' title='Go to album' 
                                 data-filename='' data-deletefilename='' 
                                 data-album='$selectedalbumHtml' 
@@ -685,26 +759,11 @@ require_once("internationalization.php");
                             </div>
 
                         </span>
-                        <br>
                     </td>
                 </tr>
                     ";
         }
         
-        echo "
-            <tr style='background-color:white;max-width:100%;padding:0;margin:0'>
-                <td style='position:relative;background-color:$global_background;max-width:100%;padding:0;margin:0'>
-
-
-                    <img class='gridnoborder photounselect tapped2'  src='$showfilenameUrl' 
-                        title='Tap on photo to return to album'
-                        style='z-index:1;cursor:pointer;position:relative;top;0;left:0px;max-width:$picwidth1;height:auto;padding:0;margin:0' 
-                        data-deletefilename='' data-filename='' data-album='$selectedalbumHtml' data-page='$page' />
-                    <img class='icon30 photounselect' src='../img/arrow-stem-left-gray-128.png' style='z-index:100;padding:10px;position:absolute;top:0;left:0' />        
-                            
-                </td>
-            </tr>
-            ";
         //End of Photo Display
         /*
          * *******************************
@@ -722,9 +781,9 @@ require_once("internationalization.php");
             echo "
                         
                                 <span class='hiderename'>
-                                    <b>Album</b>
+                                    <b>Album</b>&nbsp;
                                     <div class='formobile'></div>
-                                    <select name='album' class='photolib_editalbum' title='Album Selection' id='photolib_editalbum' data-deletefilename='' data-filename='' data-page='$page' data-rotate='' >
+                                    <select name='album' class='photolib_editalbum' title='Album Selection' id='photolib_editalbum' data-deletefilename='' data-filename='' data-page='$page' data-rotate='' style='height:40px' >
                                     <option value='$selectedalbumHtml' selected='selected'>$albumitem2</option>
                                     $albumselect
                                 </span>
@@ -821,9 +880,9 @@ require_once("internationalization.php");
             $albumitem2 = stripslashes($selectedalbum);
             echo "
                 <tr class='mainfont'>
-                    <td style='padding:20px;color:$global_textcolor'>
+                    <td style='padding-top:5px;padding-left:20px;padding-right:20px;color:$global_textcolor'>
                     External Share Link<br>
-                    <input class='dataentry' type='text' value='$directshare' />
+                    <input class='dataentry' type='text' value='$directshare' style='max-width:600px'/>
                     &nbsp;
                     <a href='$directshare'>
                     <img class='icon20' title='Change album' src='$iconsource_braxarrowright_common'  />
@@ -868,7 +927,7 @@ require_once("internationalization.php");
      * 
      *****************************************************/
     echo " </span>
-            <span class='photoalbumarea'>
+            <span class='photoalbumarea showhiddenarea' style=''>
          ";
 
         
@@ -1081,7 +1140,7 @@ require_once("internationalization.php");
             )
             
                 
-            order by createdate desc limit $pagestart, $max
+            order by photoid desc limit $pagestart, $max
         ",array($providerid,$selectedalbumSql,$selectedalbumSql));
     
     
@@ -1126,7 +1185,7 @@ require_once("internationalization.php");
             <img class='photoitem photolibrary tooltip tapped2' src='$filename' 
                 title='photo $items $title'
                 style='position:relative;top;0;left:0;max-width:$picwidthIn;height:$picheightIn;cursor:pointer;border-width:0px;padding:0px;margin:0' 
-                data-filename='$row[filename]' data-album='$album' data-page='$page' data-deletefilename='' data-save='' data-rotate='' />
+                data-filename='$row[filename]' data-album='$selectedalbumHtml' data-page='$page' data-deletefilename='' data-save='' data-rotate='' />
             </div>
               ";
         
@@ -1173,9 +1232,9 @@ require_once("internationalization.php");
     //*************************************************************
     //*************************************************************
 
-    echo "
+    echo "<!--
                 <br class='nonmobile'>
-                
+                -->
          ";
     if($items == 0){
         echo
@@ -1750,8 +1809,6 @@ function CreateAlbumList( $providerid, $selectedalbum, $selectedalbumHtml, $page
                         $settings
                         <hr style='margin:0'>
                         $shared
-                    <br>
-                        $socialshare
                 ";
         }
         
@@ -1874,6 +1931,10 @@ function DeconvertHTML( $text )
 function PhotoTip()
 {
         global $global_textcolor;
+        global $global_bottombar_color;
+        global $global_activetextcolor_reverse;
+        
+        return;
             
         echo "
                 <div class='pagetitle3' 
@@ -1881,7 +1942,7 @@ function PhotoTip()
                     <div class='circular3' style=';overflow:hidden;margin:auto'>
                         <img class='' src='../img/agent.jpg' style='width:100%;height:auto' />
                     </div>
-                    <div class='tipbubble pagetitle2a' style='padding:30px;color:black;background-color:whitesmoke'>
+                    <div class='tipbubble pagetitle2a' style='padding:30px;color:$global_activetextcolor_reverse;background-color:$global_bottombar_color'>
                         Upload your photos here for FREE. You can then share albums if you wish to all or selected friends.
                         <br><br>
                         Photos are metadata free.

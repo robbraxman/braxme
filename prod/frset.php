@@ -8,7 +8,7 @@ require_once("notifyfunc.php");
     $temp = rand ( 100000 , 999999 );
     $_SESSION['temporarypassword'] = $temp;
 
-    $providerid = @tvalidator("ID", "$_REQUEST[pid]");
+    $providerid = @tvalidator("PURIFY", "$_REQUEST[pid]");
     $loginid = @tvalidator("PURIFY", "$_REQUEST[l]");
     $sig = @tvalidator("PURIFY", "$_REQUEST[s]");
     $origproviderid = $providerid;
@@ -58,7 +58,7 @@ require_once("notifyfunc.php");
             from staff 
             left join provider on staff.providerid = provider.providerid
             where staff.providerid = ? and staff.loginid = ?  
-            ",array($providerid,$logind));
+            ",array($providerid,$loginid));
     
 
     if ($row = pdo_fetch($result)) {

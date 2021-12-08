@@ -157,12 +157,15 @@ function ProcessUpload( $providerid, $encoding, $subject, $upload_hdr, $uploadty
                                                 break;
                                             }
                                         }
+                                        
+                                        //override all - test mode
+                                        $fileencoding = 'PLAINTEXT';
+
                                         if($fileencoding != 'PLAINTEXT'){
                                             $uniqueid = uniqid();
                                             StreamEncode($physical_filename, $physical_filename.".aes", $fileencoding );
                                             $physical_filename = $upload_dir.$uniqueid.".aes";
                                         }
-                                        
                                         
                                         
                                         $attachmentfilename= $providerid."_".$_SESSION['sessionid']."_".$UploadNo.".".$filenameext;
@@ -182,12 +185,10 @@ function ProcessUpload( $providerid, $encoding, $subject, $upload_hdr, $uploadty
                                         echo("<br>File uploaded successfully. - ".$filename." <br>"); 
                                         
                                         $alias = uniqid("T4AZ", true);
-                                        $encrypted_origfilename = EncryptTextCustomEncode($origfilename,"PLAINTEXT","$attachmentfilename");
-                                        $encrypted_subject = EncryptTextCustomEncode($subject,"PLAINTEXT","$attachmentfilename");
-                                        if($encrypted_subject == "Upload"){
-                                            $encrypted_subject = $encrypted_origfilename;
+                                        if($subject == "Upload"){
+                                            $subject = $origfilename;
                                         }
-                                        $encrypted_subject .= " sent to $sendemail";
+                                        $subject .= " sent to $sendemail";
 
                                         $result = pdo_query("1", 
                                                 "
@@ -196,7 +197,7 @@ function ProcessUpload( $providerid, $encoding, $subject, $upload_hdr, $uploadty
                                                     values
                                                     ( ?, ?,?, ?,?, ?,?, now(), ?,?,'PLAINTEXT',?,'Y' ) 
                                                  ",array(
-                                                     $providerid, $attachmentfilename, $encrypted_origfilename, $filefolder,$fsize, $filenameext,$encrypted_subject, $alias,$fileencoding, $uploadprovider 
+                                                     $providerid, $attachmentfilename, $origfilename, $filefolder,$fsize, $filenameext,$subject, $alias,$fileencoding, $uploadprovider 
                                                      
                                                  )
                                          );
@@ -215,8 +216,7 @@ function ProcessUpload( $providerid, $encoding, $subject, $upload_hdr, $uploadty
                                             }
                                             
                                             $alias2 = uniqid("T4AZ", true);
-                                            $encrypted_origfilename = EncryptTextCustomEncode($origfilename,"PLAINTEXT","$attachmentfilename2");
-                                            $encrypted_subject = EncryptTextCustomEncode("$origfilename from $_SESSION[providername]","PLAINTEXT","$attachmentfilename2");
+                                            $subject = $origfilename;
                                             
                                             $result = pdo_query("1", 
                                                     "
@@ -225,7 +225,7 @@ function ProcessUpload( $providerid, $encoding, $subject, $upload_hdr, $uploadty
                                                         values
                                                         ( ?, ?,?, ?,?, ?,?, now(), ?,'PLAINTEXT', ?, 'Y' ) 
                                                      ",array(
-                                                        $uploadprovider, $attachmentfilename2, $encrypted_origfilename, $filefolder, $fsize, $filenameext, $encrypted_subject,$alias2, $uploadprovider 
+                                                        $uploadprovider, $attachmentfilename2, $origfilename, $filefolder, $fsize, $filenameext, $subject,$alias2, $uploadprovider 
                                                          
                                                      )
                                              );

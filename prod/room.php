@@ -93,13 +93,22 @@ require_once("roomfunc.inc.php");
      */
     
     $roominfo = RoomInfo($providerid, $roomid, $sizing->mainwidth, $page, $memberinfo);
+    if(is_object($roominfo)===false){
+        echo "Room Error";
+        exit();
+    }
     //echo $memberinfo->subscribedate;
 
-    if($roominfo->profileflag!='Y'){
+    if($roominfo->profileflag!='Y' && $roominfo->roomstyle!=='faq'){
         SaveLastFunction($providerid,"R", $roomid);
-    } else {
+    } else 
+    if($caller == 'none'){
+        SaveLastFunction($providerid,"", null);
+    } else
+    if($roominfo->profileflag == 'Y'){
         SaveLastFunction($providerid,"U", $roomid);
-        
+    } else {
+        SaveLastFunction($providerid,"", null);
     }
     
     
@@ -141,24 +150,10 @@ require_once("roomfunc.inc.php");
     $ownerbuttons = OwnerButtons( $readonly, $providerid, $roomid, $roominfo, $memberinfo, $find, $shareid );
 
     $profile = ShowMyProfile($providerid, $memberinfo->owner, $caller, $roominfo->profileflag );
-    $topbar =  TopBar( $readonly, $caller, $memberinfo->owner, $roominfo->profileflag, $gotohome );
+    $topbar =  TopBar( $readonly, $caller, $memberinfo->owner, $roominfo, $gotohome, $shareid );
     $childlinks = GetChildLinks($readonly, $roominfo, $caller);
     $roomfilesmessage = RoomFilesMessage($memberinfo->roomfiles);
     
-    if($roominfo->subscriptionpending == 'Y'){
-        
-        $topbarbuttons = "";
-        $roomnewpost = "";
-        $childlinks = "";
-        $roomfilesmessage = "";
-        $ownerbuttons = "";
-        $storelink = "";
-        $radiolink = "";
-        $roominvite = "";
-        $holdingbucket = "";
-        $desktopinput = "";
-        
-    }
     /**********************************************
      * 
      * 
@@ -166,7 +161,10 @@ require_once("roomfunc.inc.php");
      * 
      * 
      **********************************************/
-    if($roominfo->roomstyle=='forum'){
+    if($shareid !=''){
+    //    echo "$shareid is shareid";
+    }
+    if($roominfo->roomstyle=='forum' || $roominfo->roomstyle=='faq' ){
         include("roomforum.inc.php");    
         exit();
     }
@@ -206,7 +204,7 @@ require_once("roomfunc.inc.php");
     echo $profile;
         
     echo "
-        <div style='background-color:transparent;max-width:$_SESSION[innerwidth]px'>";
+        <div style='background-color:transparent;padding-top:10px;max-width:$_SESSION[innerwidth]px'>";
     
     echo $topbarbuttons;
     
@@ -420,6 +418,24 @@ require_once("roomfunc.inc.php");
         echo "<center><span class=roomcontent>$next</span></center>
              <br>";
     }
+
+    if($roominfo->profileflag =='Y' && $postcount == 0 && $memberinfo->owner==$providerid){
+        echo "
+            <div class='circular3' style=';overflow:hidden;margin:auto'>
+                <img class='' src='../img/agent.jpg' style='width:100%;height:auto' />
+            </div>
+            <div class='smalltext tipbubble' 
+                style='background-color:$global_bottombar_color;margin:auto;color:$global_textcolor_reverse;text-align:center;max-width:250px'>
+                <div class='mainfont' style='margin:auto;text-align:center;max-width:500px;padding:30px;color:$global_textcolor_reverse'>
+                This is your own blog space! Use it and whatever you post here will be visible to all on $appname.<br><br>Start by adding a profile photo.<br><br>Tap on the +
+                to start your first post.
+                </div>
+            </div>
+                ";
+        
+        
+    }
+
     
     /**********************************************************
       * 
@@ -441,7 +457,7 @@ require_once("roomfunc.inc.php");
             echo "
             
                 <br>&nbsp;&nbsp;
-                <span class='roomcontent' style='color:$global_activetextcolor'>
+                <span class='roomcontent' style='color:$global_activetextcolor_reverse'>
                 <span class='friends' style='cursor:pointer'
                     id='deletefriends' 
                     data-providerid='$providerid' data-roomid='$roomid' data-mode='D' data-caller='room' >
@@ -455,7 +471,7 @@ require_once("roomfunc.inc.php");
                 
                 echo "
                     <br>&nbsp;&nbsp;
-                    <span class='roomcontent' style='color:$global_activetextcolor'>
+                    <span class='roomcontent' style='color:$global_activetextcolor_reverse'>
                     <span class='icon15 mute tapped' style='cursor:pointer'
                         data-roomid='$roomid' >
                         $menu_unmutenotifications
@@ -466,7 +482,7 @@ require_once("roomfunc.inc.php");
                 
                 echo "
                     <br>&nbsp;&nbsp;
-                    <span class='roomcontent' style='color:$global_activetextcolor'>
+                    <span class='roomcontent' style='color:$global_activetextcolor_reverse'>
                         <span class='icon15 mute tapped' style='cursor:pointer'
                         data-roomid='$roomid' >
                         $menu_mutenotifications
@@ -478,20 +494,20 @@ require_once("roomfunc.inc.php");
             if($memberinfo->favorite=='Y'){
                 echo "
                     <br>&nbsp;&nbsp;
-                    <span class='roomcontent' style='color:$global_activetextcolor'>
+                    <span class='roomcontent' style='color:$global_activetextcolor_reverse'>
                         <span class='icon15 roomfavorite tapped' style='cursor:pointer'
                         data-roomid='$roomid' data-mode='D' >
-                        $menu_roomfavoritedelete
+                        $menu_roomfavoritedelete 
                         </span>
                     </span><br><br>
                     ";
             } else {
                 echo "
                     <br>&nbsp;&nbsp;
-                    <span class='roomcontent' style='color:$global_activetextcolor'>
+                    <span class='roomcontent' style='color:$global_activetextcolor_reverse'>
                         <span class='icon15 roomfavorite tapped' style='cursor:pointer'
                         data-roomid='$roomid' data-mode='A' >
-                        $menu_roomfavorite
+                        $menu_roomfavorite 
                         </span>
                     </span><br><br>
                     ";
@@ -521,6 +537,7 @@ function DisplayStdRoomPost(
         global $icon_darkmode;
         global $global_backgroundreverse;
         global $global_activetextcolor;
+        global $global_activetextcolor_onwhite;
         global $global_textcolor;
         global $global_background;
         global $rootserver;
@@ -587,7 +604,7 @@ function DisplayStdRoomPost(
                                 <hr style='border:1px solid lightgray'>
                                 <div class='showroomcomment roomcommentheader' 
                                     data-shareid='$shareid' data-anchor='$postid'
-                                        style='color:$global_activetextcolor;cursor:pointer' data-mode=''>
+                                        style='color:$global_activetextcolor_onwhite;cursor:pointer' data-mode=''>
                                     $commentcount $menu_replies
                                 </div>
                         ";
@@ -777,15 +794,16 @@ function DisplayForumRoomPost(
 
         echo "  
             <tr class='gridnoborder'>
-                <td class='commentline mainfont  $shadow feed' 
-                    data-shareid = '$shareid' data-roomid='$roomid'
+                <td class='commentline mainfont  feed' 
+                    data-shareid = '$shareid' data-roomid='$roomid' data-caller=$roomid
                     style='cursor:pointer;padding-bottom:10px;padding-left:20px;padding-right:20px;width:$sizing->statuswidth;
                     background-color:transparent;color:$global_textcolor;overflow:none;word-wrap:break-word'>          
-                    <span class='pagetitle2a' style='color:$global_activetextcolor'>$comment</span>
+                    <span class='pagetitle2b' style='color:$global_activetextcolor'>$comment</span>
 
-                    $commentcounttext
+
+                    <span class='smalltext2' style='color:$global_textcolor'>$commentcounttext $postdate</span>                        
+                        
                     <br>
-                    <span class='smalltext2' style='color:$global_textcolor'>$posterobj->name $usermedal $postdate</span>                        
 
                     </div>
                 </td>

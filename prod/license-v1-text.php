@@ -11,7 +11,7 @@ require_once("colorscheme.php");
 if( $i != 'Y'){
 ?>
     <b>Please review the Terms of Use and indicate your agreement or disagreement at the bottom of this document. The
-    terms of use have been changed as of April 20, 2020.</b>
+    terms of use have been changed as of January 29, 2021.</b>
     <br><br>
 <?php
 }
@@ -27,8 +27,9 @@ you do so. If you terminate this service, your content will not be retrievable.
 Use of this software is prohibited in certain countries to which export of Cryptography is banned. These are
 "Terrorist Supporting Countries" classified as "E1" as defined in  EAR part 772.1 of US Export Laws.
     <br><br>
+There are no warranties with the use of this service, either expressed or implied.
+    <br><br>
 
-    
 <b>Privacy</b>
 <br>
 <br>
@@ -88,7 +89,11 @@ images, photographs, sounds, etc.) that in our reasonable judgment may be found 
 inappropriate, for example, materials that may be considered obscene, pornographic, or defamatory will be
 removed from public access.
 <br><br>
-Users who create inappropriate content in publicly discoverable areas are subject to having their account inactivated or disabled.
+Inappropriate content includes: harassment, ad-hominem and defamatory attacks against specific people using the app.
+<br><br>
+Users who create inappropriate content in publicly discoverable areas are subject to having their account inactivated, disabled, or 
+have parts of their content partially or totally deleted in publicly visible areas. They may also be subject to restrictions
+on public posting.
 Users may block individuals from contacting them by adding them to their block list.
 <br><br>
 
@@ -122,7 +127,7 @@ You will not solicit login information or access an account belonging to someone
 You will not use <?=$appname?> to do anything unlawful, misleading, malicious, or discriminatory.
 <br><br>
 You will not do anything that could disable, overburden, or impair the proper working or appearance of Brax.Me, 
-such as a denial of service attack or interference with page rendering or other <?=$appname?> functionality.
+such as a denial of service attack, spamming, or interference with page rendering or other <?=$appname?> functionality.
 <br><br>
 You will not facilitate or encourage any violations of this Statement or our policies.
 <br><br>

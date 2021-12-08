@@ -7,17 +7,9 @@ require_once("roommanage.inc.php");
 require_once("advertising.inc.php");
 
     $_SESSION['validsession']=uniqid();
-    
-    //Enforcing only for enterprise
-   if($_SESSION['enterprise']=='Y' && $_SESSION['superadmin']!='Y'){
-        if(!AccountStatusCheck($_SESSION['pid'])){
-
-            exit();
-        }
-    }
     $_SESSION['needsms']="";
 
-    //$recentrooms = RecentRooms($providerid,"2", TRUE);
+    $recentrooms = RecentRooms($providerid,"2", TRUE);
     $roommanagemenu = RoomManageMenu();
     $_SESSION['iscore']=5;
     $_SESSION['innerwidth']=0;
@@ -147,19 +139,6 @@ require_once("advertising.inc.php");
         $_SESSION['contacts'] = '';
         
         
-        //Automatically Share Room Contacts
-        /*
-        pdo_query("1","
-                    insert into batchrequest ( providerid, requestdate, requesttype, status ) 
-                    values ($providerid, now(), 'SHARECONTACTSROOM', 'N' )
-
-            ");
-         * 
-         */
-        
-
-
-        
     $_SESSION['inforequest']= ActiveInformationRequest($providerid);
         
         
@@ -210,7 +189,7 @@ require_once("advertising.inc.php");
                 delete from notifytokens where token = ? and providerid= ? and status='E' and app=?
                     ",array($token,$providerid,$appname));
             @pdo_query("1"," 
-                insert into notifytokens 
+                insert ignore into notifytokens 
                 (providerid, token, platform, registered, status, arn, app) values
                 (?, ?, ?,now(), 'Y','',?)
                     ",array($providerid,$token,$platform,$appname));
@@ -235,6 +214,7 @@ require_once("advertising.inc.php");
         global $global_titlebar_color;
         global $global_background;
         global $icon_braxphoto2;
+        global $icon_braxdoc2;
         global $global_activetextcolor;
         global $iconsource_braxstopmusic_common;
         global $iconsource_braxhelp_common;
@@ -257,6 +237,7 @@ require_once("advertising.inc.php");
         global $menu_upgrade;
         global $menu_manageupgrade;
         global $menu_myprofile;
+        global $menu_myemailinfo;
         global $customsite;
         global $menu_myprofile;
         global $menu_managerooms;
@@ -291,7 +272,6 @@ require_once("advertising.inc.php");
                              style='background-color:transparent;margin:auto;text-align:center;max-width:500px;width:90%;min-width:70%;vertical-align:top'>
                         ";
 
-        //$settingsmenu .= "<hr style='border:1px solid  $global_separator_color'>";
         
         $settingsmenu .= "<br>";
         $settingsmenu .= "<div class='mainfont restarthome' data-caller='none' style='cursor:pointer;color:$global_activetextcolor;padding-left:20px;float:left'><img class='icon30' src='$iconsource_braxrestart_common' style='position:relative' /><br><br>$menu_restart</div>";
@@ -303,6 +283,7 @@ require_once("advertising.inc.php");
                 
         //$settingsmenu .= SettingsMenuButton("$icon_braxlive2 Live Streams", "selectchatlist mainbutton", "","data-mode='LIVE'","text-align:left" , "#3b3b3b", $buttoncolor2);
         $settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxidentity2 $menu_myaccountinfo", "profilebutton mainbutton", "","","text-align:left;" , "#3b3b3b", $buttoncolor2);
+
         $action = "feed";
         if(intval($_SESSION['profileroomid'])==0){
             $action = "userview";
@@ -313,46 +294,27 @@ require_once("advertising.inc.php");
         }
         $settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxsettings2 $menu_colortheme", "colorchoice mainbutton", "","data-mode='' ","text-align:left;" , "#3b3b3b", $buttoncolor2);
         
+                    $settingsmenu .= "<hr style='border:1px solid  $global_separator_color'>";
         
-        /*
-        $settingsmenu .= SettingsMenuButton("$icon_braxdoc2 My Files", "doclib mainbutton", "","","text-align:left;" , "#3b3b3b", $buttoncolor2);
-        $settingsmenu .= SettingsMenuButton("$icon_braxsettings2 My Rooms", "friends mainbutton", "","","text-align:left;" , "#3b3b3b", $buttoncolor2);
-        $settingsmenu .= SettingsMenuButton("$icon_braxsettings2 My Contacts", "mainbutton", "contactbookbutton","","text-align:left;" , "#3b3b3b", $buttoncolor2);
-         * */
-        if($_SESSION['roomcreator']=='Y' ){
-            $settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxsettings2 $menu_managerooms", "friends mainbutton", "","data-mode='' ","text-align:left;" , "#3b3b3b", $buttoncolor2);
-        }
 
         
         
 
         $settingsmenu .= "<hr style='border:1px solid  $global_separator_color'>";
-        
-        //$settingsmenu .= SettingsMenuButton("Restart", "restart", "restart","","" , $buttonbackgroundcolor, $buttoncolor);
-        //$settingsmenu .= SettingsMenuButton("Logout", "logoutbutton", "","","" , $buttonbackgroundcolor, $buttoncolor);
-        //$settingsmenu .= SettingsMenuButton("Stop Audio", "audiokillsound tilebutton", "","","" , $buttonbackgroundcolor, $buttoncolor);
         
 
         $settingsmenu .= SettingsMenuButton("$menu_changepassword", "chgpasswordbutton settingsaction", "changepasswordbutton","","" , $buttonbackgroundcolor, $buttoncolor);
-        $settingsmenu .= SettingsMenuButton("Set Up an Authenticator App", "chgtotp settingsaction", "changetotp","","" , $buttonbackgroundcolor, $buttoncolor);
+        $settingsmenu .= SettingsMenuButton("Set Up TOTP 2FA", "chgtotp settingsaction", "changetotp","","" , $buttonbackgroundcolor, $buttoncolor);
         $settingsmenu .= SettingsMenuButton("$menu_techsupport", "selectchattech mainbutton", "","","" , $buttonbackgroundcolor, $buttoncolor);
-        $settingsmenu .= SettingsMenuButton("$menu_techsupportfaq", "roomjoin mainbutton", "","data-mode='J' data-handle='#techsupport' ","" , $buttonbackgroundcolor, $buttoncolor);
+        $settingsmenu .= SettingsMenuButton("$menu_techsupportfaq", "roomselect mainbutton", "","data-mode='FAQ' data-handle='#techsupport' ","" , $buttonbackgroundcolor, $buttoncolor);
+
+
         $settingsmenu .= "<hr style='border:1px solid  $global_separator_color'>";
 
-        
-        
-        
-        
-
-
-        
         
         $settingsmenu .= SettingsMenuButton("$menu_termsofuse", "termsofusedisplay mainbutton", "","","" , $buttonbackgroundcolor2, $buttoncolor2);
         $settingsmenu .= SettingsMenuButton("$menu_privacy", "privacydisplay mainbutton", "","","" , $buttonbackgroundcolor2, $buttoncolor2);
         
-        
-        
-        //$settingsmenu .= SettingsMenuButton("App Privacy Tips", "privacytip mainbutton", "","","" , $buttonbackgroundcolor2, $buttoncolor2);
         $settingsmenu .= SettingsMenuButton("$menu_deviceinfo", "statsuser mainbutton", "","","" , $buttonbackgroundcolor2, $buttoncolor2);
         if($_SESSION['superadmin']=='Y'){
             $settingsmenu .= "<hr style='border:1px solid  $global_separator_color'>";
@@ -360,12 +322,7 @@ require_once("advertising.inc.php");
             
         $settingsmenu .= BytzVPNAd();
 
-        if($_SESSION['superadmin']=='Y' || $_SESSION['superadmin']=='A' || $_SESSION['superadmin']=='E' ){
-            $settingsmenu .= SettingsMenuButton("Access Report", "report1 mainbutton", "","","" , $buttonbackgroundcolor3, $buttoncolor3);
-        }
-
         $settingsmenu .= "<br></div>";
-
 
         
         return $settingsmenu;

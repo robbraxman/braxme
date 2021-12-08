@@ -259,7 +259,7 @@ $(document).ready( function() {
             Sizing();
         });
         $('body').on("click", ".closesidemenu", function(){
-            $('.sidemenuarea').hide();
+            $('.sidemenuarea').hide(200);
         });
         $('body').on("click", ".opensidemenu", function(){
             if(!TermsOfUseCheck()){
@@ -272,7 +272,7 @@ $(document).ready( function() {
             $('#functioniframe').hide();
             $('body').scrollLeft(0);
             $('body').click('.tilebuttonview');
-            $('.sidemenuarea').show(100);
+            $('.sidemenuarea').show(200);
             
             if(MobileType ==='A' || MobileType==='I'){
                 alertify.set({ delay: 2000 });
@@ -282,7 +282,7 @@ $(document).ready( function() {
         });
         $('body').on("touchstart", ".mainview", function(){
             if($('.sidemenuarea').is(":visible")){
-                $('.sidemenuarea').hide();
+                $('.sidemenuarea').hide(200);
             }
         });
         
@@ -1241,6 +1241,7 @@ $(document).ready( function() {
                 }
                 /* //localStorage.clear(); */
 
+                localStorage.removeItem("hswt");
                 localStorage.removeItem("swt");
                 localStorage.removeItem("password");
                 localStorage.removeItem("pw");
@@ -1405,9 +1406,9 @@ $(document).ready( function() {
         $('body').on('click','.notifysubscribe', function()
         {
             //if( DeviceCode==='chrome'){
-                PanelShow(9);
-                ('.popupwindow').html(LoadingGIF);
-                $('.popupwindow').load( rootserver+"notifysubscribe.php?"+timeStamp());
+                //PanelShow(9);
+                //('.popupwindow').html(LoadingGIF);
+                //$('.popupwindow').load( rootserver+"notifysubscribe.php?"+timeStamp());
             //}
         });
         $('body').on('click','.notifysubscribe1', function()
@@ -1926,84 +1927,7 @@ $(document).ready( function() {
                 PanelShow(14);
                 $('#socialwindow').load( rootserver+"securityguide.php");
         });
-        $('body').on('click','.stats', function()
-        {
-            AbortAjax();
-            $('.mainview').scrollTop(0);
-            PanelShow(30);
-            
-            $('#functioniframe').prop('src',rootserver+'blank.php');
-            $('#statsform').submit();
-        });
-        $('body').on('click','.statsplus', function()
-        {
-            AbortAjax();
-            $('.mainview').scrollTop(0);
-            $('.settingsview').scrollTop(0);
-            PanelShow(30);
-            
-            $('#functioniframe').prop('src',rootserver+'blank.php');
-            $('#superstatsform').submit();
-        });
-        $('body').on('click','.statsuser', function()
-        {
-            AbortAjax();
-            PanelShow(20);
-            ShowBanner();
-            $('.settingsview').scrollTop(0);
-            $('.mainview').scrollTop(0);
-            
-            $('#functioniframe').prop('src',rootserver+'blank.php');
-            $('#userstatsform').submit();
-        });
-        $('body').on('click','.testzone', function()
-        {
-            
-            AbortAjax();
-            PanelShow(20);
-            $('.settingsview').scrollTop(0);
-            
-            $('#functioniframe').prop('src',rootserver+'blank.php');
-            $('#testzoneform').submit();
-        });
-        $('body').on('click','.testzone2', function()
-        {
-                PanelShow(14);
-                $('#socialwindow').load( rootserver+"testzone.php");
-        });
-        
-        $('body').on('click','.report1', function()
-        {
-            
-            AbortAjax();
-            PanelShow(30);
-            $('.settingsview').scrollTop(0);
-            
-            $('#functioniframe').prop('src',rootserver+'blank.php');
-            $('#report1form').submit();
-        });
-        $('body').on('click','.tokenreport', function()
-        {
-            
-            AbortAjax();
-            PanelShow(30);
-            $('.settingsview').scrollTop(0);
-            
-            $('#functioniframe').prop('src',rootserver+'blank.php');
-            $('#tokenreportform').submit();
-        });
-        $('body').on('click','.tokenstore', function()
-        {
-            
-            AbortAjax();
-            PanelShow(30);
-            $('.settingsview').scrollTop(0);
-            
-            $('#functioniframe').prop('src',rootserver+'blank.php');
-            $('#tokenstoreform').submit();
-        });
-        
-        
+
                 
         $('body').on('click','.leave', function()
         {
@@ -3814,6 +3738,7 @@ $(document).ready( function() {
                      }
 
                 }).done(function( data, status ) {
+                    
 
                     if( data ==='T'){
                         
@@ -3823,6 +3748,7 @@ $(document).ready( function() {
 
                     $('#roominnerwindow').hide().html(data).fadeIn(800);
                     $("#mainview").scrollTop(0);
+                    
 
                 }).fail(function( data, status ) {
 
@@ -3877,6 +3803,9 @@ $(document).ready( function() {
                 var mode = $(this).data('mode');
                 var page = $(this).data('page');
                 var category = $(this).data('category');
+                var productid = $(this).data('productid');
+                var ship = $(this).data('ship');
+                var quantity = $('#quantity').val();
                 
                 var roomfind = '';
                 if(mode === 'F'){
@@ -3899,6 +3828,9 @@ $(document).ready( function() {
                         'mode': mode,
                         'page' : page,
                         'category' : category,
+                        'productid' : productid,
+                        'ship' : ship,
+                        'quantity' : quantity,
                         'find' : roomfind
                      }
 
@@ -4037,7 +3969,10 @@ $(document).ready( function() {
                 return;
             }
             if( MobileType === 'A'){
-                NativeCall('photofilepicker');
+                //NativeCall('photofilepicker');
+                var pid = $('#pid').val();
+                var chatid = $(this).data('chatid');
+                NativeCall('photolibrary'+"/"+pid+"-"+chatid);
             
                 return;
             }
@@ -4358,7 +4293,9 @@ $(document).ready( function() {
                 NativeCall("filepicker");
                 return;
             }
+            roomid = $(this).data("roomid");
             $('#uploadfileform').find('#uploadfile_chatid').val('');
+            $('#uploadfileform').find('#uploadfile_roomid').val(roomid);
             PanelShow(23);
             $('#functioniframe').prop('src',rootserver+'blank.php');
             $('#uploadfileform').submit();
@@ -4456,6 +4393,7 @@ $(document).ready( function() {
                 }
                 
                 if( ( handle === '' || handle ==='#') && (mode === 'J' || mode === 'R') ){
+                    $('#trigger_roomselect').data("caller",caller);
                     $('#trigger_roomselect').trigger('click');
                     return;
                 }
@@ -4501,6 +4439,7 @@ $(document).ready( function() {
                         } else
                         if(mode === 'JCOMMUNITY'){
                             $('#trigger_selectchat').trigger('click');
+                            alertify.alert("You've joined a Community Chat. It will be on your Chat list.<br><br>Tap on Community at the top to join more.");
                         } else
                         if(handle!==''){
                             $('#trigger_room').data("roomid",msg.roomid);
@@ -5106,7 +5045,6 @@ $(document).ready( function() {
                 
                 var wizardtype = $('#sponsorwizardtype').val();
                 
-                
                 var sponsorname = $('#sponsorname').val();
                 var sponsornew = $('#sponsornew').val();
                 var welcome = $('#welcome').val();
@@ -5116,6 +5054,7 @@ $(document).ready( function() {
                 var live = $('#sponsorlive').val();
                 var needemail = $('#sponsorneedemail').val();
                 var colorscheme = $('#sponsorcolorscheme').val();
+                
                 var colorschemeinvite = $('#sponsorcolorschemeinvite').val();
                 var priority = $('#sponsorpriority').val();
                 var boxcolor = $('#sponsorboxcolor').val();
@@ -5152,7 +5091,9 @@ $(document).ready( function() {
                                 'filter' : filter
 
                             }, function(html, status){
-                                    $("#roominnerwindow").scrollTop(0);
+                                $("#roominnerwindow").scrollTop(0);
+                                $('#trigger_restart').click();
+                                    
                             }).fadeIn(800);
                         }
                     });
@@ -5233,6 +5174,7 @@ $(document).ready( function() {
                 var productprice = $('#productprice').val();
                 var productshipping = $('#productshipping').val();
                 var productshipping2 = $('#productshipping2').val();
+                var productshipping3 = $('#productshipping3').val();
                 var producttax = $('#producttax').val();
                 var productshippingflag = $('#productshippingflag').val();
                 var productseq = $('#productseq').val();
@@ -5260,6 +5202,7 @@ $(document).ready( function() {
                                 'productprice' : productprice,
                                 'productshipping' : productshipping,
                                 'productshipping2' : productshipping2,
+                                'productshipping3' : productshipping3,
                                 'producttax' : producttax,
                                 'productshippingflag' : productshippingflag,
                                 'productseq' : productseq,
@@ -5292,6 +5235,7 @@ $(document).ready( function() {
                         'productprice' : productprice,
                         'productshipping' : productshipping,
                         'productshipping2' : productshipping2,
+                        'productshipping3' : productshipping3,
                         'producttax' : producttax,
                         'productshippingflag' : productshippingflag,
                         'productseq' : productseq,
@@ -5318,23 +5262,123 @@ $(document).ready( function() {
                 var product = $(this).data('product');
                 var mode = $(this).data('mode');
                 var providerid = $(this).data('providerid');
+                var owner = $(this).data('owner');
+                var tranid = $(this).data('tranid');
                 var paypalemail = $('#paypalemail').val();
                 var sandbox = $('#sandbox').val();
                 var find = $('#findproduct').val();
+                var category = $('#productcategory').val();
+                var startdate = $('#productstartdate').val();
+                var enddate = $('#productenddate').val();
+                var tracking = $('#'+tranid).val();
+                var status = $('#status-'+tranid).val();
+                var addressname = $('#addressname-'+tranid).val();
+                var address = $('#address-'+tranid).val();
+                var city = $('#city-'+tranid).val();
+                var state = $('#state-'+tranid).val();
+                var postalcode = $('#postalcode-'+tranid).val();
+                var country = $('#country-'+tranid).val();
+                var acctnote = $('#acctnote-'+tranid).val();
+                var altaddress = $('#altaddress-'+tranid).val();
+                
+                if( mode === 'LBL' || mode ==='MISSING'){
+                    $('body').load( rootserver+"productlist.php",  {
+                        'product': product,
+                        'providerid': providerid,
+                        'owner': owner,
+                        'paypalemail' : paypalemail,
+                        'sandbox' : sandbox,
+                        'mode': mode,
+                        'find' : find,
+                        'category' : category,
+                        'startdate' : startdate,
+                        'enddate' : enddate,
+                        'tracking' : tracking,
+                        'tranid' : tranid,
+                        'status' : status,
+                        'address' : address,
+                        'city' : city,
+                        'state' : state,
+                        'postalcode' : postalcode,
+                        'country' : country,
+                        'acctnote' : acctnote,
+                        'altaddress' : altaddress,
+                        'addressname' : addressname
+                                
+                                
+
+                    }, function(html, status){
+                            $("body").scrollTop(0);
+                    }).fadeIn(800);
+                    
+                }
+                
+                    $.ajax({
+                        url: rootserver+'productlist.php?'+timeStamp(),
+                        context: document.body,
+                        type: 'POST',
+                        data: 
+                         {
+                            'product': product,
+                            'providerid': providerid,
+                            'owner': owner,
+                            'paypalemail' : paypalemail,
+                            'sandbox' : sandbox,
+                            'mode': mode,
+                            'find' : find,
+                            'category' : category,
+                            'startdate' : startdate,
+                            'enddate' : enddate,
+                            'tracking' : tracking,
+                            'tranid' : tranid,
+                            'status' : status,
+                            'address' : address,
+                            'city' : city,
+                            'state' : state,
+                            'postalcode' : postalcode,
+                            'country' : country,
+                            'acctnote' : acctnote,
+                            'altaddress' : altaddress,
+                            'addressname' : addressname
+                         }
+                    }).done(function( data, status ) {
+                        if(data==='confirmed'){
+                            alertify.alert('Confirmed');
+                        } else {
+                            $("#roominnerwindow").scrollTop(0);
+                            $("#roominnerwindow").html(data);
+                        }
+                    });
                 
                 
-                $('#roominnerwindow').html(LoadingGIF);
+                //$('#roominnerwindow').html(LoadingGIF);
+                /*
                 $('#roominnerwindow').hide().load( rootserver+"productlist.php",  {
                     'product': product,
                     'providerid': providerid,
+                    'owner': owner,
                     'paypalemail' : paypalemail,
                     'sandbox' : sandbox,
                     'mode': mode,
-                    'find' : find
+                    'find' : find,
+                    'category' : category,
+                    'startdate' : startdate,
+                    'enddate' : enddate,
+                    'tracking' : tracking,
+                    'tranid' : tranid,
+                    'status' : status,
+                    'address' : address,
+                    'city' : city,
+                    'state' : state,
+                    'postalcode' : postalcode,
+                    'country' : country,
+                    'acctnote' : acctnote,
+                    'altaddress' : altaddress,
+                    'addressname' : addressname
                 
                 }, function(html, status){
-                        $("#roominnerwindow").scrollTop(0);
                 }).fadeIn(800);
+            */
         });        
         
         
@@ -5698,6 +5742,7 @@ $(document).ready( function() {
                             'deletefilename': deletefilename,
                             'timestamp' : timeStamp()
                         }, function(html, status){
+                            $('#socialwindow').html(html);
                         });
                     }
                 });
@@ -5722,6 +5767,7 @@ $(document).ready( function() {
                             'deletefilename': '',
                             'timestamp' : timeStamp()
                         }, function(html, status){
+                            $('#socialwindow').html(html);
                         });
                     }
                 });
@@ -6380,6 +6426,8 @@ $(document).ready( function() {
                             'timestamp' : timeStamp()
                         }, function(html, status){
                                 $(".mainview").scrollTop(0);
+                                $('#socialwindow').html(html);
+                                $(".mainview").scrollTop(0);
                             if(filtername!==''){
                                 $('.doclibsearcharea').show();
                             }
@@ -6394,6 +6442,12 @@ $(document).ready( function() {
                 } else {
                     alertify.set({ delay: 2000 });
                     alertify.log("Saved"); 
+                }
+                if(mode === 'TEXT'){
+                    //remove prior instances in DOM
+                    if(typeof(content)!=='undefined'){
+                        $('#texteditcontent').remove();
+                    }
                 }
                 $('#socialwindow').html(LoadingGIF);
                 $('#socialwindow').hide().load( rootserver+"doclib.php",  {
@@ -6599,6 +6653,13 @@ $(document).ready( function() {
                 var caller = $(this).data('caller');
                 var roomid = $(this).data('roomid');
                 var passkey64 = $(this).data('passkey64');
+                if(target!=='' && link==='text' && caller==='chat' && $('#texteditcontent').text()!==''){
+                    $(target).val(  $('#texteditcontent').text() );
+                    PanelShow(3);
+                    SendChat(passkey64,'',false);
+                    ScrollChat();
+                    return;
+                } else
                 if( link !== ""){
                 
                     if(target!==''){
@@ -7612,6 +7673,7 @@ $(document).ready( function() {
             var lifespan = $('#chatlifespan').val();
             var roomid = $(this).data('roomid');
             
+            
             AbortAjax();
             $.ajax({
                 url: rootserver+'chatinvite.php',
@@ -7635,7 +7697,10 @@ $(document).ready( function() {
 
             }).done(function( data, status ) {
                 PanelShow(3);
+                
+                
                 var msg = jQuery.parseJSON(data);
+                                
                 if( msg.alert!=='C' && msg.msg!==''){
 
                     alertify.set({ delay: 2000 });
@@ -7677,6 +7742,29 @@ $(document).ready( function() {
             
         });
         
+        $('body').on('click','.chatpin', function()
+        {
+            //PanelShow(14);
+            var chatid = $(this).data('chatid');
+
+            $.ajax({
+                url: rootserver+'chatpin.php?'+timeStamp(),
+                context: document.body,
+                type: 'POST',
+                data: 
+                { 'providerid': $('#pid').val(),
+                   'chatid' : chatid,
+                   'timestamp' : timeStamp()
+                }
+
+            }).done(function( data, status ) {
+                if(data!==''){
+                    alertify.alert(data);
+                }
+            });
+                
+            
+        });
         $('body').on('click','.chatpoke', function()
         {
             //PanelShow(14);
@@ -8128,7 +8216,6 @@ $(document).ready( function() {
                 ChannelId = 0;
                 $('#chatid').val("");
                 $('#socialwindow').html(LoadingGIF+"<br><div class='admintrace3'></div>");
-                
                 xhrapp = $.ajax({
                     url: rootserver+'chatlist.php',
                     context: document.body,
@@ -8211,6 +8298,7 @@ $(document).ready( function() {
                     $('.chatheading').html("");
                     $('#chatwindow').html(msg.list);
                     $('#chatwindow').scrollTop(0);
+                    $('.chatentry').hide();
                 });
                 
             
@@ -9407,34 +9495,6 @@ $(document).ready( function() {
                 }
             });
                      
-        });
-        $('body').on('click','.quizbutton', function()
-        {
-            var mode = $(this).data('mode');
-            var chatid = $(this).data('chatid');
-            var roomid = $(this).data('roomid');
-            var question = $('#quizquestion').val();
-            
-            $.ajax({
-                url: rootserver+'quiz.php',
-                context: document.body,
-                type: 'POST',
-                data: 
-                 { 'providerid': $('#pid').val(), 
-                   'chatid' : chatid,
-                   'mode' : mode,
-                   'roomid' : roomid,
-                   'question' : question
-                 }
-             }).done(function( data, status ) {
-                $('.chatwindow').html(LoadingGIF);
-                PanelShow(3);
-                 PingCount = 0;
-                 ChatTraffic = 0;
-                 TimerFieldCount = 0;
-                 ActiveChat(true, '');
-            });
-            
         });
         $('body').on('click','.store', function()
         {

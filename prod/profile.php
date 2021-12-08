@@ -9,6 +9,10 @@ require_once("crypt-pdo.inc.php");
 require_once("internationalization.php");
 require("htmlhead.inc.php");
 
+    if(!isset($_POST['pid'])){
+        echo "Profile Error";
+        exit();
+    }
     $providerid = tvalidator("ID",$_POST['pid']);
     $loginid = tvalidator("PURIFY",$_POST['loginid']);
 
@@ -170,7 +174,7 @@ $(document).ready( function()
                      }
 
                 }).done(function( data, status ) {
-                    alert('Email Verification Resent ');
+                    alertify.alert('Email Verification Resent ');
                 });
         });
                    
@@ -434,7 +438,8 @@ $(document).ready( function()
       
     $row = pdo_fetch($result);
     if(!$row) {
-         echo "SQL Error";
+         echo "Profile Error(2)";
+         exit();
     }
     $auth_hash = $row['auth_hash'];
     
@@ -458,7 +463,7 @@ $(document).ready( function()
             "defaultsmtp, provider.publish, provider.publishprofile, provider.gift, ".
             "(select sum(tokens) from tokens where tokens.providerid = provider.providerid and dc='C') as tokenspaid, " .
             "(select sum(tokens) from tokens where tokens.providerid = provider.providerid and dc='D' and tokens.method!='TEST') as tokensbought, " .
-            "store, web, roomcreator, broadcaster, allowiot, hardenter ".
+            "store, web, roomcreator, broadcaster, allowiot, hardenter, email_service ".
             "from provider where providerid=? order by providerid desc ",array($providerid));
 
   
@@ -537,7 +542,7 @@ $(document).ready( function()
             number is encrypted for your safety and is never revealed.
             <br><br>
             Additionally, you can use an authenticator app such as Google Authenticator, or Authy to give you a
-            One Time Password (OTP). Go to SETTINGS - Set up an Authenticator App to utilize this feature.
+            One Time Password (OTP). Go to SETTINGS - Set up TOTP 2FA to utilize this feature.
             <br><br>
             If you do not have a valid email address, some features such as sending email notifications and invites 
             will be disabled.
@@ -597,6 +602,13 @@ $(document).ready( function()
             <b>Your current storage used is $filesize GB, Bandwidth used this period is $bandwidth GB
             <br>
              ";
+        
+    }
+    if($row['email_service']=='Y'){
+        $subscriptiontext .= "$global_icon_check
+            <b>You're Subscribed to Braxmail.Net.
+            <br>
+            ";
         
     }
     $tokenbalance = intval($row['tokensbought'])-intval($row['tokenspaid']);
@@ -766,17 +778,21 @@ if($_SESSION['enterprise']=='Y' || $_SESSION['superadmin']=='Y' ){
                 echo "<input id=notificationflags1 name=notificationflags1  title='Show Message in Notification' checked='checked'  type=checkbox value='M' style='position:relative;top:7px'/>";
             }
             echo "<label for='notificationflags1'>Display Message in Notification (incoming and outgoing)</label>";
-            echo "<br><br><br>";
+            echo "<br><br>";
 
 
+            //Hide this. No longer in use
             if( strstr($row['notificationflags'],"L") !== false) {       
 
-                echo "<input id=notificationflags3 name=notificationflags3  title='Enable Live Stream Notifications' type=checkbox value='L' style='position:relative;top:7px'/>";
+                echo "<input id=notificationflags3 name=notificationflags3  title='Enable Live Stream Notifications' type=checkbox value='L' style='display:none;position:relative;top:7px'/>";
             } else {
-                echo "<input id=notificationflags3 name=notificationflags3  title='Enable Live Stream Notifications' checked='checked'  type=checkbox value='L' style='position:relative;top:7px'/>";
+                echo "<input id=notificationflags3 name=notificationflags3  title='Enable Live Stream Notifications' checked='checked'  type=checkbox value='L' style='display:none;position:relative;top:7px'/>";
             }
+            /*
             echo "<label for='notificationflags3'>$menu_live</label>";
             echo "<br><br>";
+             * 
+             */
 
             if( strstr($row['notificationflags'],"R") !== false) {       
 
@@ -923,16 +939,18 @@ if($row['sponsor']!='' || $row['enterprise']=='Y'){ //&& $row['enterprisesponsor
 ?>
                 
                 <br><br>
+        <!--
         <label for='publish'>Accept Brax Tokens?</label>
         <br>
+        -->
 <?php
             if( $row['gift']=='Y' || $row['gift']=='' ){        
 ?>        
-                <input id=gift name=gift  type=checkbox value='Y' checked='checked' style='position:relative;top:5px' /> Accept
+                <input id=gift name=gift  type=hidden value='Y' checked='checked' style='position:relative;top:5px' /> 
 <?php
             } else {
 ?>        
-                <input id=gift name=gift  type=checkbox value='Y'  style='position:relative;top:5px' /> Accept
+                <input id=gift name=gift  type=hidden value='Y'  style='position:relative;top:5px' /> 
 <?php
              }
 

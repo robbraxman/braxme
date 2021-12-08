@@ -41,6 +41,23 @@ if( $mode=='B'){
         exit();
     }
     
+    $result2 = pdo_query("1","
+        select * from roommoderator where roommoderator.roomid in 
+          (select roominfo.roomid 
+          from roominfo 
+          left join roomhandle on roominfo.roomid = roomhandle.roomid
+          where roominfo.roomid in (select roomid from roommoderator) and community ='Y')
+          and providerid = $targetproviderid
+        ",null);
+    if($row2 = pdo_fetch($result2)){
+        exit();
+    }
+    //can't block admin;
+    if($targetproviderid == $admintestaccount){
+        exit();
+    }
+    
+    
     $result2 = pdo_query("1","select providerid from provider where (providerid=$targetproviderid or (banid='$banid'  and banid!=''  and banid is not null)) and providerid!= $providerid ",null);
     while($row2 = pdo_fetch($result2)){
         
@@ -160,7 +177,7 @@ if( $mode!='D'){
                 " (providerid, contactname, email, sms, handle, blocked, targetproviderid, createdate ) ".
                 " values ".
                 " ( $providerid,'$recipientname','$recipientemail', '$sms', '$handle','',$targetproviderid, now() " .
-                " )");
+                " )",null);
         if($result){
             echo "Contact Saved";
         } else {

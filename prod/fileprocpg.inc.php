@@ -16,9 +16,13 @@ function ProcessUpload( $providerid, $encoding, $uploadtype )
             "png","tif","gif","bmp","apk","mov","m4p","3gp","ogv","webm","err"
           );
         $upload_dir="upload-zone/files";
-        mkdir($upload_dir);
+        try {
+            mkdir($upload_dir);
+        } catch (exception $e){}
         $upload_dir="upload-zone/files/$providerid";  
-        mkdir($upload_dir);
+        try {
+            mkdir($upload_dir);
+        } catch (exception $e){}
         $upload_dir="upload-zone/files/$providerid/";  
         
         
@@ -63,6 +67,9 @@ function ProcessUpload( $providerid, $encoding, $uploadtype )
                         break;
                     }
                 }
+                //override
+                $fileencoding = 'PLAINTEXT';
+                
                 if($fileencoding != 'PLAINTEXT'){
                     StreamEncode($physical_filename, $physical_filename.".aes", $fileencoding );
                     $physical_filename = $physical_filename.".aes";

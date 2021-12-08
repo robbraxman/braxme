@@ -33,7 +33,7 @@ echo "
         <span style='opacity:.5'>
         $icon_braxroom2
         </span>    
-        <span class='pagetitle2a' style='color:white'>Set Up an Authenticator App for Login</span> 
+        <span class='pagetitle2a' style='color:white'>Set Up TOTP Authentication</span> 
     </div>
    ";
 
@@ -45,18 +45,18 @@ echo "
     </div>
     <div style='margin:auto;width:200px' >
         <br>
-        <b>Scan QR code</b><br>
+        <b>Scan QR code with TOTP App</b><br>
     <iframe src='$qrCodeUrl' height=200 width=200 frameborder=0 >
     </iframe>
     <br><br>
-    <b>Or enter secret manually</b>
+    <b>Or enter secret manually on TOTP App</b>
     <div id='chgtotpsecret'>$secret</div>
     <br>";
 if($auth_hash!=''){
     echo "<div class='tipbubble' style='color:$global_activetextcolor'>WARNING! You have already registered an Authenticator App. This will override prior settings</div><br>";
 }
 echo "    
-    Enter Verification Code<br>
+    Enter Verification Code from TOTP App<br>
     <input id='chgtotpcode' class='dataentry totp' type=text maxlen=6 style='width:100px' />
     <img class='icon30 chgtotpvalidate mainbutton' Title='Verify Authenticator'  src='../img/Arrow-Right-in-Circle-White_120px.png' 
         style='' />

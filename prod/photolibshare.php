@@ -114,15 +114,15 @@ require_once("internationalization.php");
             select count(*) as count
             from photolib where 
             providerid = ?
-            and  album in (select album from photolibshare where providerid = ? and sharetype in (?)
+            and  album in (select album from photolibshare where providerid = ? and sharetype in ($sharelevel)
             )
             and (album = ? or ? = '')
-        ",array($userid,$userid,$sharelevel,$selectedalbumSql,$selectedalbumSql));
+        ",array($userid,$userid,$selectedalbum,$selectedalbum));
          
     
     $row2 = pdo_fetch($result2);
     $total = $row2['count'];
-    
+
     
     $page = 1;
     if(isset($_POST['page'])){
@@ -378,11 +378,11 @@ require_once("internationalization.php");
             aws_url, aws_expire, datediff(aws_expire,now()) as expire
             from photolib where 
             providerid = ?
-            and  album in (select album from photolibshare where providerid = ? and sharetype in (?)
+            and  album in (select album from photolibshare where providerid = ? and sharetype in ($sharelevel)
             )
             and (album=? or ?='')
             order by album, createdate desc limit $pagestart, $max
-        ",array($userid,$userid,$sharelevel,$selectedalbumSql,$selectedalbumSql));
+        ",array($userid,$userid,$selectedalbumSql,$selectedalbumSql));
     
     
     $col=1;
@@ -555,7 +555,7 @@ function GetSharedAlbums($sharelevel, $userid )
 {
     global $global_activetextcolor;
     
-    $albumlist .= "<div class='photolibshare'
+    $albumlist = "<div class='photolibshare'
                     data-filename=''
                     data-album=''
                     data-userid='$userid'

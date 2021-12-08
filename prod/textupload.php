@@ -82,7 +82,7 @@ require_once("notify.inc.php");
             
             //Encrypt Test
             
-            $fileencoding = $_SESSION['responseencoding'];
+            $fileencoding = $_SESSION['fileencoding'];
 
             //file_put_contents($physical_filename.".test", $contents );
            
@@ -134,7 +134,7 @@ require_once("notify.inc.php");
             
             $aws_filename= $origfilename;
             
-            $fileencoding = $_SESSION['responseencoding'];
+            $fileencoding = $_SESSION['fileencoding'];
 
             //file_put_contents($physical_filename.".test", $contents );
            

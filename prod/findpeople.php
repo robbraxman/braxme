@@ -175,11 +175,15 @@ require("validsession.inc.php");
                         $sponsor 
                     </div>
                     ";
+        $button_activity = "";
+        /*
         $button_activity = "
                     <div class='meetuplist pagetitle2a' data-mode='P2'  style='display:inline-block;width:150px;cursor:pointer;padding-left:20px;padding-top:10px;padding-bottom:10px;color:$global_textcolor'>
                         $menu_top
                     </div>
                     ";
+         * 
+         */
         $button_friends = "
                     <div class='meetuplist pagetitle2a' data-mode='P7'  style='display:inline-block;width:150px;cursor:pointer;padding-left:20px;padding-top:10px;padding-bottom:10px;color:$global_textcolor'>
                         $menu_friends
@@ -231,11 +235,17 @@ require("validsession.inc.php");
                         $sponsor 
                     </div>
                     ";
+        $button_activity = "";
+        $button_activity2 = "";
+        
+        /*
         $button_activity2 = "
                     <div class='meetuplist pagetitle3' data-mode='P2'  style='cursor:pointer;padding:10px;color:$global_activetextcolor;float:left;margin-right:20px' title='List people with recent activity from your community'>
                         $menu_top
                     </div>
                     ";
+         * 
+         */
         $button_friends2 = "
                     <div class='meetuplist pagetitle3' data-mode='P7'  style='cursor:pointer;padding:10px;color:$global_activetextcolor;float:left;margin-right:20px' title='List people with recent activity from your community'>
                         $menu_friends
@@ -283,7 +293,7 @@ require("validsession.inc.php");
         $list = "
             <div class='pagetitle2a formobile'
                 style='padding-left:10px;width:100%;
-                padding-right:10px;padding-top:25px;padding-bottom:0px;background-color:transparent'>
+                padding-right:10px;padding-top:10px;padding-bottom:0px;background-color:transparent'>
                 ";
         
         if( $roomdiscovery == 'N'){
@@ -429,6 +439,7 @@ require("validsession.inc.php");
         global $global_textcolor;
         global $global_background;
         global $global_bottombar_color;
+        global $global_activetextcolor_reverse;
         global $iconsource_braxarrowright_common;
         global $iconsource_braxfind_common;
         global $iconsource_braxmedal_common;
@@ -441,13 +452,14 @@ require("validsession.inc.php");
                 <div class='pagetitle2' style='padding-left:10px;padding-right:10px;padding-top:0px;padding-bottom:5px;color:$global_textcolor'>
                     $menu_public
                     <br>
-                    <img id='findpeoplebyname' class='icon30 showhidden' src='$iconsource_braxfind_common' title='Find Room' />
-                                
+                    <!--
+                    <img id='findpeoplebyname' class='icon30 showhidden' src='$iconsource_braxfind_common' title='Find People' />
+                    -->        
                     <input class='showhiddenarea inputline dataentry mainfont meetuppublicfind' id='meetuppublicfind' name='meetuppublicfind' type='text' size=20 value=''              
                         placeholder='$menu_handle'
-                        style='display:none;max-width:200px;background-color:transparent;padding-left:5px;;color:$global_textcolor'/>
-                        <img id='meetuplistbutton1' class='showhiddenarea icon25 meetuplist' data-mode='P1' src='$iconsource_braxarrowright_common' title='Start Search'
-                        style='display:none;top:8px' >
+                        style='max-width:200px;background-color:transparent;padding-left:5px;;color:$global_textcolor'/>
+                        <img id='meetuplistbutton1' class='showhiddenarea icon20 meetuplist' data-mode='P1' src='$iconsource_braxfind_common' title='Start Search'
+                        style='top:8px' >
                 </div>
                 <br>
             </span>
@@ -459,13 +471,17 @@ require("validsession.inc.php");
             return $list;
         }
 
-        $activequery = " order by providername limit 50";        
+        $limit = "500";
+        if($_SESSION['mobilesize']=='Y'){
+            $limit = "50";
+        }
+        $activequery = " order by providername limit $limit";        
         $listheader = "";
         if($find == '@%'){
             $activequery = " order by provider.createdate desc limit 50 ";
         } else
         if($find == ''){
-            $activequery = " order by provider.lastactive desc, provider.createdate desc limit 50 ";
+            $activequery = " order by provider.lastactive desc, provider.createdate desc limit $limit ";
             $listheader = "
                 <div class='pagetitle3' style='padding-left:10px;padding-right:10px;padding-top:0px;padding-bottom:5px;color:$global_textcolor'>
                 <br>
@@ -512,11 +528,11 @@ require("validsession.inc.php");
             
         $count = 0;
         if($_SESSION['roomdiscovery']=='N' && $find == ''  ){
-            $list .= "<div class='meetupcontactlistarea pagetitle2a' style='color:$global_textcolor;padding:20px;max-width:200px'>
+            $list .= "<div class='meetupcontactlistarea pagetitle2a' style='color:$global_textcolor;padding:20px;max-width:200px;margin:auto'>
                         <div class='circular3 gridnoborder' style=';overflow:hidden;margin:auto'>
                             <img class='' src='../img/agent.jpg' style='width:100%;height:auto' />
                         </div>
-                        <div class='tipbubble' style='color:black;background-color:white;padding:30px'>
+                        <div class='tipbubble' style='color:$global_activetextcolor_reverse;background-color:$global_bottombar_color;padding:30px'>
                             You are in a private space. The public list is not displayed.                        
                         </div>
                     </div>";
@@ -611,6 +627,7 @@ require("validsession.inc.php");
         global $providerid;
         global $rootserver;
         global $global_textcolor;
+        global $global_activetextcolor_reverse;
         global $global_background;
         global $global_bottombar_color;
         global $iconsource_braxarrowright_common;
@@ -771,11 +788,11 @@ require("validsession.inc.php");
                 ";
         }    
         if($count == 0 && $find == ''){
-            $list .= "<div class='meetupcontactlistarea pagetitle2a' style='color:$global_textcolor;padding:20px;max-width:200px'>
+            $list .= "<div class='meetupcontactlistarea pagetitle2a' style='color:$global_textcolor;padding:20px;max-width:200px;margin:auto'>
                         <div class='circular3 gridnoborder' style=';overflow:hidden;margin:auto'>
                             <img class='' src='../img/agent.jpg' style='width:100%;height:auto' />
                         </div>
-                        <div class='tipbubble' style='background-color:white;padding:30px;color:black'>
+                        <div class='tipbubble' style='background-color:$global_bottombar_color;padding:30px;color:$global_activetextcolor_reverse'>
                     You have no contacts at the moment. As you connect with others, you will get added to communities and this list will build. Search for people you know in the Public list.</div>
                         </div>";
         }
@@ -942,9 +959,11 @@ require("validsession.inc.php");
         global $providerid;
         global $rootserver;
         global $global_textcolor;
+        global $global_activetextcolor_reverse;
         global $global_background;
         global $global_bottombar_color;
         global $iconsource_braxmedal_common;
+        global $iconsource_braxwinner_common;
         global $menu_top;
         global $menu_handle;
         
@@ -1010,7 +1029,7 @@ require("validsession.inc.php");
                  $avatar = "$rootserver/img/newbie2.jpg";
              }
              if(intval($row['score'])>0){
-                 $row['publishprofile']= "<span class='smalltext2' title='Reputation Score'><img class='icon15' src='$iconsource_braxmedal_common' style='margin-top:5px;opacity:.4;margin-right:5px'/>$row[score]</span>";
+                 $row['publishprofile']= "<span class='smalltext2' title='Reputation Score'><img class='icon15' src='$iconsource_braxwinner_common' style='margin-top:5px;opacity:.4;margin-right:5px'/>$row[score]</span>";
              } else {
                  $row['publishprofile']= "";
                  
@@ -1062,7 +1081,7 @@ require("validsession.inc.php");
                 ";
         }    
         if($count == 0){
-            $list .= "<div class='meetupcontactlistarea pagetitle2a' style='color:$global_textcolor;padding:20px;max-width:200px'>
+            $list .= "<div class='meetupcontactlistarea pagetitle2a' style='color:$global_activetextcolor_reverse;background-color:$global_bottombar_color;padding:20px;max-width:200px;margin:auto'>
                         <div class='circular3 gridnoborder' style=';overflow:hidden;margin:auto'>
                             <img class='' src='../img/agent.jpg' style='width:100%;height:auto' />
                         </div>
@@ -1081,6 +1100,7 @@ require("validsession.inc.php");
         global $global_textcolor;
         global $global_background;
         global $global_bottombar_color;
+        global $global_activetextcolor_reverse;
         global $iconsource_braxmedal_common;
         global $menu_friends;
         global $menu_handle;
@@ -1194,11 +1214,12 @@ require("validsession.inc.php");
                 ";
         }    
         if($count == 0){
-            $list .= "<div class='meetupcontactlistarea pagetitle2a' style='color:$global_textcolor;padding:20px;max-width:200px'>
-                        <div class='circular3 gridnoborder' style=';overflow:hidden;margin:auto'>
-                            <img class='' src='../img/agent.jpg' style='width:100%;height:auto' />
-                        </div>
-                        <div class='tipbubble' style='color:black;background-color:white;padding:30px'>
+            $list .= "
+                    <div class='circular3 gridnoborder' style=';overflow:hidden;margin:auto'>
+                        <img class='' src='../img/agent.jpg' style='width:100%;height:auto' />
+                    </div>
+                    <div class='meetupcontactlistarea pagetitle3 tipbubble' style='color:$global_activetextcolor_reverse;background-color:$global_bottombar_color;padding:20px;max-width:200px;margin:auto'>
+                        <div class='tipbubble' style='color:$global_activetextcolor_reverse;background-color:$global_bottombar_color;padding:30px'>
                             Add friends to build this list. Friends can have additional access to your photos.
                         </div>
                      </div>";
@@ -1223,6 +1244,7 @@ require("validsession.inc.php");
         global $menu_following;
         global $menu_handle;
         global $global_activetextcolor;
+        global $global_activetextcolor_reverse;
         global $iconsource_braxclose_common;    
         
         $list = "
@@ -1332,12 +1354,12 @@ require("validsession.inc.php");
                 </div>
                 ";
         }    
-        if($count == 0 && $find == ''){
-            $list .= "<div class='meetupcontactlistarea pagetitle2a' style='color:$global_textcolor;padding:20px;max-width:200px'>
+        if($count == 0 ){
+            $list .= "<div class='meetupcontactlistarea pagetitle2a' style='color:$global_textcolor;padding:20px;max-width:200px;margin:auto'>
                         <div class='circular3 gridnoborder' style=';overflow:hidden;margin:auto'>
                             <img class='' src='../img/agent.jpg' style='width:100%;height:auto' />
                         </div>
-                        <div class='tipbubble' style='background-color:white;padding:30px;color:black'>
+                        <div class='tipbubble pagetitle3' style='background-color:$global_bottombar_color;padding:30px;color:$global_activetextcolor_reverse;margin:auto'>
                         You can follow people and limit notifications to those you follow. Enable this in My Account Settings.
                         </div>";
         }

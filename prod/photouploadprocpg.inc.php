@@ -13,7 +13,11 @@ function ProcessUpload( $providerid, $encoding, $subject, $album, $upload_hdr, $
         $file_types_array=array("png","jpg","jpeg","gif","tiff","tif");
         //$upload_hdr="photolib";    
         $upload_dir="upload-zone/files/$providerid";  
-        mkdir($upload_dir);
+        try {
+            mkdir($upload_dir);
+        } catch (exception $e){
+            
+        }
         $upload_dir="upload-zone/files/$providerid/";  
         
         //LogDebug($providerid, "0-photo: $upload_dir JPG");
@@ -71,7 +75,9 @@ function ProcessUpload( $providerid, $encoding, $subject, $album, $upload_hdr, $
 
         $upload_dir="upload-zone/files/$providerid";  
         array_map('unlink', glob($upload_dir."/*.*"));                    
-        rmdir($upload_dir);
+        try {
+            rmdir($upload_dir);
+        } catch (exception $e){}
         
         return $alias;
 }

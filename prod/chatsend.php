@@ -5,13 +5,18 @@ require_once("crypt-pdo.inc.php");
 require_once ("notify.inc.php");
 require_once("chatsend.inc.php");
 require_once("broadcast.inc.php");
+require_once("profanity.php");
 include("lib_autolink.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
     $providerid = tvalidator("ID",$_POST['providerid']);
     $message = @escape_for_sql($_POST['message']);
     $chatid = tvalidator("ID",$_POST['chatid']);
-    $msgid = tvalidator("ID",$_POST['msgid']);
+    if(isset($_POST['msgid'])){
+        $msgid = tvalidator("ID",$_POST['msgid']);
+    } else {
+        $msgid = '';
+    }
 
     
     if(isset($_POST['img'])){
@@ -343,6 +348,30 @@ include("lib_autolink.php");
     // Create Chat Message
     //*********************************************************************************************
     //*********************************************************************************************
+    
+    //Profanity Check on Room Spawned Chats only not private chats
+    $result = pdo_query("1","
+            select roomid
+            from chatmaster where chatid=? and roomid > 0
+            ",array($chatid));
+    if( $row = pdo_fetch($result)){
+        $testmessage = strtolower($message);
+        $message = ProfanityCheck($message);
+    }
+    
+    $result = pdo_query("1","
+            select restricted from provider where providerid = ? and restricted='Y' 
+            and exists
+            ( select * from chatmaster where chatid=? and roomid not in
+                (select roomid from statusroom where owner= ?)
+            )
+            ",array($providerid,$chatid, $providerid));
+    if( $row = pdo_fetch($result)){
+        echo "success";
+        exit();        
+    }
+    
+    
     $encode = EncryptChat ($message,"$chatid","$passkey" );
     $encodeshort = EncryptChat ($messageshort,"$chatid","" );
     

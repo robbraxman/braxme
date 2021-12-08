@@ -120,12 +120,12 @@ function ProcessUpload( $providerid, $encoding, $subject, $album, $upload_hdr, $
 
                                             if( $encoding !='BINARY')
                                             {
-                                                echo("<br>File uploaded successfully - ".$filename."<br>"); 
+                                                echo("<br>File uploaded successfully - ".$filename." to /$album/$uploadtype<br>"); 
                                                 //echo("<br>Album Name: $album<br>"); 
                                             }
                                             else
                                             {
-                                                echo("<br>File uploaded successfully. - ".$filename."<br>"); 
+                                                echo("<br>File uploaded successfully. - ".$filename." to /$album/$uploadtype<br>"); 
                                             }
 
                                             $alias = uniqid("T4AZ", true);
@@ -141,19 +141,23 @@ function ProcessUpload( $providerid, $encoding, $subject, $album, $upload_hdr, $
                                                      )
                                              );
 
-                                            if( $uploadtype == "A"){
+                                            if( $uploadtype == "A" ){
                                             
                                                     $result = pdo_query("1", 
                                                             "
-                                                                update provider set avatarurl = '$rootserver/$installfolder/sharedirect.php?p=?' where
-                                                                providerid = ?
-                                                             ",array($attachmentfilename,$providerid)
+                                                                update provider set avatarurl = '$rootserver/$installfolder/sharedirect.php?p=$attachmentfilename' where
+                                                                providerid = $providerid
+                                                             ",null
                                                      );
                                                     $_SESSION['avatarurl']="$rootserver/$installfolder/sharedirect.php?p=$attachmentfilename";
                                             }
                                             putAWSObject("$attachmentfilename","$upload_dir$attachmentfilename");
-                                            if(file_exists($upload_dir.$attachmentfilename)){
-                                                unlink("$upload_dir$attachmentfilename");
+                                            try {
+                                                if(file_exists($upload_dir.$attachmentfilename)){
+                                                    unlink("$upload_dir$attachmentfilename");
+                                                }
+                                            } catch (exception $e){
+                                                
                                             }
                                         }
 

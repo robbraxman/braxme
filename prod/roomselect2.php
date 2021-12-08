@@ -107,6 +107,7 @@ require_once("lib_autolink.php");
             and statuspost.articleid = 0
             and (roominfo.adminroom !='Y' or roominfo.adminroom is null)
             and roominfo.external!='Y'
+            and roominfo.roomstyle!='faq'
 
             order by lastpostdate desc, shareid asc, postid asc limit $limitstart, $limitend
             
@@ -140,6 +141,15 @@ require_once("lib_autolink.php");
             echo "
                 <div class='mainfont roomselect' data-mode='MYROOMS' style='float:right;cursor:pointer;margin-right:20px;color:$global_activetextcolor;'>$menu_rooms</div>
                 ";
+
+            if($roomdiscovery == 'Y'){
+            /*
+            echo "
+                <div class='mainfont roomselect' data-mode='COMMUNITY' style='float:right;cursor:pointer;margin-right:20px;color:$global_activetextcolor;'>$menu_community</div>
+                ";
+             * 
+             */
+            }
             
             echo "
                 <br><br>
@@ -313,6 +323,6 @@ require_once("lib_autolink.php");
     }
     if($postcount > 0){
     
-        echo "</table>$next";
+        echo "</table>";
     }
 ?>

@@ -109,7 +109,7 @@ require_once("internationalization.php");
         if($caller == 'room'){
             echo "  
                     <br><br>
-                    &nbsp;&nbsp;<span class='tipbubble pagetitle3' style='background-color:$global_menu_color;color:white'>&nbsp;Removed from Room</span> 
+                    &nbsp;&nbsp;<span class='tipbubble pagetitle3' style='background-color:$global_menu_color;color:white'>&nbsp;Unsubscribed from Blog</span> 
                     <br>
 
                         &nbsp;&nbsp;
@@ -134,7 +134,7 @@ require_once("internationalization.php");
         
             echo "  
                     <br><br>
-                    &nbsp;&nbsp;<span class='tipbubble pagetitle3' style='background-color:$global_menu_color;color:white'>&nbsp;Removed from Room</span> 
+                    &nbsp;&nbsp;<span class='tipbubble pagetitle3' style='background-color:$global_menu_color;color:white'>&nbsp;Unsubscribed from Blog</span> 
                     <br>
 
                         &nbsp;&nbsp;
@@ -278,16 +278,28 @@ require_once("internationalization.php");
             //$result = pdo_query("1","
             //    update statuspost set room='$roomForSql' where roomid = $roomid 
             //");
+
+            /*
+    function SaveHandle($roomid, $private, $handle, $name, $roomdescription, $discover, 
+                        $tags, $category, $organization, $minage, $photourl, $photourl2, $roomanonymous, 
+                        $roomexternal, $contactexchange, $adminonly, $notifications, $showmembers,
+                        $soundalert, $sharephotoflag, $rsscategory, $groupid, $rsssource, $radiostation, 
+                        $sponsor, $parent, $childsort, $copymembers, $profileflag, $roominvitehandle,
+                        $webcolorscheme, $webtextcolor, $webpublishprofile, $webflags, $searchengine, 
+                        $analytics, $subscriptiondays, $subscription, $subscriptionusd, $wallpaper,
+                        $autochatuser, $autochatmsg, $community, $communitylink, $store, $roomstyle )
+    {
+             *
+             */
             
-            
-            $error = SaveHandle($roomid, $private, $handle, $room, $roomdescription, 
-                    $discover, $tags, $category, $organization, $minage,$photourl, $photourl2,
-                    $roomanonymous, $roomexternal, $contactexchange, $adminonly, 
-                    $notifications, $showmembers, $soundalert, $sharephotoflag, 
-                    $rsscategory, $groupid, $rsssource, $radiostation, $sponsor, 
-                    $parent, $childsort, $copymembers, $profileflag, $roominvitehandle, 
+            $error = SaveHandle($roomid, $private, $handle, $room, $roomdescription, $discover, 
+                    $tags, $category, $organization, $minage,$photourl, $photourl2, $roomanonymous, 
+                    $roomexternal, $contactexchange, $adminonly, $notifications, $showmembers, 
+                    $soundalert, $sharephotoflag, $rsscategory, $groupid, $rsssource, $radiostation, 
+                    $sponsor, $parent, $childsort, $copymembers, $profileflag, $roominvitehandle, 
                     $webcolorscheme, $webtextcolor, $webpublishprofile, $webflags, $searchengine, 
-                    $analytics, $subscriptiondays, $subscription, $subscriptionusd, $wallpaper, $autochatuser, $autochatmsg, $community, $communitylink, $store, $roomstyle );
+                    $analytics, $subscriptiondays, $subscription, $subscriptionusd, $wallpaper, 
+                    $autochatuser, $autochatmsg, $community, $communitylink, $store, $roomstyle );
             if( $error!=''){
             
             }
@@ -381,22 +393,12 @@ require_once("internationalization.php");
     $action = "feed";
     if(intval($_SESSION['profileroomid'])==0){
         $action = "userview";
+        $roomid = $_SESSION['profileroomid'];
     }
-    echo "
-                <span class='roomcontent'>
-                    <div class='$action mainbutton gridnoborder' 
-                        data-providerid='$providerid' data-roomid='$_SESSION[profileroomid]' data-caller='none'
-                        style='cursor:pointer;background-color:$global_titlebar_color;color:white;padding-left:20px;padding-right:20px;padding-bottom:3px;margin:0;' >
-                        <img class='icon20' src='../img/Arrow-Left-in-Circle-White_120px.png' 
-                        />
-                        &nbsp;
-                        <span style='opacity:.5'>
-                        $icon_braxroom2
-                        </span>
-                        <span class='pagetitle2a' style='color:white'>$menu_managerooms</span> 
-                    </div> 
-                </span>
-                <div style='background-color:$global_background'>
+    if($caller == 'roomselect'){
+        $action = "feed";
+    }
+    echo "      <div style='background-color:$global_background'>
         ";
     
     
@@ -409,20 +411,11 @@ require_once("internationalization.php");
                             $braxsocial
                             $menu_room&nbsp;&nbsp;
                     </div>
-                    <!--
-                    &nbsp;&nbsp;
-                    &nbsp;&nbsp;
-                    <div class='mainfont friends tapped'  style='display:inline;cursor:pointer;color:$global_textcolor'
-                        id='feed' data-roomid=''  data-mode=''>
-                            $menu_managerooms
-                            $braxrooms
-                    </div>
-                    -->
                     <br><br>
-                    <div class='pagetitle3 tipbubble bubblesize' style='margin:20px;color:white;background-color:$global_menu_color;margin:auto;text-align:center'>Room Settings Updated</div>
+                    <div class='pagetitle3 tipbubble bubblesize' style='margin:20px;color:white;background-color:$global_menu_color;margin:auto;text-align:center'>Blog Settings Updated</div>
                     <br><br><br>
                     <center>
-                        <div class='feed pagetitle3' data-mode='' data-roomid='$roomid' style='cursor:pointer;margin:auto;color:$global_activetextcolor'>View Room</div> 
+                        <div class='feed pagetitle3' data-mode='' data-roomid='$roomid' style='cursor:pointer;margin:auto;color:$global_activetextcolor'>View Blog</div> 
                             <br>
                         &nbsp;&nbsp;
                         <div class='friends pagetitle3' data-mode='E' data-roomid='$roomid' style='cursor:pointer;margin:auto;color:$global_activetextcolor'>Edit</div> 
@@ -448,7 +441,6 @@ require_once("internationalization.php");
                     <div class='mainfont feed tapped'  style='color:$global_textcolor'
                         id='feed' data-roomid='$roomid'  data-mode=''>
                             $braxsocial
-                            $menu_back&nbsp;&nbsp;
                     </div>
 
            ";
@@ -473,8 +465,6 @@ require_once("internationalization.php");
                     &nbsp;&nbsp;
                     <div class='mainfont feed showtop tapped'  style='color:$global_textcolor'
                         id='feed' data-roomid='All'>
-                            $braxsocial
-                            $menu_rooms&nbsp;&nbsp;
                     </div>
 
            ";
@@ -500,7 +490,6 @@ require_once("internationalization.php");
                     <div class='mainfont feed showtop tapped'  style='color:$global_textcolor'
                         id='feed' data-roomid='All'>
                             $braxsocial
-                            $menu_roomselect
                             
                     </div>
 
@@ -510,6 +499,7 @@ require_once("internationalization.php");
     
         echo "  
                     &nbsp;&nbsp;
+                    <br>
                     
                     <div class='mainfont friends showtop tapped' 
                         id='feed' data-roomid='' style='color:$global_textcolor'>
@@ -637,7 +627,7 @@ require_once("internationalization.php");
                     <br>    
                     <div class=formobile></div>
                     <br>
-                    <div class='roomedit tapped'
+                    <div class='pagetitle2 roomedit tapped'
                          id='roomedit' data-room='' data-roomid='' data-mode='N'
                          style='color:$global_activetextcolor;cursor:pointer;display:inline'>
                          $menu_manageroomscreate

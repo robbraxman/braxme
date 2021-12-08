@@ -24,31 +24,34 @@
                 ";
     
     if($shareid!=''){
-        $topbar = '';
+        //$topbar = '';
         $profile = '';
         $topbarbuttons = '';
+        $roomnewpost = "";
     }
     
     echo "$holdingbucket";
     
     echo $topbar;
     
-    
     echo $profile;
         
     echo "
         <div style='background-color:transparent;max-width:$_SESSION[innerwidth]px'>";
     
-    echo $topbarbuttons;
+    //echo $topbarbuttons;
     
     echo "
         <table class='roomcontent gridnoborder' style='background-color:transparent;width:$sizing->mainwidth;padding:0;margin-left:auto;margin-right:auto;margin-top:0;'>
             ";
-    echo $ownerbuttons;
+    echo "
+                <div class='formobile'><br><br></div>";
+    //echo $ownerbuttons;
     
     echo $roomtitle;
     
-        
+
+    /*
     echo "
         <div style='background-color:transparent;max-width:$_SESSION[innerwidth]px'>";
     
@@ -56,6 +59,7 @@
     echo "
         <table class='roomcontent gridnoborder' style='background-color:transparent;$sizing->mainwidth:80%;padding:0;margin-left:auto;margin-right:auto;margin-top:0;'>
             ";
+    */
     
     echo $childlinks;    
     
@@ -114,6 +118,7 @@
     echo $roomfilesmessage;
     
     $limit_to_owner = "";
+    $find = strtolower($find);
     
     
     $result = pdo_query("1",
@@ -160,7 +165,7 @@
 
             where statuspost.parent = 'Y' and
             statuspost.roomid  = ?
-            and statuspost.title like ?
+            and lower(statuspost.title) like ?
             and statuspost.shareid like ?
             and '$roominfo->subscriptionpending'!='Y'
             order by  pin desc, lastpostdate  desc  limit $limitstart, $limitend 
@@ -177,7 +182,7 @@
         //$lastpostdate = date_format($row['lastpostdate'],"m/d/Y");
         //$postdate = InternationalizeDate($lastpostdate);
         $lastpostdate = date_create($row['lastpostdate']);
-        $postdate = InternationalizeDate(date_format($lastpostdate,"m/d/Y"));
+        $lastpostdate = InternationalizeDate(date_format($lastpostdate,"m/d/Y"));
         
         if($shareid == ''){
             $comment = $row['title'];

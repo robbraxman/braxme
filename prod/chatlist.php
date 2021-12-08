@@ -37,7 +37,7 @@ $time1 = microtime(true);
     if($mode == 'LIVE' ){
         SaveLastFunction($_SESSION['pid'],"L", 0);
     }
-    if($mode == 'CHAT' ){
+    if($mode == 'CHAT' || $mode == 'PIN' ){
         SaveLastFunction($_SESSION['pid'],"C", 0);
     }
     
@@ -45,7 +45,7 @@ $time1 = microtime(true);
     if($mode !== 'LIVE'){
         $result = pdo_query("1",
             "
-            update notification set displayed = 'Y' where notifytype='CP' and displayed!='Y' and recipientid=?
+            update provider set chatnotified = now() where providerid = ?
             ",array($providerid));
     }
     $result = pdo_query("1",
@@ -112,54 +112,68 @@ $time1 = microtime(true);
     $chatfunc = "starthyperchatbutton";
             
     if($mode != 'LIVE'){
-    $list .= "
-        <!--
-        <div class='pagetitle2a gridnoborder' 
-            style='background-color:$global_titlebar_color;padding-top:0px;
-            padding-left:20px;padding-bottom:3px;
-            text-align:left;color:white;margin:0'> 
-            
-            <span style='opacity:.5'>
-            $icon_braxchat2
-            </span>
-            <b>$menu_chats</b>
-            <br>
-        </div>
-        -->
+        $list .= "
         <div class='gridnoborder chatlistarea' 
             style='background-color:transparent;color:$global_textcolor;padding-left:0px;margin:0;padding-top:5px'>
-            <div style='padding:20px'>
+            <div style='padding-right:20px;padding-left:20px;padding-top:0px'>
                 <div class='pagetitle3' style='display:inline;white-space:nowrap;;color:$global_textcolor;margin-right:10px'>
                     <img class='icon30 meetuplist' src='$iconsource_braxpeople_common' title='Find People' />
                 </div>
-                <div class='pagetitle3' style='display:inline;white-space:nowrap;;color:$global_textcolor'>
-                    <span class='showhiddenarea' style='display:none'>
-                        <br><br>
-                    </span>
-                    <img id='findchatbyname' class='icon30 showhidden' src='$iconsource_braxfind_common' title='Find Existing Chat' style='' />
-                    <span class='showhiddenarea' style='display:none'>
-                        <input class='inputline dataentry mainfont' id='findchat' placeholder='$menu_name' name='findchat' type='text' size=20 value=''              
-                            style='width:220px;padding-left:10px;;margin-bottom:10px;color:$global_textcolor'/>
-                        <div id='selectchatlistbutton' class='mainfont selectchatlist' style='white-space:nowrap;display:inline;cursor:pointer;color:black' data-mode='F'>
-                            <img class='icon25'   src='$iconsource_braxarrowright_common' 
-                            style='top:3px' >
-                        </div>
-                    </span>    
+                ";
+        if($mode == 'CHAT'){
+            $list .= "
+                    <div class='pagetitle3' style='display:inline;white-space:nowrap;;color:$global_textcolor;margin-right:10px'>
+                        <img class='icon30 selectchatlist' data-mode='CHAT' src='$iconsource_braxrefresh_common' title='Refresh' />
+                    </div>
+                    <div class='pagetitle3' style='display:inline;white-space:nowrap;;color:$global_textcolor;margin-right:10px'>
+                        <img class='icon30 selectchatlist' data-mode='PIN' src='$iconsource_braxpin_common' title='Pinned Chats' />
+                    </div>
+                    ";
+        }
+        if($mode == 'PIN'){
+            $list .= "
+                    <div class='pagetitle3' style='display:inline;white-space:nowrap;;color:$global_textcolor;margin-right:10px'>
+                        <img class='icon30 selectchatlist' data-mode='CHAT' src='$iconsource_braxrefresh_common' title='Refresh' />
+                    </div>
+                    ";
+        }
+        $pinned = "";
+        if($mode == 'PIN'){
+            $pinned = "Pinned";
+        }
+        $list .= "
+                    <div class='pagetitle3' style='display:inline;white-space:nowrap;;color:$global_textcolor'>
+                        <span class='showhiddenarea' style='display:none'>
+                            <br><br>
+                        </span>
+                        <img id='findchatbyname' class='icon30 showhidden' src='$iconsource_braxfind_common' title='Find Existing Chat' style='' />
+                        <span class='showhiddenarea' style='display:none'>
+                            <input class='inputline dataentry mainfont' id='findchat' placeholder='$menu_name' name='findchat' type='text' size=20 value=''              
+                                style='width:220px;padding-left:10px;;margin-bottom:10px;color:$global_textcolor'/>
+                            <div id='selectchatlistbutton' class='mainfont selectchatlist' data-mode='CHAT' style='white-space:nowrap;display:inline;cursor:pointer;color:black' data-mode='F'>
+                                <img class='icon25'   src='$iconsource_braxarrowright_common' 
+                                style='top:3px' >
+                            </div>
+                        </span>    
+                    </div>
                 </div>
-            </div>
-                
-            
-            <div style='padding:10px;text-align:center;color:$global_textcolor'>
-                <div class='pagetitle' style='color:$global_textcolor'>
-                    $menu_chats
+                ";
+        $list .= "
+    
+                <div style='padding:20px;text-align:center;color:$global_textcolor'>
+                    <div class='pagetitle' style='color:$global_textcolor'>
+                        $menu_chats $pinned
+                    </div>
                 </div>
-                <!--
-                <div style='text-align:center'>
-                    $sorttext
+                ";
+        if($_SESSION['roomdiscovery']=='Y'){
+        $list .= "
+
+                <div style='padding-bottom:20px;display:inline-block;width:90%'>
+                    <div class='mainfont roomselect' data-mode='JCOMMUNITY' style='float:right;cursor:pointer;margin-right:20px;color:$global_activetextcolor;'>$menu_community</div>
                 </div>
-                -->
-            </div>
-            ";
+                ";
+        }
     }
                 
     if($sort == ''){
@@ -168,10 +182,6 @@ $time1 = microtime(true);
     } else {
         
         $sortorder = ' order by title,providername asc';
-        
-    }
-    if($mode == 'LIVE'){
-        $sortorder = ' order by radiostation asc, live desc, lastmessage desc';
         
     }
     
@@ -183,47 +193,66 @@ $time1 = microtime(true);
     
     $livefilter = "";
     if($mode == 'LIVE' ){
-        $livefilter = " and radiostation in ('Y','Q') ";
+        $livefilter = " and radiostation in ('Y') ";
     }
-    if($mode == 'CHAT' ){
+    if($mode == 'CHAT' || $mode == 'PIN' ){
         $livefilter = " and radiostation='' ";
     }
     $findfilter = "";
+    if($mode == 'PIN'){
+        $findfilter = "
+                and
+                chatmaster.chatid in 
+                (  select chatid from chatmembers 
+                   where
+                   pin='Y' and chatmembers.providerid = $providerid 
+                )
+            
+                ";
+    }
     if($find!=''){
         $findfilter = " 
         and
-        chatmaster.chatid in 
-        (  select chatid from chatmembers 
-           where
-           status='Y' 
-           and chatmembers.providerid in 
-           (  select providerid from provider 
-              where chatmembers.providerid = provider.providerid and 
-              ( providername like '%$find%' or handle like '@%$find%' )
-           )
-        )
-        and chatmaster.radiostation = '' and chatmaster.roomid is null
+        (
+            chatmaster.chatid in 
+            (  select chatid from chatmembers 
+               where
+               chatmaster.chatid = chatmembers.chatid and
+               status='Y' 
+               and chatmembers.providerid in 
+               (  select providerid from provider 
+                  where  
+                  ( providername like '%$find%' or handle like '@%$find%' )
+                  and active='Y'
+               )
+            )
+            and ( chatmaster.roomid = 0 or chatmaster.roomid is null)
+         ) 
+         or 
+         (
+            chatmaster.roomid in 
+            (  select roomid from roominfo where chatmaster.roomid = roominfo.roomid and
+               roominfo.room like '%$find%'
+            )
+         )
         ";
     }
     
-    $limit = "limit 100";
+    $limit = "limit 200";
     if($_SESSION['superadmin']=='Y'){
-        $limit = "limit 200";
+        $limit = "limit 180";
     }
     
-    $mobilequery = "";
-    if($mobile=='Y'){
-        $mobilequery = "
-             (
-             select concat(p2.providername,' ',p2.handle,'~',p2.avatarurl)
-             from chatmembers
-             left join provider p2 on chatmembers.providerid = p2.providerid
-             where chatmembers.providerid !=$providerid and 
-             chatmembers.chatid = chatmaster.chatid and p2.active='Y' 
-             order by chatmembers.lastmessage desc limit 1
-             ) as chatmembername,
-             ";
-    }
+    $mobilequery = "
+         (
+         select concat(p2.providername,' ',p2.handle,'~',p2.avatarurl)
+         from chatmembers
+         left join provider p2 on chatmembers.providerid = p2.providerid
+         where chatmembers.providerid !=$providerid and 
+         chatmembers.chatid = chatmaster.chatid and p2.active='Y' 
+         order by chatmembers.lastmessage desc limit 1
+         ) as chatmembername,
+         ";
         
     
    $result = pdo_query("1",
@@ -275,8 +304,9 @@ $time1 = microtime(true);
         left join provider on chatmaster.owner = provider.providerid
         where chatmaster.status='Y' and chatmaster.chatid in 
         (select chatid from chatmembers 
-        where providerid = ? and status='Y' )
-        and (select count(*) from chatmessage where chatmaster.chatid = chatmessage.chatid) > 0
+           where providerid = ? and status='Y'  
+        )
+        
         $findfilter
         $livefilter
         $sortorder
@@ -288,13 +318,14 @@ $time1 = microtime(true);
 
     
     $count = 0;
+    $communitycount = 0;
     $listdetail = "";
     while($row = pdo_fetch($result)){
         
         if($count == 0){
             $listdetail .= "
             <div class='' 
-                style='padding-top:0px;padding-right:20px;
+                style='padding-top:0px;padding-right:10px;padding-left:10px;margin:auto;
                 text-align:center;color:$global_textcolor;background-color:$global_background'>";
             
         }
@@ -316,24 +347,14 @@ $time1 = microtime(true);
         }
         
         $count++;
+        if($row['roomid']!==''){
+            $communitycount++;
+        }
 
-        if($row['radiostation']=='Y'){
-            $memberlist = DisplayRadio(
-                $providerid, $row['chatid'], $title, $row['keyhash'], $row['diff'], $row['lastread'], 
-                $row['chatcount'], $row['chatcountc'], $row['membercount'],
-                $row['techsupport'], $headingcolor, $backgroundcolor, $flag, $techavatar, $row['roomid'], $row['broadcaster'], $row['radiotitle'], $row['broadcastmode']);
-        } else
-        if($mobile !='Y' || $_SESSION['mobiledevice']=='T'  ){
-            $memberlist = DisplayChatMembers(
-                $providerid, $row['chatid'], $title, $row['keyhash'], $row['diff'], $row['lastread'], 
-                $row['chatcount'], $row['chatcountc'], $row['membercount'],
-                $row['techsupport'], $headingcolor, $backgroundcolor, $flag, $techavatar, $row['roomid'], $count );
-        } else {
-            $memberlist = DisplayChatMembersMobile(
-                $providerid, $row['chatid'], $title, $row['keyhash'], $row['diff'], $row['lastread'], 
-                $row['chatcount'], $row['chatcountc'], $row['membercount'],
-                $row['techsupport'], $headingcolor, $backgroundcolor, $flag, $techavatar, $row['roomid'], $count, $row['chatmembername'] );
-        } 
+        $memberlist = DisplayChatMembersMobile(
+            $providerid, $row['chatid'], $title, $row['keyhash'], $row['diff'], $row['lastread'], 
+            $row['chatcount'], $row['chatcountc'], $row['membercount'],
+            $row['techsupport'], $headingcolor, $backgroundcolor, $flag, $techavatar, $row['roomid'], $count, $row['chatmembername'] );
         
         $list .= $memberlist;
         
@@ -344,50 +365,6 @@ $time1 = microtime(true);
         $listdetail .= "</div>";
         $list .= $listdetail;
         
-    }
-    /*
-    if($count == 50){
-        $list .= "<br><br>Only 50 chats displayed. Use Search to find other chats<br>";
-        
-    }
-     * 
-     */
-    
-    if($mode == 'LIVE'){
-        
-        $listheading .= "
-            <!--
-            <div class='pagetitle2a gridnoborder' 
-                style='background-color:$global_titlebar_color;padding-top:0px;
-                padding-left:20px;padding-bottom:3px;
-                text-align:left;color:white;margin:0'> 
-
-                <span style='opacity:.5'>
-                $icon_braxlive2
-                </span>
-                <b>$menu_live</b>
-                <br>
-            </div>
-            -->
-            <div class='gridnoborder' style='background-color:transparent;width:100%'>
-            ";
-        
-        $listheading .= "
-            <br>
-            </div>
-            <div class='gridnoborder chatlistarea' 
-                style='background-color:transparent;padding-left:0px;margin:0;color:$global_textcolor'>
-
-                <div style='padding:10px;text-align:center;color:$global_textcolor'>
-                    <div class='nonmobile' style='background-color:transparent'>
-                        <br>
-                    </div>
-                    <div class='pagetitle' style='color:$global_textcolor;text-align:center;margin:auto'>
-                        $menu_live
-                    </div>
-                </div>
-                ";
-
     }
     
     
@@ -400,189 +377,52 @@ $time1 = microtime(true);
     
     
     
-    
-    
-    
-        if($count == 0 && $find =='' && $mode !='LIVE'){
-            
-            $shadow = "shadow gridstdborder";
-            if($icon_darkmode){
-                $shadow = "";
-            }
-            
-            $list .=
-                 "
-                    <div class='pagetitle3' 
-                        style='padding:20px;text-align:center;margin:auto;max-width:260px;width:80%;color:$global_textcolor;background-color:transparent'>
-                        <div class='circular3' style=';overflow:hidden;margin:auto'>
-                            <img class='' src='../img/agent.jpg' style='width:100%;height:auto' />
-                        </div>
-                        <div class='tipbubble pagetitle2a' style='padding:30px;color:black;background-color:whitesmoke'>
-                            No open Chat found.<br><br>
-                            Start a new chat by searching<br>
-                            $icon_braxpeople2&nbsp;<span class='meetuplist' style='color:$global_activetextcolor;cursor:pointer' title='Go to PEOPLE'>PEOPLE</span>.<br><br>
-                            Or tap a person's profile photo<br>anywhere in the app.
-                        </div>
-                        <br>
-                    </div>
-                    <br><br><br>
-                    
-                ";
-        } else 
-        if($count < 2 && $find =='' && $mode =='LIVE' && $roomdiscovery == 'Y'){
+    if($count == 0 && $find =='' ){
 
-                
-            $listheading .=
-                 "  <center>
-                     <br><br>
-                    <br><br>
-                    <div class='circular3 gridnoborder' style=';overflow:hidden;margin:auto'>
-                        <img class='' src='../img/agent.jpg' style='width:100%;height:auto' />
-                    </div>
-                    <div class='tipbubble pagetitle2a' style='max-width:200px;padding:30px;color:black;background-color:white' >
-                        <div class='roomjoin pagetitle2a' style='display:inline;cursor:pointer;;color:$global_activetextcolor;' data-mode='R' data-roomid='1086' 
-                             data-handle='#livestream' data-room='KBRX Livestream' data-action='RADIO2'>
-                                <b>Join Live Channels</b>
-                        </div>
-                     to see the live broadcasts.
-                    </div>
-                    </center>
-                ";
-        } else 
-        if($count == 0 && $find =='' && $mode =='LIVE' && $_SESSION['enterprise']!='Y' ){
-            
-            $list .=
-                 "
-                     <br><br>
-                    <div class='pagetitle3 gridnoborder' style='color:$global_textcolor;margin:auto;max-width:500px;padding:20px;text-align:center'>
-                        No broadcasts available.
-                    <br><br><br>
-                    <br><br><br>
-                    </div>
-                ";
-            
-        } else 
-        if($count == 0  && $find =='' && $mode =='LIVE' && $_SESSION['enterprise']=='Y' ){
-            
-                    $list .=
-                         "
-                             <br><br>
-                            <div class='pagetitle3 gridnoborder' style='color:$global_textcolor;margin:auto;max-width:500px;padding:20px;text-align:center'>
-                                <div class='circular3' style='max-width:200px;overflow:hidden;margin:auto'>
-                                    <img class='' src='../img/agent.jpg' style='width:100%;height:auto' />
-                                </div>
-                                <div class='tipbubble pagetitle2' style='margin:auto;max-width:200px;padding:30px;color:black;background-color:whitesmoke'>
-                                    No live channels for this $enterpriseapp account. You can create a live channel from a room.
-                                </div>
-                                <br><br><br>
-                                Enable SOCIAL MEDIA
-                                in My Account Info to see the public channels.
-                            <br><br><br>
-                            <br><br><br>
-                            </div>
-                        ";
-                
+        $shadow = "shadow gridstdborder";
+        if($icon_darkmode){
+            $shadow = "";
         }
-            
-            
-        
-        
-        
-    
-    if($mode =='LIVE' && $roomdiscovery == 'Y'){
-        
-        if($count == 0){
-            
-            $list .=
-             "
-                 
-            ";
-        }
-        $list .= "
-                        <br>
-                            <br>
-                            <br>
-                        <div style='background-color:$global_bottombar_color;width:100%;text-align:center;margin:0'>
-                            <br>
-                            <div class='pagetitle3 gridnoborder feed' data-roomid='$live_roomid' data-caller='live' style='padding-left:20px;padding-right:20px;cursor:pointer;color:white;margin:auto;'>
-                                    Share this with your friends! <a href='http://livestream.brax.me' style='text-decoration:none;color:$global_activetextcolor_reverse'>Livestream.brax.me</a>
-                                    <br>
-                            </div>
-                            <br>
-                            <div class='roomselect pagetitle3 gridnoborder' style='cursor:pointer;color:$global_activetextcolor_reverse;margin:auto;border:0' data-mode='S'>
-                                    Join Public Live Channels
-                                    <br>
-                            </div>
-                            <br>
-                            <div class='audioreplay pagetitle3 gridnoborder' style='cursor:pointer;color:$global_activetextcolor_reverse;margin:auto;' data-mode='S'>
-                                    Replays
-                                    <br>
-                            </div>
-                            <br>
-                            <div class='streamsched pagetitle3 gridnoborder' style='cursor:pointer;color:$global_activetextcolor_reverse;margin:auto;' data-mode='S'>
-                                    Schedules
-                                    <br>
-                            </div>
-                            <br>
-                            <div class='pagetitle3 gridnoborder feed' data-roomid='$live_roomid' data-caller='live' style='cursor:pointer;color:$global_activetextcolor_reverse;margin:auto;'>
-                                    Learn How to Broadcast #live
-                                    <br>
-                            </div>
-                        <br><br>
-                        <br>
-                        <br>
-                        <br>
-                        <br>
-                        </div>
-                  ";
 
-    } else
-    if($mode =='LIVE' && $roomdiscovery !== 'Y'){
-    
-        $list .= "
-                        <br>
-                            
-                        <div style='background-color:$global_bottombar_color;width:100%;text-align:center;margin:0'>
-                            <br><br>
-                            <div class='pagetitle3 gridnoborder feed' data-roomid='$live_roomid' data-caller='live' style='cursor:pointer;color:$global_activetextcolor_reverse;margin:auto;'>
-                                    Learn How to Broadcast #live
-                                    <br>
-                            </div>
-                        <br>
-                        <br>
-                        <br>
-                        <br>
-                        </div>
-                  ";
-    }
+    } 
+            
     
     
-    
-$time3 = microtime(true);
+    $time3 = microtime(true);
 
-$e1 = $time2 - $time1;
-$e2 = $time3 - $time1;
+    $e1 = $time2 - $time1;
+    $e2 = $time3 - $time1;
 
     if($mode !='LIVE'){
-
-        $list .= "
-            <br>
-            <div class='smalltext' 
-                style='background-color:$global_bottombar_color;margin:auto;color:$global_activetextcolor_reverse;text-align:center'>
-                <br><br>
-                <div class='mainfont' style='margin:auto;text-align:center;max-width:500px;padding:20px;color:white'>To start a new chat, find the person under PEOPLE
-                and select Start Chat from their Profile.
-                </div>
-                ";
         
-        if($_SESSION['industry']=='medical'){
+        $community_text = "Tap on Community above to join open community chats.<br><br>";
+        if($_SESSION['roomdiscovery']!='Y' || $communitycount > 0){
+            $community_text = "";
+        }
+
+        //Tip
+        if($communitycount > 0){
+            $community_text = "";
+        }
+        if($count == 0 || $communitycount < 2 ){
+
             $list .= "
-                <br><br><br>
-                <img src='../img/hipaa.png' style='height:70px' />
+                <br>
+                    <div class='circular3' style=';overflow:hidden;margin:auto'>
+                        <img class='' src='../img/agent.jpg' style='width:100%;height:auto' />
+                    </div>
+                    <div class='smalltext tipbubble' 
+                        style='background-color:$global_bottombar_color;margin:auto;color:$global_textcolor_reverse;text-align:center;max-width:250px'>
+                        <div class='pagetitle2a' style='margin:auto;text-align:center;max-width:500px;padding:20px;color:$global_textcolor_reverse'>
+                            $community_text
+                            To start a new chat with a specific person, find the person under PEOPLE
+                            from the menu and select Start Chat from that person's Profile.
+                        </div>
+                    </div>
                 ";
         }
+        
         $list .= "
-                <br><br><br>
                 <br>
             </div>
             ";
@@ -657,6 +497,7 @@ function DisplayChatMembers(
     global $dot;
     global $icon_darkmode;
     global $global_textcolor;
+    global $global_textcolor_reverse;
     global $global_background;
     global $global_bottombar_color;
     global $iconsource_braxlock_common;
@@ -1091,6 +932,262 @@ function DisplayRadio(
             return $list;
             
 }
+
+function DisplayChatMembersMobile2(
+        $providerid, $chatid, $title, $keyhash, $diff, $lastread, 
+        $chatcount, $chatcountc, $membercount,
+        $techsupport, $headingcolor, $backgroundcolor, $flag, $techavatar, $roomid, $count, $chatmemberraw)
+{
+    global $prodserver;
+    global $rootserver;
+    global $flagred;
+    global $dot;
+    global $icon_darkmode;
+    global $global_textcolor;
+    global $global_background;
+    global $global_bottombar_color;
+    global $iconsource_braxlock_common;
+    global $menu_chats;
+    
+    $tmp = explode('~',$chatmemberraw);
+    $chatmembername = $tmp[0];
+    $avatarurl = "";
+    if(isset($tmp[1])){
+        $avatarurl = $tmp[1];
+    }
+    
+    $backgroundcolor = "$global_background";
+    $list = "";
+    $alert = "";
+    $i1 = 0;
+    
+    $lock = "<img class='icon15' src='$iconsource_braxlock_common' style='' />";
+    if($keyhash==''){
+        $lock = '';
+    }
+    
+    $alert = "";
+    if( ($diff > 0 || $lastread==0) ){
+
+        $alert = " ".$flag;
+        $i1++;
+    } 
+    if(
+            intval($chatcount)>0 && (
+            //I have not responded
+            //intval($row['chatcountr'])==0 || 
+            //Other has not responded
+            intval($chatcountc)==0 
+            )
+    ){
+
+        $alert = " ".$flagred;
+    }
+    $chatcounttext = "($chatcount)";
+    if($chatcount == ""){
+        $chatcounttext = "No Response";
+    }
+    
+    if($roomid > 0){
+        
+            $avatar = "$rootserver/img/internetradio.png";
+            if($roomid > 0 ){
+                $result = pdo_query("1", "select photourl from roominfo where roomid = ? ",array($roomid));
+                if($row = pdo_fetch($result)){
+                    $avatar = RootServerReplace($row['photourl']);
+                }
+            }
+            if( ($diff > 0 || $lastread==0) ){
+            
+                $alert = " ".$flag;
+                $i1++;
+            } 
+            
+            $backgroundcolor = "$global_bottombar_color;";
+            $color = "white";
+            $opacity = "";
+            
+            
+            $shadow = "shadow gridstdborder";
+            if($icon_darkmode){
+                $shadow = "";
+            }
+           
+            
+            $list = 
+                "   
+                <div class='smalltext2 setchatsession rounded $shadow noselect' 
+                    id='setchatsession' 
+                    data-chatid='$chatid'  
+                    data-channelid=''
+                    data-keyhash='$keyhash'
+                    style='width:90%;max-width:300px;position:relative;display:inline-block;text-align:left;$opacity;
+                    overflow:hidden;
+                    color:$global_textcolor;background-color:$global_background;
+                    cursor:pointer;font-weight:300;
+                    margin-left:10px;margin-bottom:5px;;
+                    word-wrap:break-word' title='$title'>
+                    <table style='padding-left:0px;gridnoborder;width:100%'>
+                    <tr>
+                        <td style='width:50px;vertical-align:top;background-color:gray'>
+                            <div class='circular gridnoborder' style='overflow:hidden'><img class='' src='$avatar' style='margin:0;max-width:100%' /></div>
+                        </td>
+                        <td style='width:200px'>
+                            <div class='pagetitle3' style='
+                                width:200px;
+                                text-align:left;overflow:hidden;width:100%;padding-left:5px;padding-top:5px;
+                                padding-bottom:5px;
+                                background-color:$global_background;color:$global_textcolor'>
+                                $chatmembername<br>
+                                <b>$title</b>
+                                <br>
+                                <span class='smalltext2' style='color:$global_textcolor;opacity:.5'>$chatcounttext</span>
+                                <br>
+
+                            </div>
+                        </td>
+                        <td style='text-align:right;width:50px;padding-right:10px'>
+                            $alert     
+                        </td>
+                    </tr>
+                    </table>
+                </div>
+             ";
+            return $list;        
+    }
+    
+
+
+    //    $list .= "$row2[diff], $row2[lastread]<br>";
+            
+            
+
+    //New Chat ID
+    $header = true;
+    $shadow = "shadow gridstdborder";
+    $extrastyle = '';
+    if($icon_darkmode){
+        $shadow = "";
+        $extrastyle = 'filter:brightness(120%);';
+    }
+                
+    $list .= 
+        "   
+        <div class='smalltext2 setchatsession tapped2 rounded $shadow noselect' 
+            id='setchatsession' 
+            data-chatid='$chatid' 
+            data-channelid='' 
+            data-keyhash='$keyhash'
+            style='width:90%;;max-width:300px;position:relative;display:inline-block;text-align:left;$extrastyle;
+            overflow:hidden;
+            color:$global_textcolor;background-color:$backgroundcolor;
+            cursor:pointer;font-weight:300;
+            margin-left:10px;margin-bottom:5px;
+            word-wrap:break-word'>
+
+        ";
+
+                
+    //$chatmembername=substr($chatmembername,0,20);
+
+    if(intval($membercount) <= 2 ){
+        $chatmembertext = $chatmembername;
+
+    } else {
+        $memberothers = $membercount-1;
+        $chatmembertext =  "$chatmembername +$memberothers others";
+    } 
+    
+
+    /*
+     * 
+     *  Search for Invited Members in Chat
+     */
+    if($membercount == 1){
+
+        $result2 = pdo_query("1",
+
+             "
+             select name, email from invites where providerid=? and chatid=? limit 1
+             ",array($providerid, $chatid)
+        );
+        if($row2 = pdo_fetch($result2)){
+            $avatar = "$rootserver/img/newbie2.jpg";
+
+            $header = true;
+
+            $list .= 
+                "   
+                <div class='smalltext2 setchatsession tapped2 gridstdborder rounded' 
+                    id='setchatsession' 
+                    data-chatid='$chatid' data-keyhash='$keyhash'
+                    style='position:relative;display:inline-block;text-align:left;
+                    overflow:hidden;
+                    color:$global_textcolor;background-color:$backgroundcolor;
+                    cursor:pointer;font-weight:300;margin:5px;word-wrap:break-word'>
+
+                        <div class='roundedtop smalltext' 
+                            style='float:left;padding-top:7px;padding-bottom:10px;;width:100%;;
+                            background-color:#5f5f5f;color:white'>
+                            &nbsp;&nbsp;$title<br>&nbsp;&nbsp;$lock $alert $techsupport $chatcounttext <br>
+                        </div>
+                        <div style='float:left;
+                            text-align:center;overflow:hidden;width:100%;
+                            background-color:$backgroundcolor;$global_textcolor'>
+
+                                <div class='pagetitle3'>
+                                    &nbsp;&nbsp;$row2[name]<br>$row2[email]<br>(Pending)
+                                </div>
+
+                ";
+
+        }
+    }
+    if($header){
+
+        if($title == ''){
+            $title = 'Private Chat';
+
+        }
+        $list .= "
+                    <table style='padding-left:0px;gridnoborder;width:100%'>
+                    <tr>
+                        <td style='width:50px;vertical-align:top;background-color:gray'>
+                            <div class='circular gridnoborder' style='background-color:black;overflow:hidden'><img class='' src='$avatarurl' style='background-color:black;margin:0;max-width:100%' /></div>
+                        </td>
+                        <td style='width:200px'>
+                            <div class='pagetitle3' style='
+                                width:200px;
+                                text-align:left;overflow:hidden;width:100%;padding-left:5px;padding-top:5px;
+                                padding-bottom:5px;
+                                background-color:$global_background;color:$global_textcolor'>
+                                $chatmembertext<br>
+                                <b>$title</b>
+                                <br>
+                                <span class='smalltext2' style='color:$global_textcolor;opacity:.5'>$chatcounttext</span>
+                                <br>
+
+                            </div>
+                        </td>
+                        <td style='text-align:right;width:50px;padding-right:10px'>
+                            $alert $lock   
+                        </td>
+                    </tr>
+                    </table>
+                ";
+
+        $list .= 
+        "   
+       </div>
+
+         ";
+}
+        
+        
+return $list;
+
+}
+
 function DisplayChatMembersMobile(
         $providerid, $chatid, $title, $keyhash, $diff, $lastread, 
         $chatcount, $chatcountc, $membercount,
@@ -1141,6 +1238,10 @@ function DisplayChatMembersMobile(
 
         $alert = " ".$flagred;
     }
+    $chatcounttext = "($chatcount)";
+    if($chatcount == ""){
+        $chatcounttext = "No Response";
+    }
     
     if($roomid > 0){
         
@@ -1175,32 +1276,32 @@ function DisplayChatMembersMobile(
                     data-chatid='$chatid'  
                     data-channelid=''
                     data-keyhash='$keyhash'
-                    style='width:90%;max-width:400px;position:relative;display:inline-block;text-align:left;$opacity;
+                    style='width:90%;max-width:300px;position:relative;display:inline-block;text-align:left;$opacity;
                     overflow:hidden;
                     color:$global_textcolor;background-color:$global_background;
                     cursor:pointer;font-weight:300;
-                    margin-left:20px;margin-bottom:5px;;
+                    margin-left:10px;margin-bottom:5px;;
                     word-wrap:break-word' title='$title'>
-                    <table style='padding-left:10px;gridnoborder;width:100%'>
+                    <table style='padding-left:0px;gridnoborder;width:100%'>
                     <tr>
-                        <td style='width:50px'>
-                            <div class='circular gridnoborder' style='overflow:hidden'><img class='' src='$avatar' style='margin:0;max-width:100%' /></div>
+                        <td style='width:50px;background-color:black'>
+                            <div class='circular gridnoborder' style='overflow:hidden'><img class='' src='$avatar' style='margin:0;height:100%;max-width:100%' /></div>
                         </td>
-                        <td>
+                        <td style='width:200px'>
                             <div class='smalltext' style='
-                                width:150px;
-                                text-align:left;overflow:hidden;width:100%;padding-left:10px;padding-top:10px;
-                                padding-bottom:10px;
+                                width:200px;
+                                text-align:left;overflow:hidden;width:100%;padding-left:5px;padding-top:5px;
+                                padding-bottom:5px;
                                 background-color:$global_background;color:$global_textcolor'>
-                                Group Chat<br>
-                                <b>$title</b>
+                                <span class='smalltext' style='color:$global_textcolor;'><b>$title</b></span><br>
+                                $chatmembername
                                 <br>
-                                <span class='smalltext2' style='color:$global_textcolor;opacity:.5'>($chatcount)</span>
+                                <span class='smalltext2' style='color:$global_textcolor;opacity:.5'>$chatcounttext</span>
                                 <br>
 
                             </div>
                         </td>
-                        <td style='text-align:right;width:100px;padding-right:10px'>
+                        <td style='text-align:right;width:50px;padding-right:10px'>
                             $alert     
                         </td>
                     </tr>
@@ -1232,11 +1333,11 @@ function DisplayChatMembersMobile(
             data-chatid='$chatid' 
             data-channelid='' 
             data-keyhash='$keyhash'
-            style='width:90%;;max-width:400px;position:relative;display:inline-block;text-align:left;$extrastyle;
+            style='width:90%;;max-width:300px;position:relative;display:inline-block;text-align:left;$extrastyle;
             overflow:hidden;
             color:$global_textcolor;background-color:$backgroundcolor;
             cursor:pointer;font-weight:300;
-            margin-left:20px;margin-bottom:5px;
+            margin-left:10px;margin-bottom:5px;
             word-wrap:break-word'>
 
         ";
@@ -1248,8 +1349,8 @@ function DisplayChatMembersMobile(
         $chatmembertext = $chatmembername;
 
     } else {
-
-        $chatmembertext =  "$chatmembername +$membercount others";
+        $memberothers = $membercount - 1;
+        $chatmembertext =  "$chatmembername +$memberothers others";
     } 
     
 
@@ -1280,16 +1381,16 @@ function DisplayChatMembersMobile(
                     color:$global_textcolor;background-color:$backgroundcolor;
                     cursor:pointer;font-weight:300;margin:5px;word-wrap:break-word'>
 
-                        <div class='roundedtop smalltext2' 
+                        <div class='roundedtop smalltext' 
                             style='float:left;padding-top:7px;padding-bottom:10px;;width:100%;;
                             background-color:#5f5f5f;color:white'>
-                            &nbsp;&nbsp;$title<br>&nbsp;&nbsp;$lock $alert $techsupport ($chatcount) <br>
+                            &nbsp;&nbsp;$title<br>&nbsp;&nbsp;$lock $alert $techsupport $chatcounttext <br>
                         </div>
                         <div style='float:left;
                             text-align:center;overflow:hidden;width:100%;
                             background-color:$backgroundcolor;$global_textcolor'>
 
-                                <div>
+                                <div class='pagetitle3'>
                                     &nbsp;&nbsp;$row2[name]<br>$row2[email]<br>(Pending)
                                 </div>
 
@@ -1304,26 +1405,26 @@ function DisplayChatMembersMobile(
 
         }
         $list .= "
-                    <table style='padding-left:10px;gridnoborder;width:100%'>
+                    <table style='padding-left:0px;gridnoborder;width:100%'>
                     <tr>
-                        <td style='width:50px'>
-                            <div class='circular gridnoborder' style='background-color:black;overflow:hidden'><img class='' src='$avatarurl' style='background-color:black;margin:0;max-width:100%' /></div>
+                        <td style='width:50px;background-color:black'>
+                            <div class='circular gridnoborder' style='background-color:black;overflow:hidden'><img class='' src='$avatarurl' style='height:100%;background-color:black;margin:0;max-width:100%' /></div>
                         </td>
-                        <td>
+                        <td style='width:200px'>
                             <div class='smalltext' style='
-                                width:150px;
-                                text-align:left;overflow:hidden;width:100%;padding-left:10px;padding-top:10px;
-                                padding-bottom:10px;
+                                width:200px;
+                                text-align:left;overflow:hidden;width:100%;padding-left:5px;padding-top:5px;
+                                padding-bottom:5px;
                                 background-color:$global_background;color:$global_textcolor'>
-                                $chatmembertext<br>
+                                <span class='smalltext' style='color:$global_textcolor;'>$chatmembertext</span><br>
                                 <b>$title</b>
                                 <br>
-                                <span class='smalltext2' style='color:$global_textcolor;opacity:.5'>($chatcount)</span>
+                                <span class='smalltext2' style='color:$global_textcolor;opacity:.5'>$chatcounttext</span>
                                 <br>
 
                             </div>
                         </td>
-                        <td style='text-align:right;width:100px;padding-right:10px'>
+                        <td style='text-align:right;width:50px;padding-right:10px'>
                             $alert $lock   
                         </td>
                     </tr>
@@ -1341,4 +1442,5 @@ function DisplayChatMembersMobile(
 return $list;
 
 }
+
 ?>

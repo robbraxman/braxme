@@ -221,7 +221,7 @@ require_once("internationalization.php");
                     data-providerid='$row[providerid]' data-roomid='$row[roomid]' data-mode='D' />
             ";
         if($row['moderator']!='' || $row['owner']==$row['providerid']){
-            echo "&nbsp; <img class='icon20' src='$iconsource_braxmedal_common' style='cursor:none' />";
+            echo "&nbsp; <img class='icon20' src='$iconsource_braxmoderator_common' style='cursor:none' />";
         }
         $expires = "";
         if($row['expiredate']!=''){
@@ -386,7 +386,7 @@ require_once("internationalization.php");
                     </div>
             ";
         if($row['moderator']!='' || $row['owner']==$row['providerid']){
-                echo "<img class='icon20' src='$iconsource_braxmedal_common' style='cursor:none' />";
+                echo "<img class='icon20' src='$iconsource_braxmoderator_common' style='cursor:none' />";
         }
         echo "
                     $deleteme
@@ -395,7 +395,7 @@ require_once("internationalization.php");
         
         
     }
-    echo "<br><br><img class='icon15' src='$iconsource_braxmedal_common' style='cursor:none;top:3px' /><span class='smalltext2'> =  Moderator</span><br><br>";
+    echo "<br><br><img class='icon15' src='$iconsource_braxmoderator_common' style='cursor:none;top:3px' /><span class='smalltext2'> =  Moderator</span><br><br>";
     echo "</div></div></div>";
     
     

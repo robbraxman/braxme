@@ -1,7 +1,5 @@
 /* 
     Document   : local
-    Created on : Feb 25, 2013, 8:44:32 PM
-    Author     : roberto
     Description:
         Purpose of the stylesheet follows.
 */
@@ -2881,7 +2879,7 @@ FONT SPECIFIC MEDIA QUERIES
 {
     .mainfont {
         font-family:  Helvetica, Arial, sans-serif;        
-        font-size: 17px;
+        font-size: 16px;
         /*letter-spacing: 0.3px;*/
         font-weight:400;
         -webkit-font-smoothing: antialiased;

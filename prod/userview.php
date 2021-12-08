@@ -95,8 +95,8 @@ if($caller == ''){
 if($providerid == $userid){    
 ?>
     
-    <div class='gridstdborder' 
-        style='background-color:<?=$global_titlebar_color?>;color:white;padding-left:20px;padding-right:20px;padding-bottom:3px;margin:0;' >
+    <div class='gridstdborder roomsview' 
+        style='background-color:<?=$global_titlebar_color?>;color:white;padding-left:20px;padding-right:20px;padding-bottom:3px;margin:0;overflow-x:hidden' >
         <img class='icon20 feed' Title='Back to Home' src='../img/Arrow-Left-in-Circle-White_120px.png' 
              style='' data-providerid='<?=$userid?>' data-caller='<?=$caller?>' data-roomid='<?=$_SESSION['profileroomid']?>' />
         &nbsp;
@@ -107,7 +107,7 @@ if($providerid == $userid){
 }
 ?>
 
-        <div class='mainfont gridstdborder' style='background-color:<?=$global_menu_color?>;color:white;float:left;margin:auto;vertical-align:top;width:100%;padding-left:30px;padding-right:30px;padding-top:10px;margin:0'>
+        <div class='mainfont gridstdborder roomsview' style='background-color:<?=$global_menu_color?>;color:white;float:left;margin:auto;vertical-align:top;width:100%;padding-left:30px;padding-right:30px;padding-top:10px;margin:0;overflow-x:hidden'>
             <?=$mytools?>
             <?=$backto?>
 

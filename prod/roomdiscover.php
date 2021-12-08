@@ -103,6 +103,7 @@ require_once("roomselect.inc.php");
             </div>
             
             <div class=appbody style='background-color:transparent;color:$global_textcolor;vertical-align:top'>
+            <br>
             ";
         
     }
@@ -137,62 +138,6 @@ require_once("roomselect.inc.php");
             <br>
             ";
     
-            /*
-    echo "
-            <div class='pagetitle3' style='display:inline;white-space:nowrap;margin-top:20px;margin-left:20px'>
-                Join
-                <input class='inputline dataentry mainfont' id='roomhandle' placeholder='Hashtag' name='roomhandle' type='text' size=20 value=''              
-                    style='max-width:120px;background:url(../img/hash.png) no-repeat scroll;background-size:15px 15px;background-color:transparent;padding-left:20px;margin-bottom:10px'/>
-                <div class='mainfont roomjoin' style='white-space:nowrap;display:inline;cursor:pointer;color:black'>
-                    <img class='icon20 roomjoin' id='roomjoin' data-mode='J' src='../img/Arrow-Right-in-Circle_120px.png' 
-                    style='top:3px' >
-                </div>
-            </div>
-            &nbsp;&nbsp;&nbsp;
-            <div class='pagetitle3' style='display:inline;white-space:nowrap;margin-top:20px;margin-left:20px'>
-                Find
-                <input class='inputline dataentry mainfont' id='findroom' placeholder='Keyword' name='findroom' type='text' size=20 value='$find'              
-                    style='max-width:120px;padding-left:10px;;margin-bottom:10px'/>
-                <div class='mainfont roomdiscover' style='white-space:nowrap;display:inline;cursor:pointer;color:black' data-mode='F'>
-                    <img class='icon20'   src='../img/Arrow-Right-in-Circle_120px.png' 
-                    style='top:3px' >
-                </div>
-            </div>
-
-            <br>
-            ";
-             * 
-             */
-
-    /*
-    echo "
-         <br><br>
-                <div class='pagetitle2' style='white-space:nowrap;margin-top:20px;margin-left:20px'>
-                    Join
-                    <input class='inputline dataentry mainfont' id='roomhandle' placeholder='Hashtag' name='roomhandle' type='text' size=20 value=''              
-                        style='max-width:120px;background:url(../img/hash.png) no-repeat scroll;background-size:15px 15px;background-color:transparent;padding-left:20px;'/>
-                        &nbsp;
-                    <div class='mainfont roomjoin' style='white-space:nowrap;display:inline;cursor:pointer;color:black'>
-                        <img class='icon20 roomjoin' id='roomjoin' data-mode='J' src='../img/Arrow-Right-in-Circle_120px.png' 
-                        style='top:3px' >
-                    </div>
-                </div>
-                <div class='pagetitle2' style='white-space:nowrap;margin-top:20px;margin-left:20px'>
-                    Find
-                    <input class='inputline dataentry mainfont' id='findroom' placeholder='Keyword' name='findroom' type='text' size=20 value='$find'              
-                        style='max-width:120px;padding-left:10px;'/>
-                        &nbsp;
-                    <div class='mainfont roomdiscover' style='white-space:nowrap;display:inline;cursor:pointer;color:black' data-mode='F' data-caller='select' data-roomod='0'>
-                        <img class='icon20'   src='../img/Arrow-Right-in-Circle_120px.png' 
-                        style='top:3px' >
-                    </div>
-                </div>
-                <br>
-         
-         <div class='' style='text-align:center;background-color:transparent;margin:20px'>
-         <br>
-         ";
-    */
     
     /*****************************/
     $result = pdo_query("1","
@@ -215,6 +160,15 @@ require_once("roomselect.inc.php");
          <div class='' style='text-align:center;background-color:transparent;margin:20px'>
          <br>
          ";
+    
+    global $icon_darkmode;
+    $shadow = "shadow gridstdborder";
+    $background = $global_background;
+    if($icon_darkmode){
+        $shadow = "gridnoborder";
+        $background = $global_background.";filter:brightness(120%);";
+    }
+
     
     if($roomdiscovery == 'Y'){
     
@@ -383,45 +337,6 @@ require_once("roomselect.inc.php");
         
         $roomdesc = limit_words($row['roomdesc'],12);
         
-        /*
-        echo "
-              <div class='roomjoin tapped2' data-roomid='$row[roomid]' 
-                data-handle='$row[handle]' data-mode='J' 
-                style='display:inline;cursor:pointer;border:0px solid lightgray;
-                background-color:transparent;
-                width:320px;max-width:70%;
-                padding-left:10px;padding-right:10px;
-                padding-top:10px;
-                margin-bottom:10px;vertical-align:top'>
-                    <div class=pagetitle3 
-                    style='display:inline-block;color:$global_textcolor;
-                    vertical-align:top;text-align:center'>
-                        <b>$row[name]</b>
-                    </div>
-                <div class='smalltext2' style='color:$global_textcolor;max-width:300px;text-align:center;margin:auto'>
-                    $roomdesc
-                </div>
-                <div class=mainfont style='color:$global_textcolor'>$row[handle]</div>
-                ";
-        if($active !="" || $joined !=""){
-            echo "  <div class='mainfont' style='color:$global_textcolor'>$active $joined</div>";
-        }
-        if($anonymousstatus!=""){
-            echo "  <span class='smalltext2' style='color:$global_textcolor'>$anonymousstatus</span>";
-        }
-        echo "
-                <br>
-              </div>
-             ";
-         * 
-         */
-        global $icon_darkmode;
-        $shadow = "shadow gridstdborder";
-        $background = $global_background;
-        if($icon_darkmode){
-            $shadow = "gridnoborder";
-            $background = $global_background.";filter:brightness(120%);";
-        }
         
         echo "
               <div class='roomjoin tapped2 gridstdborder $shadow rounded' data-roomid='$row[roomid]' 
@@ -554,38 +469,13 @@ require_once("roomselect.inc.php");
 
         $roomdesc = limit_words($row['roomdesc'],20);
         
-        /*
-        echo "
-              <div class='rounded roomjoin tapped2 gridstdborder shadow' data-roomid='$row[roomid]' 
-                data-handle='$row[handle]' data-mode='J' 
-                style='display:inline-block;cursor:pointer;
-                background-color:white;
-                width:320px;max-width:70%;
-                padding-left:10px;padding-right:10px;
-                padding-top:10px;margin:5px;
-                vertical-align:top'>
-                $photourl
-                  <div class=pagetitle3 
-                    style='display:inline-block;color:black;
-                    vertical-align:top;text-align:center'>
-                        <b>$row[name] $membercount</b>
-                    </div>
-                <div class='smalltext2' style='max-width:70%;text-align:center;margin:auto'>
-                    $roomdesc
-                </div>
-                <div class=mainfont style='color:black'>$row[handle]</div>";
-        if($active !="" || $joined !=""){
-            echo "  <span class='mainfont' style='color:black'>$active $joined<br></span>";
+        $shadow = "shadow gridstdborder";
+        $background = $global_background;
+        if($icon_darkmode){
+            $shadow = "gridnoborder";
+            $background = $global_background.";filter:brightness(120%);";
         }
-        if($anonymousstatus!=""){
-            echo "  <span class='smalltext2' style='color:steelblue'>$anonymousstatus</span>";
-        }
-        echo "
-                <br>
-              </div>
-             ";
-         * 
-         */
+        
         echo "
               <div class='roomjoin tapped2 gridstdborder $shadow rounded' data-roomid='$row[roomid]' 
                 data-mode='J' data-handle='$row[handle]'

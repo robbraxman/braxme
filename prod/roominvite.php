@@ -42,7 +42,8 @@ include("internationalization.php");
 $expiredLink = false;
 
 //Authorized Private Share Check
-if($k !==''){
+if(rtrim($k) !==''){
+
 
     
     $title = "You're Invited to a Private Group";
@@ -79,7 +80,7 @@ if($k !==''){
 
 
 //Hashtag Open Room Share
-if($r !==''){
+if(rtrim($r) !==''){
     
     $ownername='';
     $result = pdo_query("1","
@@ -119,9 +120,9 @@ if($k != ''){
 }
 
 //If portal accept PRIVATE rooms
-if($portal == 'Y'){
-    $privateQuery = " and roominfo.groupid is null and roominfo.private = 'N' ";
-}
+//if($portal == 'Y'){
+//    $privateQuery = " and roominfo.groupid is null and roominfo.private = 'N' ";
+//}
 
 $result = pdo_query("1","
     select statusroom.roomid, roomhandle.handle, roomhandle.roomdesc,
@@ -161,6 +162,7 @@ if( !$row = pdo_fetch($result)){
           <center>
             <img src='$rootserver/img/expired.jpg' style='height:200;width:auto;float:center;margin:auto' >
                 <br>
+                <br>Code $share / $i
                 <span style='font-family:helvetica;font-size:13px'>
                 <a href='$rootserver'><img src='$iconlock' class='margined' style='height:60px;width:auto' /></a>
                 <br>Secure Enterprise Portals
@@ -903,7 +905,7 @@ if($portal!='Y'){
             <a href='<?=$rootserver?>/<?=$installfolder?>/license-v1.php' target='_blank' style='text-decoration:none;color:<?=$global_activetextcolor?>'><?=$menu_termsofuse?></a>    
             <br>
             <br>
-            <a href='<?=$rootserver?>/<?=$installfolder?>/privacy.php' target='_blank' style='text-decoration:none;color:<?=$global_activetextcolor?>'><?=$menu_privacypolicy?></a>    
+            <a href='<?=$rootserver?>/<?=$installfolder?>/privacy.php' target='_blank' style='text-decoration:none;color:<?=$global_activetextcolor?>'><?=$menu_privacy?></a>    
         <br>
         <br>
     <div  class='smalltext2' style='background-color:<?=$bottomcolor?>;color:white;'>

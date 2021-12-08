@@ -6,7 +6,7 @@ $verificationcode = @tvalidator("PURIFY",$_REQUEST['i']);
 
 
 $result = pdo_query("1", 
-      "select providerid, email from verification where verificationkey='$verificationcode' "
+      "select providerid, email from verification where verificationkey='$verificationcode' ",null
        );
 if(!$row = pdo_fetch($result))
 {

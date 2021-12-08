@@ -5,6 +5,7 @@ require_once("config-pdo.php");
 
 
 require ("photouploadproc.inc.php");
+
 echo "<body class='newmsgbody' style='padding:50px;font-family:helvetica, san-serif;font-height:20px'>";
 echo "<img src='../img/logo-b2.png' style='height:50px' '/>";
 echo "<div class='statustitle'>Photo Upload</div>";
@@ -24,7 +25,7 @@ if( $newalbum!='')
     $album = $newalbum;
 }
 
-$upload_dir = 'upload-zone';
+$upload_dir = 'upload-zone/files';
 
 
 /*********************************************************************

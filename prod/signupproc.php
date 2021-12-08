@@ -100,20 +100,19 @@ require_once("internationalization.php");
 
     $lastuserdecrypted = '';
     if($lastuser!=''){
-        $lastuserdecrypted = DecryptJs($lastuser,'');
+        $lastuserdecrypted = OpenSSLDecrypt($lastuser,$serverencryptionkey);
     }
 
     $icount = $signup->IPHashCheck($timezone, $deviceid, $lastuserdecrypted,$signupcookie, $innerwidth, $innerheight);
     
-    /*
-    if(!$customsite){
-        if($icount > 2 && $trackerid == ''){
-            echo "<h2 style='padding:20px;font-family:helvetica'><img src='$applogo' style='height:50px' /><br><br>What are you up to?<br>You're acting suspiciously.<br>Fingerprinted ($icount).</h2>";
-            exit();
-        }
+    if($icount === 999 && $trackerid == ''){
+        echo "<h2 style='padding:20px;font-family:helvetica'><img src='$applogo' style='height:50px' /><br><br>Intrusion Detected. Logged and Reported</h2>";
+        exit();
     }
-     * 
-     */
+    if($icount > 3 && $trackerid == ''){
+        echo "<h2 style='padding:20px;font-family:helvetica'><img src='$applogo' style='height:50px' /><br><br>What are you up to?<br>You're acting suspiciously.<br>Tracking... ($icount).</h2>";
+        exit();
+    }
     //
     
     //Password Single Use Only
@@ -323,6 +322,7 @@ require_once("internationalization.php");
         global $appname;
         global $startupphp;
         global $store;
+        global $serverencryptionkey;
         
         $loginscript = "$startupphp";
 
@@ -346,18 +346,22 @@ require_once("internationalization.php");
                             <a href='https://play.google.com/store/apps/details?id=me.brax.app1&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1' target='_blank'>
                                 <img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' style='width:135px'/>
                             </a>
+                            <br><br>
+                            <a href='https://brax.me/braxme.apk' target='_blank'>
+                                Direct APK Download
+                            </a>
                             ";
 
             }
         }
                     
 
-        $jspassword = EncryptJs($password,"");
+        $jspassword = OpenSSLEncrypt($password,$serverencryptionkey);
         $script =  "
                 <script>
                 localStorage.pid = '$replyemail';
                 localStorage.loginid = '$loginid';
-                localStorage.swt = '$jspassword';
+                localStorage.hswt = '$jspassword';
                 localStorage.pid = '$handle';
                 if( '$mobile'!=''){
 

@@ -299,8 +299,10 @@ require_once("internationalization.php");
                     data-passkey64=''        
                     title='Create a Text File'
                 >
-            <img class='icon25 $uploadfile' id='uploadfile' 
+            <!--
+            <img class='icon25 $uploadfile' id='uploadfile'  data-roomid='$roomid'
                 src='../img/upload-circle-128.png' style='cursor:pointer;' title='Upload a File'    />
+            -->
             <br><br>
             
 

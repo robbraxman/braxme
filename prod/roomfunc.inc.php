@@ -155,9 +155,9 @@ function DesktopInputReply( $readonly, $selectedroomid, $roomid, $shareid, $post
                     style='cursor:pointer;color:$global_activetextcolor'
                     id='photoselect' 
                     data-target='.replyphoto' data-src='.replyphoto' data-filename='' data-mode='X' data-caller='feed' title='My Photo Library' >
+                    <img class='icon25' src='../img/brax-photo-round-black-128.png' style='cursor:pointer;position:relative;display:inline;height:30px;width:auto;top:0px;' />
                     $menu_sharephoto
 
-                    <!--<img class='icon25'  src='../img/brax-photo-round-gold-128.png' style='top:0px;' />-->
                 </div>
                 <br>
             </div>
@@ -166,9 +166,10 @@ function DesktopInputReply( $readonly, $selectedroomid, $roomid, $shareid, $post
                     style='cursor:pointer;color:$global_activetextcolor'
                     id='fileselect' 
                     data-target='.replyfile' data-src='.replyfile' data-filename='' data-link='' data-caller='room'  title='My File Library' >
+                    <img class='icon25' src='../img/brax-doc-round-black-128.png' style='cursor:pointer;position:relative;display:inline;height:30px;width:auto;top:0px;' />
                     $menu_sharefile
+                        <br><br>
 
-                     <!-- <img class='icon25' src='../img/brax-doc-round-gold-128.png' style='top:0px;' />-->
                 </div>
                     <br>
             </div>
@@ -193,6 +194,7 @@ function MobileInput( $readonly, $roomid, $page, $room, $mainwidth, $anonymous_s
 {
     global $textcolor;
     global $global_activetextcolor;
+    global $global_activetextcolor_onwhite;
     global $backgroundcolor;
     global $iconsource_braxarrowleft_common;
     global $iconsource_braxarrowright_common;
@@ -218,15 +220,15 @@ function MobileInput( $readonly, $roomid, $page, $room, $mainwidth, $anonymous_s
                         <div id='roomstatusheading' class='pagetitle3;font-weight:bold;color:$textcolor'><b>New Topic</b></div>
                         <input class='commentwidth mainfont' id='roomstatustitle' placeholder='Thread Title' name='title'   x-webkit-speech autocomplete='off' style='background-color:white;margin-bottom:5px' />
                         <textarea class='commentwidth mainfont' id='roomstatuscomment' placeholder='Comment, links, photo, video.' name='comment...'  x-webkit-speech rows=4 style='padding:5px;margin:0'></textarea>
-                        <span class='statusphoto' style='color:$textcolor;display:none'>
-                        <br><b>$menu_sharephoto</b><br>
-                        <input class='commentwidth mainfont' id='roomstatusphoto' type='url' title='Photo Link' value='' >
-                        <br><br>
+                        <span class='statusphoto' style='cursor:pointer;color:$textcolor;display:none'>
+                            <br><b>$menu_sharephoto</b><br>
+                            <input class='commentwidth mainfont' id='roomstatusphoto' type='url' title='Photo Link' value='' >
+                            <br><br>
                         </span>
-                        <span class='statusfile' style='color:$textcolor;display:none'>
-                        <br><b>$menu_sharefile</b><br>
-                        <input class='commentwidth mainfont' id='roomstatusfile' type='url' title='File Link'  value=''  >
-                        <br><br>
+                        <span class='statusfile' style='cursor:pointer;color:$textcolor;display:none'>
+                            <br><b>$menu_sharefile</b><br>
+                            <input class='commentwidth mainfont' id='roomstatusfile' type='url' title='File Link'  value=''  >
+                            <br><br>
                         </span>
                         
 
@@ -235,28 +237,28 @@ function MobileInput( $readonly, $roomid, $page, $room, $mainwidth, $anonymous_s
 
 
                         <br>
-                                <div class='smalltext' style='display:inline-block;height:80px;width:45px;text-align:center;color:$global_activetextcolor'>
+                                <div class='smalltext' style='display:inline-block;height:80px;width:45px;text-align:center;color:$global_activetextcolor_onwhite'>
                                     <div class='openstatusphoto photoselect tapped' 
                                          id='photoselect_icon' data-target='#roomstatusphoto' data-album='' 
                                          data-src='#roomstatusphoto' data-filename='' data-mode='X' data-caller='feed' >
                                     
                                           <img class='buttonicon' src='../img/brax-photo-round-black-128.png' style='cursor:pointer;position:relative;display:inline;height:30px;width:auto;top:0px;' />
+                                          $menu_sharephoto
                                     </div>
-                                    $menu_sharephoto
                                     <br>
                                 </div>
-                                <div class='smalltext' style='cursor:pointer;display:inline-block;height:80px;width:45px;text-align:center;color:$global_activetextcolor'>
+                                <div class='smalltext' style='cursor:pointer;display:inline-block;height:80px;width:45px;text-align:center;color:$global_activetextcolor_onwhite'>
                                     <div class='openstatusfile fileselect tapped' 
                                          id='fileselect_icon' data-target='#roomstatusfile' data-album='' 
                                          data-src='#roomstatusfile' data-filename='' data-link=''  data-caller='room' >
                                     
                                           <img class='buttonicon' src='../img/brax-doc-round-black-128.png' style='position:relative;display:inline;height:30px;width:auto;top:0px;' />
+                                          $menu_sharefile
                                     </div>
-                                    $menu_sharefile
                                     <br>
                                 </div>
                                 <!--
-                                 <div class='smalltext' style='display:inline-block;height:80px;width:45px;text-align:center;color:$global_activetextcolor'>
+                                 <div class='smalltext' style='display:inline-block;height:80px;width:45px;text-align:center;color:$global_activetextcolor_onwhite'>
                                     <div class='uploadphoto2 tapped' 
                                          id='photoselect_icon' data-target='#roomstatusphoto' data-album='' 
                                          data-src='#roomstatusphoto' data-filename='' data-mode='X' data-caller='feed' >
@@ -345,7 +347,7 @@ function TopButtons($roomid, $memberinfo, $showmembers, $readonly, $profileflag 
     
     $accessbuttons1 =
             "
-            <div class='smalltext2 friendlist$disablemembers tapped roombutton' id='friendlist' data-caller='room' data-mode=''  title='Room Members'
+            <div class='smalltext2 friendlist$disablemembers tapped roombutton' id='friendlist' data-caller='room' data-mode=''  title='Blog Members'
                 data-roomid='$roomid' style='vertical-align:top;color:$global_textcolor;$opacitymembers;margin-left:10px'>
                 <img class='icon25' src='$iconsource_braxaddressbook_common' 
                     style='margin-bottom:7px;' />
@@ -359,15 +361,6 @@ function TopButtons($roomid, $memberinfo, $showmembers, $readonly, $profileflag 
                     $menu_roomfiles
                         <br>
             </div>
-            <!--
-            <div class='smalltext2 roomevents$disable tapped roombutton' data-caller='room'  data-roomid='$roomid' title='Room Calendar Events'
-                style='vertical-align:top;color:$global_textcolor;$opacityfiles'>
-                <img class='icon25' src='../img/Calendar-4_120px.png' 
-                    style='margin-bottom:7px' />
-                <br>Events
-                <br><br>
-            </div>
-            -->
             ";
 
     return $accessbuttons1;
@@ -538,6 +531,9 @@ function GetChildLinks($readonly, $roominfo, $caller )
         $parentroomhandle = "";
         $parentroomid = "";
     }
+    if(is_object($roominfo)===false){
+        return "";
+    }
     
     if($readonly =='Y'){
         return "";
@@ -673,8 +669,10 @@ function TopBarButtons($readonly, $memberinfo, $providerid, $roomid, $showmember
     
     return $topbar;
 }
-function BackAction($caller, $readonly, $profileflag )
+function BackAction($caller, $readonly, $roominfo )
 {
+    $profileflag = $roominfo->profileflag;
+    
     $backto = "roomselect";
     if($profileflag=='Y'){
         $backto = "tilebutton";
@@ -704,8 +702,12 @@ function BackAction($caller, $readonly, $profileflag )
     
     if( $caller=='none'){
         $backto = "restart";
-        
     }
+    if( $caller=='FAQ'){
+        $backto = "roomselect";
+    }
+    
+    
     //Back to Prior Room - Roomid specified
     if( intval($caller)> 0 ){
         $backto = 'feed';
@@ -714,7 +716,7 @@ function BackAction($caller, $readonly, $profileflag )
     return $backto;
 }
 
-function TopBar( $readonly, $caller, $owner, $profileflag, $gotohome )
+function TopBar( $readonly, $caller, $owner, $roominfo, $gotohome, $shareid )
 {
     global $global_titlebar_color;
     global $icon_braxroom2;
@@ -724,6 +726,10 @@ function TopBar( $readonly, $caller, $owner, $profileflag, $gotohome )
     global $global_menu_text_color;
     global $global_textcolor;
     global $iconsource_braxarrowleft_common;
+    
+    $profileflag = $roominfo->profileflag;
+    $roomstyle = $roominfo->roomstyle;
+    $roomid = $caller;
     
     if($readonly=='Y'){
         return "";
@@ -743,25 +749,44 @@ function TopBar( $readonly, $caller, $owner, $profileflag, $gotohome )
     if($gotohome=='Y'){
         $readonly = "Y";
     }
-    $backto = BackAction($caller, $readonly, $profileflag );
-    $mode = 'LIVE';
+    $backto = BackAction($caller, $readonly, $roominfo );
+
     if($backto == 'roomselect'){
         $mode = '';
+    }
+    if($caller == 'FAQ'){
+        $mode = 'FAQ';
+    }
+    if($backto == 'feed'){
+        $mode = '';
+    }
+    if($roomstyle == 'faq'){
+        $backto = "feed";
+        if($shareid == ""){
+            $backto = "roomselect";
+            $caller = "FAQ";
+            $mode = "FAQ";
+            $roomid = "";
+        }
+    }
+    if($roomstyle == 'forum'){
+        $backto = "feed";
+        if($shareid == ""){
+            $backto = "roomselect";
+            $caller = "";
+            $mode = "";
+            $roomid = "";
+        }
     }
     
     $topbar = "
         <span class='roomcontent'>
             <div class='gridnoborder $backto' 
-                data-providerid='$owner' data-caller='$caller' data-roomid='$caller' data-mode='$mode'
+                data-providerid='$owner' data-caller='$caller' data-roomid='$roomid' data-mode='$mode' data-roomstyle='$roomstyle'
                 style='background-color:transparent;color:white;padding-left:20px;padding-right:20px;padding-bottom:3px;margin:0;cursor:pointer' >
                 <img class='icon20' Title='Back to Home' src='$iconsource_braxarrowleft_common' 
                     style='' 
                     />
-                &nbsp;
-                <span style='opacity:.5'>
-                $icon_braxroom2
-                </span>
-                <span class='pagetitle2a' style='color:$global_textcolor'>$topbartitle</span> 
             </div>
         </span>
         ";
@@ -872,7 +897,8 @@ function OwnerButtons( $readonly, $providerid, $roomid, $roominfo, $memberinfo, 
                         <img class='icon25' title='Spawn a Chat' src='$iconsource_braxchatbubble_common' style='top:10px;$memberinfoonly2' />
                     </div>
                     ";
-        
+
+        /*
         if( (   ($memberinfo->ownermoderatorflag == 'Y' && $roominfo->radiostation=='Q') || 
                 $_SESSION['enterprise']=='Y' || $_SESSION['superadmin']=='Yx'
             ) 
@@ -889,11 +915,13 @@ function OwnerButtons( $readonly, $providerid, $roomid, $roominfo, $memberinfo, 
                     </div>
             ";
         }
+         * 
+         */
         
             $ownerbuttons .=
             "
                     <br style='$memberinfoonly'><br style='$memberinfoonly'>
-                    <div class='showhiddenarea'>
+                    <div class='showhiddenarea' style='display:none'>
                         <input class='showhiddenarea inputline dataentry mainfont' id='roomsearch' name='roomsearch' type='text' size=20 value='$find'              
                             placeholder='Search'
                             style='display:none;max-width:200px;background-color:transparent;padding-left:5px;;color:$global_textcolor'/>

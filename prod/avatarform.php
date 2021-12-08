@@ -70,7 +70,6 @@ if($row = pdo_fetch($result)){
         $('.upload_an_avatar').click( function() 
         {
             window.open("braxme://avatar","_self");
-            alert('test1');
         });
    
  

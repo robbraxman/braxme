@@ -159,7 +159,7 @@ if($mode ==''){
                 <span class='smalltext'>
                 Advanced Feature: 
                 This is an optional chat storage encryption. When used, the session is encrypted with a key only
-                the participants posess.
+                the participants possess.
                 Keys are automatically sent for pickup to the recipient device but must be done within 24 hours.
                 Keys also need to be resent for additional devices. Due to the extra steps involved with
                 key management, this is 

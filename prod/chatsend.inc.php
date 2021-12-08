@@ -70,9 +70,9 @@
             $url_headers=get_headers($comment, 1);
             if(isset($url_headers['Content-Type'])){
 
-                $type=explode("/",strtolower($url_headers['Content-Type']));
+                $type=explode("/",$url_headers['Content-Type']);
                 if(
-                        $type[0] == 'image' 
+                        strtolower($type[0]) == 'image' 
                    )
                 {
                     return true;
@@ -462,6 +462,15 @@ function CreateChatMessage( $providerid, $chatid, $passkey, $message, $messagesh
     } else {
         $loginid = 'admin';
     }
+    
+    $result = pdo_query("1","select restricted from provider where providerid=? ",array($providerid));
+    if($row = pdo_fetch($result)){
+        $restricted = $row['restricted'];
+        if( $restricted == 'Y'){
+            exit();
+        }
+    }
+    
         
         $result = pdo_query("1",
         "
@@ -490,13 +499,17 @@ function CreateChatMessage( $providerid, $chatid, $passkey, $message, $messagesh
          * 
          */
         if( $streaming ){
-            pdo_query("1"," 
-               update broadcastlog set chatcount=chatcount+1 
-               where chatid=? and providerid =?
-               and mode ='V' and 
-               broadcastid = (select max(broadcastid) from broadcastlog 
-               where mode='V' and providerid = ? and chatid=?)
-            ",array($chatid,$providerid,$providerid,$chatid));
+            $result = pdo_query("1","select max(broadcastid) as maxno from broadcastlog ",null);
+            if($row = pdo_fetch($result)){
+                $maxno = $row['maxno'];
+                
+                pdo_query("1"," 
+                   update broadcastlog set chatcount=chatcount+1 
+                   where chatid=? and providerid =?
+                   and mode ='V' and 
+                   broadcastid = $maxno
+                ",array($chatid,$providerid,$providerid,$chatid));
+            }
         }
     
     

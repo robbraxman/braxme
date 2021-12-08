@@ -27,7 +27,7 @@ echo "<link rel='apple-touch-icon-precomposed' href='$rootserver/img/logo-b1a.pn
 echo "<link rel='apple-touch-startup-image' href='$rootserver/img/logo-b1a.png' />";
 
 
-echo "<link href='$rootserver/fonts/font-raleway.css' rel='stylesheet'>";
+echo "<link href='$rootserver/fonts/font-raleway.css?$randomid' rel='stylesheet'>";
 
 echo "<link rel='stylesheet' href='$rootserver/libs/alertify.js-0.3.10/themes/alertify.core.css' />\r\n";
 echo "<link rel='stylesheet' href='$rootserver/libs/alertify.js-0.3.10/themes/alertify.default.css' />\r\n";
@@ -56,7 +56,7 @@ echo "<script type='text/javascript' src='$rootserver/$installfolder/jquery.simp
 echo "<script type='text/javascript' src='$rootserver/libs/jquery.visible/jquery.visible.js'></script>\r\n";
 echo "<script type='text/javascript' src='$rootserver/libs/audio/audiojs/audio.js?$randomid'></script>\r\n";
 echo "<script type='text/javascript' src='$rootserver/libs/Mediabuffer-master/mediabuffer.js'></script>\r\n";
-
+    
 echo "<script src='$rootserver/libs/twitch/v1.js'  ></script>\r\n";
 
         

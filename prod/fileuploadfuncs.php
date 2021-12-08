@@ -95,7 +95,7 @@ require_once("notify.inc.php");
             
             //Encrypt Test
             $nVideo = false;
-            $fileencoding = $_SESSION['responseencoding'];
+            $fileencoding = $_SESSION['fileencoding'];
             $fileStreamTypes = array("mp4","mp3","mov","m4a","wav","m4v","pptx","ppt","avi");
             foreach( $fileStreamTypes as $fileStreamType ){
 
@@ -117,6 +117,10 @@ require_once("notify.inc.php");
                 exec("ffmpeg -vcodec png -i $physical_filename -ss  00:00:00 -vframes frames $upload_dir"."video-preview.png");            
                 
             }
+            $fileencoding = $_SESSION['fileencoding'];
+            //$fileencoding = 'PLAINTEXT';
+            
+            
             if($fileencoding != 'PLAINTEXT'){
                 StreamEncode($physical_filename, $physical_filename.".aes", $fileencoding );
                 $physical_filename = $physical_filename.".aes";
@@ -306,8 +310,7 @@ require_once("notify.inc.php");
             
             $alias = uniqid("T4AZ", true);
             $filesize = filesize( $upload_dir."medium/".$origfilename );
-
-
+            
             $result = pdo_query("1", 
                     "
                         insert into photolib

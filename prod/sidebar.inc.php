@@ -6,6 +6,7 @@ require_once("internationalization.php");
 
 
 
+
     function NotificationStatus($providerid, $write){
         
         if(intval($providerid)==0){
@@ -46,9 +47,15 @@ require_once("internationalization.php");
         $result = pdo_query("1",
         
             "
-            select * from notification where recipientid = ? and displayed = 'N' and 
-                notifytype = 'CP' and (notifysubtype is null or notifysubtype = 'CY') 
-                and chatid not in (select chatid from chatmaster where radiostation='Y')
+            select * 
+            from notification 
+            left join provider on notification.recipientid = provider.providerid
+            where notification.recipientid = ? and 
+                ( notification.notifydate > provider.chatnotified or provider.chatnotified is null ) and 
+                notification.notifytype = 'CP' and 
+                (notification.notifysubtype is null or notification.notifysubtype = 'CY') 
+                and notification.chatid is not null
+                and notification.chatid not in (select chatid from chatmaster where radiostation='Y')
                 
                 limit 1
             ",array($providerid)
@@ -68,7 +75,11 @@ require_once("internationalization.php");
         $result = pdo_query("1",
         
             "
-            select * from notification where recipientid = ? and displayed = 'N' and 
+            select * 
+            from notification 
+            left join provider on notification.recipientid = provider.providerid
+            where recipientid = ? and 
+            ( notification.notifydate > provider.roomnotified or provider.roomnotified is null) and 
                 notifytype = 'RP' limit 1
             ",array($providerid)
         );
@@ -112,22 +123,6 @@ require_once("internationalization.php");
     
     function SyncMailStatus($providerid){
         return 0;
-        /*
-        $result = pdo_query("2",
-        
-            "
-            select count(*) as proccount from imap_fillqueue where providerid=$providerid and xaccode='R' and status in ('P','N')
-            "
-        );
-        if($row = pdo_fetch($result))
-        {
-            if( intval($row['proccount'])>0){
-                return $row['proccount'];
-            }
-        }
-        return 0;
-         * 
-         */
     }
     
     function MeetupStatus($providerid){
@@ -161,9 +156,6 @@ require_once("internationalization.php");
         global $menu_live;
         global $customsite;
         
-        if($customsite){
-            return "";
-        }
         
         $notifytext = "";
         $timezone = $_SESSION['timezoneoffset'];
@@ -317,9 +309,6 @@ require_once("internationalization.php");
         global $customsite;
         global $iconsource_braxcheck_common;
         
-        if($customsite){
-            return "";
-        }
         $count=0;
         $notifytext = "";
         $timezone = $_SESSION['timezoneoffset'];
@@ -527,9 +516,10 @@ require_once("internationalization.php");
             </div>
             ";
 
+        $notifytext = "";
         
         $notifytext =  GetKudosNotifications($providerid);
-        $notifytext .=  GetLiveNotifications($providerid);
+        //$notifytext .=  GetLiveNotifications($providerid);
         $notifytext .=  GetBytzVPNNotifications($providerid);
         
         
@@ -547,19 +537,23 @@ require_once("internationalization.php");
                 from notification
                 left join provider on provider.providerid = notification.providerid
                 left outer join roominfo on notification.roomid = roominfo.roomid 
-                left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = ?
-                left join blocked blocked2 on blocked2.blocker = provider.providerid and blocked2.blockee = ?
                 
                 where
-                datediff(curdate(), notification.notifydate) < 30 and
+                datediff(curdate(), notification.notifydate) < 3 and
                 notification.recipientid = ?
                 and notification.notifytype in ('RP','RL','CP')
-                and notifymethod is not null
-                and blocked1.blockee is null and blocked2.blocker is null
                 and (notification.notifyread is null or notification.notifyread = '')
                 and provider.active = 'Y'
+                and notification.notifydate > (select homenotified from provider where provider.providerid = notification.recipientid)
+                and notification.providerid not in 
+                    (select blockee from blocked where
+                    blocker = ?) 
+                and notification.recipientid not in 
+                    (select blockee from blocked where blocker = notification.providerid )
                 order by livechannel desc, notification.notifydate desc limit 100
-            ",array($providerid,$providerid,$providerid));
+            ",array($providerid,$providerid));
+        
+        
         $i1 = 0;
         $lastnotifydate = '';
         $lastnotifytype = '';
@@ -620,7 +614,7 @@ require_once("internationalization.php");
                 if($postactive){
 
                     $notifytext .=                         "
-                    <div class='mainbutton mainfont' 
+                    <div class='mainfont' 
                             style='float:left;display:block;cursor:pointer; 
                             background-color:transparent;color:black;
                             padding-top:3px;
@@ -642,7 +636,7 @@ require_once("internationalization.php");
                                         </div>
 
                                     </td>
-                                    <td class='feed' 
+                                    <td class='feed mainbutton' 
                                         data-roomid='$row[roomid]' data-caller='home'
                                         data-reference='$cleanReference' data-shareid='$shareid'
                                         style='word-break:break-all;word-wrap:break-word;'>
@@ -746,11 +740,12 @@ require_once("internationalization.php");
             $lastnotifydate = $row['notifydate'];
             $i1++;
         }
+        //return "<br><br>Count is $i1<br><br>";
+        return $notifytext;
         if($_SESSION['superadmin']=='Y'){
             //$notifytext = "Test";
         }
-        if($notifytext!=""){
-            return $notifytext;
+        if($notifytext!==""){
         }
         return "";
     }

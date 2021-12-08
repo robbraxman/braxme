@@ -67,7 +67,7 @@ require_once("notify.inc.php");
             ",array($providerid,$email,$email,$handle,$handle));
 
             $result2 = pdo_query("1","
-                insert into contacts (providerid, targetproviderid, contactname, handle, email, sms, friend, imapbox, blocked, createdate, source ) values
+                insert ignore into contacts (providerid, targetproviderid, contactname, handle, email, sms, friend, imapbox, blocked, createdate, source ) values
                 (?, ?,?, ?,?, ?, 'Y', null,'', now(),'C'  )
             ",array($providerid,$targetproviderid,$name,$handle,$email,$sms));
         }
@@ -219,7 +219,7 @@ require_once("notify.inc.php");
 
             pdo_query("1",
                 "
-                    insert into chatmembers 
+                    insert ignore into chatmembers 
                     ( chatid, providerid, status, lastactive, lastmessage, lastread ) 
                     values
                     ( ?, ?, 'Y', now(), now(), now() );
@@ -234,7 +234,7 @@ require_once("notify.inc.php");
                 pdo_query("1",
                 "
                     insert into chatspawned ( chatid, roomid, providerid, createdate )
-                    values ( $chatid, $roomid, $providerid, now() )
+                    values ( ?, ?, ?, now() )
                 ",array($chatid,$roomid,$providerid));
             }
             
@@ -272,7 +272,7 @@ require_once("notify.inc.php");
          */
         
         $result = pdo_query("1","
-                insert into chatmembers ( chatid, providerid, status, lastactive, techsupport ) 
+                insert ignore into chatmembers ( chatid, providerid, status, lastactive, techsupport ) 
                 values
                 ( ?, ?, 'Y', now(),? );
         ",array($chatid,$recipientid,$techsupport));
@@ -289,7 +289,7 @@ require_once("notify.inc.php");
 
             $result = pdo_query("1",
                 "
-                    insert into chatmessage ( chatid, providerid, message, msgdate, encoding, status)
+                    insert ignore into chatmessage ( chatid, providerid, message, msgdate, encoding, status)
                     values
                     ( ?, ?, \"$encode\", now(), '$_SESSION[responseencoding]', 'Y' );
                 ",array($chatid,$recipientid));

@@ -196,7 +196,9 @@ $(document).ready( function() {
         
         $('#pid').val( localStorage.pid );
         $('#loginid').val(localStorage.loginid);
-        $('#stored').val(localStorage.swt);
+        if(typeof(localStorage.hswt)!=='undefined'){
+            $('#stored').val(localStorage.hswt);
+        } 
         $('#deviceid').val(localStorage.deviceid);
         
         

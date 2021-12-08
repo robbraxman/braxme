@@ -84,8 +84,6 @@ $inline = @tvalidator("PURIFY", $_GET['i'] );
 
         }
 
-        //header("Content-Type: application/octet-stream");
-        //header("Content-Disposition: inline; filename=$origfilename");
 
         //Echo Decrypted Stream
         getAWSObjectStreamEncryptedEcho( $row['filename'], $fileencoding, 0xFFFFF, $filesize );
@@ -141,22 +139,5 @@ $inline = @tvalidator("PURIFY", $_GET['i'] );
     header('Location: '.$awsurl);
     exit();
 
-/*
-header("Content-Type: application/octet-stream");
-header("Content-Disposition: filename='$row[origfilename]'");
-header("Cache-control: private;no-cache"); //prevent proxy caching
-if( $row[filesize] > 0 )
-     header("Content-length: $row[filesize]");
-
-exit();
-
-if ($fd = fopen ($filename, "rb")) {
-
-    fpassthru($fd);
-    fclose( $fd);
-    exit();
-}
- * 
- */
 
 ?>

@@ -154,7 +154,7 @@ if($_SESSION['innerwidth'] > 600)
             background: url(<?=$rootserver?>/libs/jssorslider/img/browser-icons.png);
         }
     </style>
-    <link href='http://fonts.googleapis.com/css?family=Playfair+Display:400,700,900,400italic,700italic,900italic' rel='stylesheet' type='text/css'>    
+    <link href='//fonts.googleapis.com/css?family=Playfair+Display:400,700,900,400italic,700italic,900italic' rel='stylesheet' type='text/css'>    
     <!-- it works the same with all jquery version from 1.x to 2.x -->
     <script src='<?=$rootserver?>/libs/jquery-1.11.1/jquery.min.js'  ></script>
     <!-- use jssor.slider.mini.js (40KB) instead for release -->

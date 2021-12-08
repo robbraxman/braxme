@@ -1,4 +1,5 @@
 <?php
+exit();
 session_start();
 require("validsession.inc.php");
 require_once("config-pdo.php");

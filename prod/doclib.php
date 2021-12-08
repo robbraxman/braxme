@@ -80,7 +80,7 @@ require_once("internationalization.php");
         
         $result = 
         pdo_query("1","
-            select folderid from filefolders where providerid=$providerid and foldername='--temp--'
+            select folderid from filefolders where providerid=? and foldername='--temp--'
                 ",array($providerid));
         if($row = pdo_fetch($result)){
         
@@ -103,7 +103,7 @@ require_once("internationalization.php");
     
         pdo_query("1","
             delete from filefolders where providerid=? and folderid=?
-            ",array($selectedfolderid));
+            ",array($providerid,    $selectedfolderid));
         
         pdo_query("1","
             update filelib set status='N', folder='', folderid = 0 where providerid=? and folderid=?
@@ -264,8 +264,8 @@ require_once("internationalization.php");
             
             $uploadfilename= $targetproviderid."_".$unique_id.".".$row['filetype'];
             $origfilename = DecryptText( $row['origfilename'],$row['encoding'],"$filename" );
-            $neworigfilename = EncryptTextCustomEncode( $origfilename,"PLAINTEXT","$uploadfilename" );
-            $title = EncryptTextCustomEncode($targetname,"PLAINTEXT", "$uploadfilename");
+            $neworigfilename = $origfilename;
+            $title = $targetname;
             
             if(copyAWSObject( $uploadfilename, $filename )){
             
@@ -315,7 +315,7 @@ require_once("internationalization.php");
             $result = pdo_query("1","
                 select fileencoding, filetype from filelib 
                     where providerid=? and filename=?
-                    ",array($provider,$filename));
+                    ",array($providerid,$filename));
             if($row = pdo_fetch($result)){
                 $encoding = $row['fileencoding'];
                 $ext = $row['filetype'];
@@ -364,24 +364,23 @@ require_once("internationalization.php");
         $path = pathinfo("$filename");
         $origfilename =  @tvalidator("PURIFY",$_POST['origfilename']);
         $pathname = pathinfo( $origfilename );
-        if( strtolower($path['extension'])!=strtolower($pathname['extension'])){
-        
-            $origfilename .= ".$path[extension]";
-            
-        }          
+        if(isset($path['extension'])){
+            if( strtolower($path['extension'])!=strtolower($pathname['extension'])){
+
+                $origfilename .= ".$path[extension]";
+
+            }          
+        }
         //Change the Name if it's a duplicate
         $origfilename = duplicateNameCorrection($providerid, $filename, $origfilename);
-
         
-        $origfilename_encrypted = EncryptTextCustomEncode( $origfilename,"PLAINTEXT","$filename" );
-        
-        $title = EncryptTextCustomEncode(@tvalidator("PURIFY",$_POST['title']),"PLAINTEXT", "$filename");
+        $title = @tvalidator("PURIFY",$_POST['title']);
         $result = pdo_query("1",
             "
                 update filelib set origfilename=?, title=?, encoding='PLAINTEXT', folder=? where
                     filename=? and providerid = ?
             ",array(
-                $origfilename_encrypted, $title, $selectedfolder,$filename, $providerid
+                $origfilename, $title, $selectedfolder,$filename, $providerid
             ));
         $statusMessage = "File $origfilename info changed<br>";
         $filename = '';
@@ -447,8 +446,9 @@ require_once("internationalization.php");
     }
     $pagenext = intval($page)+1;
     $pageprev = intval($page)-1;
-    if( intval($pageprev)< 1 )
+    if( intval($pageprev)< 1 ){
         $pageprev = 1;
+    }
     
     $max = 500;
     
@@ -944,7 +944,7 @@ require_once("internationalization.php");
                     vertical-align:top;
                     color:$filecolor;'
                     >
-                    <b class='smalltext' style='color:$filecolor'>$foldertext$shortname</b><br>
+                    <b class='pagetitle3' style='color:$filecolor'>$foldertext$shortname</b><br>
                     $createdate<br>$filesize ($row[views])
                 </div>
             </div>
@@ -1013,14 +1013,17 @@ require_once("internationalization.php");
     if($count > 0){
     echo "
         </div>
-        <div class='smalltext' style='padding:10px;background-color:white'>
+        <div class='smalltext' style='padding:10px;background-color:$backgroundcolor'>
         $count files in folder
         <br><br>
         Total Space Used: $totalsize MB<br>
         Total Bandwidth Used: $bandwidth GB
         <br><br>
         <div class='privacytip smalltext' style='padding:20px;margin:auto;cursor:pointer;color:firebrick;text-align:center'>
+        <!--
         <b>Privacy Tips</b>
+        debug limit=$limit max=$max pagestart=$pagestart folderid=$_SESSION[folderid] caller=$caller filtername=$filtername sort=$sorttext
+        -->
         </div>
             
         </div>
@@ -1032,15 +1035,6 @@ require_once("internationalization.php");
     $e2 = $time3 - $time1;
 
         
-
-    if($providerid==$admintestaccount){
-
-        echo " <br><br>
-            1 $e1
-            <br>2 $e2
-
-        ";
-    }
     //*************************************************************
     //*************************************************************
     //*************************************************************
@@ -1386,9 +1380,19 @@ function ShowFile( $displayOnly, $providerid, $mode, $filename, $altfilename, $t
                 echo "
                     <br>
                     $streamlink
-                    <div class='divbutton3 divbutton3_unsel fileselect' data-link='$download ' data-target='$target' data-caller='$caller'  data-passkey64='$passkey64' >
+                    <div class='divbutton3 divbutton3_unsel fileselect' data-link='$download' data-target='$target' data-caller='$caller'  data-passkey64='$passkey64' >
                     Share Download Link
                     </div>
+                    ";
+                if($row['filetype']=='txt'){
+                echo"
+                    <br><br><br>
+                    <div class='divbutton3 divbutton3_unsel fileselect' data-link='text' data-target='$target' data-caller='$caller'  data-passkey64='$passkey64' >
+                    Share Text Content
+                    </div>
+                    ";
+                }
+                echo "
                     <br><br>
                     ";
                 
@@ -1982,7 +1986,7 @@ function PagingButtons( $filtername, $pagedisplay, $page, $pagenext, $pageprev,
                     <input id='photolibpage' class='photolibpage' type=hidden value='$page' />
                     <br><br>
                     <img class='doclib tapped icon25' id='prevfilepage' 
-                        src='$iconsource_braxarrowup_common' 
+                        src='$iconsource_braxarrowdown_common' 
                         style='cursor:pointer;float:right;
                         padding-left:5px;
                         padding-right:35px;

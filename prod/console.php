@@ -17,15 +17,15 @@ $timeouterror = "<div class='tilebutton restarthome' style='cursor:pointer;paddi
 
 $uniqid = uniqid();
 
-
 $tester = 'N';
-//if($_SESSION['pid'] == $admintestaccount || $_SESSION['pid'] == 690034545 )
+
 if(
     $_SESSION['pid'] == $admintestaccount ) 
         //|| $_SESSION['pid'] == 690032821)
 {
     $tester ='Y';
 }
+
 
 //Auto Launch Chat
 $initmodule = "";
@@ -72,7 +72,7 @@ if($_SESSION['enterprise']=='Y'){
 </head>
 <body class='iosx-visible' style='z-index:3;max-height:100%;overflow-x:hidden;overflow-y:auto;background-color:#d9d9d9;position:absolute;left:0px;top:0px;width:100%;padding:0;'>
 <div class='iosx-visible' id='fixedbackground'  style='
-    background-color:<?=$global_background?>;
+    background-color:<?=$global_web_background?>;
     border-image-width:0px;
     display:block;
     position:fixed;
@@ -102,7 +102,7 @@ if($_SESSION['enterprise']=='Y'){
     '>
     <div class='hearts' style='margin-left:20%;height:100%;width:300px;'></div>
 </div>
-<div class='consolebody' style='z-index:10;border:0;position:absolute;top:0;left:0;background-color:transparent;padding:0;margin:0;width:100%;max-width:100%;'>
+<div class='consolebody' style='z-index:10;border:0;position:absolute;top:0;overflow-x:hidden;overflow-y:hidden;left:0;background-color:transparent;padding:0;margin:0;width:100%;max-width:100%;'>
 
     <div class='gridnoborder' style='display:none' id="loading-div-background">
         <div id="loading-div" class="ui-corner-all" >
@@ -160,7 +160,7 @@ if($_SESSION['enterprise']=='Y'){
 
 
                 <div class='mainview gridnoborder' 
-                     style="max-height:100%;width:98%;overflow-x:hidden;overflow-y:scroll;position:relative;display:none;background-color:transparent;
+                     style="max-height:100%;width:100%;overflow-x:hidden;overflow-y:scroll;position:relative;display:none;background-color:transparent;
                      padding:0;margin:0;z-index:10">
                     <table id='mainviewtop gridnoborder' class="panelhost mainfont" style="background-color:transparent;width:100%;height:auto;margin:0;padding:0px;border-spacing:0;border:0">
                         <tr class='gridnoborder' style="padding:0;margin:0;background-color:transparent;;width:100%">
@@ -203,7 +203,7 @@ if($_SESSION['enterprise']=='Y'){
                                     <div class='chatarea gridnoborder hearts' style="overflow-x:hidden;overflow-y:hidden;position:relative;padding:0;margin:0;background-color:transparent;width:100%;max-height:100%">
                                         <div class='mobilenoteareadiv gridnoborder' style='border-color:black;display:none;color:white;background-color:black;overflow:hidden;width:100%;height:250px'></div>
                                         <div class='chatheading gridnoborder smalltext' style='color:black;background-color:transparent;overflow:hidden;width:100%;'></div>
-                                        <div id="chatwindow" name="chatwindow" class="chatwindow gridnoborder" style="overflow-x:hidden;overflow-y:scroll;background-color:transparent;color:black;padding:0;margin:0;width:100%" >
+                                        <div id="chatwindow" name="chatwindow" class="chatwindow gridnoborder" style="overflow-x:hidden;overflow-y:auto;background-color:transparent;color:black;padding:0;margin:0;width:100%" >
                                             <img style="height:100px;margin:10px;" src="../img/loading-blue.gif" alt="Connecting.."/>
                                         </div>
                                         <div class='chatentry gridnoborder smalltext' style='position:absolute;bottom:0;height:0;left:0;color:black;background-color:<?=$global_bottombar_color?>;overflow:hidden;width:100%;'>
@@ -233,15 +233,15 @@ if($_SESSION['enterprise']=='Y'){
                                     <div id="popupwindow" name="popupwindow" class="popupwindow" 
                                          style="padding:0px;margin:0px;color:<?=$global_textcolor?>;background-color:<?=$global_background?>;width:100%;" ></div>
                                     <div id="socialwindow" name="socialwindow" class="socialwindow" 
-                                         style="padding:0px;margin:0px;color:<?=$global_textcolor?>;border:0;border-spacing:0;background-color:transparent;width:100%;" ></div>
+                                         style="padding:0px;margin:0px;color:<?=$global_textcolor?>;border:0;border-spacing:0;background-color:transparent;width:100%;overflow-y:auto" ></div>
                                     <div id="shareitwindow" name="shareitwindow" class="shareitwindow" 
                                          style="padding:0px;margin:0px;color:<?=$global_textcolor?>;background-color:transparent;width:100%;" ></div>
-                                    <div id="roomwindow" name="roomwindow" class="roomwindow feedpanel gridnoborder" style="
-                                        padding:0px;margin:0px;color:<?=$global_textcolor?>;width:100%;
-                                        background-color:transparent;
+                                    <div id="roomwindow" name="roomwindow" class="roomsview roomwindow feedpanel gridnoborder" style="
+                                        padding:0px;margin:0px;color:<?=$global_textcolor?>;width:100%;max-width:100%;
+                                        background-color:transparent;overflow-x:hidden;
                                          " >
-                                        <div id="roominnerwindow" name="roominnerwindow" class="roominnerwindow gridnoborder" style="padding:0px;margin:0px;color:<?=$global_textcolor?>;background-color:transparent;width:100%;overflow:hidden" >
-                                            <img style="height:100px;margin:10px;" src="../img/loading-blue.gif" alt="Connecting.."/>
+                                        <div id="roominnerwindow" name="roominnerwindow" class="roominnerwindow gridnoborder" style="padding:0px;margin:0px;color:<?=$global_textcolor?>;background-color:transparent;width:100%;overflow-x:hidden;overflow-y:visible" >
+                                            <img style="height:100px;margin:0px;" src="../img/loading-blue.gif" alt="Connecting.."/>
                                         </div>
 
                                     </div>
@@ -416,6 +416,7 @@ if($_SESSION['enterprise']=='Y'){
      <INPUT TYPE="hidden" NAME="folder" value=LastFolder >
      <INPUT TYPE="hidden" NAME="otherid" id="uploadfile_otherid" value='' >
      <INPUT TYPE="hidden" NAME="chatid" id="uploadfile_chatid" value='' >
+     <INPUT TYPE="hidden" NAME="roomid" id="uploadfile_roomid" value='' >
      <INPUT TYPE="hidden" NAME="passkey64" id="uploadfile_passkey64" value='' >
     <INPUT class='timestamp' TYPE='hidden' NAME='timestamp' value='' >
     </form>
@@ -657,7 +658,7 @@ if( $tester == 'Y'){
 ?>
 <script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console0.js?i=<?=$uniqid?>'></script>
 <script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console.js?i=<?=$uniqid?>'></script>
-<script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/notifywebtest.js?<?=$uniqid?>'></script>
+<script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/notifyweb.js?<?=$uniqid?>'></script>
 <script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console_extra.js?<?=$uniqid?>'></script>
 
 <?php
@@ -667,6 +668,7 @@ if( $tester == 'Y'){
 <script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console0.js?i=<?=$uniqid?>'></script>
 <script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console.js?i=<?=$uniqid?>'></script>
 <script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/notifyweb.js?<?=$uniqid?>'></script>
+<script type='text/javascript' src='<?=$rootserver?>/<?=$installfolder?>/console_extra.js?<?=$uniqid?>'></script>
 
 <?php
 /*

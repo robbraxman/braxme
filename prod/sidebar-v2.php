@@ -8,6 +8,7 @@ require_once("roomselect.inc.php");
 require_once("sponsorhome.inc.php");
 require("nohost.php");
 
+
         $alertstatus = "";
         $meetupstatus = "";
         $chatblink = "";
@@ -40,7 +41,15 @@ require("nohost.php");
         $sponsorformat = "";
         $sizing = "";
         $lasttip = "";
-        $imap_item = 0;//intval(tvalidator("PURIFY",$_POST['imap_item']))-1;
+        $notifypretext = "";
+        $notifytext = "";
+        $tileview2 = '';
+        $tileview = "";
+        $sidebar = "";
+        $sidebarmenu = "";
+        $tour = "";
+        $notifytitle = "";
+        
 
         $flag = $global_icon_check;//"<img class='chatalert icon15' title='Checked' src='../img/check-yellow-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
         $flagblink = $global_icon_check_blink;//"<img class='chatalert icon15' title='Checked' src='../img/check-yellow-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
@@ -49,7 +58,6 @@ require("nohost.php");
         $backgroundcolorside2 = "$global_menu2_color";//$global_color_menu;
         $backgroundcolorside = $global_menu_color;
 
-        
         
         
         if(isset($_SESSION['sponsorname']) ){
@@ -79,7 +87,7 @@ require("nohost.php");
         }
         if(!isset($_POST['providerid']) || !isset($_SESSION['pid'])){
         
-            $arr = array('sidebar'=> "",
+            $arr = array('sidebar'=> "No Data",
                         'tileview'=> "Timeout",
                         'settingsview'=> "",
                         'roomsview'=> "",
@@ -239,12 +247,14 @@ require("nohost.php");
             $logo = "";
             $promo = "";//<p class='smalltext2'>Proudly made and encrypted in the USA by US Citizens</p>";
         }
+
+
         
         if(strtolower($_SESSION['sponsor'])!=''){
             
             $result2 = pdo_query("1","
                     select logo, boxcolor, partitioned, roomid, roomhashtag, format,
-                    live  from sponsor where sponsor = '$_SESSION[sponsor]' ");
+                    live  from sponsor where sponsor = '$_SESSION[sponsor]' ",null);
             if( $row2 = pdo_fetch($result2)){
                 //$logo = "Sponsored by<br><img src='../img/dteenergy-logo.png' style='height:80px;max-width:80%'/>";
                 $boxcolor = "$row2[boxcolor]";      
@@ -268,6 +278,7 @@ require("nohost.php");
             }
                           
         }
+       
         if($sponsorroomhashtag=='' && !$customsite && $_SESSION['newbie']=='Y'){
             if($lasttip == '0' || $lasttip == ''){
                 //$sponsorroomhashtag = '#userbasics';
@@ -343,7 +354,7 @@ require("nohost.php");
             </div>
             
          * ";
-
+ 
         $footer = "     
                 <div style='float:left;width:100%'>
                 <br>
@@ -366,21 +377,21 @@ require("nohost.php");
                 ";
         if($_SESSION['web']=='Y'){
             $footer .= "     
-                <div class='mainbutton sponsormanage pagetitle3 tapped' data-mode='CHECKLIST' style='cursor:pointer;color:$global_activetextcolor'>$enterpriseapp Check List</div>
+                <div class='mainbutton sponsormanage pagetitle2 tapped' data-mode='CHECKLIST' style='padding-left:20px;cursor:pointer;color:$global_activetextcolor'>$enterpriseapp Check List</div>
                 <br>
                     ";
         }
         if($customsite == false){
             $footer .= "     
-                <div class='mainbutton languagechoice pagetitle3 tapped' data-mode=''  style='cursor:pointer;color:$global_activetextcolor'>$footer_language</div>
+                <div class='mainbutton languagechoice pagetitle2 tapped' data-mode=''  style='padding-left:20px;cursor:pointer;color:$global_activetextcolor'>$footer_language</div>
                 <br>
                 ";
             $footer .= "     
-                    <div class='mainbutton roomjoin pagetitle3 tapped' data-mode='J' data-handle='#userbasics' data-roomid='12802' data-caller='home' style='cursor:pointer;color:$global_activetextcolor'>$footer_platformtour</div>
+                    <div class='mainbutton roomjoin pagetitle2 tapped' data-mode='J' data-handle='#userbasics' data-roomid='12802' data-caller='home' style='padding-left:20px;cursor:pointer;color:$global_activetextcolor'>$footer_platformtour</div>
                     <br>
                     ";
             $footer .= "     
-                    <div class='mainbutton selectchattech pagetitle3 tapped' data-handle='@robbraxman' data-mode='' style='cursor:pointer;color:$global_activetextcolor'>$footer_techsupport</div>
+                    <div class='mainbutton selectchattech pagetitle2 tapped' data-handle='@robbraxman' data-mode='' style='padding-left:20px;cursor:pointer;color:$global_activetextcolor'>$footer_techsupport</div>
                     <br>
                     ";
         }
@@ -407,18 +418,28 @@ require("nohost.php");
                                 <br><br>
                             </span>
                         ";        
+        
+        $swipemsg = "<div class='pagetitle3 gridnoborder rounded shadow' 
+                        style='background-color:$global_background;padding-top:20px;max-width:600px;
+                        padding-left:20px;padding-right:20px;padding-bottom:20px;
+                        text-align:left;color:$global_textcolor;margin-left:auto;margin-right:auto;margin-bottom:10px;max-width:90%'> 
+                        <b>Swipe Right to see the Menu from anywhere. Try it now!</b>
+                    </div>";
+
+        
+        $notifytext = GetNotifications($providerid);
+        if($notifytext!==''){
+            $swipemsg = "";
+        }
+        /*
         if($sponsorroomhashtag == '' ){
-            
-            $notifypretext =  GetEformNotifications($providerid);
-            $notifytext = GetNotifications($providerid);
             $tileview2 = '';
-            
         } else {
             
             $tour = "";
             $notifytitle = "";
-            $tileview2 = GetSponsorHome($sponsorroomhashtag);
-            $notifytext .= $tileview2;
+            //$tileview2 = GetSponsorHome($sponsorroomhashtag);
+            //$notifytext .= $tileview2;
         }
         if($notifytext == ""){
             if($roomdiscovery !='N'){
@@ -429,17 +450,11 @@ require("nohost.php");
         } else {
             $notifytext = $notifypretext.$tour.$notifytext."";
         }
-        //if($roomdiscovery!='N' ){
-        if($_SESSION['joinedvia']=='' && $_SESSION['enterprise']!='Y' ){
+         * 
+         */
+        if( $_SESSION['enterprise']!='Y' ){
             //New User
             $notifytext .= SetProfileReminder($providerid,"<br>","");
-            
-            $community = JoinCommunity($providerid, $roomdiscovery, "<br>","");
-            $notifytext .=
-                "<div class='pagetitle2' style='display:inline-block;margin-auto;width:90%;text-align:center;color:$global_textcolor;'>
-                    $community
-                  </div>
-                  ";
         }
         $notifytext .= $footer;
         
@@ -447,6 +462,7 @@ require("nohost.php");
 
         $sidemenu = GenerateMenu();
 
+        
         $displayedlogo = $applogo;
         if($sponsorlogo!=''){
             $displayedlogo = $sponsorlogo;
@@ -462,6 +478,10 @@ require("nohost.php");
 
                 </div>
             ";
+        
+        
+        
+        
         
         $tileview =
             "
@@ -488,7 +508,8 @@ require("nohost.php");
                             <div class='' style='background-color:transparent;padding:10px;margin-right:0px'>
                                 $notifytitle
                                 $promo
-                                <div class='sidebarmessage' style=''></div>        
+                                $swipemsg
+                                <div class='sidebarmessage' style=''></div>    
                                 $notifytext
                             </div>
                         </td>
@@ -537,21 +558,13 @@ require("nohost.php");
                         </td>
                         <td class='sidebararea2 gridnoborder' style='vertical-align:top;margin-right:0px;width:100%;padding:0'>
                             $logo
-                            <!--
-                            <div class='pagetitle2a gridnoborder' 
-                                style='background-color:$global_titlebar_color;padding-top:0px;
-                                padding-left:20px;padding-bottom:5px;padding-top:5px;
-                                text-align:left;color:white;margin:0'> 
-                                $menu_activity
-                                <br>
-                            </div>
-                            -->
                             <div class='pagetitle2 gridnoborder' 
                                 style='background-color:transparent;padding-top:10px;
                                 padding-left:20px;padding-bottom:5px;
                                 text-align:left;color:$global_textcolor;margin:0'> 
                                 $menu_activity
                             </div>
+                            
                             
                             <div class='' style='position:relative;background-color:transparent;padding-left:20px;padding-right:20px;margin-right:10px'>
                                 <img class='icon20 roomjoin mainbutton' 
@@ -572,7 +585,6 @@ require("nohost.php");
             ";
      
         $settingsview = "";
-
     
         
         $alarmstatus = "";
@@ -584,6 +596,8 @@ require("nohost.php");
             $roomalertflag =true;
         }
 
+        
+        
         if($startup=='true'){
             $notificationstatus = "Y";
         }
@@ -597,28 +611,6 @@ require("nohost.php");
         }
         $notificationstatus='Y';
         $alertmessage = "";
-        if($sponsorroomhashtag!=''){
-            if($alertlive != ''){
-                $alertmessage .= "<div class='selectchatlist mainbutton pagetitle3'  data-mode='LIVE' style='cursor:pointer;padding:10px;color:$global_activetextcolor'>$global_icon_check Live Broadcasts</div>";
-            }
-            if($alertchat != ''){
-                $alertmessage .= "<div class='selectchatlist mainbutton pagetitle3' data-mode='CHAT' style='cursor:pointer;padding:10px;color:$global_activetextcolor'>$global_icon_check You have messages</div>";
-            }
-            if($alertroom != ''){
-                $alertmessage .= "<div class='roomselect mainbutton pagetitle3' style='cursor:pointer;padding:10px;color:$global_activetextcolor'>$global_icon_check New Room content</div>";
-            }
-            if($sponsorformat != '' && $startup != 'true'){
-                $tileview = '';
-            }
-            if($sponsorformat == ''){
-                $alertmessage .= "<div class='pagetitle3 savetip restarthome' 
-                    data-mode='E' data-sponsor='' data-tip='$lasttip'
-                    style='padding:10px;cursor:pointer;color:$global_activetextcolor'>
-                    $global_icon_check Dismiss the Tips Below
-                  </div>";
-            }
-
-        }
         
     
         $arr = array('logo'=> "$logoarea",
@@ -645,6 +637,7 @@ require("nohost.php");
         function MenuItem( $style, $icon, $title, $alert, $class, $datastring, $seq, $bold  )
         {
             global $global_menu_text_color;
+            
             $prebold = '';
             $postbold = '';
             if($bold){
@@ -664,7 +657,7 @@ require("nohost.php");
                     <span class='featureheadsidebar' ></span>
                     -->
                     <span class='featureheadsidebar noselect'> 
-                        <div class='pagetitle2a  divbuttonsidebar divbuttonsidebar_unsel rounded noselect' style='padding-left:10px;padding-right:20px' > 
+                        <div class='mainfont  divbuttonsidebar divbuttonsidebar_unsel rounded noselect' style='padding-left:10px;padding-right:20px;color:$global_menu_text_color' > 
                             $icon&nbsp;&nbsp;
                             $title
                             <span class='alertlive'> 
@@ -684,7 +677,7 @@ require("nohost.php");
                     <span class='featureheadsidebar'> 
                         <div class='divbuttonsidebar divbuttonsidebar_unsel rounded' > 
                             $icon&nbsp;&nbsp;
-                            <span class='pagetitle2a' style='color:$global_menu_text_color'>
+                            <span class='mainfont' style='color:$global_menu_text_color'>
                             $prebold$title$postbold $alert
                             </span>
                             &nbsp;&nbsp;&nbsp;
@@ -696,7 +689,8 @@ require("nohost.php");
             return $menu;
             
         }
-    
+
+        
         function GenerateMenu()
         {
             global $icon_braxlive;
@@ -710,6 +704,7 @@ require("nohost.php");
             global $icon_braxmenu;
             global $icon_braxsecurity;
             global $icon_braxstore;
+            global $icon_braxfaq;
             
 
             $braxdoctor =    "<img class='icon30' src='../img/brax-doctor-round-white-128.png'  />";
@@ -726,6 +721,7 @@ require("nohost.php");
             $braxsettings =   $icon_braxsettings;
             $braxidentity =   $icon_braxidentity;
             $braxsecurity =   $icon_braxsecurity;
+            $braxfaq =   $icon_braxfaq;
             $braxstore = $icon_braxstore;
             $bold = true;
 
@@ -740,10 +736,11 @@ require("nohost.php");
             global $menu_myfiles;
             global $menu_myphotos;
             global $menu_store;
+            global $menu_faq;
             global $alertlive;
             global $alertchat;
             global $alertroom;
-            global $admintestaccount;
+            
 
             $sidemenu = MenuItem( "S", $braxnotifications, "$menu_home", "", "tilebutton", "", 2, false );
             $sidemenu .= "<br>";
@@ -751,10 +748,31 @@ require("nohost.php");
             $sidemenu .= MenuItem( "S", $braxmeetup, "$menu_people", "", "meetuplist mainbutton", "", 2, $bold );
             $sidemenu .= MenuItem( "S", $braxchat, "$menu_chats", "$alertchat", "selectchatlist mainbutton", "data-mode='CHAT'", 3, $bold );
             $sidemenu .= MenuItem( "S", $braxrooms, "$menu_rooms", "$alertroom", "roomselect mainbutton", "data-mode='FEED' data-roomid='0'", 3, $bold );
+            if($_SESSION['roomdiscovery']=='Y'){
+                $sidemenu .= MenuItem( "S", $braxfaq, "$menu_faq", "", "roomselect mainbutton", "data-mode='FAQ' ", 3, false );
+            }
 
-            $sidemenu .= "<br><br>";
+
+            //$sidemenu .= "<br><br>";
             $sidemenu .= MenuItem( "S", $braxphotos, "$menu_myphotos", "", "photolibrary mainbutton", "", 2, false );
             $sidemenu .= MenuItem( "S", $braxdocs, "$menu_myfiles", "", "doclib mainbutton", "", 2, false );
+            if($_SESSION['sponsor']==''){
+                if( $customsite == false){ 
+                //$sidemenu .= MenuItem( "S", $braxlive, "$menu_live", "$alertlive", "selectchatlist mainbutton", "data-mode='LIVE'", 1, $bold );
+                }
+            } else {
+                if($sponsorlive == '1'){
+                    if( $customsite == false){ 
+                        //$sidemenu .= MenuItem( "S", $braxlive, "$menu_live", "$alertlive", "selectchatlist mainbutton", "data-mode='LIVE'", 1, $bold );
+                    }
+                }
+                if($sponsorlive == '2'){
+                    if( $customsite == false){ 
+                        //$sidemenu .= MenuItem( "S", $braxlive, "$menu_live", "$alertlive", "selectchatlist mainbutton", "data-mode='LIVE'", 1, $bold );
+                    }
+                }
+
+            }
             $sidemenu .= "<br><br>";
             
             
@@ -763,7 +781,6 @@ require("nohost.php");
             
             return $sidemenu;
         }
-        
 function SetProfileReminder($providerid, $preformat, $postformat)
 {
     global $lock;
@@ -776,30 +793,43 @@ function SetProfileReminder($providerid, $preformat, $postformat)
     global $menu_trending;
     global $installfolder;
     global $customsite;
+    global $global_icon_check;
     
-    $list = "";
+    $list = "<br><br><br><br>";
     
     
-    if($_SESSION['avatarurl']!=="$prodserver/img/faceless.png" && $_SESSION['avatarurl']!==""  
-        || $_SESSION['roomdiscovery']=='N'){
-        return;
-    }
     
     $list .=
-   "<div class='pagetitle2' style='display:inline-block;margin-auto;width:90%;text-align:center;color:$global_textcolor;'>
+   "<div class='pagetitle2' style='display:inline-block;margin-auto;width:90%;padding-left:20px;padding-right:20px;text-align:left;color:$global_textcolor;'>
         $preformat
-        Create Your Personal Profile!<br>
-        <br>
         <div class='$_SESSION[profileaction] gridnoborder rounded mainfont mainbutton' 
           data-roomid='$_SESSION[profileroomid]' data-provider='$providerid' data-caller='none'
           style='display:inline-block;cursor:pointer;
-          text-align:center;vertical-align:top;
+          text-align:left;vertical-align:top;
           background-color:$global_background;
-          min-width:15%;max-width:300px;padding-left:10px;padding:10px;margin:5px'>
-              <div class='mainfont' style='color:$global_textcolor;max-width:90%;width:200px;word-break:break-word'>
-                  <b>Update User Profile</b>
-              </div>
+          min-width:80%;max-width:300px;padding-left:10px;padding:10px;margin:5px'>
+            $global_icon_check Create Your Personal Profile!<br>
+        </div>";
+    
+    if($_SESSION['avatarurl']!=="$prodserver/img/faceless.png" && $_SESSION['avatarurl']!==""  ){
+        $list = "<br><br><br><br>";
+    }
+    
+    if($_SESSION['roomdiscovery']=='N'){
+        return "";
+    }
+    
+    $list .="
+        <div class='selectchatlist mainbutton gridnoborder rounded mainfont mainbutton' 
+          style='display:inline-block;cursor:pointer;
+          text-align:left;vertical-align:top;
+          background-color:$global_background;
+          min-width:80%;max-width:300px;padding-left:10px;padding:10px;margin:5px'>
+            $global_icon_check Join a Community Chat<br>
         </div>
+
+        <br>
+        
        $postformat
      </div>
      ";

@@ -11,7 +11,7 @@ if($_SESSION['language']==''){
     $menu_handle = 'Username';
     $menu_home = 'Home';
     $menu_rooms = 'Blogs';
-    $menu_room = 'Blog Room';
+    $menu_room = 'Blog';
     $menu_live = 'Live';
     $menu_chats = 'Chats';
     $menu_chat = 'Chat';
@@ -26,8 +26,8 @@ if($_SESSION['language']==''){
     $menu_userprofile = "User Profile";
     $menu_myphotos = 'My Photos';
     $menu_myfiles = 'My Files';
-    $menu_myrooms = 'My Blog Rooms';
-    $menu_whatsnew = "Blogs - What's New";
+    $menu_myrooms = 'My Blogs';
+    $menu_whatsnew = "What's New";
     $menu_password ='Password';
     $menu_confirmpassword ='Confirm Password';
     $menu_changepassword ='Change Password';
@@ -39,8 +39,8 @@ if($_SESSION['language']==''){
     $menu_public = 'Public';
     $menu_community = 'Contacts';
     $menu_top = 'Top';
-    $menu_roomselect = 'Select Blog Room';
-    $menu_discoverrooms = 'Discover Blog Rooms';
+    $menu_roomselect = 'Select Blog';
+    $menu_discoverrooms = 'Discover Blogs';
     $menu_trending = 'Trending';
     $menu_communitylist = 'Group Lists';
     
@@ -48,8 +48,8 @@ if($_SESSION['language']==''){
     $menu_mynotifications = 'My Notifications';
     $menu_advancedsettings = 'Advanced Settings';
     $menu_save = "Save Changes";
-    $menu_managerooms = "Manage Blog Rooms";
-    $menu_manageroom = "Manage Blogs and Members";
+    $menu_managerooms = "Manage My Blogs";
+    $menu_manageroom = "Manage My Blogs and Members";
     $menu_websites = "Websites";
     $menu_all = "All";
     $menu_activetoday = "Active Today";
@@ -66,7 +66,7 @@ if($_SESSION['language']==''){
     $menu_leave = "Leave";
     $menu_back = "Back";
     $menu_hide = "Hide";
-    $menu_gotoroom = "Go to blog room to post";
+    $menu_gotoroom = "Go to blog to post";
     $menu_name = 'Name';
     $menu_email = 'Email';
     $menu_alias = 'External Alias';
@@ -83,20 +83,20 @@ if($_SESSION['language']==''){
     $menu_thanks = 'Thanks!';
     
     $menu_whoshere = "Who's Here";
-    $menu_roommembers = "Blog Room Members";
-    $menu_aboutme = "About Me";
+    $menu_roommembers = "Blog Members";
+    $menu_aboutme = "My Blog";
     $menu_managesocialvision = "Manage $enterpriseapp";
     $menu_upgrade = "Upgrade to $enterpriseapp";
-    $menu_manageupgrade = "$appname Services Store";
+    $menu_manageupgrade = "Upgrade to $enterpriseapp";
     $menu_setprofilephoto = "Set a Profile Photo";    
-    $menu_biography = "Profile";
+    $menu_biography = "Your Public Profile";
     $menu_biographyprompt = "Brief Biography";
     $menu_refresh = "Refresh";
     $menu_title = 'Title';
     $menu_newtopic = "New Topic, comment, link, photos, video";
     $menu_reply = "Topic Reply";
     $menu_replies = "Comments";
-    $menu_roomfiles = "Blog Room Files";
+    $menu_roomfiles = "Blog Files";
     $menu_roominvite = "Invite";
     $menu_roomunsubscribe = "Unsubscribe from Blog";
     $menu_mutenotifications = "Mute Notifications";
@@ -130,9 +130,9 @@ if($_SESSION['language']==''){
     $menu_friends = "Friends";
     $menu_friendadd = "Add Friend";
     $menu_frienddelete = "Remove Friend";
-    $menu_roomfavorite = "Add to Favorites";
-    $menu_roomfavoritedelete = "Remove from Favorites";
-    $menu_roomfavorites = "Favorite Blog Rooms";
+    $menu_roomfavorite = "Pin to Favorites";
+    $menu_roomfavoritedelete = "Unpin from Favorites";
+    $menu_roomfavorites = "Favorite Blogs";
     $menu_new = "New";
     $menu_newfolder = "New Folder";
     $menu_sortbydate = "By Date";
@@ -150,11 +150,15 @@ if($_SESSION['language']==''){
 
     $menu_signupsuccess = "Done! Please Login to continue.";
     $menu_signupsuccess2 = "Download the $appname mobile app from your app store for a better experience.";
-    $menu_techsupportfaq = "FAQ Tech Support";
+    $menu_techsupportfaq = "FAQ";
     $menu_sms = "Mobile Phone";
-    $menu_manageroomscreate = "Create New Blog Room";
-    $menu_manageroomsview = "View Blog Room";
-    $menu_manageroomsedit = "Edit Blog Room Properties";
+    $menu_manageroomscreate = "Create New Blog";
+    $menu_manageroomsview = "View Blog";
+    $menu_manageroomsedit = "Edit Blog Properties";
+    
+    $menu_faq = "Privacy FAQ";
+    $menu_community = "Community";
+    $menu_myemailinfo = "My Email Service";;
     
 if($_SESSION['language']=='spanish'){
 
@@ -274,7 +278,7 @@ if($_SESSION['language']=='spanish'){
     $menu_join = 'Unirse';
     $menu_existingaccount = 'Ya tiene una cuenta';
     $menu_or = 'o';
-    $menu_e2ekey = 'E2E Secret Passkey - Optional';
+    $menu_e2ekey = 'Chat Secret Passkey - Optional';
     $menu_friends = "Amigos";
     $menu_friendadd = "Agrega Amigo";
     $menu_frienddelete = "Elimina Amigo";
@@ -403,7 +407,7 @@ if($_SESSION['language']=='danish'){
     $menu_join = 'Slutte';
     $menu_existingaccount = 'Har du allerede en konto?';
     $menu_or = 'eller';
-    $menu_e2ekey = 'E2E Secret Passkey - Optional';
+    $menu_e2ekey = 'Chat Secret Passkey - Optional';
     $menu_friends = "Venner";
     $menu_friendadd = "tilføj ven";
     $menu_frienddelete = "Fjern ven";
@@ -531,7 +535,7 @@ if($_SESSION['language']=='russian'){
     $menu_join = 'присоединиться';
     $menu_existingaccount = 'Already have an account?';
     $menu_or = 'или';
-    $menu_e2ekey = 'E2E Secret Passkey - Optional';
+    $menu_e2ekey = 'Chat Secret Passkey - Optional';
     $menu_friends = "друзья";
     $menu_friendadd = "добавить друга";
     $menu_frienddelete = "удалить друга";
@@ -653,7 +657,7 @@ if($_SESSION['language']=='dutch'){
     $menu_join = 'Toetreden';
     $menu_existingaccount = 'Heb al een account';
     $menu_or = 'of';
-    $menu_e2ekey = 'E2E Secret Passkey - Optional';
+    $menu_e2ekey = 'Chat Secret Passkey - Optional';
     $menu_friends = "Vrienden";
     $menu_friendadd = "Vriend toevoegen";
     $menu_frienddelete = "Vriend verwijderen";
@@ -780,7 +784,7 @@ if($_SESSION['language']=='french'){
     $menu_join = 'Rejoindre';
     $menu_existingaccount = 'Avez déjà un compte';
     $menu_or = 'ou';
-    $menu_e2ekey = 'E2E Secret Passkey - Optional';
+    $menu_e2ekey = 'Chat Secret Passkey - Optional';
     $menu_friends = "Amis";
     $menu_friendadd = "Ajouter un Ami";
     $menu_frienddelete = "Enlever un ami";
@@ -900,7 +904,7 @@ if($_SESSION['language']=='korean'){
     $menu_join = '가입';
     $menu_existingaccount = '이미 계정이있다';
     $menu_or = '또는';    
-    $menu_e2ekey = 'E2E Secret Passkey - Optional';
+    $menu_e2ekey = 'Chat Secret Passkey - Optional';
     $menu_friends = "Friends";
     $menu_friendadd = "Add Friend";
     $menu_frienddelete = "Remove Friend";
@@ -1026,7 +1030,7 @@ if($_SESSION['language']=='german'){
     $menu_join = 'Beitreten';
     $menu_existingaccount = 'Hast du schon ein Konto';
     $menu_or = 'oder';
-    $menu_e2ekey = 'E2E Secret Passkey - Optional';
+    $menu_e2ekey = 'Chat Secret Passkey - Optional';
     $menu_friends = "Freunde";
     $menu_friendadd = "Freunde hinzufügen";
     $menu_frienddelete = "Freund löschen";
@@ -1153,7 +1157,7 @@ if($_SESSION['language']=='portuguese'){
     $menu_join = 'Junta';
     $menu_existingaccount = 'Eu tenho uma conta existente';
     $menu_or = 'ou';
-    $menu_e2ekey = 'E2E Secret Passkey - Optional';
+    $menu_e2ekey = 'Chat Secret Passkey - Optional';
     $menu_friends = "Amigos";
     $menu_friendadd = "Adicionar Amigo";
     $menu_frienddelete = "Remover Amigo";

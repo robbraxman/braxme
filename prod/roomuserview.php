@@ -38,20 +38,21 @@ function MyProfileOutput(
     global $iconsource_braxcheck_common;
 
     $technotes = "";
-    if($_SESSION['superadmin']=='Y'){
+    if($_SESSION['superadmin']=='Y' || $_SESSION['techsupport']=='Y'){
         $technotes = GetTechNotes($roomowner);
     }
     
     
     $donate = "&nbsp";
+    
     if( $roomowner!=$providerid ){
     
-    $donate .= "<br>
+        $donate .= "<br>
                 <img class='icon30 showhidden' src='../img/gift-white-128.png' placeholder='Give a gift in tokens' title='Give a gift in tokens'  />
                 <span class='showhiddenarea' style='display:none'>
                 ";
-    if($gift == 'Y'){
-        $donate .= "
+        if($gift == 'Y'){
+            $donate .= "
                     <form id='donateform' method='POST' action='$rootserver/$installfolder/tokendonate.php?mode=select&account=$roomowner' 
                     style='text-decoration:none;color:white;'>
                     <input id='donatetokens' name='tokens' type=number max=1000 min=1 placeholder='Tokens' style='width:80px;height:30px;' />&nbsp;
@@ -62,6 +63,7 @@ function MyProfileOutput(
                     <div class='formobile'><br></div>
                 ";
     }
+    
     $donate .= "
                     
                     <form id='donateform0' method='POST' action='$rootserver/$installfolder/gift.php?&account=$roomowner' target='functioniframe'
@@ -111,20 +113,20 @@ function MyProfileOutput(
                     $providername<br>
                 </span>
                 $avatar
-                <div class='' style='display:inline-block;margin-left:20px;;color:$global_profiletext_color;vertical-align:top'>
-                    <div ><b>$handle</b> $followers $score $following </div>
+                <div class='' style='display:inline-block;margin-left:20px;margin-right:20px;color:$global_profiletext_color;vertical-align:top'>
+                    <div ><b>$handle</b> $followers $score $following </div>    
                     <br>
                     $buttons
                 </div>
             </span>
-            <span class='formobile'>
-                $avatar
-            </span>
         </div>
         <div class='mainfont' style='color:$global_profiletext_color;margin-left:0;margin-top:20px;vertical-align:top;width:80%;padding-left:30px;padding-right:30px;'>
+                <span class='formobile'>
+                    $avatar
+                </span>
                 <div class='formobile pagetitle' style='color:$global_profiletext_color'><b>$providername</b></div>
-                <br>
-                <div class='formobile' ><b>$handle</b> $followers $score $following</div>
+                <div class='formobile' ><b>$handle</b></div>
+                <div class='formobile' >$followers $score $following</div>
                 <span class='formobile'>
                     $buttons
                 </span>
@@ -139,9 +141,8 @@ function MyProfileOutput(
                 $myprivaterooms
         </div>
     </div>
-    <div style='float:left;width:100%'>
+    <div style='float:left;width:100%;overflow:hidden'>
         $technotes
-        <br><br>
     </div>
     ";
     return $output;
@@ -295,7 +296,6 @@ function ShowMyRooms($providerid, $watcherid, $caller)
             and (roominfo.private = 'N')
             and roomhandle.handle not in 
             ('#sayhi','#braxme','#braxtips','#QA','#braxportal','#braxtokens','#braxbasics')
-            and roominfo.groupid is null
 	    )
         and statusroom.roomid > 1
         order by roominfo.profileflag desc, roominfo.lastactive desc, roominfo.room asc
@@ -411,7 +411,7 @@ function UserButtons($providerid, $userid, $handle, $providername, $replyemail, 
                         data-chatid = '$chatobj->chatid'
                         data-keyhash = '$chatobj->keyhash'
                         data-mode ='S' data-passkey64='' style='cursor:pointer'>
-                    <img class='icon20' src='../img/chat-line-white-128.png'
+                    <img class='icon15' src='../img/chat-line-white-128.png'
                          style='top:8px;position:relative'
                          /> $menu_resumechat
                 </div>
@@ -422,7 +422,7 @@ function UserButtons($providerid, $userid, $handle, $providername, $replyemail, 
                         data-chatid = '$chatobj->chatid'
                         data-keyhash = '$chatobj->keyhash'
                         data-mode ='S' data-passkey64='' style='margin:bottom:0px;cursor:pointer'>
-                    <img class='icon35' src='../img/chat-line-white-128.png'
+                    <img class='icon25' src='../img/chat-line-white-128.png'
                          style='top:10px;position:relative'
                          /> $menu_resumechat
                 </div>
@@ -435,7 +435,7 @@ function UserButtons($providerid, $userid, $handle, $providername, $replyemail, 
                     data-providerid='$userid' data-name='$providername'    
                      data-handle='$handle'
                     data-mode ='S' data-passkey64='' style='cursor:pointer'>
-                <img class='icon20' src='../img/chat-line-white-128.png'
+                <img class='icon15' src='../img/chat-line-white-128.png'
                      style='top:8px;position:relative'
                      /> $menu_startchat
             </div>
@@ -445,7 +445,7 @@ function UserButtons($providerid, $userid, $handle, $providername, $replyemail, 
                     data-providerid='$userid' data-name='$providername'    
                      data-handle='$handle'
                     data-mode ='S' data-passkey64='' style='margin:bottom:0px;cursor:pointer'>
-                <img class='icon35' src='../img/chat-line-white-128.png'
+                <img class='icon25' src='../img/chat-line-white-128.png'
                      style='top:10px;position:relative'
                      /> $menu_startchat
             </div>
@@ -457,7 +457,7 @@ function UserButtons($providerid, $userid, $handle, $providername, $replyemail, 
                      data-handle='$handle'
                     data-caller='$caller'
                     data-mode='A'  style='cursor:pointer'>
-                <img class='icon20' src='../img/Add-White_120px.png'
+                <img class='icon15' src='../img/Add-White_120px.png'
                      style='top:8px;position:relative'
                      /> $menu_friendadd
             </div>
@@ -468,7 +468,7 @@ function UserButtons($providerid, $userid, $handle, $providername, $replyemail, 
                      data-handle='$handle'
                     data-caller='$caller'
                     data-mode='A'  style='margin:bottom:0px;cursor:pointer'>
-                <img class='icon35' src='../img/Add-White_120px.png'
+                <img class='icon25' src='../img/Add-White_120px.png'
                      style='top:10px;position:relative'
                      /> $menu_friendadd
             </div>
@@ -480,7 +480,7 @@ function UserButtons($providerid, $userid, $handle, $providername, $replyemail, 
                      data-handle='$handle'
                     data-caller='$caller'
                     data-mode='AF'  style='cursor:pointer'>
-                <img class='icon20' src='../img/Add-White_120px.png'
+                <img class='icon15' src='../img/Add-White_120px.png'
                      style='top:8px;position:relative'
                      /> $menu_follow
             </div>
@@ -491,7 +491,7 @@ function UserButtons($providerid, $userid, $handle, $providername, $replyemail, 
                      data-handle='$handle'
                     data-caller='$caller'
                     data-mode='AF'  style='margin:bottom:0px;cursor:pointer'>
-                <img class='icon35' src='../img/Add-White_120px.png'
+                <img class='icon25' src='../img/Add-White_120px.png'
                      style='top:10px;position:relative'
                      /> $menu_follow
             </div>
@@ -504,7 +504,7 @@ function UserButtons($providerid, $userid, $handle, $providername, $replyemail, 
                 <div class='credentialformsetup'
                         data-clientid='$userid' 
                         data-mode ='DISPLAYFORM' data-passkey64='' style='cursor:pointer'>
-                    <img class='icon20' src='../img/credentials-white-128.png'
+                    <img class='icon15' src='../img/credentials-white-128.png'
                          style='top:8px;position:relative'
                          /> View Forms
                 </div>
@@ -513,7 +513,7 @@ function UserButtons($providerid, $userid, $handle, $providername, $replyemail, 
                 <div class='credentialformsetup'
                         data-clientid='$userid' 
                         data-mode ='DISPLAYFORM' data-passkey64='' style='margin:bottom:0px;cursor:pointer'>
-                    <img class='icon35' src='../img/credentials-white-128.png'
+                    <img class='icon25' src='../img/credentials-white-128.png'
                          style='top:10px;position:relative'
                          /> View Forms
                 </div>
@@ -527,7 +527,7 @@ function UserButtons($providerid, $userid, $handle, $providername, $replyemail, 
             <div class='blockbutton'
                  data-name='$providername' data-email='$replyemail' data-handle='$handle'
                  style='cursor:pointer;margin-bottom:0px'>
-                <img class='icon20' src='../img/block-line-white-128.png'
+                <img class='icon15' src='../img/block-line-white-128.png'
                      style='top:8px;position:relative'
                      /> $menu_block
             </div>
@@ -536,7 +536,7 @@ function UserButtons($providerid, $userid, $handle, $providername, $replyemail, 
             <div class='blockbutton'
                  data-name='$providername' data-email='$replyemail' data-handle='$handle'
                  style='cursor:pointer;margin-bottom:0px'>
-                <img class='icon35' src='../img/block-line-white-128.png'
+                <img class='icon25' src='../img/block-line-white-128.png'
                      style='top:10px;position:relative'
                      /> $menu_block
             </div>
@@ -547,7 +547,7 @@ function UserButtons($providerid, $userid, $handle, $providername, $replyemail, 
             <div class='unblockbutton'
                  data-name='$providername' data-email='$replyemail' data-handle='$handle'
                  style='cursor:pointer;margin-bottom:10px'>
-            <img class='icon20' src='../img/check-round-white-128.png'
+            <img class='icon15' src='../img/check-round-white-128.png'
                  style='cursor:pointer;;top:8px;position:relative'
                  data-name='$providername' data-email='$replyemail' data-handle='$handle'             
                  
@@ -558,7 +558,7 @@ function UserButtons($providerid, $userid, $handle, $providername, $replyemail, 
             <div class='unblockbutton'
                  data-name='$providername' data-email='$replyemail' data-handle='$handle'
                  style='cursor:pointer;margin-bottom:0px'>
-            <img class='icon35' src='../img/check-round-white-128.png'
+            <img class='icon25' src='../img/check-round-white-128.png'
                  style='cursor:pointer;;top:10px;position:relative'
                  data-name='$providername' data-email='$replyemail' data-handle='$handle'             
                  
@@ -566,6 +566,57 @@ function UserButtons($providerid, $userid, $handle, $providername, $replyemail, 
             </div>
             ";
         } 
+        
+        if($_SESSION['superadmin']=='Y' ){
+            $buttons .= "
+                <div class='shadowban'
+                        data-userid='$userid' 
+                        style='cursor:pointer'>
+                    <img class='icon15' src='../img/credentials-white-128.png'
+                         style='top:8px;position:relative'
+                         /> Shadow Ban
+                </div>
+                ";
+            $buttons .= "
+                <div class='postwipe'
+                        data-userid='$userid' 
+                        style='cursor:pointer'>
+                    <img class='icon15' src='../img/credentials-white-128.png'
+                         style='top:8px;position:relative'
+                         /> Wipe Post
+                </div>
+                ";
+            $buttons .= "
+                <div class='profilerestrict'
+                        data-userid='$userid' 
+                        style='cursor:pointer'>
+                    <img class='icon15' src='../img/credentials-white-128.png'
+                         style='top:8px;position:relative'
+                         /> Profile Restrict
+                </div>
+                ";
+            $buttons .= "
+                <div class='postrestrict'
+                        data-userid='$userid' 
+                        style='cursor:pointer'>
+                    <img class='icon15' src='../img/credentials-white-128.png'
+                         style='top:8px;position:relative'
+                         /> Post Restrict
+                </div>
+                ";
+            $buttons .= "
+                <div class='hardrestrict'
+                        data-userid='$userid' 
+                        style='cursor:pointer'>
+                    <img class='icon15' src='../img/credentials-white-128.png'
+                         style='top:8px;position:relative'
+                         /> Hard Restrict
+                </div>
+                ";
+        }
+        
+        
+        
     } else {
     }
     $buttontext = "
@@ -628,8 +679,9 @@ function ShowMyAvatar($avatarurl, $providerid, $roomowner, $caller)
                  />
               ";
         $avatar .= "</div>";
-        $avatar .= "
+        $avatar .= "<br>
             <div class='$blink uploadavatar pagetitle3' style='color:$global_activetextcolor_reverse;cursor:pointer' >$menu_edit </div>
+                <br>
             ";
         
     } else {
@@ -767,7 +819,7 @@ function GetTechNotes( $otherid  )
     global $admintestaccount;
     
     if($otherid == $admintestaccount){
-        return "";
+        return "Admin Account<br>";
     }
     //return "";
     $technotes = "<div class='smalltext' style='padding:10px'>";
@@ -781,8 +833,9 @@ function GetTechNotes( $otherid  )
             (select count(*) from chatmessage where chatmessage.providerid = provider.providerid) as chatcount,
             (select count(*) from filelib where filelib.providerid = provider.providerid and filelib.status='Y') as filecount
             
-            from provider where providerid = ? and superadmin is null and techsupport = ''
+            from provider where providerid = ? 
             ",array($otherid));
+            //and superadmin is null and techsupport = ''
             //(select count(*) from chatmessage where chatmessage.providerid = provider.providerid) as chatcount,
             //(select count(*) from statuspost where statuspost.providerid = provider.providerid) as roomcount
     
@@ -816,17 +869,46 @@ function GetTechNotes( $otherid  )
             
         }
         
+        $result2 = pdo_query("1","   
+            select email_service, handle from provider where providerid = ? 
+            ",array($otherid));
+        if($row2 = pdo_fetch($result2)){
+            if($row2['email_service']!=='Y'){
+                $technotes .= "Email Service <br>";
+                $technotes .= "<br><div class='emailmanage divbutton4' data-handle='$handle' data-providerid=$otherid data-mode='A' >New Email</div><br><br>";
+            } else {
+                $technotes .= "Email Service (Edit) <br>";
+                $technotes .= "<br><div class='emailmanage divbutton4' data-handle='$handle' data-providerid=$otherid  data-mode='' >Edit Email</div><br><br>";
+                
+            }
+            
+        }
+        
+        
+        
+        
+        
         $i = 0;
         $result2 = pdo_query("1","   
-            select xacdate, item_name, payment_status, payment_amount,payer_email,paypalname,tracking,shipstatus, 
-            city, state, country from paypalipn where buyer = ? order by xacdate desc
+            select xacdate, item_name, payment_status, payment_amount,payer_email,paypalname, addressname, tracking,shipstatus, address1,address2,
+            city, state, postalcode, country,altaddress from paypalipn where buyer = ? order by xacdate desc
             ",array($otherid));
         while($row2 = pdo_fetch($result2)){
             if($i==0){
                 $technotes .= "STORE TRANSACTIONS<br>-----------------------<br>";
             }
             $i++;
-            $technotes .= "$row2[xacdate] / $row2[item_name] ($row2[payment_status]) $row2[payment_amount] Status: $row2[shipstatus]<br> ................................ $row2[payer_email] $row2[paypalname] $row2[tracking]<br>$row2[city], $row2[state] $row2[country]<br>";
+            $name = $row2['addressname'];
+            if($row2['addressname']==''){
+                $name = $row2['paypalname'];;
+            } else {
+                $name = $row2['paypalname']." [".$row2['addressname']."]";
+            }
+            
+            $technotes .= "$row2[xacdate] / $row2[item_name] ($row2[payment_status]) $row2[payment_amount] Status: $row2[shipstatus]<br> ................................ $row2[payer_email]<br>$row2[tracking]<br>$name<br>$row2[address1]<br>$row2[city], $row2[state] $row2[postalcode]<br>$row2[country]<br><br>";
+            if($row2['altaddress']!=''){
+                $technotes .= "$row2[altaddress]<br>";
+            }
         } 
         if($i>0){
         $technotes .= "-----------------------<br><br>";
@@ -842,7 +924,7 @@ function GetTechNotes( $otherid  )
         $technotes .= "Ip Hash2 $row[iphash2]<br>";
         $technotes .= "Ip Source $row[ipsource]<br>";
         $technotes .= "Timezone $row[timezone]<br>";
-        $technotes .= "Muti-Accounts $row[multi]<br>";
+        $technotes .= "Multi-Accounts $row[multi]<br>";
         $technotes .= "Device Specs  $row[devicewidth]/$row[deviceheight]/$row[pixelratio]<br>";
         $technotes .= "Device Code  $row[devicecode]<br>";
         $technotes .= "Enterprise $row[enterprise] - Industry $row[industry] Sponsorlist $row[sponsor]<br>";
@@ -956,7 +1038,7 @@ function GetTechNotes( $otherid  )
         
         
         $technotes .= "</div>";
-        $technotes .= "<br><br>";
+        $technotes .= "<br><br><br>";
         
         //$technotes .= "</div></div>";
         

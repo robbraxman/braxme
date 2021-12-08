@@ -180,6 +180,7 @@ class SignUp
                 )
             ",array($iphash,$deviceid,$deviceid,$lastuser,$lastuser));
         
+        //check icount same day actions
         $result = pdo_query("1","
             select icount from iphash where ip = ? and datediff(?, lastaction)<1
                 and icount > 2
@@ -191,6 +192,16 @@ class SignUp
                 ",array($ip,$iphash));
             
                 return $icount;
+        }
+        $ban = "";
+        
+        //check BAN Lockout
+        $result = pdo_query("1","
+            select ban from iphash where ip = ? and ban='Y'
+                ",array($iphash));
+        if( $row = pdo_fetch($result)){
+            //permanent lockout
+            return 9999;
         }
         
         pdo_query("1"," 
@@ -402,6 +413,23 @@ class SignUp
         $this->companyname = str_replace("&amp;","&",$this->companyname);
         $this->name2 = str_replace("&amp;","&",$this->name2);
         
+        if(FindSpam($this->providername)){
+            $this->StoreError("Invalid Entry");
+            return false;
+            
+        }
+        if(FindSpam($this->name2)){
+            $this->StoreError("Invalid Entry");
+            return false;
+            
+        }
+        if(FindSpam($this->alias)){
+            $this->StoreError("Invalid Entry");
+            return false;
+            
+        }
+        
+        
         if($this->onetimeflag == 'Y'){
             $this->eowner = $ownerid;
         }
@@ -526,7 +554,7 @@ class SignUp
              allowrandomkey, cookies_recipient, cookies_sender, allowkeydownload, 
              serverhost, allowtexting, msglifespan, sponsor, roomdiscovery, member, eowner, sponsorlist,
              colorscheme, language, joinedvia, appname, iphash, iphash2, timezone, ipsource, trackerid,
-             roomcreator, broadcaster, web, store, hardenter
+             roomcreator, broadcaster, web, store, hardenter,homenotified
              ) values (
               'Y',
              ?,now(),?,?,
@@ -539,7 +567,7 @@ class SignUp
              'N', 'N','Y', 'Y',
              ?,?,?,?,?,?,?,?,
              'std',?,?,'$appname',?,?,?,?,?,
-             ?,?,?,?,?
+             ?,?,?,?,?,'1900-01-01'
             )"
             ,array(
               $this->providerid, $this->providername, $this->name2, 
@@ -677,7 +705,7 @@ class SignUp
 
         }
         
-        pdo_query("1","insert into handle (handle, email, providerid) values (?,?,?) ",
+        pdo_query("1","insert ignore into handle (handle, email, providerid) values (?,?,?) ",
                 array($this->handle,$this->replyemail,$this->providerid));
         $result = pdo_query("1","select * from provider where providerid = ? and active='Y' ",array($this->providerid));
         if($row = pdo_fetch($result)){
@@ -712,14 +740,31 @@ class SignUp
 
         $this->providerid = $providerid;
         $this->providername = ltrim($providername);
-        if( "$this->providername"==""){
+        if( $this->providername==""){
             $this->StoreError("No Name Provided");
             return false;
         }
         
-        
         $this->name2 = ltrim($name2);
         $this->alias = ltrim($alias);
+        
+        
+        if(FindSpam($this->providername)){
+            $this->StoreError("Invalid Entry");
+            return false;
+            
+        }
+        if(FindSpam($this->name2)){
+            $this->StoreError("Invalid Entry");
+            return false;
+            
+        }
+        if(FindSpam($this->alias)){
+            $this->StoreError("Invalid Entry");
+            return false;
+            
+        }
+        
         $this->positiontitle = ltrim($positiontitle);
         //$this->replyemail = $replyemail;
         $this->replyemail = $origemail;
@@ -905,7 +950,7 @@ class SignUp
             pdo_query("1","delete from invites where email=? and chatid is not null ",array($this->replyemail));
             pdo_query("1","delete from handle where providerid = ?  ",array($this->providerid));
              
-            pdo_query("1","update iphash set icount = icount-1 where iphash = (select iphash2 from provider where providerid = ? ) ",array($this->providerid));
+            pdo_query("1","update iphash set icount = icount-1 where ip = (select iphash2 from provider where providerid = ? ) ",array($this->providerid));
              
         }
          
@@ -1137,29 +1182,37 @@ class SignUp
          * 
          */
         
-        if( $this->superadmin!='Y' && stristr($this->providername,"brax")!==FALSE 
-                && stristr($this->providername,"braxtv")===FALSE 
-                && stristr($this->providername,"braxdemo")===FALSE 
-                && stristr($this->providername,"braxuser")===FALSE 
-                && stristr($this->providername,"braxman")===FALSE 
-                && stristr($this->providername,"braxton")===FALSE ){
+        if( $this->superadmin!='Y' && (stristr($this->providername,"brax")!==FALSE 
+                || stristr($this->providername,"braxtv")!==FALSE 
+                || stristr($this->providername,"braxdemo")!==FALSE 
+                || stristr($this->providername,"braxuser")!==FALSE 
+                || stristr($this->providername,"braxman")!==FALSE 
+                || stristr($this->providername,"braxton")!==FALSE )){
             $error = $this->StoreError("Restricted Name - Violation of Terms of Use");
         }
-        if( $this->superadmin!='Y' && stristr($this->name2,"brax")!==FALSE 
-                && stristr($this->providername,"braxtv")===FALSE 
-                && stristr($this->providername,"braxdemo")===FALSE 
-                && stristr($this->providername,"braxuser")===FALSE 
-                && stristr($this->providername,"braxman")===FALSE 
-                && stristr($this->providername,"braxton")===FALSE ){
+        if( $this->superadmin!='Y' && (stristr($this->name2,"brax")!==FALSE 
+                || stristr($this->name2,"braxtv")!==FALSE 
+                || stristr($this->name2,"braxdemo")!==FALSE 
+                || stristr($this->name2,"braxuser")!==FALSE 
+                || stristr($this->name2,"braxman")!==FALSE 
+                || stristr($this->name2,"braxton")!==FALSE) ){
             $error = $this->StoreError("Restricted Alt Name - Violation of Terms of Use");
         }
-        if( $this->superadmin!='Y' && stristr($this->alias,"brax")!==FALSE 
-                && stristr($this->providername,"braxtv")===FALSE 
-                && stristr($this->providername,"braxdemo")===FALSE 
-                && stristr($this->providername,"braxuser")===FALSE 
-                && stristr($this->providername,"braxman")===FALSE 
-                && stristr($this->providername,"braxton")===FALSE ){
+        if( $this->superadmin!='Y' && (stristr($this->alias,"brax")!==FALSE 
+                || stristr($this->alias,"braxtv")!==FALSE 
+                || stristr($this->alias,"braxdemo")!==FALSE 
+                || stristr($this->alias,"braxuser")!==FALSE 
+                || stristr($this->alias,"braxman")!==FALSE 
+                || stristr($this->alias,"braxton")!==FALSE) ){
             $error = $this->StoreError("Restricted Alias - Violation of Terms of Use");
+        }
+        if( $this->superadmin!='Y' && (stristr($this->handle,"brax")!==FALSE 
+                || stristr($this->handle,"braxtv")!==FALSE 
+                //&& stristr($this->handle,"braxdemo")!==FALSE 
+                //&& stristr($this->handle,"braxuser")!==FALSE 
+                || stristr($this->handle,"braxman")!==FALSE 
+                || stristr($this->handle,"braxton")!==FALSE) ){
+            $error = $this->StoreError("Restricted Username - Violation of Terms of Use");
         }
          
          
@@ -1543,7 +1596,15 @@ class SignUp
     
     
 }
-
-
-
+function FindSpam($text)
+{
+    $text = strtolower($text);
+    if( strpos($text,"https:") !== false || strpos($text,"http:") !== false ){
+        return true;
+    }
+    if( strpos($text,"/") !== false || strpos($text,"\\") !== false ){
+        return true;
+    }
+    return false;
+}
 ?>

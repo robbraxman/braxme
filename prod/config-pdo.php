@@ -22,13 +22,37 @@ require('colorscheme.php');
     
     function pdo_sql_connect( $connectnum, $sqlurl, $usr, $pwd, $database  )
     {
+        global $sql_cert;
+        global $sql_key;
+        global $sql_ca;
+        global $sql_globalcert;
 
         $dsn = "mysql:host=$sqlurl:3306;dbname=$database;charset=utf8mb4";
-        $options = [
-            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES   => false,
-        ];
+        
+        if($sql_globalcert!=''){
+            
+            $options = [
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES   => false,
+
+                /* Amazon AWS Version */
+                //PDO::MYSQL_ATTR_SSL_CA => $sql_globalcert,
+                //PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
+            ];
+        } else {
+            $options = [
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES   => false,
+
+                PDO::MYSQL_ATTR_SSL_KEY    => $sql_key,
+                PDO::MYSQL_ATTR_SSL_CERT   => $sql_cert,
+                PDO::MYSQL_ATTR_SSL_CA     => $sql_ca,
+                PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
+            ];
+            
+        }
         $pdo = null;
         try {
              $pdo = new PDO($dsn, $usr, $pwd, $options);
@@ -43,9 +67,10 @@ require('colorscheme.php');
     /* Connect to all the Databases and initialize Database Objects */
 
     $dbconnect1 = pdo_sql_connect( "1", $_SESSION['sqlurl'], $_SESSION['sqlusr'], $_SESSION['sqlpwd'], $_SESSION['database'] );
-    $dbconnect2 = pdo_sql_connect( "2", $_SESSION['sqlurl2'], $_SESSION['sqlusr2'], $_SESSION['sqlpwd2'], $_SESSION['database2'] );
-    $dbconnect3 = pdo_sql_connect( "3", $_SESSION['sqlurl3'], $_SESSION['sqlusr3'], $_SESSION['sqlpwd3'], $_SESSION['database3'] );
-    $dbconnect6 = pdo_sql_connect( "6", $_SESSION['sqlurl6'], $_SESSION['sqlusr6'], $_SESSION['sqlpwd6'], $_SESSION['database6'] );
+    //$dbconnect2 = pdo_sql_connect( "2", $_SESSION['sqlurl2'], $_SESSION['sqlusr2'], $_SESSION['sqlpwd2'], $_SESSION['database2'] );
+    //$dbconnect3 = pdo_sql_connect( "3", $_SESSION['sqlurl3'], $_SESSION['sqlusr3'], $_SESSION['sqlpwd3'], $_SESSION['database3'] );
+    $dbconnect4 = pdo_sql_connect( "4", $_SESSION['sqlurl4'], $_SESSION['sqlusr4'], $_SESSION['sqlpwd4'], $_SESSION['database4'] );
+    //$dbconnect6 = pdo_sql_connect( "6", $_SESSION['sqlurl6'], $_SESSION['sqlusr6'], $_SESSION['sqlpwd6'], $_SESSION['database6'] );
     $dbconnect_news = pdo_sql_connect( "news", $_SESSION['sqlurl_news'], $_SESSION['sqlusr_news'], $_SESSION['sqlpwd_news'], $_SESSION['database_news'] );
 
 
@@ -57,12 +82,14 @@ require('colorscheme.php');
         global $dbconnect1;
         global $dbconnect2;
         global $dbconnect3;
+        global $dbconnect4;
         global $dbconnect6;
         global $dbconnect_news;
         
         $db_pdo['1'] = $dbconnect1;
         $db_pdo['2'] = $dbconnect2;
         $db_pdo['3'] = $dbconnect3;
+        $db_pdo['4'] = $dbconnect4;
         $db_pdo['6'] = $dbconnect6;
         $db_pdo['news'] = $dbconnect_news;
         
@@ -197,8 +224,8 @@ require('colorscheme.php');
     {
         
             if( isset($string)){
-                    $tmp = urldecode($string);
-                    $tmp = str_replace("\n","\\n",$tmp);
+                    //$tmp = urldecode($string);
+                    $tmp = str_replace("\n","\\n",$string);
                     return $tmp;
             } else {
                 return "";
@@ -282,6 +309,8 @@ require('colorscheme.php');
 
     function LogDebug( $providerid, $event )
     {
+        //Disable except during testing
+        return;
         if($providerid == ''){
             $providerid = 0;
         }
@@ -311,12 +340,13 @@ require('colorscheme.php');
         return 'N';
 
     }
+    
     function EncryptE2EPasskey($passkey,$salt)
     {
         if($passkey==''){
             return $passkey;
         }
-        $passkey64 = EncryptJs($passkey,$salt);
+        $passkey64 = OpenSSLEncrypt($passkey,$salt);
         return $passkey64;
     }
     function DecryptE2EPasskey($passkey64,$salt)
@@ -324,7 +354,7 @@ require('colorscheme.php');
         if($passkey64==''){
             return $passkey64;
         }
-        $passkey = DecryptJs($passkey64,$salt);
+        $passkey = OpenSSLDecrypt($passkey64,$salt);
         return $passkey;
     }
     function TrapJs($string)
@@ -386,7 +416,7 @@ require('colorscheme.php');
                 $response = "";
             }
 
-            if(strstr($response, 'could not be found')!== false ){
+            if($response === '' || strstr($response, 'could not be found')!== false ){
 
                 return false;
             }

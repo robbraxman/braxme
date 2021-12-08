@@ -145,7 +145,7 @@ function InlineNotification( $lastfunc, $parm1, $providerid )
                     ";
             //@pdo_query("1", "update notification set displayed='Y' where recipientid=$providerid  and notifyid = $notifyid ");
         }
-        @pdo_query("1", "update notification set displayed='Y' where recipientid=$providerid and displayed !='Y' ");
+        //@pdo_query("1", "update notification set displayed='Y' where recipientid=$providerid and displayed !='Y' ");
     }
     $arr['notification'] = FormattedPayload($payload, $total, $soundalert);
     $arr['soundalert'] = $soundalert;

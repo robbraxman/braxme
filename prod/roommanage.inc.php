@@ -59,7 +59,7 @@ require_once("chat.inc.php");
                 ( owner = ? 
                   or
                   roomid in
-                    (select roomid from roommoderator r2 where r2.roomid=$roomid and r2.providerid =?)
+                    (select roomid from roommoderator r2 where r2.roomid=? and r2.providerid =?)
                   or
                   providerid = ?
                 )",array($roomid,$friendproviderid,$providerid,$roomid,$providerid,$providerid)
@@ -203,7 +203,7 @@ require_once("chat.inc.php");
             if( !$row = pdo_fetch($result)){
             
                 pdo_query("1","
-                    insert into statusroom ( roomid, owner, providerid, status, createdate, creatorid ) values
+                    insert ignore into statusroom ( roomid, owner, providerid, status, createdate, creatorid ) values
                     ( ?,?, ?,'Y',now(),? )
                     ",array($roomid,$owner,$friendproviderid,$providerid));
 
@@ -252,7 +252,7 @@ require_once("chat.inc.php");
                     $owner = $row2['owner'];
 
                     pdo_query("1","
-                        insert into statusroom ( roomid, owner, providerid, status, createdate, creatorid ) values
+                        insert ignore into statusroom ( roomid, owner, providerid, status, createdate, creatorid ) values
                         ( ?,?, ?,'Y',now(),? )
                         ",array($roomid,$owner,$friendproviderid,$providerid));
 
@@ -295,7 +295,7 @@ require_once("chat.inc.php");
                     $owner = $row2['owner'];
 
                     pdo_query("1","
-                        insert into statusroom ( roomid, owner, providerid, status, createdate, creatorid ) values
+                        insert ignore into statusroom ( roomid, owner, providerid, status, createdate, creatorid ) values
                         ( ?,?, ?,'Y',now(),? )
                         ",array($roomid,$owner,$friendproviderid,$providerid));
 
@@ -313,38 +313,30 @@ require_once("chat.inc.php");
     {
         //Get Room Handle
         $result = pdo_query("1","
-            select handle from roomhandle where roomid = ?
+            select roomid, handle from roomhandle where roomid = ? and community='Y'
             ",array($parentroomid));
         if( $row = pdo_fetch($result)){
+            
             $handle = $row['handle'];
 
-            //Check for Community Link Chain
-            $result = pdo_query("1","
-                select roomid from roominfo where communitylink = ?
-                ",array($handle));
-            while( $row = pdo_fetch($result)){
-                
-                $roomid = $row['roomid'];
+            $result2 = pdo_query("1","
+                select owner from statusroom 
+                where statusroom.roomid = ? and statusroom.owner = statusroom.providerid
+                ",array($parentroomid));
+            if( $row2 = pdo_fetch($result2)){
+                $owner = $row2['owner'];
 
-                $result2 = pdo_query("1","
-                    select owner from statusroom 
-                    where statusroom.roomid = ? and statusroom.owner = statusroom.providerid
-                    ",array($roomid));
-                if( $row2 = pdo_fetch($result2)){
-                    $owner = $row2['owner'];
-
-                    pdo_query("1","
-                        insert into statusroom ( roomid, owner, providerid, status, createdate, creatorid ) values
-                        ( ?,?, ?,'Y',now(),? )
-                        ",array($roomid,$owner,$friendproviderid,$providerid));
-
-                }
-                AddtoGroup($owner, $friendproviderid, $roomid );
-                AddtoChat($owner, $friendproviderid, $roomid );
-                //Add Second Level Membership
-                AddMemberRoomChain2($providerid, $friendproviderid, $roomid );
+                pdo_query("1","
+                    insert ignore into statusroom ( roomid, owner, providerid, status, createdate, creatorid ) values
+                    ( ?,?, ?,'Y',now(),? )
+                    ",array($parentroomid,$owner,$friendproviderid,$providerid));
 
             }
+            AddtoGroup($owner, $friendproviderid, $parentroomid );
+            AddtoChat($owner, $friendproviderid, $parentroomid );
+            //Add Second Level Membership
+            AddMemberRoomChain2($providerid, $friendproviderid, $parentroomid );
+
         }
         return true;
         
@@ -383,14 +375,14 @@ require_once("chat.inc.php");
         
         pdo_query("1",
             "
-                insert into chatmembers ( chatid, providerid, status, lastmessage, lastread, lastactive, techsupport, mute, broadcaster)
+                insert ignore into chatmembers ( chatid, providerid, status, lastmessage, lastread, lastactive, techsupport, mute, broadcaster)
                 values
                 ( ?, ?, 'Y', now(), now(), now(), null, null, null )
             ",array($chatid,$autochatuserid));
         
         pdo_query("1",
             "
-                insert into chatmembers ( chatid, providerid, status, lastmessage, lastread, lastactive, techsupport, mute, broadcaster)
+                insert ignore into chatmembers ( chatid, providerid, status, lastmessage, lastread, lastactive, techsupport, mute, broadcaster)
                 values
                 ( ?, ?,     'Y', now(), now(), now(), null, null, null )
             ",array($chatid,$providerid));
@@ -531,7 +523,7 @@ require_once("chat.inc.php");
         if( $row = pdo_fetch($result)){
             //LogDebug($providerid,"$providerid $row[groupid] $friendproviderid $roomid");
             pdo_query("1","
-                insert into groupmembers ( groupid, providerid, createdate ) 
+                insert ignore into groupmembers ( groupid, providerid, createdate ) 
                 select ?, ?, now()
                 ",array($row['groupid'],$friendproviderid));
         }
@@ -579,7 +571,7 @@ require_once("chat.inc.php");
                 insert ignore into statusroom ( roomid, owner, providerid, status, createdate, creatorid ) values
                 ( ?,?, ?,'Y',now(),? )
                 ",array($roomid,$providerid,$row['providerid'],$row['owner']));
-            AddtoChat($providerid, $row[providerid], $roomid );
+            AddtoChat($providerid, $row['providerid'], $roomid );
             
         }
         
@@ -953,10 +945,10 @@ require_once("chat.inc.php");
         $selectcommunity = "";
         if($communitylink!=''){
             $result = pdo_query("1","
-                select roomhandle.handle from roomhandle where community='Y' and roomhandle=?
+                select roomhandle.handle from roomhandle where community='Y' and handle=?
                     ",array($communitylink));
             $selectgroupoptions = "<option value=''>No Community Link</option>";
-            while($row = do_fetch($result)){
+            while($row = pdo_fetch($result)){
                 $selectcommunity .= "<option value='$row[handle]'>$row[handle]</option>";
             }
         }
@@ -1003,6 +995,7 @@ require_once("chat.inc.php");
                     <input id='roomchildsort' name='roomchildsort' placeholder='Child Sort #' type='number' size=20 maxlength=250 value='$childsort' style='max-width:400px;width:70%'>
                     <br><br>
                         ";
+        /*
         if($_SESSION['superadmin'] == 'Y' || $_SESSION['enterprise']=='Y'){
             $rsscategorytext = "
                         <br>
@@ -1037,14 +1030,11 @@ require_once("chat.inc.php");
                         <input id='roomsponsor' name='roomsponsor' placeholder='Sponsor' type='hidden' size=20 maxlength=250 value='$sponsor' style='max-width:400px;width:70%'>
                             ";
         }    
-
+        */
         $copymemberstext = "";
         
         if($_SESSION['superadmin'] == 'Y'){
             $broadcasttext = "
-                        Broadcast Channel/Quiz<br>
-                        <input id='radiostation' name='radiostation' placeholder='Y/Q/' type='text' size=20 maxlength=250 value='$radiostation' style='max-width:400px;width:70%'>
-                        <br><br>    
                         Community Holder (Y/N)<br>
                         <input id='community' name='community' placeholder='' type='text' size=20 maxlength=1 value='$community' style='max-width:400px;width:70%'>
                         <br><br>
@@ -1059,6 +1049,7 @@ require_once("chat.inc.php");
         } else {
             $broadcasttext = "
                         <input id='radiostation' name='radiostation' placeholder='Y/N' type='hidden' size=20 maxlength=250 value='$radiostation' style='max-width:400px;width:70%'>
+                        <input id='community' name='community' placeholder='' type='hidden' size=20 maxlength=1 value='$community' style='max-width:400px;width:70%'>
                             ";
             $copymemberstext = "
                         Copy Members From<br>
@@ -1070,7 +1061,19 @@ require_once("chat.inc.php");
                     <input id='profileflag' name='profileflag'  type='hidden' size=20 maxlength=1 value='$profileflag' />
                         ";
         
-        
+        if($_SESSION['superadmin']=='Y'){
+            $roomstyleoptions = "
+                                <option value='std'>Standard</option>
+                                <option value='forum'>Forum</option>
+                                <option value='faq'>FAQ</option>
+                                ";
+        } else {
+            $roomstyleoptions = "
+                                <option value='std'>Standard</option>
+                                <option value='forum'>Forum</option>
+                                ";
+            
+        }
         
         
         $roomedit = "
@@ -1098,10 +1101,10 @@ require_once("chat.inc.php");
                         </div>
                         <br>
                         Name<br>
-                        <input id='newroomname' name='room' placeholder='Room Name' type='text' size=20 maxlength=30 value='$roomHtml' style='max-width:400px;width:70%'>
+                        <input id='newroomname' name='room' placeholder='Blog Room Name' type='text' size=20 maxlength=30 value='$roomHtml' style='max-width:400px;width:70%'>
                         <br><br>
                         Description<br>
-                        <input id='roomdesc' name='roomdesc' placeholder='Room Description' type='text' size=20 value='$roomdesc' style='max-width:400px;width:70%'>
+                        <input id='roomdesc' name='roomdesc' placeholder='Blog Description' type='text' size=20 value='$roomdesc' style='max-width:400px;width:70%'>
                         <br><br>
                         <!--
                         Organization/Company<br>
@@ -1349,32 +1352,17 @@ require_once("chat.inc.php");
                             <span class='smalltext' style='color:$global_textcolor'>Limit discovery and membership to this group.</span>
                             <br><br>
 
-                            <span style='$displayForEnterpriseOnly'>
-
-                            Subscription Token Price<br>
-                            <input id='subscription' class='smalltext' name='subscription' placeholder='Token Price' type='text' size=20 value='$subscription'  style='background-color:whitesmoke;max-width:400px;width:70%'>
-                                <br>
-                                <span class='smalltext2'>Use a negative number to accept Test Subscriptions</span>
-                            <br><br>
-                            Subscription $ Price (Sandbox Test Only)<br>
-                            <input id='subscriptionusd' class='smalltext' name='subscriptionusd' placeholder='$ USD Price' type='text' size=20 value='$subscriptionusd'  style='background-color:whitesmoke;max-width:400px;width:70%'>
-                            <br><br>
-                            Subscription Days (0 = Unlimited)<br>
-                            <input id='subscriptiondays' class='smalltext' name='subscriptiondays' placeholder='Subscription Days' type='text' size=20 value='$subscriptiondays'  style='background-color:whitesmoke;max-width:400px;width:70%'>
-                            <br><br>
 
 
 
                                 
-                            $rsslinktext
 
                             $copymemberstext
                                 
                             Viewing Style<br>
                             <select id='roomstyle' name='roomstyle'  style='width:250px'>
                                 $selectroomstyle
-                                <option value='std'>Standard</option>
-                                <option value='forum'>Forum</option>
+                                $roomstyleoptions
                             </select>
                             <br><br>
 
@@ -1432,15 +1420,14 @@ require_once("chat.inc.php");
                                     $selectcommunity
                                     $selectcommunityoptions
                                 </select>
-                                <br>
+                                <br><br>
                                 <span class='smalltext' style='color:$global_textcolor'>Link this room's membership to a global community with a group chat</span>
                                 <br><br>
-
-                                $rsscategorytext    
 
 
 
                                 $broadcasttext
+                                
                             </span>
                             
                         </span>
@@ -1700,12 +1687,12 @@ require_once("chat.inc.php");
 
         //Don't allow reversal of this setting. If anonymous once, past posts will remain anonymous
         if($roomanonymous == 'Y'){
-            pdo_query("1","update statusposts set anonymous = 'Y' where roomid = ? ",array($roomid));
+            pdo_query("1","update statuspost set anonymous = 'Y' where roomid = ? ",array($roomid));
         }
         
         if($parent!=='' || $copymembers!==''){
             $result = pdo_query("1","select roomid, (select owner from statusroom where statusroom.roomid = ? and statusroom.owner = statusroom.providerid) as "
-                    . "    providerid from roomhandle where handle=? ",array($roomid),$copymembers);
+                    . "    providerid from roomhandle where handle=? ",array($roomid,$copymembers));
             if($row = pdo_fetch($result)){
                 $sourceroomid = $row['roomid'];
                 CopyMembersToRoom($row[providerid], $sourceroomid, $roomid);
@@ -2037,6 +2024,7 @@ require_once("chat.inc.php");
     {
         global $rootserver;
         global $iconsource_braxmedal_common;
+        global $iconsource_braxmoderator_common;
         global $global_textcolor;
         
         $result = pdo_query("1",
@@ -2089,7 +2077,7 @@ require_once("chat.inc.php");
                     ";
             if($row['moderator']!='' || $row['providerid']==$providerid){
                 echo "
-                                    &nbsp;&nbsp; <img class='icon20 friends' src='$iconsource_braxmedal_common' style='' 
+                                    &nbsp;&nbsp; <img class='icon20 friends' src='../img/moderator-black-512.png' style='' 
                                         id='' 
                                         data-providerid='$row[providerid]' data-room='$room2' data-roomid='$roomid' data-mode='MOD' />
                             </div>
@@ -2097,7 +2085,7 @@ require_once("chat.inc.php");
             } else
             if($row['owner']==$providerid){
                 echo " 
-                                    &nbsp;&nbsp;  <img class='icon20 friends' src='../img/medal-02-128.png' style='opacity:.3' 
+                                    &nbsp;&nbsp;  <img class='icon20 friends' src='../img/moderator-black-512.png' style='opacity:.2' 
                                         id='' 
                                         data-providerid='$row[providerid]' data-room='$room2' data-roomid='$roomid' data-mode='MOD' />
                             </div>
@@ -2113,7 +2101,7 @@ require_once("chat.inc.php");
 
         }
         
-        echo "<br><br><span class='smalltext2' style='color:$global_textcolor'><img class='icon15' src='$iconsource_braxmedal_common' style='top:3px;cursor:none;' /> = Moderator</span>";
+        echo "<br><br><span class='smalltext2' style='color:$global_textcolor'><img class='icon15' src='$iconsource_braxmoderator_common' style='top:3px;cursor:none;' /> = Moderator</span>";
 
         
     }        

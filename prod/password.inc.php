@@ -160,16 +160,16 @@ require_once 'authenticator/GoogleAuthenticator.php';
             //Password in Local Storage
             $clientstoredpassword = tvalidator("PURIFY",$_POST['stored']);
             if($clientstoredpassword!=''){
-                $password = DecryptJs($clientstoredpassword,"");
+                $password = OpenSSLDecrypt($clientstoredpassword,$serverencryptionkey);
             }
             
-            $jspassword = EncryptJs($password,"");
-            $pidl = EncryptJs($pid,"");
+            $jspassword = OpenSSLEncrypt($password,$serverencryptionkey);
             
             echo "
                 <script>
-                localStorage.swt = '$jspassword';
-                localStorage.pidl = '$pidl';
+                localStorage.hswt = '$jspassword';
+                localStorage.removeItem('swt');
+                localStorage.pidl = '$pid';
                 </script>
             ";
             //echo "<body>Logging in</body>";
@@ -200,6 +200,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
         $providerid =  ConvertPidToAccount( $pid );
         //From Here on this is now a numeric pid.
         $_SESSION['pid'] = $providerid;
+        
         
         AddLoginToRoom($providerid, $roomhandle, $roomstorehandle);
 
@@ -453,6 +454,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
         //echo "<br><h2>$_SESSION[replyemail]</h2>";
         echo "<script>
               try {
+              localStorage.removeItem('hswt');
               localStorage.removeItem('swt');
               localStorage.removeItem('password');
               localStorage.removeItem('pw');
@@ -672,11 +674,10 @@ require_once 'authenticator/GoogleAuthenticator.php';
                (select enterprisename from sponsor where sponsor.sponsor = provider.sponsor ) as sponsorname,
                (select colorscheme from sponsor where sponsor.sponsor = provider.sponsor ) as sponsorcolorscheme,
                (select live from sponsor where sponsor.sponsor = provider.sponsor ) as sponsorlive,
-               ( select count(*) from imap 
-                 where imap.providerid = provider.providerid ) as emailcount,
                ( select count(*) from sponsor 
                  where sponsor.creator = provider.providerid ) as sponsorcount,
-               newbie, joinedvia, provider.allowiot, provider.hardenter
+               newbie, joinedvia, provider.allowiot, provider.hardenter, provider.email_service,
+               (select accountid from bytzvpn where bytzvpn.providerid = provider.providerid and bytzvpn.status='Y' limit 1) as vpnaccountid
                from provider 
                left join timeout on provider.providerid = timeout.providerid
                where provider.providerid = ? and provider.active='Y' ",
@@ -719,6 +720,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
             $_SESSION['roomdiscovery'] = $row['roomdiscovery'];
             $_SESSION['roomcreator'] = $row['roomcreator'];
             $_SESSION['broadcaster'] = $row['broadcaster'];
+            $_SESSION['email_service'] = $row['email_service'];
             $_SESSION['store'] = $row['store'];
             $_SESSION['web'] = $row['web'];
             $_SESSION['newbie'] = $row['newbie'];
@@ -752,10 +754,8 @@ require_once 'authenticator/GoogleAuthenticator.php';
                 $_SESSION['livesupport'] = 'N';
             }
             
-            if(intval($row['emailcount'])>0){
             
-                $_SESSION['invitesource']='';
-            }
+            $_SESSION['invitesource']='';
             $_SESSION['industry'] = $row['industry'];
             
             $_SESSION['mobilesize']="";
@@ -804,6 +804,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
             }
             $_SESSION['enterprise']=$row['enterprise'];
             $_SESSION['enterprisehost']=$row['enterprisehost'];
+            $_SESSION['vpnaccountid']=$row['vpnaccountid'];
             
 
             if(isset($_POST['mobile'])){
@@ -857,6 +858,7 @@ function AddLoginToRoom($providerid, $roomhandle, $roomstorehandle)
     }
     //echo "Add Login to room $roomhandle";
     //exit();
+    $roomid = 0;
     $result = pdo_query("1", "
         select roomid, 
         ( select owner from statusroom where statusroom.roomid = roomhandle.roomid and 
@@ -868,15 +870,16 @@ function AddLoginToRoom($providerid, $roomhandle, $roomstorehandle)
         $owner = $row['owner'];
         AddMember(0, $providerid, $roomid );
     }
-    $result = pdo_query("1", "
-        select profileroomid from provider where providerid = ?
-        ",array($providerid));
-    if( $row = pdo_fetch($result)){
-        if($roomstorehandle == ''){
-            $lastfunc = 'U';
-        } else {
+    $lastfunc = 'U';
+    if($roomstorehandle!=''){
+        $result = pdo_query("1", "
+            select profileroomid from provider where providerid = ?
+            ",array($providerid));
+        if( $row = pdo_fetch($result)){
             $lastfunc = 'US';
+            SaveLastFunction( $providerid, $lastfunc, $row['profileroomid'] );
         }
-        SaveLastFunction( $providerid, $lastfunc, $row['profileroomid'] );
+    } else {
+            SaveLastFunction( $providerid, $lastfunc, $roomid );
     }
 }

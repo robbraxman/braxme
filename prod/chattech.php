@@ -8,12 +8,6 @@ require_once("internationalization.php");
     $providerid = @tvalidator("ID",$_POST['providerid']);
     $handle = @tvalidator("PURIFY",$_SESSION['handle']);
     
-    /*
-    $result = pdo_query("1",
-        "
-        update notification set displayed = 'Y' where notifytype='CP' and displayed!='Y'
-        ");
-    */
 
  
     $add = "<img class='unreadicon' src='../img/add-new-128.png' style='height:12px;width:auto;padding-top:0;padding-right:2px;padding-bottom:0px;' />";
@@ -108,7 +102,9 @@ require_once("internationalization.php");
             }
             
         }
+        
         $count++;
+        /*
         $list .=
             "
                     <div class='roomlistbox pagetitle3 $modeaction tapped2 gridstdborder' 
@@ -138,10 +134,43 @@ require_once("internationalization.php");
             
                ";
             
-        
+        */
         
         
     }
+
+        $count = 1;
+        $list .=
+            "
+                    <div class='roomlistbox pagetitle3 $modeaction tapped2 gridstdborder' 
+                        data-chatid='$chatid' 
+                        style='position:relative;display:inline-block;
+                        overflow:hidden;
+                        color:black;background-color:white;
+                        cursor:pointer;font-weight:300;margin-bottom:10px'
+                        data-email=''
+                        data-handle='@alec'
+                        data-name='Tech Support' 
+                        data-techsupport='Y'
+                        data-passkey = ''
+                        data-mode='S'                        
+                    >
+                        <div style='background-color:#58585B;text-align:center'>
+                        <img class='chatlistphoto1' src='$rootserver/img/techsupport.jpg' style='width:100%;height:auto' />
+                            </div>
+                        <div class='smalltext' style=';left:0;text-align:center;overflow:hidden'>
+                            <br>
+                            <b>Queue $count</b><br>
+                            Tech Support<br>
+
+                        </div>
+                    </div>
+                
+            
+               ";
+        
+
+        
    /*
     * This idea of launching to the chat automatically (if unread) seems to not work right
     * if you want to go to some other chat discussion
@@ -154,7 +183,8 @@ require_once("internationalization.php");
         $list .="   </div></div>
                 </div>";
     }
-    $list .= "<br><br><div class='roomjoin pagetitle2' data-handle='#techsupport' data-mode='J' data-caller='none' style='cursor:pointer;margin:auto;text-align:center;color:$global_activetextcolor'>FAQ Common Questions</div> ";
+    
+    //$list .= "<br><br><div class='roomjoin pagetitle2' data-handle='#techsupport' data-mode='J' data-caller='none' style='cursor:pointer;margin:auto;text-align:center;color:$global_activetextcolor'>FAQ Common Questions</div> ";
 
     if($count == 0)
     {
