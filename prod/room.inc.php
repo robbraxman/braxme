@@ -461,7 +461,7 @@ function YouTubeMeta($url, $videotitle)
 
         
         $url = 'https://www.googleapis.com/youtube/v3/videos?id=';
-        $end =  "&part=snippet&key=AIzaSyAMiz7TJ-8WMPBr7QrlVy6RD30eL7bgunY";
+        $end =  "&part=snippet&key=";
         $vid = $vars[4];;
         //$response = file_get_contents($url.$vid.$end);
         //$obj = json_decode($response,true);            
