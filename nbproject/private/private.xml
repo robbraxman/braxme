@@ -2,40 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/console.js</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/profile.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/notifybatch.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/chatkey.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/fileuploadproc.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/room.inc.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/localsettings/localsettings.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/fileupload.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/textupload.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/fileprocpg.inc.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/localsettings/aws-config.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/startup.inc.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/aws.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/fileuploadprocs3.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/chatalert.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/tip.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/localsettings/mcryptlib.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/chatinvite.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/sidebar-v2.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/app.css</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/.htaccess</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/localsettings/cryptofunc-pdo.inc.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/textphoto.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/authenticator.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/doclib.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/textphoto-full.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/fileuploadfuncs.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/localsettings/openssllib.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/verifybatch.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/batch/verifybatch.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/fileuploadproc.inc.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/filedecode.php</file>
-            <file>file:/home/worker/Documents/NetbeansProjects/Brax.Me-Open-Source/prod/fileuploadprocs3.inc.php</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>
