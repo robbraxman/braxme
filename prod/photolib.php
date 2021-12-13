@@ -612,7 +612,7 @@ require_once("internationalization.php");
          * *******************************
          * 
          */
-        $result = pdo_query("1",
+        $result2 = pdo_query("1",
             "
                 select filename
                 from photolib where 
@@ -641,8 +641,8 @@ require_once("internationalization.php");
                 order by photoid desc limit 1
             ",array($providerid,$selectedalbumSql,$selectedalbumSql, $providerid));
         $shownextfilename = $showfilename;
-        if($row = pdo_fetch($result)){
-            $shownextfilename = $row['filename'];
+        if($row2 = pdo_fetch($result2)){
+            $shownextfilename = $row2['filename'];
         }  
         
         
