@@ -497,7 +497,7 @@ require("validsession.inc.php");
             DATE_FORMAT(provider.createdate, '%b %d/%y') as joined, provider.score,
             (select 'Y' from followers where followers.providerid = provider.providerid and followers.followerid = $providerid ) as followed
             from provider
-            where  active='Y' and termsofuse is not null and 
+            where  (active='Y' or 'Y' = '$_SESSION[superadmin]') and termsofuse is not null and 
             (
                 (
                     (providername like ? or handle like ? or publishprofile like?)
@@ -1404,7 +1404,7 @@ require("validsession.inc.php");
             provider.banid, provider.iphash2
             from provider  where (banid!='' or 
             (select count(*) from provider p2 where p2.iphash2 = provider.iphash2 and active='Y') > 1 
-            ) and active='Y' and (ipsource!='whitelist' or ipsource is null)
+            ) and active='Y' and (ipsource not in ('whitelist','internal') and ipsource is not null and ipsource!='' )
             order by provider.lastaccess desc limit 1000
                 ",null);
         $count = 0;

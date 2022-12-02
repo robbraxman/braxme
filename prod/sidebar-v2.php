@@ -406,6 +406,7 @@ require("nohost.php");
          * 
          */
         $footer .= "</div>";
+        
         $notifytitle = "    <span class='formobile'>
                                 <div class='pagetitle' style='color:$global_textcolor'>$menu_activity
                                     &nbsp;&nbsp;
@@ -417,6 +418,7 @@ require("nohost.php");
                                 <img class='icon20 notifyclear' src='$iconsource_braxclose_common' style='cursor:pointer;padding-top:10px;' title='Clear Notifications' />
                                 <br><br>
                             </span>
+                            
                         ";        
         
         $swipemsg = "<div class='pagetitle3 gridnoborder rounded shadow' 
@@ -774,6 +776,10 @@ require("nohost.php");
 
             }
             $sidemenu .= "<br><br>";
+            if($_SESSION['roomdiscovery']=='Y' &&
+              ( $_SESSION['sponsor']=='' || $_SESSION['sponsor']=='rob') ){
+                $sidemenu .= MenuItem( "S", $braxstore, "$menu_store", "", "userstore mainbutton", "data-owner='690001027'", 1, $bold );
+            } 
             
             
 

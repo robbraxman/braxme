@@ -52,11 +52,6 @@ if($roomid!=''){
             $action = $menu_chat;
             $actiontitle = "$menu_startchat";
         }
-        if($radiostation=='Q'){
-            $windowtitle = "<span class='pagetitle2a' style='color:$global_textcolor'>New Live Quiz with all members of $name2</span>";
-            $action = "Quiz";
-            $actiontitle = "Start Quiz";
-        }
         if($radiostation=='Y'){
             $windowtitle = "<br><span class='pagetitle2a' style='color:$global_textcolor'>$menu_startstation - $name2</span>";
             $action = $menu_station;

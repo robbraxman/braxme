@@ -91,11 +91,21 @@ function ModerationHardRestrict($userid)
              update provider set restricted ='' where providerid = ? and restricted ='Y'
             ",array($userid)
             );
+
+            /*
+            echo "
+                <script>
+                localStorage.removeItem('hgtx');
+                </script>
+            ";
+             * 
+             */
             
             
             return "Unrestricted";
         } else {
-
+            
+            
             pdo_query("1",
                     "
                     delete from statuspost where providerid = ?
@@ -231,4 +241,41 @@ function ModerationShadowBan($userid)
             return "ShadowBanned";
             
     }
+}
+
+function Inactivate($userid)
+{
+    global $admintestaccount;
+    
+    if($userid==$admintestaccount){
+        return;
+    }
+    if($_SESSION['superadmin']!=='Y'){
+        return;
+    }
+    pdo_query("1",
+            "
+            update provider set active='N' where providerid=?
+            ",array($userid)
+            );
+    return "Inactive";
+    
+}
+function Activate($userid)
+{
+    global $admintestaccount;
+    
+    if($userid==$admintestaccount){
+        return;
+    }
+    if($_SESSION['superadmin']!=='Y'){
+        return;
+    }
+    pdo_query("1",
+            "
+            update provider set active='Y' where providerid=?
+            ",array($userid)
+            );
+    return "Active";
+    
 }

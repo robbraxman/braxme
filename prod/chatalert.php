@@ -562,11 +562,11 @@ function WrapLinks($text)
     $links = $html->find('a');
 
     foreach ($links as $link) {
-        if(SafeUrl($link->href)== false){
-            $malwareflag = true;
-        }
-        if(isset($link->href) && substr( strtolower($link->href),0,6 )!="https:"){
-            $link->href = "https://bytz.io/$installfolder/wrap.php?u=" . $link->href;
+        //if(SafeUrl($link->href)== false){
+        //    $malwareflag = true;
+        //}
+        if(isset($link->href) && substr( strtolower($link->href),0,7 )==="http://"){
+            $link->href = "https://" . substr($link->href,7);
         }
         if($_SESSION['mobiletype']=='A' || $_SESSION['mobiletype']=='I'){
             $link->target = "_parent";

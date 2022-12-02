@@ -517,11 +517,26 @@ require_once("internationalization.php");
             ";
 
         $notifytext = "";
-        
         $notifytext =  GetKudosNotifications($providerid);
         //$notifytext .=  GetLiveNotifications($providerid);
         $notifytext .=  GetBytzVPNNotifications($providerid);
+        //return "";
         
+        $homenotified = '2022-04-03';
+        $result = pdo_query("1","
+            select DATE_FORMAT(homenotified,'%y-%m-%d %h:%i%p'), notification_disable as homenotified from provider where provider.providerid = ?
+            ", array($providerid));
+        if($row = pdo_fetch($result))
+        {
+            if($row['homenotified']!==''){
+                $homenotified = $row['homenotified'];
+                
+            }
+            $notification_disabled = $row['notification_disabled'];
+            if($notification_disabled === 'Y'){
+                //return "";
+            }
+        }
         
         $result = pdo_query("1","
                 select 
@@ -542,16 +557,15 @@ require_once("internationalization.php");
                 datediff(curdate(), notification.notifydate) < 3 and
                 notification.recipientid = ?
                 and notification.notifytype in ('RP','RL','CP')
-                and (notification.notifyread is null or notification.notifyread = '')
                 and provider.active = 'Y'
-                and notification.notifydate > (select homenotified from provider where provider.providerid = notification.recipientid)
+                and notification.notifydate > ?
                 and notification.providerid not in 
                     (select blockee from blocked where
                     blocker = ?) 
                 and notification.recipientid not in 
                     (select blockee from blocked where blocker = notification.providerid )
-                order by livechannel desc, notification.notifydate desc limit 100
-            ",array($providerid,$providerid));
+                order by notification.notifydate desc limit 100
+            ",array($providerid,$homenotified, $providerid));
         
         
         $i1 = 0;
@@ -814,32 +828,6 @@ require_once("internationalization.php");
         
         return preg_replace('/([0-9#][\x{20E3}])|[\x{00ae}\x{00a9}\x{203C}\x{2047}\x{2048}\x{2049}\x{3030}\x{303D}\x{2139}\x{2122}\x{3297}\x{3299}][\x{FE00}-\x{FEFF}]?|[\x{2190}-\x{21FF}][\x{FE00}-\x{FEFF}]?|[\x{2300}-\x{23FF}][\x{FE00}-\x{FEFF}]?|[\x{2460}-\x{24FF}][\x{FE00}-\x{FEFF}]?|[\x{25A0}-\x{25FF}][\x{FE00}-\x{FEFF}]?|[\x{2600}-\x{27BF}][\x{FE00}-\x{FEFF}]?|[\x{2900}-\x{297F}][\x{FE00}-\x{FEFF}]?|[\x{2B00}-\x{2BF0}][\x{FE00}-\x{FEFF}]?|[\x{1F000}-\x{1FFFF}][\x{FE00}-\x{FEFF}]?/u', '', $text);
         
-        /*
-        $cleanText = "";
-        
-
-        // Match Emoticons
-        $regexEmoticons = '/[\x{1F600}-\x{1F64F}]/u';
-        $cleanText = preg_replace($regexEmoticons, '', $text);
-
-        // Match Miscellaneous Symbols and Pictographs
-        $regexSymbols = '/[\x{1F300}-\x{1F5FF}]/u';
-        $cleanText = preg_replace($regexSymbols, '', $cleanText);
-
-        // Match Transport And Map Symbols
-        $regexTransport = '/[\x{1F680}-\x{1F6FF}]/u';
-        $cleanText = preg_replace($regexTransport, '', $cleanText);
-
-        // Dingbats
-        $regexTransport = '/[\x{2702}-\x{27B0}]/u';
-        $cleanText = preg_replace($regexTransport, '', $cleanText);
-
-        // Enclosed Chars
-        $regexTransport = '/[\x{24C2}-\x{1F251}]/u';
-        $cleanText = preg_replace($regexTransport, '', $cleanText);
-        
-        return $cleanText;
-         */
     }
     
     ?>

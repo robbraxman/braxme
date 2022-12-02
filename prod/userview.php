@@ -4,8 +4,8 @@ require("validsession.inc.php");
 require_once("config-pdo.php");
 require("roommanage.inc.php");
 $providerid = @tvalidator("ID",$_SESSION['pid']);
-$userid = @tvalidator("PURIFY",$_POST['userid']);
-$caller = @tvalidator("PURIFY",$_POST['caller']);
+$userid = @tvalidator("PURIFYHANDLE",$_POST['userid']);
+$caller = @tvalidator("PURIFYHANDLE",$_POST['caller']);
 
 $source = "";
 if($caller == ''){

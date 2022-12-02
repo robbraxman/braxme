@@ -13,7 +13,7 @@ require_once('localsettings/secure/localsettings.php');
         }
     }
 
-require_once('htmlpurifier-4.8.0-standalone/HTMLPurifier.standalone.php');
+require_once('htmlpurifier-4.15.0-standalone/HTMLPurifier.standalone.php');
 require('colorscheme.php');
 
     $purifierconfig = HTMLPurifier_Config::createDefault();
@@ -202,11 +202,17 @@ require('colorscheme.php');
             return "";
         }
         if($type == 'ID'){
+            if(FindJS($string)){
+                return "";
+            }
 
             return filter_var(intval($string), FILTER_VALIDATE_INT);//, array("options" => array("min_range" => 0,"max_range" => 9999999999)) );
             
         }
         if($type == 'EMAIL'){
+            if(FindJS($string)){
+                return "";
+            }
             return filter_var($string, FILTER_SANITIZE_EMAIL);
         }
         if($type== 'ASCII'){
@@ -216,6 +222,13 @@ require('colorscheme.php');
             }            
         }
         if($type== 'PURIFY'){
+            return $purifier->purify( $string);
+        }
+        if($type== 'PURIFYHANDLE'){
+            if(FindJS($string)){
+                return "";
+            }
+            
             return $purifier->purify( $string);
         }
 
@@ -357,10 +370,47 @@ require('colorscheme.php');
         $passkey = OpenSSLDecrypt($passkey64,$salt);
         return $passkey;
     }
+    function FindJs($string)
+    {
+        //$test = rawurldecode($string);
+        if(strstr(strtolower($string),"javascript:")!==false){
+            return true;
+        }
+        /* validate that the value does not contain potential javascript */
+        if(strstr(strtolower($string),";")!==false){
+            return true;
+        }
+        if(strstr(strtolower($string),":")!==false){
+            return true;
+        }
+        if(strstr(strtolower($string),")")!==false){
+            return true;
+        }
+        if(strstr(strtolower($string),"(")!==false){
+            return true;
+        }
+        if(strstr(strtolower($string),"-")!==false){
+            return true;
+        }
+        return false;
+    }
     function TrapJs($string)
     {
         //$test = rawurldecode($string);
         if(strstr(strtolower($string),"javascript:")!==false){
+            return true;
+        }
+        /*
+         *  Identify JS injection via Escaping quotes
+         */
+        
+        if(strstr(strtolower($string),"';")!==false){
+            return true;
+        }
+        if(strstr(strtolower($string),"\";")!==false){
+            return true;
+        }
+        if(strstr(strtolower($string),"`;")!==false){
             return true;
         }
         return false;
@@ -393,7 +443,7 @@ require('colorscheme.php');
                 
         } 
         
-        $wrapper = "https://brax.me/$installfolder/wrap.php?u=" . $shortlink;
+        $wrapper = "https://" . $shortlink;
 
         return $wrapper;
     }    

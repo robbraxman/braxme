@@ -2109,8 +2109,7 @@
             $(".mainview").hide();
             $("#loading-div-background").hide();
             
-        }
-
+        } else
         if( LastFunc === 'R'){
 
             //defaultRoomid = LastFuncParm1;

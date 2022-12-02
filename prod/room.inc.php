@@ -1112,8 +1112,7 @@ function PinPost( $providerid, $shareid, $postid, $roomid )
     pdo_query("1","
         update statuspost set pin = 10 where postid = ? and 
             (
-                owner = ?
-                or exists 
+                exists 
                  (   select providerid from roommoderator 
                      where roomid=? and providerid=? 
                  ) 
@@ -1123,7 +1122,7 @@ function PinPost( $providerid, $shareid, $postid, $roomid )
                  ) 
             )
     
-        ",array($postid, $providerid,$roomid,$providerid,$roomid,$providerid ));
+        ",array($postid, $roomid,$providerid,$roomid,$providerid ));
         
 }
 function LockPost( $providerid, $shareid, $postid, $roomid )
@@ -1171,8 +1170,7 @@ function UnPinPost( $providerid, $shareid, $postid, $roomid )
     pdo_query("1","
         update statuspost set pin = 0 where postid = ? and
             (
-                owner = ?
-                or exists 
+                exists 
                  (   select providerid from roommoderator 
                      where roomid=? and providerid=? 
                  ) 
@@ -1181,7 +1179,7 @@ function UnPinPost( $providerid, $shareid, $postid, $roomid )
                      where roomid=? and owner=? 
                  ) 
             )
-        ",array($postid,$providerid,$roomid,$providerid,$roomid,$providerid));
+        ",array($postid, $roomid,$providerid,$roomid,$providerid));
         
 }
 /****************************************************************
@@ -1556,7 +1554,33 @@ function RoomInfo($providerid, $roomid, $mainwidth, $page, $memberinfo)
                 
             }
             
-            $tokenpay = "";
+            $tokenpay = "        
+                <tr>
+                    <td>
+                        <br><center>
+                        <span class='mainfont' style='color:$global_textcolor'>$tokenpaymsg
+                            <br>
+                                Subscribe Paypal $subscriptionusd  $subscriptionperiod
+                            
+                        </span><br><br><br>
+                            <form id='fmPaypal' method='post' action= 'https://www.sandbox.paypal.com/cgi-bin/webscr'>
+                                    <input type='hidden' name='cmd' value='_xclick'>
+                                    <input type='hidden' name='currency_code' value='USD'>
+                                    <input type='hidden' name='business' value='rob@brax.me'>
+                                    <input type='hidden' name='item_name' value='Room/$roomid'>
+                                    <input type='hidden' name='item_number' value='$_SESSION[pid]'>
+                                    <input type='hidden' name='amount' value='$subscriptionusd'>
+                                    <input type='hidden' name='no_shipping' value='1'>
+                                    <input type='hidden' name='tax' value='0'>
+                                    <input type='hidden' name='return' value='$rootserver/$installfolder/paypalreturn.php?mode=1' />
+                                    <input type='hidden' name='cancel_return' value='$rootserver/$installfolder/paypalreturn.php?mode=cancel1' />
+                                    <input type='image' src='https://www.paypalobjects.com/en_US/i/btn/btn_subscribeCC_LG.gif' border='0' name='submit' alt='PayPal - The safer, easier way to pay online!'  style='height:47px'>
+                                    <img alt='' border='0' src='https://www.paypalobjects.com/en_US/i/scr/pixel.gif' width='1' height='1'>
+                            </form>
+                           </center><br><br>
+                    </td>
+                </tr>
+                ";
         }
 
         

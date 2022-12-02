@@ -31,6 +31,7 @@ $inline = @tvalidator("PURIFY", $_GET['i'] );
         exit();
         
     }
+
     
     
     pdo_query("1","
@@ -72,6 +73,7 @@ $inline = @tvalidator("PURIFY", $_GET['i'] );
 
     }
 
+    
     if($fileencoding!='PLAINTEXT' ) {
 
         if($filetype=='pdf'){
@@ -112,6 +114,7 @@ $inline = @tvalidator("PURIFY", $_GET['i'] );
         echo getAWSObjectStreamEcho($row['filename']);
         exit();
     }
+    
     if(
         $filesize < 1000000*10 //10MB
     )
@@ -124,13 +127,19 @@ $inline = @tvalidator("PURIFY", $_GET['i'] );
         exit();
     }
     if(
-        $filesize > 1000000*1500 //1.5GB
+        $filesize > 1000000*10 //1.5GB
     )
     {
+        $awsurl = getAWSObjectUrlShortTermLarge( $row['filename']);
+        echo "$awsurl";
+        
+        /*
         $awsurl = getAWSObjectUrlShortTermLarge( $row['filename']);
 
         header('Location: '.$awsurl);
         exit();
+         * 
+         */
     }
     
 

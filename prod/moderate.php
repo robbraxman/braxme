@@ -32,6 +32,16 @@ if($mode=='R'){
     echo "$result";
     exit();
 }
+if($mode=='I'){
+    $result = Inactivate($userid);
+    echo "$result";
+    exit();
+}
+if($mode=='A'){
+    $result = Activate($userid);
+    echo "$result";
+    exit();
+}
 echo "OK $mode-";
 
 exit();

@@ -49,8 +49,8 @@ $forgotmode = "One-Time-Use Password Request";
 $forgotsig = "";
 
 $result = pdo_query("1"," 
-        select * from notifytokens where token='$apn$gcm' and status='Y'
-        ");
+        select * from notifytokens where token=? and status='Y'
+        ",array("$apn$gcm"));
 if( $row = pdo_fetch($result) ){
     $validmobiletoken = true;
     $forgotsig = session_id();
@@ -199,7 +199,7 @@ $(document).ready( function() {
                             <div class='pagetitle2'>Reset Password Request</div>
                             -->
 
-                            <INPUT class='login' id="pid" TYPE="email" NAME="pid" size='30' placeholder="@<?=$menu_handle?> <?=$menu_or?> <?=$menu_email?>" autocomplete="false" autocapitalize='off' style='font-size:16px;width:250px;border-color:lightgray;padding:5px;margin-top:3px' value=''>
+                            <INPUT class='login' id="pid" TYPE="email" NAME="pid" size='30' placeholder="<?=$menu_handle?>" autocomplete="false" autocapitalize='off' style='font-size:16px;width:250px;border-color:lightgray;padding:5px;margin-top:3px' value=''>
                         <div class="forgot">
                             <?=$forgotmode?>
                             <img class='icon20' src='../img/Arrow-Right-in-Circle_120px.png' style='cursor:pointer;' />

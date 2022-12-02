@@ -391,9 +391,6 @@ require("chat.inc.php");
 
             }
         $message = "Chat Session Established";
-        if($radiostation == 'Q'){
-            $message = "Quiz Session Started";
-        }
         $encode = EncryptChat ($message,"$chatid","" );
 
 

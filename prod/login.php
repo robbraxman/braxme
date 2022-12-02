@@ -3,6 +3,7 @@ session_start();
 header('X-Frame-Options: SAMEORIGIN');
 header('X-Content-Type: nosniff');
 header('X-XSS-Protection: 1; mode=block');
+//  header("Content-Security-Policy:  ;");
 require_once("config-pdo.php");
 
 //session_unset();
@@ -27,18 +28,18 @@ $apn = '';
 $_SESSION['gcm']='';
 $_SESSION['apn']='';
 
-$mobile = @tvalidator("PURIFY",$_GET['mobile']);
-$landing = @tvalidator("PURIFY",$_GET['l']);
-$source = @tvalidator("PURIFY",$_GET['s']);
-$version = @tvalidator("PURIFY",$_GET['v']);
-$gcm = @tvalidator("PURIFY",$_GET['gcm']);
+$mobile = @tvalidator("PURIFYHANDLE",$_GET['mobile']);
+$landing = @tvalidator("PURIFYHANDLE",$_GET['l']);
+$source = @tvalidator("PURIFYHANDLE",$_GET['s']);
+$version = @tvalidator("PURIFYHANDLE",$_GET['v']);
+$gcm = @tvalidator("PURIFYHANDLE",$_GET['gcm']);
 $_SESSION['gcm']=$gcm;
-$apn = @tvalidator("PURIFY",$_GET['apn']);
+$apn = @tvalidator("PURIFYHANDLE",$_GET['apn']);
 $_SESSION['apn']=$apn;
-$init = @tvalidator("PURIFY",$_GET['init']);
-$language = @tvalidator("PURIFY",$_GET['lang']);
-$roomhandle = @tvalidator("PURIFY",$_GET['h']);
-$roomstorehandle = @tvalidator("PURIFY",$_GET['store']);
+$init = @tvalidator("PURIFYHANDLE",$_GET['init']);
+$language = @tvalidator("PURIFYHANDLE",$_GET['lang']);
+$roomhandle = @tvalidator("PURIFYHANDLE",$_GET['h']);
+$roomstorehandle = @tvalidator("PURIFYHANDLE",$_GET['store']);
 
 
 
@@ -196,6 +197,7 @@ $(document).ready( function() {
         
         $('#pid').val( localStorage.pid );
         $('#loginid').val(localStorage.loginid);
+        $('#hgtx').val(localStorage.hgtx);
         if(typeof(localStorage.hswt)!=='undefined'){
             $('#stored').val(localStorage.hswt);
         } 
@@ -287,13 +289,14 @@ $(document).ready( function() {
         <INPUT id="useragent" TYPE="hidden" NAME="useragent" value="">
         <INPUT id="roomhandle" TYPE="hidden" NAME="roomhandle" value="<?=$roomhandle?>">
         <INPUT id="roomstorehandle" TYPE="hidden" NAME="roomstorehandle" value="<?=$roomstorehandle?>">
+        <INPUT id="hgtx" TYPE="hidden" NAME="hgtx" value="">
         </center>
             <table style='margin:auto'>
                 <tr>
                     <td>
                         <p>
 
-                        <INPUT class='login' id="pid" TYPE="email" NAME="pid" size='30' placeholder="<?='@'.$menu_handle?>" autocomplete="false" autocapitalize='off' style='font-size:18px;width:250px;border-color:lightgray;padding:10px;margin-top:3px' value=''>
+                        <INPUT class='login' id="pid" TYPE="email" NAME="pid" size='30' placeholder="<?=$menu_handle?>" autocomplete="false" autocapitalize='off' style='font-size:18px;width:250px;border-color:lightgray;padding:10px;margin-top:3px' value=''>
                         <INPUT id="standalone" TYPE="hidden" NAME="mobile"  value=""  >
                         <INPUT id="uuid" TYPE="hidden" NAME="uuid"  value=""  >
                         <INPUT id="stored" TYPE="hidden" NAME="stored"  value=""  >

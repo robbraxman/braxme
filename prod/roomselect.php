@@ -13,7 +13,6 @@ require_once("roomselect.inc.php");
     
 require("validsession.inc.php");
 
-    SaveLastFunction($providerid,"", null);
 
     $time1 = microtime(true);
 
@@ -23,6 +22,7 @@ require("validsession.inc.php");
     $roomid = @tvalidator("ID",$_POST['roomid']);
     $find = stripslashes(htmlentities(@tvalidator("PURIFY",$_POST['find'],ENT_QUOTES)));
     
+    SaveLastFunction($providerid,"", null);
 
     $result = pdo_query("1","
         select roomdiscovery, sponsor, roomfeed from provider where providerid = ? 
@@ -142,7 +142,7 @@ require("validsession.inc.php");
         
         if($mode!=='JCOMMUNITY'){    
             echo "
-            <div class='gridnoborder' style='background-color:$global_backgroundcolor;color:$global_textcolor;margin:auto;padding-left:10px;padding-top:10px;padding-right:20px;padding-bottom:3px;' >
+            <div class='gridnoborder' style='background-color:transparent;color:$global_textcolor;margin:auto;padding-left:10px;padding-top:10px;padding-right:20px;padding-bottom:3px;' >
                 <center>
                 <span class='pagetitle' style='color:$global_textcolor'>$menu_roomselect</span> 
                 </center>

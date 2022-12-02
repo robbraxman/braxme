@@ -19,19 +19,21 @@ require_once("aws.php");
     $_SESSION['temporarypassword'] = substr( $temp, 5, 8 );
     $session = session_id();
     
-    $providerid = @tvalidator("PURIFY", "$_POST[pid]");
+    $userid = @tvalidator("PURIFY", "$_POST[pid]");
     $loginid = @tvalidator("PURIFY", "$_POST[l]");
     $ip = tvalidator("PURIFY",$_SERVER['REMOTE_ADDR']);
     //$ip = "test";
     
-    
-    if( strpos( (string) $providerid,"@")!==false ){
+
+    $providerid = "0";
+    //Validate the User
+    if( strpos( (string) $userid,"@")!==false ){
     
         $result = pdo_query("1", 
            "select providerid, verified, replyemail, handle from 
             provider where (
             replyemail = ? or handle=?) 
-            and active='Y'  ",array($providerid,$providerid)
+            and active='Y'  ",array($userid,$userid)
           );
         if($row = pdo_fetch($result)){
             $providerid = $row['providerid'];
@@ -40,7 +42,7 @@ require_once("aws.php");
             
             
         } else {
-            $providerid = "";
+            $providerid = "0";
             $replyemail = "";
             $handle = "";
             echo "User not found";
@@ -48,13 +50,13 @@ require_once("aws.php");
         }
         
     } else {
-        echo "Enter an email or handle";
+        echo "Enter an email or @braxusername";
         exit();
     }
     
 
     //Validation Checks
-    if( $providerid == "" ){
+    if( $providerid == "0" ){
     
         echo "Invalid Subscriber";
         exit();
@@ -77,10 +79,29 @@ require_once("aws.php");
     }
     
     $smssent = false;
+    $braxemail = "";
+    
+    $result = pdo_query("1", "
+        select userid from braxmail where braxmail.providerid = ? 
+      ",array($providerid));
+
+
+    if ($row = pdo_fetch($result)){
+
+        //NOT FOR OPEN SOURCE
+        if($row['userid']!==''){
+            $braxemail = $row['userid']."@braxmail.net";
+        }
+    }
+    
+    
+    /*
+     * This part is crashing
     $result = pdo_query("1", "
         select providerid, 
         (select sms from sms where provider.providerid = sms.providerid ) as smsencrypted,
-        (select encoding from sms where provider.providerid = sms.providerid ) as smsencoding
+        (select encoding from sms where provider.providerid = sms.providerid ) as smsencoding,
+        (select userid from braxmail where braxmail.providerid = provider.providerid) as braxemail
         from provider where providerid=? and active='Y'  
       ",array($providerid));
 
@@ -97,9 +118,17 @@ require_once("aws.php");
             SmsAlert( $providerid, $smsmessage, $sms );
             $smssent = true;
         }
+        
+        //NOT FOR OPEN SOURCE
+        $braxemail = "";
+        if($row['braxmail']!==''){
+            $braxemail = $row['braxemail']."@braxmail.net";
+        }
     }
-    
-    if( strstr($replyemail, ".account@brax.me")!==false){
+    echo "test";
+    exit();
+    */
+    if( strstr($replyemail, ".account@brax.me")!==false && $braxemail==''){
         //SMS sent so no need to bother with invalid email
         if($smssent){
             echo "Password Reset sent via text";
@@ -112,23 +141,28 @@ require_once("aws.php");
     }
 
     
+    //Those with a Braxmail Subscription are presumed to be verified
+    
     $result = pdo_query("1", 
             
-            "SELECT staff.email, provider.verified, sms.sms
+            "SELECT provider.replyemail, staff.email, provider.verified, sms.sms
                 from staff 
                 left join provider on provider.providerid = staff.providerid
                 left join sms on provider.providerid = sms.providerid
                 where staff.providerid = ? and staff.loginid = ?  
-                and staff.email in 
-                (select email from verification where verifieddate is not null 
-                and staff.email = verification.email
+                and (
+                  staff.email in 
+                     ( select email from verification where verifieddate is not null 
+                       and staff.email = verification.email
+                     )
+                   or
+                  '$braxemail'!=''
                 )
             ",array($providerid,$loginid)
     );
     
     if ($row = pdo_fetch($result)){
     
-            
                 
                 $_SESSION['message'] = 
                         "Did you forget your $appname password? You made a request for a One-Time-Use Password. ".
@@ -141,12 +175,20 @@ require_once("aws.php");
                              Send me a One-Time-Use Password
                          </a>";
                 
-                $to = "$row[email]";
+                //$to = "$row[email]";
+                //Modified to take from Main account for now
+                //the other way was enterprise multi-login use
+                $to = "$row[replyemail]";
                 $subject = "$appname Security Message";
                 $message = "$_SESSION[message]";
                 $from = "donotreply@brax.me";
                 $headers = "From: '$appname' <$from>\r\n";
+                
                 SendMail("0", "$subject", "$message", "$message", "$to", "$to" );
+                if($braxemail!==''){
+                    SendMail("0", "$subject", "$message", "$message", "$braxemail", "$braxemail" );
+                }
+                
                 if($smssent == false ){
                     echo "Email sent with a One-Time-Use Password Request.";
                 } else {

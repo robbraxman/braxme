@@ -3806,6 +3806,7 @@ $(document).ready( function() {
                 var productid = $(this).data('productid');
                 var ship = $(this).data('ship');
                 var quantity = $('#quantity').val();
+                var info = $('#storeinfo').val();
                 
                 var roomfind = '';
                 if(mode === 'F'){
@@ -3815,7 +3816,6 @@ $(document).ready( function() {
                 
                 PanelShow(4);
                 defaultRoomid = 0;
-                
                 $('#roominnerwindow').html(LoadingGIF);
                 $.ajax({
                     url: rootserver+'userstore.php',
@@ -3831,7 +3831,8 @@ $(document).ready( function() {
                         'productid' : productid,
                         'ship' : ship,
                         'quantity' : quantity,
-                        'find' : roomfind
+                        'find' : roomfind,
+                        'info' : info
                      }
 
                 }).done(function( data, status ) {
@@ -10008,6 +10009,19 @@ $(document).ready( function() {
                 });
         });
 
+        $('body').on('click','.chatlink', function()
+        {
+            href = $(this).attr('href');
+            linktext = "<a href="+href+" target=_blank />Proceed to Link</a><br><br><br>"+href+"<br>b";
+
+                    alertify.alert(linktext,function(ok){
+                        if( ok ){
+                            return true;
+                        }
+                    });
+                    return false;
+            
+        });        
     
        
 });

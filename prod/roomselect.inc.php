@@ -14,11 +14,8 @@ function RoomListFooter()
     
         echo "
         <div class='mainfont' 
-            style='background-color:$global_bottombar_color;margin:auto;cursor:pointer;color:white;text-align:center'>
+            style='background-color:transparent;margin:auto;cursor:pointer;color:white;text-align:center'>
             <br><br>
-            <!--
-            <div class='friends' style='color:$global_activetextcolor_reverse'><b>$menu_managerooms</b></div>
-            -->
             <br><br>
             <br><br><br>
             <br><br><br>
@@ -932,10 +929,11 @@ function OwnedRooms2($providerid, $find, $owned )
         $roomtitle = "$menu_all";
         $nonmobile = "";
     };
-    $ownedquery = "and (roomhandle.community!='Y' or roomhandle.community is null) ";
+    $ownedquery = "";
+    //$ownedquery = "and (roomhandle.community!='Y' or roomhandle.community is null) ";
     if($owned == 'Y' && $_SESSION['enterprise']=='Y'){
         $roomtitle = "$menu_myrooms";
-        $ownedquery = " and statusroom.owner = statusroom.providerid and (roomhandle.community!='Y' or roomhandle.community is null) ";
+        $ownedquery = " and statusroom.owner = statusroom.providerid ";
     }
     
 
@@ -2786,6 +2784,36 @@ function FAQRooms($providerid, $find )
                 <br>
             </div>
             ";
+        
+        $result = pdo_query("1","select photourl,roomid,room from roominfo where roomid = (select roomid from roomhandle where handle = '#brax2faq') ",null);
+        if($row=pdo_fetch($result)){
+            
+        $photourl = "
+                <div style='display:inline-block;width:100%;text-align:center;padding-bottom:10px;overflow:hidden'>
+                    <img src='$row[photourl]' style='height:120px;width:auto;max-width:100%' />
+                </div>
+                ";
+            
+           
+            echo "
+                <div class='stdlistbox roomjoin mainbutton tapped2 $shadow' data-handle='#brax2faq' 
+                  data-room=''  data-roomid=$row[roomid] data-mode='J' data-caller='FAQ'
+                  style='position:relative;display:inline-block;cursor:pointer;
+                  text-align:left;
+                  background-color:whitesmoke;
+                  min-width:15%;
+                  margin:5px;overflow:hidden'>
+                        $photourl
+                      <div class=mainfont 
+                      style='position:absolute;bottom:10px;;color:black;
+                      '>
+                          <div style='padding:10px'>
+                          $row[room]
+                          </div>
+                      </div>
+                </div>
+                 ";
+        }        
         
         $result = pdo_query("1","select photourl,roomid,room from roominfo where roomid = (select roomid from roomhandle where handle = '#privacyfaq') ",null);
         if($row=pdo_fetch($result)){

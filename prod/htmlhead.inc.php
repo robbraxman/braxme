@@ -57,6 +57,8 @@ echo "<script type='text/javascript' src='$rootserver/libs/jquery.visible/jquery
 echo "<script type='text/javascript' src='$rootserver/libs/audio/audiojs/audio.js?$randomid'></script>\r\n";
 echo "<script type='text/javascript' src='$rootserver/libs/Mediabuffer-master/mediabuffer.js'></script>\r\n";
     
+echo "<script src='$rootserver/libs/twitch/v1.js'  ></script>\r\n";
+
         
 echo "<script type='text/javascript' src='$rootserver/libs/fastclick/fastclick.js'></script>\r\n";
 

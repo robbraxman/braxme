@@ -308,7 +308,7 @@ if($_SESSION['enterprise']=='Y'){
     <div id=trigger_notifysubscribe class='notifysubscribe1 mainbutton' style='display:none'></div>
     <div id=trigger_room class='mainbutton feedload' data-roomid='' data-mode='' data-caller='' style='display:none'></div>
     <div id=trigger_userstore class='mainbutton userstore' data-roomid='' data-mode='' data-caller='' style='display:none'></div>
-    <div id=trigger_roomselect class='mainbutton roomselect' data-roomid='' data-mode='' style='display:none'></div>
+    <div id=trigger_roomselect class='mainbutton roomselect' data-roomid='' data-mode='' data-caller='' style='display:none'></div>
     <div id=trigger_roomselectlive class='mainbutton roomselect' data-roomid='' data-mode='S' style='display:none'></div>
     <div id=trigger_discoverroom class='mainbutton roomdiscover' data-roomid='' data-mode='' style='display:none'></div>
     <div id=trigger_chat class='mainbutton setchatsession' data-chatid='' data-keyhash=''  style='display:none'></div>

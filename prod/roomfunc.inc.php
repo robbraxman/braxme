@@ -730,7 +730,7 @@ function TopBar( $readonly, $caller, $owner, $roominfo, $gotohome, $shareid )
     $profileflag = $roominfo->profileflag;
     $roomstyle = $roominfo->roomstyle;
     $roomid = $caller;
-    
+    $mode = "";
     if($readonly=='Y'){
         return "";
     }

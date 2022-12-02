@@ -112,7 +112,6 @@ class SignUp
         }
         $useragent = tvalidator("PURIFY",$_SERVER['HTTP_USER_AGENT']);
         $this->iphash2 = hash("sha256",$ip.$useragent.$timezone);
-        $this->iphash3 = hash("sha256",$ip.$useragent.$timezone.$innerwidth.$innerheight);
         
         //Which hash to use for tracking
         $iphash = $this->iphash2;
@@ -994,6 +993,15 @@ class SignUp
                 ",array($this->replyemail)
             );
         }
+        
+        //Match Email if they don't sync
+        $result = pdo_query("1",
+            "
+            update staff set email = (select replyemail from provider where staff.providerid = provider.providerid) 
+            where providerid = ? and loginid='admin' and "
+                . " active='Y'
+            ",array($this->providerid )
+        );
         if( $this->enterprise == 'Y'){
             $result = pdo_query("1", "select * from msgplan where providerid = ? ",array($this->providerid));
             if(!$row = pdo_fetch($result)){

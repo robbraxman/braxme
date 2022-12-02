@@ -8,6 +8,9 @@ require_once("roommanage.inc.php");
 require_once("whitelist.inc.php");
 require_once 'authenticator/GoogleAuthenticator.php';
 
+/* NOTE: for Open source version - remove references to hgtx. That is for production only */
+
+
 
     $roomhandle = '';
     $roomstorehandle = '';
@@ -106,8 +109,8 @@ require_once 'authenticator/GoogleAuthenticator.php';
 
         if( isset($_SESSION['pid'])){
 
-            $pid = rtrim(tvalidator("PURIFY",$_SESSION['pid']));
-            $loginid = rtrim(@tvalidator("PURIFY", "$_SESSION[loginid]"));
+            $pid = rtrim(tvalidator("PURIFYHANDLE",$_SESSION['pid']));
+            $loginid = rtrim(@tvalidator("PURIFYHANDLE", "$_SESSION[loginid]"));
             $password = "";
             if($loginid == ''){
                 $logind = 'admin';
@@ -119,24 +122,24 @@ require_once 'authenticator/GoogleAuthenticator.php';
 
             $_SESSION['timeoutcheck']=time();
 
-            $pid = rtrim(tvalidator("PURIFY","$_POST[pid]"));
-            $_SESSION['pid'] = tvalidator("PURIFY",$_POST['pid']);
+            $pid = rtrim(tvalidator("PURIFYHANDLE","$_POST[pid]"));
+            $_SESSION['pid'] = tvalidator("PURIFYHANDLE",$_POST['pid']);
             
             
             $_SESSION['logintoken']=session_id();
             $_SESSION['pwd_hash'] = session_id();
-            $_SESSION['loginid'] = tvalidator("PURIFY",$_POST['loginid']);
-            $_SESSION['init'] = tvalidator("PURIFY",$_POST['init']);
+            $_SESSION['loginid'] = tvalidator("PURIFYHANDLE",$_POST['loginid']);
+            $_SESSION['init'] = tvalidator("PURIFYHANDLE",$_POST['init']);
             if(!isset($_SESSION['version'])){
                 $_SESSION['version']='000';
             }
             if(isset($_POST['version']) && $_POST['version']!=''){
-                $_SESSION['version'] = tvalidator("PURIFY",$_POST['version']);
+                $_SESSION['version'] = tvalidator("PURIFYHANDLE",$_POST['version']);
             }
             
-            $roomhandle = tvalidator("PURIFY",$_POST['roomhandle']);
-            $roomstorehandle = tvalidator("PURIFY",$_POST['roomstorehandle']);
-            $timezone = tvalidator("PURIFY",$_POST['timezone']);
+            $roomhandle = tvalidator("PURIFYHANDLE",$_POST['roomhandle']);
+            $roomstorehandle = tvalidator("PURIFYHANDLE",$_POST['roomstorehandle']);
+            $timezone = tvalidator("PURIFYHANDLE",$_POST['timezone']);
             if($timezone!=''){
                 pdo_query("1","update provider set timezone=? where providerid = ? and timezone is null ",array($timezone,$pid));
                 $_SESSION['timezone']=$timezone;
@@ -149,7 +152,15 @@ require_once 'authenticator/GoogleAuthenticator.php';
             }
 
             //Load Existing Device ID
-            $_SESSION['deviceid'] = tvalidator("PURIFY",$_POST['deviceid']);
+            $_SESSION['deviceid'] = tvalidator("PURIFYHANDLE",$_POST['deviceid']);
+            
+            //banned user flag
+            $hgtx = tvalidator("PURIFYHANDLE",$_POST['hgtx']);
+            if($hgtx ==='1'){
+                $_SESSION['hgtx']='1';
+                
+            }
+            
 
             //Anti CSRF
             $_SESSION['remote_addr'] = $_SERVER['REMOTE_ADDR'];
@@ -389,18 +400,47 @@ require_once 'authenticator/GoogleAuthenticator.php';
          * 
          */
         $timezone = $_SESSION['timezone'];
-        $ip = WhiteListCheck(false);
+        $innerwidth =   $_SESSION['innerwidth'];
+        $innerheight =  $_SESSION['innerheight'];
+        $pixelratio = $_SESSION['pixelratio'];
+ 
+        //banned user based on IP address currently used
+        $ip = "";
+        $iphash = WhiteListCheck(false);
+        if($iphash!=='internal' && $iphash!=='whitelist'){
+            $result = pdo_query("1", 
+               " 
+                select ban from iphash where ip=? and ban = 'Y'
+               ",
+               array($iphash)     
+
+              );
+            if( $row = pdo_fetch($result)){
+                $_SESSION['hgtx']='1';
+            }
+            $ip = $iphash;
+        } 
+        
+        
+        
+        $ipclean = WhiteListCheck(true);
         $useragent = tvalidator("PURIFY",$_SERVER['HTTP_USER_AGENT']);
-        $iphash2 = hash("sha256",$ip.$useragent.$timezone);
+        /* iphash = raw hasn of IP excluding TOR and Internal list or BytzVPN
+         * iphash2 = fingerprint with ip
+         * iphash3 = no ip but device fingerprint only with timezone
+         * 
+         */
+        
         $iphash = hash("sha256", WhiteListCheck(2));
-        $ip = WhiteListCheck(true);
-        $ipsource = $ip;
+        $iphash2 = hash("sha256",$ip.$useragent.$timezone);
+        $iphash3 = hash("sha256",$useragent.$timezone.$innerwidth.$innerheight.$pixelratio.$ipclean);
+        $ipsource = $ipclean;
 
         //Simplified Browser Fingerprint to catch trolls
         $result = pdo_query("1"," 
-            update provider set iphash=?,iphash2 =?,ipsource=?, timezone=?
+            update provider set iphash=?,iphash2 =?, iphash3=?, ipsource=?, timezone=?
              where providerid = ?",
-             array($iphash,$iphash2,$ipsource,$timezone,$providerid)
+             array($iphash,$iphash2,$iphash3, $ipsource,$timezone,$providerid)
             );
 
         GetTimeoutPin($providerid);
@@ -658,7 +698,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
         
         $result = pdo_query("1", 
             "
-               select provider.verified, provider.superadmin, 
+               select provider.restricted, provider.verified, provider.superadmin, 
                provider.techsupport, provider.cookies_sender, provider.inactivitytimeout, 
                provider.replyemail, provider.avatarurl, provider.accountstatus, provider.providername, 
                provider.menustyle, provider.handle, provider.featureemail, 
@@ -817,6 +857,17 @@ require_once 'authenticator/GoogleAuthenticator.php';
                //Future Warning for unverified email
                
            }
+           if( $row['restricted']=='Y'){
+               //Slow down trolls
+                echo "
+                    <script>
+                    localStorage.hgtx = '1';
+                    </script>
+                ";
+               
+           }   
+           
+           
             
         }
         

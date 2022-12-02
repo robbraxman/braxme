@@ -613,6 +613,24 @@ function UserButtons($providerid, $userid, $handle, $providername, $replyemail, 
                          /> Hard Restrict
                 </div>
                 ";
+            $buttons .= "
+                <div class='inactivate'
+                        data-userid='$userid' 
+                        style='cursor:pointer'>
+                    <img class='icon15' src='../img/credentials-white-128.png'
+                         style='top:8px;position:relative'
+                         /> Inactivate
+                </div>
+                ";
+            $buttons .= "
+                <div class='activate'
+                        data-userid='$userid' 
+                        style='cursor:pointer'>
+                    <img class='icon15' src='../img/credentials-white-128.png'
+                         style='top:8px;position:relative'
+                         /> Activate
+                </div>
+                ";
         }
         
         
@@ -826,8 +844,8 @@ function GetTechNotes( $otherid  )
     $result = pdo_query("1","   
         select useragent, deviceheight, devicewidth, pixelratio, industry, enterprise, notifications, notificationflags,
             providername, name2, alias, replyemail, handle, createdate, devicecode, sponsor, roomdiscovery, colorscheme, language,
-            accountstatus, iphash, iphash2, ipsource, joinedvia, timezone, store, web, roomcreator, broadcaster, publish,
-            allowiot, active, verified,
+            accountstatus, iphash, iphash2, iphash3, ipsource, joinedvia, timezone, store, web, roomcreator, broadcaster, publish,
+            allowiot, active, verified, restricted,
             (select count(*) from provider p2 where p2.iphash2 = provider.iphash2 and active='Y') as multi,
             (select count(*) from photolib where photolib.providerid = provider.providerid) as photocount,
             (select count(*) from chatmessage where chatmessage.providerid = provider.providerid) as chatcount,
@@ -842,7 +860,7 @@ function GetTechNotes( $otherid  )
     
     if($row = pdo_fetch($result)){
         $handle = substr($row['handle'],1);
-        $technotes .= "Name $row[providername] - $otherid  Active: $row[active]<br>";
+        $technotes .= "Name $row[providername] - $otherid  Active: $row[active] Restricted: $row[restricted]<br>";
         $technotes .= "Handle $row[handle]<br>";
         $technotes .= "Name2 $row[name2]<br>";
         $technotes .= "Publish Profile $row[publish]<br>";
@@ -922,6 +940,7 @@ function GetTechNotes( $otherid  )
         $technotes .= "JoinedVia $row[joinedvia]<br>";
         $technotes .= "Ip Hash $row[iphash]<br>";
         $technotes .= "Ip Hash2 $row[iphash2]<br>";
+        $technotes .= "Ip Hash3 $row[iphash3]<br>";
         $technotes .= "Ip Source $row[ipsource]<br>";
         $technotes .= "Timezone $row[timezone]<br>";
         $technotes .= "Multi-Accounts $row[multi]<br>";
@@ -954,7 +973,7 @@ function GetTechNotes( $otherid  )
         $technotes .= "<br><br>";
         
         $result2 = pdo_query("1","   
-            select providername, handle, createdate, lastaccess from provider where iphash2 = '$row[iphash2]' and '$row[iphash2]'!='' and active='Y'
+            select providername, handle, createdate, lastaccess from provider where iphash3 = '$row[iphash3]' and '$row[iphash3]'!='' and active='Y'
             ",null);
         while($row2 = pdo_fetch($result2)){
             $technotes .= "$row2[providername] $row2[handle] $row2[createdate] $row2[lastaccess]<br>";

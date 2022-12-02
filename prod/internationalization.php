@@ -8,7 +8,7 @@ if($_SESSION['language']==''){
     $_SESSION['language']='english';
 }
 
-    $menu_handle = 'Username';
+    $menu_handle = '@username';
     $menu_home = 'Home';
     $menu_rooms = 'Blogs';
     $menu_room = 'Blog';
@@ -156,7 +156,7 @@ if($_SESSION['language']==''){
     $menu_manageroomsview = "View Blog";
     $menu_manageroomsedit = "Edit Blog Properties";
     
-    $menu_faq = "Privacy FAQ";
+    $menu_faq = "FAQ";
     $menu_community = "Community";
     $menu_myemailinfo = "My Email Service";;
     

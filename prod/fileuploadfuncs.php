@@ -110,14 +110,14 @@ require_once("notify.inc.php");
                       }
                 }
             }
-            if($fsize > 10000000 ){
-                $fileencoding = 'PLAINTEXT';
-            }
             if( $nVideo == true ){
                 exec("ffmpeg -vcodec png -i $physical_filename -ss  00:00:00 -vframes frames $upload_dir"."video-preview.png");            
                 
             }
             $fileencoding = $_SESSION['fileencoding'];
+            if($fsize > 10000000 ){
+                $fileencoding = 'PLAINTEXT';
+            }
             //$fileencoding = 'PLAINTEXT';
             
             

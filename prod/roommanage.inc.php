@@ -1834,7 +1834,7 @@ require_once("chat.inc.php");
             while($row = pdo_fetch($result)){
 
                 if($i==0){
-                    $select .= "<div class='pagetitle2a' style='color:$global_textcolor;margin:auto'>Websites</div>";
+                    $select .= "<div class='pagetitle2a' style='color:$global_textcolor;margin:auto'>Owned Websites</div>";
                 }
 
                 $selected = "";
@@ -1914,7 +1914,7 @@ require_once("chat.inc.php");
         
 
             if($i2==0){
-                $select .= "<div class='pagetitle2a' style='color:$global_textcolor;margin:auto'>Rooms</div>";
+                $select .= "<div class='pagetitle2a' style='color:$global_textcolor;margin:auto'>Owned Blogs</div>";
             }
             $selected = "";
 

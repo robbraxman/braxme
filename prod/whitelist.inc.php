@@ -8,12 +8,7 @@ function WhiteListCheck($cleaned)
         return "tornode";
     }
     
-    $ipList = array();
-    $ipList[] = "66.165.236.90";
-    $ipList[] = "54.189.223.125";
-    $ipList[] = "54.165.146.66";
-    $ipList[] = "66.165.228.138";
-    $ipList[] = "66.165.233.42";
+$ipList = array();
     
     
     
@@ -22,7 +17,6 @@ function WhiteListCheck($cleaned)
     }
     
     $ipList = array();
-    $ipList[] = "104.174.149.174";
     if(in_array($ip, $ipList)){
         return "internal";
     }
