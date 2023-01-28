@@ -85,7 +85,8 @@ SaveLastFunction($providerid,"A","");
                     <input id='fileupload' class='fileupload' type='file' name='file[]' accept='image/*' multiple="multiple" size='20' style='height:40px;border-width:1px'>        
                     <input type="hidden" name="MAX_FILE_SIZE" value="20480000">&nbsp;&nbsp;
                     <span class="formobile"><br></span>
-                    <input type='submit' value='<?=$menu_uploadphoto?>' style='padding:5px'/>
+                    <!--<div type='submit' value='<?=$menu_uploadphoto?>'><?=$icon_braxrightarrow_common?></div>-->
+                    <input type='submit' value='<?=$menu_uploadphoto?>' style='padding:5px;cursor:pointer;'/>
                     <span class="formobile"><br></span>
                     <INPUT TYPE="hidden" name="subject" value="Profile Photo" >
                     <INPUT TYPE="hidden" name="album" value="Profile Photo" >
@@ -105,8 +106,10 @@ SaveLastFunction($providerid,"A","");
 if($_SESSION['language']=='english'){
 ?>
         <div style='max-width:250px;margin:auto'>
-            <br>
-        <span class='mainfont'>You can also use any photo in My Photos and click on 'Use as Profile Photo'.</span>
+        <span class='mainfont'>
+        On mobile, you can only upload photos from the <?=$appname?> App. Not from the browser.
+        <br><br>
+        You can also use any photo in My Photos and click on 'Use as Profile Photo' below the photo.</span>
         <br><br>
         <div class='photolibrary' style='cursor:pointer;color:<?=$global_activetextcolor?>'>My Photos</div>
         <span class='formobile mainfont'><br><br>Or use the Camera icon to take a new photo.</span>

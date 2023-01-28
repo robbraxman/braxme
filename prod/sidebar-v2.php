@@ -146,7 +146,7 @@ require("nohost.php");
                     ",array($innerheight,$innerwidth,$pixelratio,$devicecode));
             }
         }
-        
+                
         
 
         if( $_SESSION['pid']!= $providerid ){
@@ -164,7 +164,6 @@ require("nohost.php");
             exit();
             
         }
-        
         
         
         if(isset($_SESSION['sizing'])){
@@ -322,7 +321,7 @@ require("nohost.php");
             
 
             if($_SESSION['sponsorcount']==0 && $_SESSION['web']=='Y'){
-                $tour .= "<div class='pagetitle2 sponsormanage mainbutton' 
+                $tour .= "<div class='pagetitle3 sponsormanage mainbutton' 
                         data-mode='E' data-sponsor=''
                         style='cursor:pointer;color:$global_textcolor'>
                         $global_icon_check Create $enterpriseapp Domain
@@ -338,7 +337,7 @@ require("nohost.php");
         
         $touragent = "
             <br><br>
-            <div class='mainbutton roomjoin pagetitle2 tapped' data-mode='J' data-handle='#userbasics' data-roomid='12802' style='width:100%;cursor:pointer;color:$global_activetextcolor' title='Quick Tour for New Users'>
+            <div class='mainbutton roomjoin pagetitle3 tapped' data-mode='J' data-handle='#userbasics' data-roomid='12802' style='width:100%;cursor:pointer;color:$global_activetextcolor' title='Quick Tour for New Users'>
                 <table class='gridnoborder' style='vertical-align:top;text-align:left;width:100%'>
                     <tr>
                         <td>
@@ -377,21 +376,21 @@ require("nohost.php");
                 ";
         if($_SESSION['web']=='Y'){
             $footer .= "     
-                <div class='mainbutton sponsormanage pagetitle2 tapped' data-mode='CHECKLIST' style='padding-left:20px;cursor:pointer;color:$global_activetextcolor'>$enterpriseapp Check List</div>
+                <div class='mainbutton sponsormanage pagetitle3 tapped' data-mode='CHECKLIST' style='padding-left:20px;cursor:pointer;color:$global_activetextcolor'>$enterpriseapp Check List</div>
                 <br>
                     ";
         }
         if($customsite == false){
             $footer .= "     
-                <div class='mainbutton languagechoice pagetitle2 tapped' data-mode=''  style='padding-left:20px;cursor:pointer;color:$global_activetextcolor'>$footer_language</div>
+                <div class='mainbutton languagechoice pagetitle3 tapped' data-mode=''  style='padding-left:20px;cursor:pointer;color:$global_activetextcolor'>$footer_language</div>
                 <br>
                 ";
             $footer .= "     
-                    <div class='mainbutton roomjoin pagetitle2 tapped' data-mode='J' data-handle='#userbasics' data-roomid='12802' data-caller='home' style='padding-left:20px;cursor:pointer;color:$global_activetextcolor'>$footer_platformtour</div>
+                    <div class='mainbutton roomjoin pagetitle3 tapped' data-mode='J' data-handle='#userbasics' data-roomid='12802' data-caller='home' style='padding-left:20px;cursor:pointer;color:$global_activetextcolor'>$footer_platformtour</div>
                     <br>
                     ";
             $footer .= "     
-                    <div class='mainbutton selectchattech pagetitle2 tapped' data-handle='@robbraxman' data-mode='' style='padding-left:20px;cursor:pointer;color:$global_activetextcolor'>$footer_techsupport</div>
+                    <div class='mainbutton selectchattech pagetitle3 tapped' data-handle='@robbraxman' data-mode='' style='padding-left:20px;cursor:pointer;color:$global_activetextcolor'>$footer_techsupport</div>
                     <br>
                     ";
         }
@@ -409,19 +408,19 @@ require("nohost.php");
         
         $notifytitle = "    <span class='formobile'>
                                 <div class='pagetitle' style='color:$global_textcolor'>$menu_activity
-                                    &nbsp;&nbsp;
-                                    <img class='icon20 notifyclear' src='$iconsource_braxclose_common' style='cursor:pointer;padding-top:10px;' title='Clear Notifications' />
                                 </div>
                                 <hr style='border:1px solid $global_separator_color;margin-top:10px'>
                             </span>   
                             <span class='nonmobile'>                            
-                                <img class='icon20 notifyclear' src='$iconsource_braxclose_common' style='cursor:pointer;padding-top:10px;' title='Clear Notifications' />
-                                <br><br>
                             </span>
                             
-                        ";        
+                        ";
+         $shadow = 'shadow';
+        if($icon_darkmode==true){
+            $shadow = '';
+        }
         
-        $swipemsg = "<div class='pagetitle3 gridnoborder rounded shadow' 
+        $swipemsg = "<div class='pagetitle3 gridnoborder rounded $shadow' 
                         style='background-color:$global_background;padding-top:20px;max-width:600px;
                         padding-left:20px;padding-right:20px;padding-bottom:20px;
                         text-align:left;color:$global_textcolor;margin-left:auto;margin-right:auto;margin-bottom:10px;max-width:90%'> 
@@ -569,10 +568,6 @@ require("nohost.php");
                             
                             
                             <div class='' style='position:relative;background-color:transparent;padding-left:20px;padding-right:20px;margin-right:10px'>
-                                <img class='icon20 roomjoin mainbutton' 
-                                                data-handle='#userbasics' data-mode='J'
-                                                src='$iconsource_braxhelp_common' style='cursor:pointer;float:right;margin-right:20px'/>
-                                <img class='audiokillsound tilebutton icon20' src='$iconsource_braxstopmusic_common' style='cursor:pointer;float:right;margin-right:20px' title='Stop Audio' />
                                     $notifytitle
                                     $promo
                                 <div class='sidebarmessage' style=''></div>        
@@ -802,13 +797,27 @@ function SetProfileReminder($providerid, $preformat, $postformat)
     global $global_icon_check;
     
     $list = "<br><br><br><br>";
-    
+ 
+   $list .=
+    "<div class='pagetitle2' style='display:inline-block;margin-auto;width:90%;padding-left:20px;padding-right:20px;text-align:left;color:$global_textcolor;'>
+      $preformat";
+   
+    $list .="
+        <div class='roomjoin mainbutton gridnoborder rounded mainfont mainbutton' 
+          data-mode='J' data-handle='#userbasics' data-roomid='12802' data-caller='home'
+          style='display:inline-block;cursor:pointer;
+          text-align:left;vertical-align:top;
+          background-color:$global_background;
+          min-width:80%;max-width:300px;padding-left:10px;padding:10px;margin:5px'>
+            $global_icon_check Have you done a Platform Tour?<br>
+        </div>
+
+        <br>
+        ";
     
     
     $list .=
-   "<div class='pagetitle2' style='display:inline-block;margin-auto;width:90%;padding-left:20px;padding-right:20px;text-align:left;color:$global_textcolor;'>
-        $preformat
-        <div class='$_SESSION[profileaction] gridnoborder rounded mainfont mainbutton' 
+        "<div class='$_SESSION[profileaction] gridnoborder rounded mainfont mainbutton' 
           data-roomid='$_SESSION[profileroomid]' data-provider='$providerid' data-caller='none'
           style='display:inline-block;cursor:pointer;
           text-align:left;vertical-align:top;
@@ -824,6 +833,7 @@ function SetProfileReminder($providerid, $preformat, $postformat)
     if($_SESSION['roomdiscovery']=='N'){
         return "";
     }
+    
     
     $list .="
         <div class='selectchatlist mainbutton gridnoborder rounded mainfont mainbutton' 

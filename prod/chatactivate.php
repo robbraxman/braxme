@@ -44,9 +44,9 @@ require_once("config-pdo.php");
         
         $result = pdo_query("1",
             "
-                insert into chatmembers ( chatid, providerid, status, lastactive ) 
+                insert into chatmembers ( chatid, providerid, status, lastactive,pin ) 
                 values
-                ( $row[chatid], ?, 'Y', now() );
+                ( $row[chatid], ?, 'Y', now(),'' );
             ",array($providerid));
         
         
@@ -54,9 +54,9 @@ require_once("config-pdo.php");
         {
             $result = pdo_query("1",
                 "
-                    insert into chatmembers ( chatid, providerid, status, lastactive ) 
+                    insert into chatmembers ( chatid, providerid, status, lastactive,pin ) 
                     values
-                    ( $row[chatid], ?, 'Y', 0 );
+                    ( $row[chatid], ?, 'Y', 0,'' );
                 ",array($callingid));
             if( $result )
             {

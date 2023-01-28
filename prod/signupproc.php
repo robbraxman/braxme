@@ -459,15 +459,18 @@ require_once("internationalization.php");
                                 <td>
 
                                     <span class='pagetitle2a' style='color:white'>
-                                        $menu_signupsuccess2
+                                        <!--$menu_signupsuccess2-->
                                     </span>
                                     <br><br>
                                     <div class='pagetitle2a' style='color:white;max-width:300px'>
-                                        Please download the mobile app to access all the features. Use the same login credentials
+                                        The mobile app has additional features if you are using a phone. Use the same login credentials 
+                                        
                                     </div>
                                     <br>
                                     <div style='text-align:center;background-color:transparent;padding:0px;width:auto;color:$global_textcolor;margin:auto'>
                                         $storelink
+                                        <br><br>
+                                        It is available also as a direct download at <a href='https://brax.me/braxme.apk'>https://brax.me/braxme.apk</a> for Android devices.                                        
                                     </div>
                                 </td>
                             </tr>

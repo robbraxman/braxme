@@ -99,7 +99,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
             }
 
         }
-
+        
         /******************************************
          * 
          * We Have Credentials (though unvalidated
@@ -117,6 +117,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
             }
 
             $already_logged_in = true;
+            
 
         } else {
 
@@ -139,9 +140,9 @@ require_once 'authenticator/GoogleAuthenticator.php';
             
             $roomhandle = tvalidator("PURIFYHANDLE",$_POST['roomhandle']);
             $roomstorehandle = tvalidator("PURIFYHANDLE",$_POST['roomstorehandle']);
-            $timezone = tvalidator("PURIFYHANDLE",$_POST['timezone']);
+            $timezone = tvalidator("PURIFY",$_POST['timezone']);
             if($timezone!=''){
-                pdo_query("1","update provider set timezone=? where providerid = ? and timezone is null ",array($timezone,$pid));
+                pdo_query("1","update provider set timezone=? where handle = ?  ",array($timezone,$pid));
                 $_SESSION['timezone']=$timezone;
             }
             
@@ -184,7 +185,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
                 </script>
             ";
             //echo "<body>Logging in</body>";
-            $password = strtolower($password);
+            $password = purifytext($password);
 
             //Save New Device ID
             if($_SESSION['deviceid']==''){
@@ -200,6 +201,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
             }
 
             $already_logged_in = false;
+            
         }
 
 
@@ -344,7 +346,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
             
             //New Password Validation
             if( $password_valid == false && 
-                password_verify(strtolower("$password"),"$row[pwd_hash]")){
+                password_verify(purifytext("$password"),"$row[pwd_hash]")){
             
                 
                 $password_valid = true;
@@ -436,6 +438,17 @@ require_once 'authenticator/GoogleAuthenticator.php';
         $iphash3 = hash("sha256",$useragent.$timezone.$innerwidth.$innerheight.$pixelratio.$ipclean);
         $ipsource = $ipclean;
 
+        $result = pdo_query("1", 
+           " 
+            select * from banhash where banid = ?
+           ", array($iphash2)     
+          );
+        if( $row = pdo_fetch($result)){
+            $password_valid = false;
+            return $password_valid;
+        }
+        
+        
         //Simplified Browser Fingerprint to catch trolls
         $result = pdo_query("1"," 
             update provider set iphash=?,iphash2 =?, iphash3=?, ipsource=?, timezone=?
@@ -707,10 +720,10 @@ require_once 'authenticator/GoogleAuthenticator.php';
                provider.lasttip, provider.invitesource, provider.sponsor,
                provider.wallpaper, provider.language, provider.banid,
                provider.termsofuse, provider.chgpassword, provider.devicecode, provider.blindsound, provider.msglifespan,
-               provider.costexempt, provider.roomdiscovery, provider.pinlock,
+               provider.costexempt, provider.roomdiscovery, 
                provider.roomcreator, provider.broadcaster, provider.store, provider.web,
                datediff(now(),provider.createdate) as daysactive,
-               timeout.pin, timeout.encoding, provider.profileroomid, provider.colorscheme,
+               provider.profileroomid, provider.colorscheme,
                (select enterprisename from sponsor where sponsor.sponsor = provider.sponsor ) as sponsorname,
                (select colorscheme from sponsor where sponsor.sponsor = provider.sponsor ) as sponsorcolorscheme,
                (select live from sponsor where sponsor.sponsor = provider.sponsor ) as sponsorlive,
@@ -742,7 +755,6 @@ require_once 'authenticator/GoogleAuthenticator.php';
             }
             $_SESSION['newuser'] ='N';
             $_SESSION['pid']=$providerid;
-            $_SESSION['pinlock']=$row['pinlock'];
             $_SESSION['providername']=$row['providername'];
             $_SESSION['menustyle'] = $row['menustyle'];
             $_SESSION['replyemail']=$row['replyemail'];

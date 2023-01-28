@@ -149,7 +149,7 @@ require_once("internationalization.php");
                         color:black;background-color:white;
                         cursor:pointer;font-weight:300;margin-bottom:10px'
                         data-email=''
-                        data-handle='@alec'
+                        data-handle='@xxxx'
                         data-name='Tech Support' 
                         data-techsupport='Y'
                         data-passkey = ''

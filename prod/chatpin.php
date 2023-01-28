@@ -5,7 +5,8 @@ require_once("sendmail.php");
 require ("SmsInterface.inc");
 
     $providerid = tvalidator("ID",$_POST['providerid']);
-    $chatid = tvalidator("PURIFY",$_POST[chatid]);
+    $chatid = tvalidator("PURIFY",$_POST['chatid']);
+    $mode = tvalidator("PURIFY",$_POST['mode']);
     
     $result = pdo_query("1","
         select pin from chatmembers where providerid = ? and chatid =?
@@ -14,16 +15,29 @@ require ("SmsInterface.inc");
     if($row = pdo_fetch($result))
     {
         $pin = $row['pin'];
-        if($pin == 'Y'){
+        if($pin == 'Y' && $mode!='SAVED' ){
             $result = pdo_query("1","
                 update chatmembers set pin='' where providerid = ? and chatid =?
                     ",array($providerid,$chatid));
             echo "Chat Unpinned";
-        } else {
+        } else
+        if($pin == 'S' && $mode=='SAVED'){
             $result = pdo_query("1","
-                update chatmembers set pin='Y' where providerid = ? and chatid =?
+                update chatmembers set pin='' where providerid = ? and chatid =?
                     ",array($providerid,$chatid));
-            echo "Chat Pinned";
+            echo "Chat Unsaved";
+        } else {
+            if($mode == 'SAVED'){
+                $pin='S';
+                echo "Chat Saved";
+            } else {
+            $pin = 'Y';
+                echo "Chat Pinned";
+                
+            }
+            $result = pdo_query("1","
+                update chatmembers set pin='$pin' where providerid = ? and chatid =?
+                    ",array($providerid,$chatid));
             
         }
     }

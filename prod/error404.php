@@ -245,7 +245,6 @@ $randomid = uniqid();
                         navigator.userAgent.match(/Version/i)
                 */
             ) {
-            //alert('Droid');
             mobileDevice = "P";
             MobileCapable = true;
             MobileType = "A";

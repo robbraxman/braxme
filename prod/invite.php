@@ -759,7 +759,7 @@ $(document).ready( function()
                             This becomes your log in ID to the app.
                            <br>
                         </p>
-                        @<?=$menu_handle?><br>
+                        <?=$menu_handle?><br>
                         <input id=handle name=handle  type=text placeholder="<?=$menu_handle?>" value='' size=30 maxlength=255 style='padding:10px;font-size:18px;width:250px;height:20px;margin-top:3px' autocomplete='false' />
                         <br>
                         </td>

@@ -15,6 +15,7 @@ require_once('internationalization.php');
 
     $braxchat = "<img src='../img/braxchat.png' style='position:relative;top:5px;height:30px;width:auto;padding-top:0;padding-right:2px;padding-bottom:0px;' />";
     $braxmedal = "<img class='icon15' src='$iconsource_braxmedal_common' title='Trusted $appname Resource' style='top:0px;bottom:0px;height:14px' />";
+    $braxnewbie = "<img class='icon15' src='$iconsource_braxnewbie_common' title='Trusted $appname Resource' style='top:0px;bottom:0px;height:14px' />";
 
     
     $time1 = microtime(true);
@@ -284,11 +285,8 @@ require_once('internationalization.php');
                         type='text' maxlength='20' size=20 value='$titlehtml' />
                     &nbsp;&nbsp;  
                     &nbsp;&nbsp;  
-                    Channel?&nbsp;
                     <input class='chatradio' 
-                        placeholder='Radio'
-                        type='text' maxlength='1' size='1' value='$chatobj->radiostation'  />
-                    &nbsp;&nbsp;  
+                        type='hidden' maxlength='1' size='1' value=''  />
                     <img class='chatsettitle' data-chatid='$chatid' 
                        src='../img/Arrow-Right-in-Circle-White_120px.png' 
                        style='cursor:pointer;position:relative;top:5px;
@@ -744,7 +742,7 @@ function IsValidChat($chatid, $providerid, $passkey)
                 A key resend request has been sent. Your key will be delivered when a member reenters this chat.
                 Please come back later.
                 <br><br>
-                Or enter the E2E secret key if you know it.
+                Or enter the secret key if you know it.
                 <br><br>
                 <div class='pagetitle3 divbutton setchatsession' data-chatid='$chatid' data-mode='CHAT' data-keyhash='$row[keyhash]' data-error='Y' style='background-color:$global_titlebar_color;color:white' >Enter Secret Key</div> 
                 <div class='pagetitle3 divbutton selectchatlist' data-chatid='$chatid' data-mode='CHAT' data-keyhash='$row[keyhash]' data-error='Y' style='background-color:$global_titlebar_color;color:white' >Back</div> 
@@ -1047,6 +1045,7 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
     global $menu_save;
     global $menu_edit;
     global $braxmedal;
+    global $braxnewbie;
     
     if($_SESSION['superadmin']=='Y'){
         //$hidemode = 'Y';
@@ -1110,6 +1109,14 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
         //See only yourself and the owner
         $hidemodefilter = " and chatmessage.providerid in ($providerid, $owner ) ";
     }
+    //Normal
+    $blockedfilter = "and blocked1.blockee is null and blocked2.blocker is null";
+    //Test if admin blocked, admin still sees content
+    if($_SESSION['superadmin']=='Y'){
+        //$blockedfilter = "and blocked2.blocker is null";
+    }
+    
+
 
     $result = pdo_query("1",
         "
@@ -1121,7 +1128,8 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
             chatmembers.techsupport, chatmessage.flag,
             chatmessage.providerid, chatmessage.chatid,
             provider.providername, provider.avatarurl, chatmaster.owner,
-            provider.medal,
+            provider.medal, provider.handle, provider.active,
+            datediff(curdate(), provider.createdate) as accountage,
 
             staff.staffname as name, blocked1.blockee, blocked2.blocker, provider.profileroomid,
             ban.banid
@@ -1129,14 +1137,14 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
             from chatmessage 
             left join chatmembers on chatmembers.chatid = chatmessage.chatid and chatmembers.providerid = chatmessage.providerid
             left join chatmaster on chatmessage.chatid = chatmaster.chatid 
-            left join provider on provider.providerid = chatmessage.providerid and provider.active='Y'
+            left join provider on provider.providerid = chatmessage.providerid 
             left join staff on staff.providerid = chatmessage.providerid and
                staff.loginid = chatmessage.loginid
             left join blocked blocked1 on blocked1.blockee = chatmessage.providerid and blocked1.blocker = ? 
             left join blocked blocked2 on blocked2.blocker = chatmessage.providerid and blocked2.blockee = ?
             left join ban on ban.banid = provider.banid and ban.chatid = chatmaster.chatid
-            where chatmessage.chatid = ? and chatmessage.status='Y'  and 
-            blocked1.blockee is null and blocked2.blocker is null 
+            where chatmessage.chatid = ? and chatmessage.status='Y'  
+            $blockedfilter
             $lifespanfilter
             $hidemodefilter
             and (ban.banid is null or (ban.banid = ? and ban.chatid = ?) or '$_SESSION[superadmin]'='Y' )
@@ -1177,7 +1185,18 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
         if($row['avatarurl']==""){
             $avatarurl="$rootserver/img/newbie.jpg";
         }
-        
+        if(($row['avatarurl']=="$rootserver/img/faceless.png" || $row['avatarurl']=="") && intval($row['accountage']) < 3 ){
+            $avatarurl="$rootserver/img/newbie.jpg";
+        }
+        if($row['active']=='N'){
+            $row['name'] = $row['handle']. " [Inactive]";
+            $avatarurl="$rootserver/img/newbie.jpg";
+            
+        }
+        if( intval($row['accountage']) < 3 && $row['active']=='Y'){
+            $row['name'] = $row['name']. " [New]";
+            
+        }
         $profileroomid = $row['profileroomid'];
         $action = 'feed';
         if(intval($profileroomid)==0){
@@ -1912,9 +1931,6 @@ function ChatHeading($broadcastmode, $chatid, $title, $owned, $hidemode)
                      src='$iconsource_braxarrowleft_common' style='margin-left:10px' />
                      &nbsp;&nbsp;&nbsp;<span class='mainfont' style='color:$global_textcolor'>
                      
-                    <span style='opacity:.5'>
-                    $icon_braxchat2 
-                    </span>
                     $menu_chat $title
             </div>";
 
@@ -2181,8 +2197,8 @@ function MobileMenu(
 
                     ";
         $buttonpin = "
-                <table class='gridnoborder smalltext chatpin tapped' 
-                    title='Pin' data-chatid='$chatid'
+                <table class='gridnoborder smalltext chatpin selectchatlist tapped' 
+                    title='Pin' data-chatid='$chatid' data-mode='CHAT'
                     style='vertical-align:top;color:black;padding-top:10px;height:40px'>
                 <tr>
                     <td>
@@ -2191,7 +2207,25 @@ function MobileMenu(
                             style='cursor:pointer;position:relative;top:0px' />
                     </td>
                     <td class='mainfont' style='padding-right:10px;padding-left:10px;vertical-align:center'>
-                            Pin
+                            Pin/Unpin
+                    </td>
+                </tr>
+                </table>
+           
+
+                    ";
+        $buttonsave = "
+                <table class='gridnoborder smalltext chatpin selectchatlist tapped' 
+                    title='Pin' data-chatid='$chatid' data-mode='SAVED'
+                    style='vertical-align:top;color:black;padding-top:10px;height:40px'>
+                <tr>
+                    <td>
+                        <img class='icon30 tapped'  
+                            src='../img/tasks-circle-128.png'
+                            style='cursor:pointer;position:relative;top:0px' />
+                    </td>
+                    <td class='mainfont' style='padding-right:10px;padding-left:10px;vertical-align:center'>
+                            Save
                     </td>
                 </tr>
                 </table>
@@ -2306,8 +2340,8 @@ function MobileMenu(
                         $buttonsharephoto 
                         $buttonsharefile
                         $buttonupload 
-                        $buttontakephoto 
                         $buttonpin
+                        $buttonsave
                             </td>
                         </tr>
                     </table>
@@ -2534,18 +2568,32 @@ function DesktopMenu( $providerid, $chatid, $passkey64, $keyhash, $archive,
         }
         $chat .= "
 
-            <div class='smalltext2 chatbutton tapped' style='' >
+            <div class='smalltext2 chatbutton selectchatlist tapped' style='' >
                     <img class='chatpin icon25' src='../img/pin-512.png'
-                        style='top:0px' 
-                        title='Pin Chat'
+                        style='top:0px'  data-mode='CHAT'
+                        title='Pin/Unpin Chat'
                     data-chatid='$chatid' 
                     />
-                <br>Pin
+                <br>Pin/
+                <br>Unpin
+                <br>
+            </div>
+            ";
+
+                $chat .= "
+
+            <div class='smalltext2 chatbutton selectchatlist tapped' style='' data-mode='' >
+                    <img class='chatpin icon25 ' src='../img/tasks-circle-128.png'
+                        style='top:0px'  data-mode='SAVED'
+                        title='Save Chat'
+                    data-chatid='$chatid' 
+                    />
+                <br>Save
                 <br>
                 <br>
             </div>
             ";
-                
+
                 
         
         $chat .= "

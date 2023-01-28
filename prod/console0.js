@@ -489,9 +489,6 @@
                 if(data!==''){
                 }
                 if( data==='timeout' ){
-                    if(tester==='Y'){
-                        alert('Session Timeout');
-                    }
                     TimedOutHandler();
                 }
                 if( data==='chat' ){
@@ -1267,10 +1264,6 @@
             
         function SideBarHandling (data, startup)
         {
-                if(data === ''){
-                    alert("No Data - Testing");
-                    return;
-                }
                 lastCheckIn = new Date();
                 $('.admintrace').html(lastCheckIn+' Side');
                 
@@ -1899,8 +1892,7 @@
                     }
             }
         } catch (err) {
-            //alertify.alert(err);
-            alertify.alert(err);
+            alertify.alert("Save to Local Storage Error");
             return false;
         }
         
@@ -1918,7 +1910,6 @@
                     }
             }
         } catch (err) {
-            //alertify.alert(err);
             alertify.alert("Please make sure you are not blocking cookies to enable this Camera feature");
             return false;
             
@@ -1972,7 +1963,7 @@
         if(TimeoutSeconds === 0 || pin ==='' ){
             
             PanelShow(15);
-            $('#socialwindow').load( rootserver+"timeout.php",  {
+            $('#socialwindow').load( rootserver1+startupphp,  {
                 'providerid': $('#pid').val()
             }, function(html, status){
             });

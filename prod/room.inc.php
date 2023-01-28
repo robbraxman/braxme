@@ -11,7 +11,8 @@ function RoomPostNew(
 {
         global $rootserver;
         global $installfolder;
-                
+        global $superadmin;
+        
         $slideshow_album = "";
     
         if( $roomid =='' || $roomid == 'All ') {
@@ -207,6 +208,7 @@ function RoomPostNew(
                     
                 } else 
                 if(IsLink($comment_item )){
+                    $comment_item .= " ";
                     //echo "$comment_item\nIs Link...";
                     if(filter_var($comment_item, FILTER_VALIDATE_URL)){
                         $imageOG = GetOGImageTag($comment_item);
@@ -220,7 +222,7 @@ function RoomPostNew(
                     }               
                     
                 } else {
-                    $text_comment .= " ".$comment_item;
+                    $text_comment .= $comment_item." ";
                 }
             } 
 
@@ -241,7 +243,7 @@ function RoomPostNew(
         //HtmlEntities now DOUBLED
         $combinedcomment = htmlentities( $precomment.$combinedcomment, ENT_QUOTES );
 
-        //Test
+        //Test/
         $encoding = $_SESSION['responseencoding'];
         $encryptedcomment = EncryptPost($combinedcomment, "$providerid","");    
         /*
@@ -345,6 +347,8 @@ function RoomPostEdit(
             set title=?, comment = ?, encoding=?
             where postid = ?
                 ",array($title,$encryptedcomment,$encoding,$postid));
+        //Don't change owner on edit but record edit with actual user
+        FlagEditPost( $_SESSION['pid'], $postid );
 
         return true;
 }
@@ -1039,6 +1043,36 @@ function FlagMakePost( $providerid, $shareid, $postid, $roomid )
         
         
 }
+function FlagEditPost( $providerid, $postid )
+{
+        
+    $shareid = '';
+    $roomid = '';
+    $result = pdo_query("1",
+        "
+        select shareid,roomid from statuspost where postid = ?        
+        ",array($postid));
+    if( $row = pdo_fetch($result)){
+        $roomid = $row['roomid'];
+        $shareid = $row['shareid'];
+    } else {
+        return;
+    }
+        
+    pdo_query("1","
+        insert into statusreads 
+        (providerid, shareid, postid, xaccode, actiontime, roomid ) values
+        ( ?, ?, ?, 'E', now(), ? )
+        ",array($providerid,$shareid,$postid,$roomid));
+
+    //pdo_query("1","
+    //    update roominfo set lastactive = now() where roomid = ?
+    //    ",array($roomid));
+        
+
+        
+        
+}
 /****************************************************************
  * 
  * 
@@ -1140,8 +1174,7 @@ function LockPost( $providerid, $shareid, $postid, $roomid )
         pdo_query("1","
             update statuspost set locked = $lock where postid = ? and 
                 (
-                    owner = ?
-                    or exists 
+                    exists 
                      (   select providerid from roommoderator 
                          where roomid=? and providerid=? 
                      ) 
@@ -1151,7 +1184,7 @@ function LockPost( $providerid, $shareid, $postid, $roomid )
                      ) 
                 )
 
-            ",array($postid,$providerid,$roomid,$providerid,$roomid,$providerid));
+            ",array($postid,$roomid,$providerid,$roomid,$providerid));
     }
         
 }
@@ -1778,7 +1811,7 @@ function MemberCheck($providerid, $roomid)
             (select providerid from roommoderator where roommoderator.roomid = statusroom.roomid
              and roommoderator.providerid = ?) as moderator,
             (select handle from roomhandle where roomhandle.roomid = statusroom.roomid) as handle,
-            (select 'Y' from roomfavorites where roomfavorites.roomid = statusroom.roomid and roomfavorites.providerid = statusroom.providerid ) as favorite,
+            (select 'Y' from roomfavorites where roomfavorites.roomid = statusroom.roomid and roomfavorites.providerid = ? ) as favorite,
             roominfo.private, roominfo.anonymousflag, roominfo.adminonly, roominfo.adminroom, roominfo.showmembers,
             roominfo.sponsor, roominfo.profileflag,
             (select DATE_FORMAT(now(),'%Y%m%d' )) as today,
@@ -1799,7 +1832,7 @@ function MemberCheck($providerid, $roomid)
             left join roominfo on statusroom.roomid = roominfo.roomid
             left join provider on statusroom.owner = provider.providerid
             where statusroom.roomid=$roomid  and statusroom.owner = statusroom.providerid
-                ",array($providerid,$providerid,$providerid,$providerid,$providerid,$providerid,$roomid));
+                ",array($providerid, $providerid,$providerid,$providerid,$providerid,$providerid,$providerid,$roomid));
         if($row = pdo_fetch($result)){
             $memberinfo['roomid'] = $row['roomid'];
             $memberinfo['roomforsql'] = tvalidator("PURIFY",$row['room']);
@@ -1896,18 +1929,9 @@ function DisplayNewPost($readonly, $providerid, $roomid, $handle )
     if(($adminroom!='Y' && $roomid !='All') || $providerid==$admintestaccount){
         $add =  "       
                 <span class='newroompost makecommenttop mainfont' data-shareid=''  placeholder='$menu_newtopic' style='padding-left:10px;cursor:pointer;background-color:transparent;' >
-                    <img class='icon25' src='$iconsource_braxadd_common' style='cursor:pointer;' />
+                    <img class='icon20' src='$iconsource_braxadd_common' style='cursor:pointer;' />
                 </Span>
                 ";
-        if($_SESSION['superadmin']=='Y'){
-            
-            $add =  "       
-                    <span class='newroompost makecommenttop mainfont' data-shareid=''  placeholder='$menu_newtopic' style='padding-left:10px;cursor:pointer;background-color:transparent;' >
-                        <img class='icon25' src='$iconsource_braxadd_common' style='cursor:pointer;' />
-                    </Span>
-                    ";
-            
-        }
     }
 
         if( $_SESSION['roomuser']=='1' && $roomid == 'All'){
@@ -2117,7 +2141,7 @@ function DeleteButton( $parent, $owner, $owner2, $moderator, $providerid, $share
         //if( $parent == 'Y' && $providerid != $owner && $superadmin!='Y' ){
         //    return "";
         //}
-        if(  $providerid != $owner && $providerid !=$owner2 && $providerid!= $moderator && $superadmin!='Y' ){
+        if(  $providerid != $owner && $providerid !=$owner2 && $moderator!='Y' && $superadmin!='Y' ){
             return "";
         }
         $classes = "feedreply";
@@ -2380,7 +2404,7 @@ function ShareRoom ( $readonly, $caller, $providerid, $roomid, $style, $showroom
         
 function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, $incomment, $title, 
         $inphoto, $album, $invideo, $inlink, $style, $parent, $mainwidth, $statuswidth2, 
-        $videotitle, $articleid, $page, $readonly, $blockee, $blocker )
+        $videotitle, $articleid, $page, $readonly, $blockee, $blocker, $moderator )
 {
     global $rootserver;
     global $installfolder;
@@ -2435,10 +2459,16 @@ function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, 
         $incomment!=''){
             $owner = true;
     }
-    
+    if($moderator == 'Y'){
+        $owner = true;
+        
+    }
     $page = "0";
     
     $decryptedpost = DecryptPost( $incomment, $encoding, $providerid, "");
+    $newcomment = DecryptPost( $incomment, $encoding, "", "");
+    
+    $mypost = $decryptedpost;
     if( strstr($decryptedpost,"slideshow ")!==false &&
         strstr($decryptedpost,"img src=")!==false            
       ){
@@ -2573,6 +2603,13 @@ function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, 
 
     //if( $parent == 'Y' ){
     if(true){
+        if($postid == 'A63cf5dc6705e89.13097108'){
+                $comment .= "
+                             <div style='color:$global_textcolor;word-wrap:break-word;
+                                padding-left:30px;padding-right:20px;padding-top:10px;$style'>$decryptedpost $postid<br>$incomment, $encoding, $providerid<br>$newcomment</div>
+                            ";
+            
+        }
         $tmp = html_entity_decode( $decryptedpost, ENT_QUOTES);
         //$tmp = $decryptedpost;
         if($tmp!=''){
@@ -2666,7 +2703,7 @@ function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, 
                                 <textarea id='roomedit-$cleanPostid' class='mainfont' style='width:100%;height:300px'>$tmp2</textarea>
                                 <br><br>
                                 <div class='feededitpost tapped' style='display:inline-block;cursor:pointer' 
-                                    data-roomid='$roomid' data-postid='$postid' 
+                                    data-roomid='$roomid' data-postid='$postid'  data-owner='$providerid'
                                      data-postidclean='$cleanPostid' data-page='$page' >
                                     <img class='icon15' src='../img/arrow-circle-right-gray-128.png' style='top:3px' /> $menu_save
                                 </div>

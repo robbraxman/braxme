@@ -15,7 +15,7 @@
     if( $mode == 'EDIT'){
     
         RoomPostEdit( 
-        $providerid, $postid, $comment );
+        $owner, $postid, $comment );
         $mode = "";
         $parent = "Y";
     }

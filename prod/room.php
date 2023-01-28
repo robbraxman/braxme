@@ -17,6 +17,7 @@ require_once("roomfunc.inc.php");
 
     //$replyflag = tvalidator("PURIFY",$_POST[replyflag]);
     $providerid = @tvalidator("ID",$_SESSION['pid']);
+    $owner = @tvalidator("ID",$_POST['owner']);
     $caller = @tvalidator("PURIFY",$_POST['caller']);
     $host = @tvalidator("PURIFY",$_POST['host']);
     $roomid = @tvalidator("ID",$_POST['roomid']);
@@ -311,7 +312,7 @@ require_once("roomfunc.inc.php");
                 as handle,
             roominfo.anonymousflag, blocked1.blockee, blocked2.blocker,
             provider.profileroomid,
-            (select providerid from roommoderator where roommoderator.roomid = statuspost.roomid
+            (select 'Y' from roommoderator where roommoderator.roomid = statuspost.roomid
              and roommoderator.providerid = ? ) as moderator,
             statuspost.commentcount, statuspost.title
             from statuspost
@@ -330,6 +331,12 @@ require_once("roomfunc.inc.php");
     $postcount = 0;
     while($row = pdo_fetch($result)){
         
+        $moderator = $row['moderator'];
+        if($_SESSION['superadmin']=='Y'){
+            $moderator = 'Y';
+        }
+        
+        
         $postcount++;
         $cleanPostid = str_replace(".","",$row['postid']);
         $postdate = InternationalizeDate($row['postdate']);
@@ -338,7 +345,7 @@ require_once("roomfunc.inc.php");
             $row['encoding'], $row['comment'], $row['title'], $row['photo'], $row['album'],
             $row['video'], $row['link'],"width:$sizing->statuswidth2","Y", 
             $sizing->mainwidth, $sizing->statuswidth2, $row['videotitle'], 
-            $row['articleid'], $page, $readonly, $row['blockee'], $row['blocker'] );
+            $row['articleid'], $page, $readonly, $row['blockee'], $row['blocker'], $moderator );
         
         
         $posterobj = RoomPosterInfo($row['roomid'], $row['owner'], $row['avatarurl'], $memberinfo->adminroom, $memberinfo->private,
@@ -427,8 +434,10 @@ require_once("roomfunc.inc.php");
             <div class='smalltext tipbubble' 
                 style='background-color:$global_bottombar_color;margin:auto;color:$global_textcolor_reverse;text-align:center;max-width:250px'>
                 <div class='mainfont' style='margin:auto;text-align:center;max-width:500px;padding:30px;color:$global_textcolor_reverse'>
-                This is your own blog space! Use it and whatever you post here will be visible to all on $appname.<br><br>Start by adding a profile photo.<br><br>Tap on the +
+                This is your own blog space. To find this again, just click on your profile pic. Use it anytime and whatever you post 
+                here will be visible to all on $appname as your public profile.<br><br>Tap on the +
                 to start your first post.
+                <br><br>This is not a message to any particular person so do not put questions here.
                 </div>
             </div>
                 ";
@@ -918,7 +927,7 @@ function LastComment( $owner, $adminroom, $shareid, $handle, $providerid, $roomi
                                roominfo.private,
                                roominfo.anonymousflag, blocked1.blockee, blocked2.blocker,
                                provider.profileroomid,
-                                (select providerid from roommoderator where roommoderator.roomid = statuspost.roomid
+                                (select 'Y' from roommoderator where roommoderator.roomid = statuspost.roomid
                                  and roommoderator.providerid = ? ) as moderator
                                 from statuspost
 				left join provider on statuspost.providerid = provider.providerid
@@ -937,10 +946,15 @@ function LastComment( $owner, $adminroom, $shareid, $handle, $providerid, $roomi
     $i = 0;
     while($row2 = pdo_fetch($result2)){
 
+        $moderator = $row2['moderator'];
+        if($_SESSION['superadmin']=='Y'){
+            $moderator = 'Y';
+        }
+        
         $comment = FormatComment( "", $row2['postid'], $row2['owner'], $roomid, $row2['encoding'], 
                 $row2['comment'], '', $row2['photo'], $row2['album'], $row2['video'], $row2['link'], "","N",  
                 $mainwidth, $statuswidth2, $row2['videotitle'], 0, "0", $readonly,
-                $row2['blockee'], $row2['blocker']);
+                $row2['blockee'], $row2['blocker'], $moderator);
         
         $posterobj = RoomPosterInfo( $roomid, $row2['owner'],$row2['avatarurl'], $adminroom, $private,
                 $row2['anonymous'], $anonymousflag, $row2['providername'], $row2['name2'], 

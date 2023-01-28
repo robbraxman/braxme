@@ -1704,7 +1704,7 @@ function CreateAlbumList( $providerid, $selectedalbum, $selectedalbumHtml, $page
                 border-top-right-radius:10px; 
                 text-decoration:none;
                 cursor:pointer;
-                background-color:$color1;width:280px;min-width:25%;vertical-align:middle;
+                background-color:$color1;width:200px;min-width:23%;vertical-align:middle;
                 color:white;
                 '
                 >

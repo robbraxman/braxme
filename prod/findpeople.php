@@ -446,7 +446,23 @@ require("validsession.inc.php");
         global $menu_public;
         global $menu_handle;
         
+        
         $providerid = $_SESSION['pid'];
+        
+        $chatlimit = 200;
+        $result = pdo_query("1",
+                "select peoplelimit from provider where providerid = ?",array($_SESSION['pid']));
+        if($row = pdo_fetch($result)){
+            $peoplelimit = $row['peoplelimit'];
+            if($peoplelimit < 100){
+                $peoplelimit = 100;
+            }
+            if($peoplelimit > 2000){
+                $peoplelimit = 2000;
+            }
+        }
+        
+        
         $list = "
             <span class='meetuppublicshow' style='display:none;background-color:transparent;color:$global_textcolor'>
                 <div class='pagetitle2' style='padding-left:10px;padding-right:10px;padding-top:0px;padding-bottom:5px;color:$global_textcolor'>
@@ -471,17 +487,16 @@ require("validsession.inc.php");
             return $list;
         }
 
-        $limit = "500";
         if($_SESSION['mobilesize']=='Y'){
-            $limit = "50";
+            $peoplelimit = "100";
         }
-        $activequery = " order by providername limit $limit";        
+        $activequery = " order by providername limit $peoplelimit";        
         $listheader = "";
         if($find == '@%'){
             $activequery = " order by provider.createdate desc limit 50 ";
         } else
         if($find == ''){
-            $activequery = " order by provider.lastactive desc, provider.createdate desc limit $limit ";
+            $activequery = " order by provider.lastactive desc, provider.createdate desc limit $peoplelimit ";
             $listheader = "
                 <div class='pagetitle3' style='padding-left:10px;padding-right:10px;padding-top:0px;padding-bottom:5px;color:$global_textcolor'>
                 <br>
@@ -601,7 +616,7 @@ require("validsession.inc.php");
                                     <img class='' src='$avatar' style='height:auto;width:100%;'/>
                                 </div>
                             </div>
-                                <div style='padding-left:10px;padding-right:10px'>
+                                <div class='smalltext' style='padding-left:10px;padding-right:10px'>
                                $row[providername]<br><span class='smalltext' style='color:$global_textcolor'>$id $joined
                                 <br> $following </span>
                                 </div>
@@ -612,8 +627,19 @@ require("validsession.inc.php");
         if($count == 0){
             $list .= "<div class='meetuppublicshow' style='padding:20px;color:$global_textcolor'>Not found in Public List</div>";
         } else {
-            if($find==''){
-                $list .= "<div class='meetuppublicshow' style='padding:20px;color:$global_textcolor'>Newly updated profiles displayed - More names available. Use Find</div>";
+            if($find=='' && $_SESSION['mobilesize']!=='Y'  ){
+                $list .= "
+                    <br><br>
+                    <div class=smalltext style='padding-left:20px;color='$global_textcolor'>
+                    Items Display LImit: <input id=peopledisplaylimit class='peopledisplaylimit dataentry' type=numeric value=$peoplelimit style='width:50px' />&nbsp;&nbsp; 
+                     <img class='icon20 setpeopledisplaylimit'  src='$iconsource_braxarrowright_common' />
+                    </div>
+                    ";
+                
+            }
+            if($find=='' && $_SESSION['mobilesize']=='Y'  ){
+                $list .= "<div class='meetuppublicshow' style='padding:20px;color:$global_textcolor'>This list is huge so we just show you a sample on mobile. Search by name to limit the results.</div>";
+                
             }
         }
 

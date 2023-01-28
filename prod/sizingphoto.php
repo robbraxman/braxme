@@ -28,7 +28,7 @@
     if($_SESSION['sizing']=='1900')
     {
         $max = 100;
-        $maxperline = 5;
+        $maxperline = 4;
         $picwidth1 = '1600px';
         $picwidth = '380px';
         $picheight = '220px';

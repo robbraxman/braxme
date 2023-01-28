@@ -131,11 +131,26 @@
             avatarurl, alias, statuspost.providerid, statuspost.articleid,
             DATE_FORMAT(date_add(statuspost.postdate,INTERVAL $_SESSION[timezoneoffset]*60 MINUTE), 
                 '%m/%d/%y %h:%i%p') as postdate, 
-            (select actiontime from statusreads st2 
-                where st2.shareid = statuspost.shareid and
-                st2.roomid = statuspost.roomid and
-                st2.xaccode  not in ('R','D','X') 
-             order by actiontime desc limit 1 ) as lastpostdate,
+            date_add( 
+                
+                (select actiontime from statusreads st2 
+                    where st2.shareid = statuspost.shareid and
+                    st2.roomid = statuspost.roomid and
+                    st2.xaccode  not in ('R','D','X','B','L','E') 
+                 order by actiontime desc limit 1 ) ,
+                 INTERVAL $_SESSION[timezoneoffset]*60 MINUTE)
+                  as lastpostdate,
+                  
+            date_add( 
+                
+                (select actiontime from statusreads st2 
+                    where st2.shareid = statuspost.shareid and
+                    st2.roomid = statuspost.roomid and
+                    st2.xaccode  not in ('R','D','X','L') 
+                 order by actiontime desc limit 1 ) ,
+                 INTERVAL $_SESSION[timezoneoffset]*60 MINUTE)
+                  as allactiondate,
+
 
             (select 'Y' from statusreads st2 
                 where st2.shareid = statuspost.shareid and
@@ -154,7 +169,7 @@
                 as handle,
             roominfo.anonymousflag, blocked1.blockee, blocked2.blocker,
             provider.profileroomid,
-            (select providerid from roommoderator where roommoderator.roomid = statuspost.roomid
+            (select 'Y' from roommoderator where roommoderator.roomid = statuspost.roomid
              and roommoderator.providerid = ? ) as moderator,
             statuspost.commentcount, statuspost.title
             from statuspost
@@ -168,12 +183,17 @@
             and lower(statuspost.title) like ?
             and statuspost.shareid like ?
             and '$roominfo->subscriptionpending'!='Y'
-            order by  pin desc, lastpostdate  desc  limit $limitstart, $limitend 
+            order by  pin desc, allactiondate  desc  limit $limitstart, $limitend 
     ",array($providerid,$providerid,$providerid,$providerid,$roomid,"%".$find."%",$shareid."%"));
     
     
     $postcount = 0;
     while($row = pdo_fetch($result)){
+
+        $moderator = $row['moderator'];
+        if($_SESSION['superadmin']=='Y'){
+            $moderator = 'Y';
+        }
         
         $postcount++;
         $cleanPostid = str_replace(".","",$row['postid']);
@@ -194,7 +214,7 @@
                 $row['encoding'], $row['comment'], $row['title'], $row['photo'], $row['album'],
                 $row['video'], $row['link'],"width:$sizing->statuswidth2","Y", 
                 $sizing->mainwidth, $sizing->statuswidth2, $row['videotitle'], 
-                $row['articleid'], $page, $readonly, $row['blockee'], $row['blocker'] );
+                $row['articleid'], $page, $readonly, $row['blockee'], $row['blocker'], $moderator );
             
         }
         
@@ -257,7 +277,7 @@
 
                 $readonly, intval($row['locked']),
                 $providerid, $row['owner'], $row['roomid'], $row['profileroomid'], $row['shareid'], $row['postid'], 
-                $memberinfo, $postdate, $row['handle'],
+                $memberinfo, $lastpostdate, $row['handle'],
                 $row['active'], $posterobj, $sizing, $avatarurl, $comment,
                 $anonymous_settings, $anonymous_opacity,
                 $deletebutton, $likebutton, $row['commentcount'] 
@@ -296,7 +316,7 @@
             echo "
             
                 <br>&nbsp;&nbsp;
-                <span class='roomcontent' style='color:$global_activetextcolor'>
+                <span class='roomcontent' style='color:$global_activetextcolor_reverse'>
                 <span class='friends' style='cursor:pointer'
                     id='deletefriends' 
                     data-providerid='$providerid' data-roomid='$roomid' data-mode='D' data-caller='room' >
@@ -309,7 +329,7 @@
             if($memberinfo->mute=='Y'){
                 echo "
                     <br>&nbsp;&nbsp;
-                    <span class='roomcontent' style='color:$global_activetextcolor'>
+                    <span class='roomcontent' style='color:$global_activetextcolor_reverse'>
                     <span class='icon15 mute tapped' style='cursor:pointer'
                         data-roomid='$roomid' >
                         $menu_unmutenotifications
@@ -319,7 +339,7 @@
             } else {
                 echo "
                     <br>&nbsp;&nbsp;
-                    <span class='roomcontent' style='color:$global_activetextcolor'>
+                    <span class='roomcontent' style='color:$global_activetextcolor_reverse'>
                         <span class='icon15 mute tapped' style='cursor:pointer'
                         data-roomid='$roomid' >
                         $menu_mutenotifications
@@ -331,7 +351,7 @@
             if($memberinfo->favorite=='Y'){
                 echo "
                     <br>&nbsp;&nbsp;
-                    <span class='roomcontent' style='color:$global_activetextcolor'>
+                    <span class='roomcontent' style='color:$global_activetextcolor_reverse'>
                         <span class='icon15 roomfavorite tapped' style='cursor:pointer'
                         data-roomid='$roomid' data-mode='D' >
                         $menu_roomfavoritedelete
@@ -341,7 +361,7 @@
             } else {
                 echo "
                     <br>&nbsp;&nbsp;
-                    <span class='roomcontent' style='color:$global_activetextcolor'>
+                    <span class='roomcontent' style='color:$global_activetextcolor_reverse'>
                         <span class='icon15 roomfavorite tapped' style='cursor:pointer'
                         data-roomid='$roomid' data-mode='A' >
                         $menu_roomfavorite

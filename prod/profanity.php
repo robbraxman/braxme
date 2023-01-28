@@ -85,6 +85,12 @@ function ModerationHardRestrict($userid)
             ",array($iphash2)
             );
             
+            pdo_query("1",
+            "
+             delete from banhash where banid=?
+            ",array($iphash2)
+            );
+            
             
             pdo_query("1",
             "
@@ -139,6 +145,13 @@ function ModerationHardRestrict($userid)
                      update iphash set ban='Y' where ip = ?
                     ",array($iphash2)
                     );
+            
+            pdo_query("1",
+                    "
+                     insert ignore into banhash (banid) values (?)
+                    ",array($iphash2)
+                    );
+            
             
             return "HardRestricted";
             
@@ -277,5 +290,47 @@ function Activate($userid)
             ",array($userid)
             );
     return "Active";
+    
+}
+function ModerationIpRestrict($userid)
+{
+    global $admintestaccount;
+    
+    if($userid==$admintestaccount){
+        return;
+    }
+    $iphash2 = '';
+    $result = pdo_query("1","select iphash2 from provider where providerid = ?  ",array($userid));
+    if($row = pdo_fetch($result)){
+        
+        $iphash2 = $row['iphash2'];
+        if($iphash2==''){
+            return "Invalid Request";
+        }
+    }
+    
+    $result = pdo_query("1","select * from banhash where banid = ?",array($iphash2));
+    if($row = pdo_fetch($result)){
+            
+            pdo_query("1",
+            "
+             delete from banhash where banid=?
+            ",array($iphash2)
+            );
+            return "IP Ban Released";
+            
+    } else {
+            
+            pdo_query("1",
+                    "
+                     insert ignore into banhash (banid) values (?)
+                    ",array($iphash2)
+                    );
+            
+            
+            return "IP Restricted";
+            
+    }
+
     
 }

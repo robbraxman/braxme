@@ -73,6 +73,7 @@ require_once("roomselect.inc.php");
     
     if( $caller == 'select'){
         echo "
+                <br>
                 <div class='feed gridnoborder' style='cursor:pointer;background-color:$global_titlebar_color;color:white;padding-left:20px;padding-right:20px;padding-bottom:3px;margin:0;
                         id='feed' data-roomid='$roomid' data-caller='room';>
                     <img class='icon20'
@@ -80,7 +81,11 @@ require_once("roomselect.inc.php");
                         style='' />
                     &nbsp;
                 <span style='opacity:.5'>
-                $icon_braxroom2
+                    &nbsp;
+                    &nbsp;
+                    &nbsp;
+                    &nbsp;
+                    &nbsp;
                 </span>
                     <span class='pagetitle2a' style='color:white'>$menu_discoverrooms</span> 
                 </div>
@@ -90,6 +95,7 @@ require_once("roomselect.inc.php");
             ";
     } else {
         echo "
+            <br>
             <div class='feed gridnoborder' style='cursor:pointer;background-color:transparent;color:$global_textcolor;padding-left:20px;padding-right:20px;padding-bottom:3px;margin:0;
                 id='feed' data-roomid='0' data-caller='room' >
                 <img class='icon20 feed'
@@ -97,7 +103,6 @@ require_once("roomselect.inc.php");
                     style='' />
                 &nbsp;
                 <span style='opacity:.5'>
-                $icon_braxroom2
                 </span>
                 <span class='pagetitle2a' style='color:$global_textcolor'>$menu_discoverrooms</span> 
             </div>
@@ -109,6 +114,7 @@ require_once("roomselect.inc.php");
     }
 
     echo "
+            <br>
             <div class='feed pagetitle3' style='color:$global_textcolor;display:inline;white-space:nowrap;margin-top:20px;margin-left:10px;'>
                 <img class='icon25 showhidden' src='$iconsource_braxfind_common'  title='Find Room' />
                 <span class='showhiddenarea' style='display:none'>
@@ -343,7 +349,7 @@ require_once("roomselect.inc.php");
                 data-room='$row[name]' data-mode='J' data-handle='$row[handle]'
                 style='display:inline-block;cursor:pointer;
                 text-align:center;vertical-align:top;
-                background-color:white;
+                background-color:white;color:black;
                 min-width:15%;padding-left:10px;padding:10px;margin:5px'>
                     <b>$row[name]</b>
                     $photourl
@@ -481,7 +487,7 @@ require_once("roomselect.inc.php");
                 data-mode='J' data-handle='$row[handle]'
                 style='display:inline-block;cursor:pointer;
                 text-align:center;vertical-align:top;
-                background-color:white;
+                background-color:white;color:black;
                 min-width:15%;padding-left:10px;padding:10px;margin:5px'>
                     <b>$row[name]</b>
                     $photourl

@@ -61,8 +61,6 @@ if(strtoupper($enterprise) =='E'){
 $(document).ready( function() {
     
         
-    var visitortime = new Date();
-    $('#timezone').val(-visitortime.getTimezoneOffset()/60);
     
 
     try {
@@ -242,6 +240,8 @@ $(document).ready( function() {
     
         alertify.alert("Cookies have been blocked. You will have to re-login each time.")
     }
+    
+    
     //Auto Start if Logged in Before
     if( 
             $('#pid').val()!=="" &&
@@ -251,13 +251,12 @@ $(document).ready( function() {
             )
     ){
         $('body').hide();
-        visitortime = new Date();
-        $('#timezone').val(-visitortime.getTimezoneOffset()/60);
         $('form#Login').submit();
     } else {
         $('body').show();
         
     }
+    
        
 });
 </script>
@@ -350,4 +349,8 @@ echo "<br><br><br>";
 </center>
 </div>
 </BODY>
+<script>
+    var visitortime = new Date();
+    $('#timezone').val(-visitortime.getTimezoneOffset()/60);
+</script>
 </HTML>

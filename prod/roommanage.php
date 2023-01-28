@@ -67,6 +67,7 @@ require_once("internationalization.php");
     $communitylink = @tvalidator("PURIFY",$_POST['communitylink']);
     $store = @tvalidator("PURIFY",stripslashes($_POST['store']));
     $roomstyle = @tvalidator("PURIFY",stripslashes($_POST['roomstyle']));
+    $showinprofile = @tvalidator("PURIFY",stripslashes($_POST['showinprofile']));
         
 
     $radiostation = strtoupper(stripslashes(@tvalidator("PURIFY",$_POST['radiostation'])));
@@ -245,7 +246,8 @@ require_once("internationalization.php");
                     $rsscategory, $groupid, $rsssource, $radiostation, $sponsor, 
                     $parent, $childsort, $copymembers, $profileflag, $roominvitehandle, 
                     $webcolorscheme, $webtextcolor, $webpublishprofile, $webflags, $searchengine, 
-                    $analytics, $subscriptiondays, $subscription, $subscriptionusd, $wallpaper, $autochatuser, $autochatmsg, $community, $communitylink, $store, $roomstyle );
+                    $analytics, $subscriptiondays, $subscription, $subscriptionusd, $wallpaper, 
+                    $autochatuser, $autochatmsg, $community, $communitylink, $store, $roomstyle,$showinprofile );
             $mode = 'F';
             if( $error!=''){
             }
@@ -299,7 +301,7 @@ require_once("internationalization.php");
                     $sponsor, $parent, $childsort, $copymembers, $profileflag, $roominvitehandle, 
                     $webcolorscheme, $webtextcolor, $webpublishprofile, $webflags, $searchengine, 
                     $analytics, $subscriptiondays, $subscription, $subscriptionusd, $wallpaper, 
-                    $autochatuser, $autochatmsg, $community, $communitylink, $store, $roomstyle );
+                    $autochatuser, $autochatmsg, $community, $communitylink, $store, $roomstyle,$showinprofile );
             if( $error!=''){
             
             }
@@ -573,7 +575,7 @@ require_once("internationalization.php");
                             $roomdata->searchengine, $roomdata->analytics, $roomdata->subscriptiondays, 
                             $roomdata->subscription,$roomdata->subscriptionusd, $roomdata->wallpaper, 
                             $roomdata->autochatuser, $roomdata->autochatmsg, $roomdata->community, $roomdata->communitylink, 
-                            $roomdata->store, $roomdata->wizardenterprise, $roomdata->roomstyle
+                            $roomdata->store, $roomdata->wizardenterprise, $roomdata->roomstyle,$roomdata->showinprofile
                     );
 
             echo $roomedit;
@@ -627,7 +629,7 @@ require_once("internationalization.php");
                     <br>    
                     <div class=formobile></div>
                     <br>
-                    <div class='pagetitle2 roomedit tapped'
+                    <div class='pagetitle3 roomedit tapped'
                          id='roomedit' data-room='' data-roomid='' data-mode='N'
                          style='color:$global_activetextcolor;cursor:pointer;display:inline'>
                          $menu_manageroomscreate

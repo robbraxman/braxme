@@ -155,8 +155,9 @@ function DesktopInputReply( $readonly, $selectedroomid, $roomid, $shareid, $post
                     style='cursor:pointer;color:$global_activetextcolor'
                     id='photoselect' 
                     data-target='.replyphoto' data-src='.replyphoto' data-filename='' data-mode='X' data-caller='feed' title='My Photo Library' >
-                    <img class='icon25' src='../img/brax-photo-round-black-128.png' style='cursor:pointer;position:relative;display:inline;height:30px;width:auto;top:0px;' />
+                    <!--<img class='icon25' src='../img/brax-photo-round-black-128.png' style='cursor:pointer;position:relative;display:inline;height:30px;width:auto;top:0px;' />-->
                     $menu_sharephoto
+                        <br><br>
 
                 </div>
                 <br>
@@ -166,7 +167,7 @@ function DesktopInputReply( $readonly, $selectedroomid, $roomid, $shareid, $post
                     style='cursor:pointer;color:$global_activetextcolor'
                     id='fileselect' 
                     data-target='.replyfile' data-src='.replyfile' data-filename='' data-link='' data-caller='room'  title='My File Library' >
-                    <img class='icon25' src='../img/brax-doc-round-black-128.png' style='cursor:pointer;position:relative;display:inline;height:30px;width:auto;top:0px;' />
+                    <!--<img class='icon25' src='../img/brax-doc-round-black-128.png' style='cursor:pointer;position:relative;display:inline;height:30px;width:auto;top:0px;' />-->
                     $menu_sharefile
                         <br><br>
 
@@ -180,7 +181,7 @@ function DesktopInputReply( $readonly, $selectedroomid, $roomid, $shareid, $post
                 <input class='replyalias' type='checkbox' title='Alias' value='A' $anonymous_settings style='padding:0;margin:0;position:relative;top:5px'> Alias
                    &nbsp;&nbsp;
                    -->
-                <br><br>
+                <br><br><br>
             </div>
 
             <br>
@@ -354,13 +355,15 @@ function TopButtons($roomid, $memberinfo, $showmembers, $readonly, $profileflag 
                 <br>$menu_whoshere
                 <br>   
             </div>
+            <!--
             <div class='smalltext2 roomfiles$disable tapped roombutton' data-caller='room' data-mode=''  title='Access Shared Files'
                 data-roomid='$roomid' style='vertical-align:top;color:$global_textcolor;$opacityfiles'>
                 <img class='icon25' src='$iconsource_braxfolder_common' 
                     style='margin-bottom:7px' />
-                    $menu_roomfiles
+                   <br>$menu_roomfiles
                         <br>
             </div>
+            -->
             ";
 
     return $accessbuttons1;
@@ -891,12 +894,16 @@ function OwnerButtons( $readonly, $providerid, $roomid, $roominfo, $memberinfo, 
                     </span>
                     <div class='friends tapped' style='$memberinfoonly'  data-mode='E' data-caller='friendlist' data-roomid='$roomid' title='Settings'>
                         <img class='icon25' src='$iconsource_braxgear_common' style='top:10px;$memberinfoonly' />
-                    </div>
+                    </div>";
+        if($_SESSION['superadmin']=='Y'){
+        $ownerbuttons .=
+        "  
                     &nbsp;&nbsp;&nbsp;
                     <div class='chatinvite tapped' style='$memberinfoonly2'  data-mode='S' data-caller='friendlist' data-roomid='$roomid' title='Swawn Chat'>
                         <img class='icon25' title='Spawn a Chat' src='$iconsource_braxchatbubble_common' style='top:10px;$memberinfoonly2' />
                     </div>
                     ";
+        }
 
         /*
         if( (   ($memberinfo->ownermoderatorflag == 'Y' && $roominfo->radiostation=='Q') || 
@@ -963,6 +970,13 @@ function RoomTitle($readonly, $roominfo, $privatetext, $radiolink, $storelink )
         $radiolink = '';
         $storelink = '';
     }
+    $roomdesc = '';
+    if($roominfo->roomdesc!==''){
+       $roomdesc = "<div class='pagetitle3' style='color:$global_textcolor;padding-left:20px;padding-right:20px'>$roominfo->handle $roominfo->roomdesc</div>";
+    }
+    if($privatetext!==''){
+        $privateroom = "<div class='pagetitle3' style='color:$global_textcolor;padding-left:20px;padding-right:20px'>$privatetext</div>";
+    }
     
     
     $roomtitle = 
@@ -971,10 +985,8 @@ function RoomTitle($readonly, $roominfo, $privatetext, $radiolink, $storelink )
             <td class='gridnoborder' style='background-color:transparent;color:$global_textcolor;margin:0;padding:0 10 0 10;text-align:center'>
                 <div class='formobile'><br></div>
                 <div class='roomposttitle' style='color:$global_textcolor;padding-left:20px;padding-right:20px'><b>$roominfo->room</b></div>
-                <div class='pagetitle3' style='color:$global_textcolor;padding-left:20px;padding-right:20px'>$roominfo->handle $roominfo->roomdesc</div>
-                <div class='pagetitle3' style='color:$global_textcolor;padding-left:20px;padding-right:20px'>$privatetext</div>
+                $roomdesc $privateroom
                 $radiolink $storelink
-                <br>
             </td>
         </tr>
         ";

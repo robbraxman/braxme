@@ -42,6 +42,12 @@ if($mode=='A'){
     echo "$result";
     exit();
 }
+if($mode=='IP'){
+    $result = ModerationIpRestrict($userid);
+    echo "$result";
+    exit();
+}
+
 echo "OK $mode-";
 
 exit();

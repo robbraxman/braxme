@@ -113,16 +113,16 @@ $caller = @tvalidator("PURIFY", $_SESSION['caller'] );
         
         pdo_query("1",
             "
-                insert into chatmembers ( chatid, providerid, status, lastmessage, lastread, lastactive, techsupport, mute, broadcaster)
+                insert into chatmembers ( chatid, providerid, status, lastmessage, lastread, lastactive, techsupport, mute, broadcaster,pin)
                 values
-                ( $chatid, $autochatuserid, 'Y', now(), now(), now(), null, null, null )
+                ( $chatid, $autochatuserid, 'Y', now(), now(), now(), null, null, null,'' )
             ",null);
         
         pdo_query("1",
             "
-                insert into chatmembers ( chatid, providerid, status, lastmessage, lastread, lastactive, techsupport, mute, broadcaster)
+                insert into chatmembers ( chatid, providerid, status, lastmessage, lastread, lastactive, techsupport, mute, broadcaster,pin)
                 values
-                ( $chatid, $providerid,     'Y', now(), now(), now(), null, null, null )
+                ( $chatid, $providerid,     'Y', now(), now(), now(), null, null, null,'' )
             ",null);
 
         $message = $welcome;

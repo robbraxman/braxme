@@ -613,7 +613,7 @@ require_once("chat.inc.php");
             $caller, $radiostation, $sponsor, $parent, $childsort, $profileflag, $roomexternal, 
             $roominvitehandle, $webcolorscheme, $webtextcolor, $webpublishprofile, $webflags, $searchengine,
             $analytics, $subscriptiondays, $subscription, $subscriptionusd, $wallpaper, 
-            $autochatuser, $autochatmsg, $community, $communitylink, $store, $wizardenterprise, $roomstyle
+            $autochatuser, $autochatmsg, $community, $communitylink, $store, $wizardenterprise, $roomstyle, $showinprofile
             )
     {
         global $appname;
@@ -625,6 +625,8 @@ require_once("chat.inc.php");
         global $menu_room;
         global $menu_manageroomedit;
         global $menu_manageroomcreate;
+        
+        $roomHtml = ltrim($roomHtml);
         
         if($_SESSION['store']=='N' && $store == 'Y'){
             $store = 'N';
@@ -661,7 +663,7 @@ require_once("chat.inc.php");
         if($mode == 'N'){
             $result = pdo_query("1","select sponsor, roomhashtag from sponsor where creator=? ",array($providerid));
             if($row = pdo_fetch($result)){
-                $parent = $row['roomhashtag'];
+                //$parent = $row['roomhashtag'];
             }
         }
         
@@ -685,6 +687,24 @@ require_once("chat.inc.php");
                         Open <input id='private2' name='private' type='radio'  checked=checked value='N' style='position:relative;top:5px'>
                         ";
         }        
+        
+        if($showinprofile == 'Y' || $showinprofile == ''){
+        
+            $showinprofiletext = "
+                        Show <input id='showinprofile1' name='showinprofile' type='radio' checked=checked value='Y' style='position:relative;top:5px'>
+                        &nbsp;&nbsp;
+                        Hide <input id='showinprofile2' name='showinprofile' type='radio'  value='N' style='position:relative;top:5px'>
+                        ";
+            
+        } else {
+        
+            $showinprofiletext = "
+                        Show <input id='showinprofile1' name='showinprofile' type='radio' value='Y' style='position:relative;top:5px'>
+                        &nbsp;&nbsp;
+                        Hide <input id='showinprofile2' name='showinprofile' type='radio'  checked=checked value='N' style='position:relative;top:5px'>
+                        ";
+        }        
+        
         if($discover == 'Y'){
         
             $discovertext = "
@@ -732,12 +752,6 @@ require_once("chat.inc.php");
                         Either <input id='roomanonymous3' name='roomanonymous' type='radio'  checked=checked value='A' style='position:relative;top:5px'>
                         ";
         }
-        /*
-        $contactexchangetext = "
-                    <input id='contactexchange2' name='contactexchange' type='hidden' checked=checked  value='N' style='position:relative;top:5px'>
-                    ";
-         * 
-         */
         if($adminonly == 'Y' ){
         
             $adminonlytext = "
@@ -902,24 +916,6 @@ require_once("chat.inc.php");
         }        
 
         /*
-        if($sharephotoflag != '1' )
-        {
-            $sharephotoflagtext = "
-                        Post Photo <input id='sharephotoflag1' name='sharephotoflag' type='radio' checked=checked value='0' style='position:relative;top:5px'>
-                        &nbsp;&nbsp;
-                        Header Photo <input id='sharephotoflag2' name='sharephotoflag' type='radio'  value='1' style='position:relative;top:5px'>
-                        ";
-            
-        }
-        else
-        {
-            $sharephotoflagtext = "
-                        Post Photo <input id='sharephotoflag1' name='sharephotoflag' type='radio' value='0' style='position:relative;top:5px'>
-                        &nbsp;&nbsp;
-                        Header Photo <input id='sharephotoflag2' name='sharephotoflag' type='radio' checked=checked  value='1' style='position:relative;top:5px'>
-                        ";
-        }        
-        */
         $selectgroup = "";
         if($groupid!=''){
             $result = pdo_query("1","
@@ -941,6 +937,8 @@ require_once("chat.inc.php");
         while($row = pdo_fetch($result)){
             $selectgroupoptions .= "<option value='$row[groupid]'>$row[groupname]</option>";
         }
+         * 
+         */
         
         $selectcommunity = "";
         if($communitylink!=''){
@@ -989,9 +987,9 @@ require_once("chat.inc.php");
                     Parent #Hashtag<br>
                     <input id='roomparent' name='roomparent' placeholder='#ParentRoom' type='text' size=20 maxlength=250 value='$parent' style='max-width:400px;width:70%'>
                         <br>
-                        <span class='smalltext'>Take members from this Room</span>
+                        <span class='smalltext'>Take members from this blog hashtag</span>
                     <br><br>
-                    Sort Order - If Child Room<br>
+                    Sort Order - If Child Blog<br>
                     <input id='roomchildsort' name='roomchildsort' placeholder='Child Sort #' type='number' size=20 maxlength=250 value='$childsort' style='max-width:400px;width:70%'>
                     <br><br>
                         ";
@@ -1253,6 +1251,9 @@ require_once("chat.inc.php");
                             <b>Open or Private Membership?</b><br>
                             $privatetext
                             <br><br><br>
+                            <b>Show Blog in My Profile</b><br>
+                            $showinprofiletext
+                            <br><br><br>
 
                             <b>Show Members List?</b><br>
                             $showmemberstext
@@ -1343,6 +1344,7 @@ require_once("chat.inc.php");
                             $parenttext
 
 
+                            <!--
                             Member Group Limitation<br>
                             <select id='roomgroupid' name='roomgroupid'  style='width:250px'>
                                 $selectgroup
@@ -1351,6 +1353,7 @@ require_once("chat.inc.php");
                             <br>
                             <span class='smalltext' style='color:$global_textcolor'>Limit discovery and membership to this group.</span>
                             <br><br>
+                            -->
 
 
 
@@ -1514,7 +1517,7 @@ require_once("chat.inc.php");
                         $sponsor, $parent, $childsort, $copymembers, $profileflag, $roominvitehandle,
                         $webcolorscheme, $webtextcolor, $webpublishprofile, $webflags, $searchengine, 
                         $analytics, $subscriptiondays, $subscription, $subscriptionusd, $wallpaper,
-                        $autochatuser, $autochatmsg, $community, $communitylink, $store, $roomstyle )
+                        $autochatuser, $autochatmsg, $community, $communitylink, $store, $roomstyle,$showinprofile )
     {
         
         
@@ -1646,7 +1649,7 @@ require_once("chat.inc.php");
             webpublishprofile=?, webflags=?, searchengine=?, 
             analytics=?, subscriptiondays=?, subscription=?,subscriptionusd=?, 
             wallpaper=?, autochatuser=?, autochatmsg=?, 
-            communitylink = ?, store = ?, roomstyle=?
+            communitylink = ?, store = ?, roomstyle=?, showinprofile=?
            
             where roomid = ?
         ",array(
@@ -1661,7 +1664,7 @@ require_once("chat.inc.php");
             $webpublishprofile,$webflags,$searchengine, 
             $analytics64,$subscriptiondaysvalue, $subscriptionvalue,$subscriptionusdvalue, 
             $wallpaper,$autochatuser,$autochatmsg, 
-            $communitylink,$store,$roomstyle,$roomid
+            $communitylink,$store,$roomstyle,$showinprofile,$roomid
         )
         );
         
@@ -1763,7 +1766,7 @@ require_once("chat.inc.php");
                     $row['photourl'] = "https://bytz.io/$installfolder/sharedirect.php?a=T4AZ5435f7a219bb08.41310993";
                 }
                 $photourl = "
-                        <div class='circular' style='float:left;text-align:left;padding:0px;vertical-align:top;;margin-right:10px;overflow:hidden'>
+                        <div class='circular' style='height:70%;width:auto;max-width:90%;float:left;text-align:left;padding:0px;vertical-align:top;;margin-right:10px;overflow:hidden'>
                             <img src='$row[photourl]' style='height:100%;width:auto' />
                         </div>
                         ";
@@ -1782,16 +1785,16 @@ require_once("chat.inc.php");
                 }
 
                 $select .=      "<div data-room='$room1' data-roomid='$row[roomid]' data-mode='' 
-                                class='roomedit pagetitle3 smalltext' 
-                               style='width:200px;min-width:20%;
+                                class='roomedit smalltext' 
+                               style='width:150px;min-width:15%;
                                vertical-align:top;
                                margin-left:5px;margin-right:5px;margin-top:0px;margin-bottom:5px;
                                font-weight:500;cursor:pointer;text-align:left;
-                               background-color:whitesmoke;color:black;display:inline-block;height:80px;
+                               background-color:whitesmoke;color:black;display:inline-block;height:120px;
                                padding-left:10px;padding-right:10px;border-radius:5px;
                                padding-bottom:5px;padding-top:10px;overflow:hidden;'>
 
-                                <div class='mainfont' style='width:100%;margin:0;padding:0'>
+                                <div class='smalltext' style='width:100%;margin:0;padding:0'>
                                     $room2 
                                 </div>
                                     $photourl 
@@ -1845,7 +1848,7 @@ require_once("chat.inc.php");
                     $row['photourl'] = "https://bytz.io/$installfolder/sharedirect.php?a=T4AZ5435f7a219bb08.41310993";
                 }
                 $photourl = "
-                        <div class='circular' style='float:left;text-align:left;padding:0px;vertical-align:top;;margin-right:10px;overflow:hidden'>
+                        <div class='circular' style='height:70%;width:auto;max-width:90%;float:left;text-align:left;padding:0px;vertical-align:top;;margin-right:10px;overflow:hidden'>
                             <img src='$row[photourl]' style='height:100%;width:auto' />
                         </div>
                         ";
@@ -1864,16 +1867,16 @@ require_once("chat.inc.php");
                 }
 
                 $select .=      "<div data-room='$room1' data-roomid='$row[roomid]' data-mode='' 
-                                class='roomedit pagetitle3 smalltext' 
-                               style='width:200px;min-width:20%;
+                                class='roomedit smalltext' 
+                               style='width:150px;min-width:15%;
                                vertical-align:top;
                                margin-left:5px;margin-right:5px;margin-top:0px;margin-bottom:5px;
                                font-weight:500;cursor:pointer;text-align:left;
-                               background-color:whitesmoke;color:black;display:inline-block;height:80px;
+                               background-color:whitesmoke;color:black;display:inline-block;height:120px;
                                padding-left:10px;padding-right:10px;border-radius:5px;
                                padding-bottom:5px;padding-top:10px;overflow:hidden;'>
 
-                                <div class='mainfont' style='width:100%;margin:0;padding:0'>
+                                <div class='smalltext' style='width:100%;margin:0;padding:0'>
                                     $room2 
                                 </div>
                                     $photourl 
@@ -1923,11 +1926,11 @@ require_once("chat.inc.php");
             if($row['photourl']==''){
                 $row['photourl'] = "https://bytz.io/$installfolder/sharedirect.php?a=T4AZ5435f7a219bb08.41310993";
             }
-            $photourl = "
-                    <div class='circular' style='float:left;text-align:left;padding:0px;vertical-align:top;;margin-right:10px;overflow:hidden'>
-                        <img src='$row[photourl]' style='height:100%;width:auto' />
-                    </div>
-                    ";
+                $photourl = "
+                        <div class='circular' style='height:70%;width:auto;max-width:90%;float:left;text-align:left;padding:0px;vertical-align:top;;margin-right:10px;overflow:hidden'>
+                            <img src='$row[photourl]' style='height:100%;width:auto' />
+                        </div>
+                        ";
 
             $private = ".";
             $public = "";
@@ -1943,16 +1946,16 @@ require_once("chat.inc.php");
             }
 
             $select .=      "<div data-room='$room1' data-roomid='$row[roomid]' data-mode='' 
-                            class='roomedit pagetitle3 smalltext' 
-                           style='width:200px;min-width:20%;
+                            class='roomedit smalltext' 
+                           style='width:150px;min-width:15%;
                            vertical-align:top;
                            margin-left:5px;margin-right:5px;margin-top:0px;margin-bottom:5px;
                            font-weight:500;cursor:pointer;text-align:left;
-                           background-color:whitesmoke;color:black;display:inline-block;height:80px;
+                           background-color:whitesmoke;color:black;display:inline-block;height:120px;
                            padding-left:10px;padding-right:10px;border-radius:5px;
                            padding-bottom:5px;padding-top:10px;overflow:hidden;'>
                            
-                            <div class='mainfont' style='width:100%;margin:0;padding:0'>
+                            <div class='smalltext' style='width:100%;margin:0;padding:0'>
                                 $room2 
                             </div>
                                 $photourl 
@@ -2165,6 +2168,7 @@ require_once("chat.inc.php");
         $roomdata['store']='';
         $roomdata['wizardenterprise']='';
         $roomdata['roomstyle']='';
+        $roomdata['showinprofile']='';
         
         if(intval($roomid)==0){
             return (object) $roomdata;
@@ -2182,7 +2186,7 @@ require_once("chat.inc.php");
             roominfo.webpublishprofile, roominfo.webflags, roominfo.searchengine, roominfo.analytics, 
             roominfo.subscriptiondays, roominfo.subscription, roominfo.subscriptionusd, roominfo.wallpaper,
             roominfo.autochatuser, roominfo.autochatmsg, roominfo.store, roominfo.wizardenterprise,
-            roominfo.roomstyle
+            roominfo.roomstyle, roominfo.showinprofile
             from roominfo 
             left join statusroom on statusroom.roomid = roominfo.roomid and statusroom.owner = statusroom.providerid
             left join roomhandle on roomhandle.roomid = roominfo.roomid
@@ -2263,6 +2267,7 @@ require_once("chat.inc.php");
             $roomdata['store'] = $row['store'];
             $roomdata['wizardenterprise'] = $row['wizardenterprise'];
             $roomdata['roomstyle'] = $row['roomstyle'];
+            $roomdata['showinprofile'] = $row['showinprofile'];
             
             
                 
@@ -2345,6 +2350,7 @@ require_once("chat.inc.php");
             $communitylink = "";
             $store = "N";
             $roomstyle = 'std';
+            $showinprofile = 'Y' ;
             
             
             $error = SaveHandle($roomid, $private, $handle, $room, $roomdescription, 
@@ -2355,7 +2361,7 @@ require_once("chat.inc.php");
                     $parent, $childsort, $copymembers, $profileflag, $roominvitehandle, 
                     $webcolorscheme, $webtextcolor, $webpublishprofile, $webflags, $searchengine, 
                     $analytics, $subscriptiondays, $subscription, $subscriptionusd, $wallpaper, $autochatuser, $autochatmsg, 
-                    $community, $communitylink, $store, $roomstyle  );
+                    $community, $communitylink, $store, $roomstyle, $showinprofile  );
             
             pdo_query("1","update provider set profileroomid = ? where providerid=? ",array($roomid,$providerid));
             

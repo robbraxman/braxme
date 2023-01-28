@@ -40,7 +40,7 @@ require_once("internationalization.php");
             left join roominfo on roominfo.roomid = statusreads.roomid
             left join statuspost on statuspost.owner = statusreads.providerid and statusreads.shareid = statuspost.shareid 
             left join blocked blocked1 on blocked1.blockee = statuspost.providerid and blocked1.blocker = ?
-            where statusreads.shareid = ? and statusreads.xaccode in ('L','C','D','B','P')
+            where statusreads.shareid = ? and statusreads.xaccode in ('L','C','D','B','P','E')
             order by actiontime2 desc limit 100
         ",array($providerid,$shareid));
         $activity = "";
@@ -73,6 +73,8 @@ require_once("internationalization.php");
                 $action = 'bumped it up';
             if( $row2['xaccode']=='P')
                 $action = 'posted';
+            if( $row2['xaccode']=='E')
+                $action = 'edited';
             $activity .=
                 "$postername $action on $row2[actiontime]<br>";
             
@@ -131,7 +133,7 @@ require_once("internationalization.php");
                 roominfo.private,
                 roominfo.anonymousflag, blocked1.blockee, blocked2.blocker,
                 provider.profileroomid,
-                (select providerid from roommoderator where roommoderator.roomid = statuspost.roomid
+                (select 'Y' from roommoderator where roommoderator.roomid = statuspost.roomid
                  and roommoderator.providerid = ? ) as moderator
 
                 from statuspost
@@ -151,10 +153,15 @@ require_once("internationalization.php");
     //echo "<br>";
     while($row2 = pdo_fetch($result2))
     {
+        $moderator = $row['moderator'];
+        if($_SESSION['superadmin']=='Y'){
+            $moderator = 'Y';
+        }
+        
         $comment = FormatComment("", $row2['postid'],$row2['owner'], $row2['roomid'], $row2['encoding'], 
                 $row2['comment'], '',$row2['photo'], $row2['album'], $row2['video'], $row2['link'], "","N",  
                 $sizing->mainwidth, $sizing->statuswidth2, $row2['videotitle'], 0, $page, $readonly, 
-                $row2['blockee'], $row2['blocker']  );
+                $row2['blockee'], $row2['blocker'], $moderator  );
 
         $posterobj = RoomPosterInfo( $row2['roomid'], $row2['owner'], $row2['avatarurl'], $row2['public'], 
                 $row2['private'], $row2['anonymous'], $row2['anonymousflag'], $row2['providername'], $row2['name2'], 

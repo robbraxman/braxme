@@ -95,27 +95,6 @@ function UnreadRooms($providerid)
             $background = $global_background.";filter:brightness(120%);";
         }
         
-        /*
-        $discoverbutton = 
-            "
-            <div class='roomdiscover rounded roomselectbutton tapped2 $shadow' data-roomid='0' 
-              data-room='' data-selectedroom='Y' 
-              style='display:inline-block;cursor:pointer;
-              text-align:left;
-              background-color:white;
-              min-height:80px;
-              min-width:12%;
-              padding:10px;margin:5px'>
-                  <div class=smalltext 
-                  style='float:left;display:inline-block;color:black;
-                  '>
-                      <b>Discover Rooms</b> 
-                  </div><br>
-                    $photourl   
-                    
-            </div>
-             ";
-    */
         $discoverbutton = "";
     
     $result = pdo_query("1","
@@ -244,7 +223,6 @@ function ActiveRooms($providerid)
     global $global_background;
     global $menu_activetoday;
     
-        //echo "<img class='icon15' src='../img/Speach-Bubble_120px.png' style='top:3px;opacity:.3' title='Legend: active today' /> <span class='smalltext2'>Active Today  </span><br><br>";
     
     
         $photourl = "
@@ -252,28 +230,6 @@ function ActiveRooms($providerid)
                     <img src='../img/familyreunion.jpg' style='height:100%;width:auto;max-width:100%' />
                 </div><span class='smalltext'><br></span>
                 ";
-        /*
-        echo "
-            <div class='roomdiscover rounded roomselectbutton tapped2 shadow' data-roomid='0' 
-              data-room='' data-selectedroom='Y' 
-              style='display:inline-block;cursor:pointer;border:1px solid lightgray;
-              text-align:left;
-              background-color:white;
-              min-height:120px;
-              min-width:12%;
-              padding:10px;margin:10px'>
-                  <div class=mainfont 
-                  style='float:left;display:inline-block;color:black;
-                  '>
-                      <b>Discover Rooms</b> 
-                  </div><br>
-                    $photourl   
-                    
-            </div>
-             ";
-         * 
-         */
-    
     
     $result = pdo_query("1","
             select 
@@ -315,7 +271,6 @@ function ActiveRooms($providerid)
             ",array($providerid));
 
     $count = 0;
-    //        (select count(*) from statuspost where statuspost.roomid = roominfo.roomid and statuspost.providerid > 0 ) as postcount
               
     while($row = pdo_fetch($result)){
         
@@ -330,12 +285,6 @@ function ActiveRooms($providerid)
             $row['ownername']=$row['handle'];
         }
         $public = '';
-        /*
-        if( $row['publicadmin']=='Y') {
-            $public = "<span style='color:firebrick'> (Public Room)</span>";
-        }
-         * 
-         */
         $activecolor = 'gray';
         if( $row['lastaccess']!=''){
             $activecolor = 'steelblue';
@@ -370,10 +319,10 @@ function ActiveRooms($providerid)
         
         global $icon_darkmode;
         $shadow = "shadow gridstdborder";
-        $background = $global_background;
+        $background = $global_background.";color:black;";
         if($icon_darkmode){
             $shadow = "gridnoborder";
-            $background = $global_background.";filter:brightness(120%);";
+            $background = $global_background.";color:white;filter:brightness(120%);";
         }
         echo "
             <div class='feed rounded roomselectbutton tapped2 $shadow' data-roomid='$row[roomid]' 
@@ -450,8 +399,6 @@ function FeedRooms($providerid )
             ",array($providerid));
 
     $count = 0;
-    //        and datediff( now(), roominfo.lastactive)  < 2
-    //        (select count(*) from statuspost where statuspost.roomid = roominfo.roomid and statuspost.providerid = 0) as postcount
               
     while($row = pdo_fetch($result)){
         
@@ -501,24 +448,6 @@ function FeedRooms($providerid )
                     <img src='$row[photourl]' style='height:100%;width:auto;max-width:100%' />
                 </div>
                 ";
-        /*
-        echo "
-              <div class='$call tapped2 gridstdborder' data-roomid='$row[roomid]' 
-                data-room='$row[room]' data-selectedroom='Y' 
-                style='display:inline-block;cursor:pointer;
-                text-align:center;
-                background-color:whitesmoke;
-                margin-bottom:5px;
-                width:250px;min-width:25%;padding-left:10px;padding-right:10px;padding-bottom:10px;padding-top:10px'>
-                    $photourl
-                    <div class=mainfont
-                    style='display:inline-block;color:black;
-                    '>
-                        $row[room] $active $dot 
-                    </div>
-              </div>
-             ";
-        */
         global $icon_darkmode;
         $shadow = "shadow gridstdborder";
         $background = $global_background;
@@ -677,12 +606,6 @@ function AlphaRooms($providerid, $find )
             $dot = "";
 
 
-            /*
-            if("$row[owner]"=="$providerid"){
-                $dot = "<img src='$rootserver/img/dot.png' style='height:6px;width:auto;position:relative;top:0px' />";
-            }
-             * 
-             */
             if($row['private']=='Y'){
                 $dot .= "<div style='float:left'>$lock</div>";
             }
@@ -691,7 +614,6 @@ function AlphaRooms($providerid, $find )
             if($row['active']!= '' && $row['active'] < 8){
                 $active = "<div style='float:left'><img class='icon15' src='../img/Arrow-Circle_120px.png' style='top:3px;opacity:.3' title='Active this week' /></div>";
             }
-            //$row['room']=htmlentities($row['room']);
             $row['room']=rtrim(ltrim($row['room']));
 
 
@@ -716,7 +638,7 @@ function AlphaRooms($providerid, $find )
                   data-room='$row[room]' data-selectedroom='Y' 
                   style='display:inline-block;cursor:pointer;
                   text-align:left;
-                  background-color:white;
+                  background-color:white;color:black;
                   min-height:120px;
                   min-width:12%;
                   padding:10px;margin:5px'>
@@ -916,17 +838,19 @@ function OwnedRooms2($providerid, $find, $owned )
     global $menu_myrooms;
     global $menu_rooms;
     global $menu_all;
+    global $global_icon_check;
+    global $global_icon_lock;
     
     if($_SESSION['superadmin']!='Y'){
         //return "";
     }
     $circular = "circular";
-    $roomtitle = $menu_all;
+    $roomtitle = $menu_all." Subscriptions";
     $nonmobile = "nonmobile";
     
     if($_SESSION['roomdiscovery']=='N'){
         $circular = "circular2";
-        $roomtitle = "$menu_all";
+        $roomtitle = "$menu_all Subscriptions";
         $nonmobile = "";
     };
     $ownedquery = "";
@@ -999,7 +923,7 @@ function OwnedRooms2($providerid, $find, $owned )
             
             if($count == 0){
                 echo "<br><div class='pagetitle2'  style='padding:20px;max-width:300px;margin:auto;color:$global_textcolor;'>$roomtitle</div>";
-                echo "<div class='smalltext' style='padding-bottom:20px;'></div>";
+                echo "<div class='smalltext ' style='padding-bottom:20px;'></div>";
                 
             }
             
@@ -1034,11 +958,13 @@ function OwnedRooms2($providerid, $find, $owned )
             $dot = "";
 
             $owned = "";
+            $private = "";
             if("$row[owner]"=="$providerid"){
-                $owned = "<img src='$rootserver/img/dot.png' style='height:6px;width:auto;position:relative;top:0px' />";
+                //$owned = "<img src='$rootserver/img/dot.png' style='height:6px;width:auto;position:relative;top:0px' />";
+                $owned = $global_icon_check;
             }
             if($row['private']=='Y'){
-                $dot .= "<div style='float:left'>$lock</div>";
+                $private = "$global_icon_lock";
             }
 
             $active = "";
@@ -1081,50 +1007,28 @@ function OwnedRooms2($providerid, $find, $owned )
             $background = $global_background.";filter:brightness(120%);";
         }
 
-            if( true ){
-                //test
-                echo "
-                    <div class='feed pagetitle2a' data-roomid='$row[roomid]' 
-                      data-room='$row[room]' data-selectedroom='Y' 
-                      style='padding-left:20px;height:40px;max-width:500px;margin:auto;position:relative;display:block;cursor:pointer;
-                      text-align:left;
-                      background-color:$global_background;color:$global_textcolor;
-                      min-width:15%;
-                      overflow:hidden'>
-                              <div style='padding:10px'>
-                              $row[room] $owned
-                              </div>
-                    </div>
-                     ";
-            } else {
-                
-                echo "
-                    <div class='stdlistbox feed tapped2 $shadow' data-roomid='$row[roomid]' 
-                      data-room='$row[room]' data-selectedroom='Y' 
-                      style='position:relative;display:inline-block;cursor:pointer;
-                      text-align:left;
-                      background-color:$background;
-                      min-width:15%;
-                      margin:5px;overflow:hidden'>
-                            $photourl
-                          <div class=mainfont 
-                          style='position:absolute;bottom:10px;;color:$global_textcolor;
-                          '>
-                              <div style='padding:10px'>
-                              $row[room] $owned
-                              </div>
+            echo "
+                <div class='feed pagetitle3' data-roomid='$row[roomid]' 
+                  data-room='$row[room]' data-selectedroom='Y' 
+                  style='padding-left:30px;height:60px;max-width:500px;margin:auto;position:relative;display:block;cursor:pointer;
+                  text-align:left;
+                  background-color:$global_background;color:$global_activetextcolor;
+                  min-width:15%;
+                  overflow:hidden'>
+                          <div style='padding:10px'>
+                          $row[room] $owned $private<br>
+                          <span class='smalltext'>($row[ownername])</span>
+                              <br>
                           </div>
-                    </div>
-                     ";
-                
-            }
-                 
+                </div>
+                 ";
 
         }
         if($count == 0 && $find==''){
 
         }
         if($count > 0){
+            echo "<br>$global_icon_check = My Blog&nbsp;&nbsp;&nbsp;&nbsp;$global_icon_lock = Private";
             echo "<br><br>";
         }
         return $count;
@@ -1252,9 +1156,6 @@ function DiscoverRooms($providerid, $find, $roomdiscovery )
             if("$row[owner]"=="$providerid"){
                 $owned = "<img src='$rootserver/img/dot.png' style='height:6px;width:auto;position:relative;top:0px' />";
             }
-            if($row['private']=='Y'){
-                $dot .= "<div style='float:left'>$lock</div>";
-            }
 
             $active = "";
             if($row['active']!= '' && $row['active'] < 8){
@@ -1290,10 +1191,10 @@ function DiscoverRooms($providerid, $find, $roomdiscovery )
              */
         global $icon_darkmode;
         $shadow = "shadow gridstdborder";
-        $background = $global_background;
+        $background = $global_background.";color:black;";
         if($icon_darkmode){
             $shadow = "gridnoborder";
-            $background = $global_background.";filter:brightness(120%);";
+            $background = $global_background.";color:white;filter:brightness(120%);";
         }
 
             //if($_SESSION['superadmin']=='Y'){
@@ -1311,32 +1212,11 @@ function DiscoverRooms($providerid, $find, $roomdiscovery )
                           style='position:absolute;bottom:10px;;color:$global_textcolor;
                           '>
                               <div style='padding:10px'>
-                              $row[room] $owned
+                              $row[room] $owned $private
                               </div>
                           </div>
                     </div>
                      ";
-            //} else {
-                /*
-                echo "
-                    <div class='gridstdborder feed tapped2 shadow' data-roomid='$row[roomid]' 
-                      data-room='$row[room]' data-selectedroom='Y' 
-                      style='display:inline-block;cursor:pointer;
-                      text-align:left;
-                      background-color:$global_background;
-                      min-width:15%;
-                      padding:10px;margin:5px'>
-                          <div class=mainfont 
-                          style='float:left;display:inline-block;color:$global_activetextcolor;
-                          '>
-                            $photourl
-                              $row[room] $owned 
-                          </div>
-                    </div>
-                     ";
-                
-            }
-                 */
 
         }
         if($count == 0 ){
@@ -1405,8 +1285,6 @@ function FavoriteRooms($providerid, $find, $owned )
             ",null);
 
 
-
-
         $lastroomid = '';
         $lastcategory = 'Unspecified';
         $count = 0;
@@ -1471,8 +1349,8 @@ function FavoriteRooms($providerid, $find, $owned )
             }
             //if($_SESSION['superadmin']=='Y'){
             $photourl = "
-                    <div class='gridnoborder' style='float:left;width:100%;max-height:70%;text-align:center;vertical-align:top;;overflow:hidden;top:0px;'>
-                        <img src='$row[photourl]' style='width:100%;height:auto;overflow:hidden;max-height:100$' />
+                    <div class='gridnoborder' style='float:left;width:100%;max-height:50%;text-align:center;vertical-align:top;;overflow:hidden;top:0px;'>
+                        <img src='$row[photourl]' style='width:100%;height:auto;overflow:hidden;max-height:100%' />
                     </div>
                     ";
             /*
@@ -1516,28 +1394,6 @@ function FavoriteRooms($providerid, $find, $owned )
                           </div>
                     </div>
                      ";
-            //} else {
-                /*
-                echo "
-                    <div class='gridstdborder feed tapped2 shadow' data-roomid='$row[roomid]' 
-                      data-room='$row[room]' data-selectedroom='Y' 
-                      style='display:inline-block;cursor:pointer;
-                      text-align:left;
-                      background-color:$global_background;
-                      min-width:15%;
-                      padding:10px;margin:5px'>
-                          <div class=mainfont 
-                          style='float:left;display:inline-block;color:$global_activetextcolor;
-                          '>
-                            $photourl
-                              $row[room] $owned 
-                          </div>
-                    </div>
-                     ";
-                
-            }
-                 */
-
         }
         if($count == 0 && $find==''){
 
@@ -1732,27 +1588,6 @@ function WebsiteRooms($providerid, $find )
                           </div>
                     </div>
                      ";
-            //} else {
-                /*
-                echo "
-                    <div class='gridstdborder feed tapped2 shadow' data-roomid='$row[roomid]' 
-                      data-room='$row[room]' data-selectedroom='Y' 
-                      style='display:inline-block;cursor:pointer;
-                      text-align:left;
-                      background-color:$global_background;
-                      min-width:15%;
-                      padding:10px;margin:5px'>
-                          <div class=mainfont 
-                          style='float:left;display:inline-block;color:$global_activetextcolor;
-                          '>
-                            $photourl
-                              $row[room] $owned 
-                          </div>
-                    </div>
-                     ";
-                
-            }
-                 */
 
         }
         if($count == 0 && $find==''){
@@ -1958,7 +1793,7 @@ function TrendingRooms($providerid, $roomdiscovery)
                 data-room='$row[room]' data-mode='J' data-handle='$row[handle]'
                 style='display:inline-block;cursor:pointer;
                 text-align:center;vertical-align:top;
-                background-color:white;
+                background-color:white;color:black;
                 min-width:15%;padding-left:10px;padding:10px;margin:5px'>
                     <b>$row[room]</b>
                     $photourl
@@ -1989,280 +1824,6 @@ echo "<center>
 
     
 }
-function RadioRooms($providerid, $roomdiscovery, $mode)
-{
-    global $lock;
-    global $rootserver;
-    global $appname;
-    global $global_titlebar_color;
-    return;
-    $result = null;
-    
-    $member = "
-            and not exists 
-            ( 
-                select providerid from statusroom where
-                statusroom.roomid = roominfo.roomid and 
-                statusroom.providerid = $providerid 
-            )
-            ";
-    $adultfilter = " and roomhandle.handle not like '%adult%'  and roomhandle.handle not like '%test%' ";
-
-    $actionmode = "J";
-    $dataaction = "";
-    if($mode == 'S'){
-        $member = "";
-        $actionmode = "R";
-        $dataaction = "RADIO";
-        //$adultfilter = "";
-    }
-    
-    if($roomdiscovery =='Y'){
-        
-        $result = pdo_query("1","
-            select distinct roomhandle.roomid, roominfo.room, statusroom.owner,
-            statusroom.lastaccess,
-            roomhandle.handle,
-            roomhandle.public,
-            roominfo.roomdesc,
-            roominfo.private,
-            (select 'Y' from statusroom where statusroom.roomid = roominfo.roomid and statusroom.providerid = $providerid) as member,
-            (select case  
-                when roomhandle.category is null then 'Private' 
-                else roomhandle.category end)
-            as category,
-            roominfo.organization,
-            (select case 
-                when roominfo.rsscategory ='' then ''
-                when roominfo.rsscategory !='' then 'Y' 
-                else '' end)
-            as rss,
-            (select case 
-                when roominfo.organization is null then ''
-                when roominfo.organization !='' then 'Y' 
-                else '' end)
-            as org,
-            datediff( now(), roominfo.lastactive) as active,
-            roominfo.photourl,
-            (select count(*) from statuspost where statuspost.roomid = roominfo.roomid ) as postcount
-            from roominfo
-            left join statusroom on statusroom.roomid = roominfo.roomid
-                and statusroom.owner = statusroom.providerid
-            left join roomhandle on roomhandle.roomid = statusroom.roomid 
-            where 
-            (roominfo.radiostation = 'Y'  )
-            and (roominfo.parentroom = '' or roominfo.parentroom is null)           
-            $member
-            $adultfilter
-            order by radiostation desc, member asc, roomhandle.handle asc
-            ",null);
-    } else {
-        $result = pdo_query("1","
-            select distinct roomhandle.roomid, statusroom.owner,
-            statusroom.lastaccess,
-            roomhandle.handle,
-            roomhandle.public,roominfo.room, 
-            roominfo.roomdesc,
-            roominfo.private,
-            (select 'Y' from statusroom where statusroom.roomid = roominfo.roomid and statusroom.providerid = $providerid) as member,
-            (select case 
-                when roominfo.rsscategory ='' then ''
-                when roominfo.rsscategory !='' then 'Y' 
-                else '' end)
-            as rss,
-            (select case  
-                when roomhandle.category is null then 'Private' 
-                else roomhandle.category end)
-            as category,
-            roominfo.organization,
-            (select case 
-                when roominfo.organization is null then ''
-                when roominfo.organization !='' then 'Y' 
-                else '' end)
-            as org,
-            datediff( now(), roominfo.lastactive) as active,
-            roominfo.photourl,
-            (select count(*) from statuspost where statuspost.roomid = roominfo.roomid ) as postcount
-            from roominfo
-            left join statusroom on roominfo.roomid = statusroom.roomid
-            left join roomhandle on roomhandle.roomid = roominfo.roomid 
-            where 
-            (roominfo.radiostation = 'Y'  )
-            and (roominfo.parentroom = '' or roominfo.parentroom is null)           
-            $member
-            $adultfilter
-            and statusroom.owner = statusroom.providerid
-            and roominfo.groupid in (select groupid from groupmembers where providerid =$providerid)
-            order by radiostation desc, member asc, roomhandle.handle asc
-            ",null);        
-    }
-
-    
-    $lastroomid = '';
-    $lastcategory = 'Unspecified';
-    $count = 0;
-    while($row = pdo_fetch($result)){
-        
-        if($count == 0){
-            echo "<div class='pagetitle2a' style='color:#68809f'>
-                    <b>JOIN PUBLIC LIVE STREAMING CHANNELS</b>
-                 </div>
-            ";
-            if($mode == 'S'){
-            /*
-            echo "
-                 <div class='smalltext' style='padding:20px;max-width:500px;margin:auto'>
-                     Join these channels to access the open live streams. New channels may be added here.
-                    <br><br><br>
-                    <div class='divbuttontext selectchatlist pagetitle2a gridnoborder' data-mode='LIVE' style='background-color:$global_titlebar_color;color:white;cursor:pointer;border:0'>
-                         Back to LIVE Channels
-                    </div>
-                 </div>
-                ";
-             * 
-             */
-            } else {
-            echo "
-                 <div class='smalltext' style='padding:20px'>
-                    Streaming Channels available for you to join.
-                 </div>
-                ";
-                
-            }
-            echo "<br>";
-        } else {
-            /*
-            echo "
-                 <div class='smalltext' style='padding:20px'>
-                    No Channels available for you to join.
-                 </div>
-                ";
-            */
-        }
-            
-        
-        
-        if($row['handle']!='') {
-            $row['ownername']=$row['handle'];
-        }
-        $activecolor = 'gray';
-        $public = '';
-        /*
-        if( $row['publicadmin']=='Y') {
-            $public = "<span style='color:firebrick'> (Public Room)</span>";
-            $activecolor = 'transparent';
-        }
-         * 
-         */
-        if( $row['lastaccess']!=''){
-            $activecolor = 'steelblue';
-        }
-        if( $row['roomid']==$lastroomid){
-            continue;
-        }
-        
-        if( $row['org']=='Y' ){
-            $row['category']="$row[organization]";
-        }
-        if( $row['org']!='Y' && $row['category']=='' ){
-            $row['category']='Private';
-        }
-        
-        if(rtrim($row['organization'])==''){
-            $row['organization']=$row['category'];
-        }
-        $dot = "";
-        if("$row[owner]"=="$providerid"){
-            $dot = "<img src='$rootserver/img/dot.png' style='height:6px;width:auto;position:relative;top:0px' />";
-        }
-
-        $active = "";
-        if($row['active']!= '' && $row['active'] < 8){
-            $active = "<img class='icon15' src='../img/Arrow-Circle_120px.png' style='top:3px' />";
-        }
-        
-        if($row['photourl']=='' || strstr($row['photourl'],"http://")!==false ) {
-            $row['photourl'] = "https://bytz.io/$installfolder/sharedirect.php?a=T4AZ5435f7a219bb08.41310993";
-        } else {
-            $row['photourl'] = HttpsWrapper($row['photourl']);
-        }
-        $photourl = "
-                <div style='width:100%;text-align:center;padding-bottom:10px;overflow:hidden'>
-                    <img src='$row[photourl]' style='height:80px;width:auto;max-width:100%' />
-                </div>
-                ";
-        $roomdesc = limit_words($row['roomdesc'],20);
-            
-        if($roomdesc == ''){
-            $roomdesc = "<br><br>";
-        }
-        $chatid = "";
-        //$photourl="";
-        $insert = "
-                    <div class=mainfont 
-                    style='display:inline-block;text-align:center;color:black;
-                    '>
-                    <div class='smalltext' style='max-width:90%;width:200px;word-break:break-word'>$roomdesc</div>
-                    </div>
-            ";
-        $opacity="";
-        if($row['member']=='Y'){
-            $opacity = "opacity:0.2;";
-            $insert = "
-                    <div class=mainfont 
-                    style='display:inline-block;text-align:center;color:black;
-                    '>
-                    Joined
-                    </div>
-                    <br>
-            ";
-            $action = "";
-            $result2 = pdo_query("1","select chatid from chatspawned where roomid='$row[roomid]' ",null);
-            if($row2 = pdo_fetch($result2)){
-                $chatid = $row2['chatid'];
-            }
-            
-        } else {
-            $action = "roomjoin tapped2";
-        }
-        global $icon_darkmode;
-        $shadow = "gridstdborder shadow";
-        if($icon_darkmode){
-            $shadow = "";
-        }
-        
-        echo "
-              <div class='$action $shadow rounded' data-roomid='$row[roomid]' 
-                data-room='$row[room]' data-mode='$actionmode' data-handle='$row[handle]' data-chatid='$chatid' 
-                data-action='$dataaction'
-                style='display:inline-block;cursor:pointer;
-                text-align:center;vertical-align:top;
-                background-color:white;$opacity
-                min-width:15%;padding-left:10px;padding:10px;margin:5px'>
-                    $row[room]
-                    $photourl
-                    $insert
-              </div>
-             ";
-        $count++;
-        
-    }
-
-    if($count > 0){
-        echo "<br><br><br>";
-    } else {
-        echo "
-             <div class='smalltext' style='padding:20px'>
-                No Channels available for you to join.
-             </div>
-             <br><br><br>
-            ";
-        
-    }
-    
-    
-}
-
 
 function CommunityRooms($providerid, $find )
 {
@@ -2390,23 +1951,10 @@ function CommunityRooms($providerid, $find )
             }
             //if($_SESSION['superadmin']=='Y'){
             $photourl = "
-                    <div class='' style='float:left;width:100%;max-height:70%;text-align:center;vertical-align:top;;overflow:hidden;top:0px;'>
-                        <img src='$row[photourl]' style='width:100%;height:auto;overflow:hidden;max-height:100$' />
+                    <div class='' style='float:left;width:100%;max-height:50%;text-align:center;vertical-align:top;;overflow:hidden;top:0px;'>
+                        <img src='$row[photourl]' style='width:100%;height:auto;overflow:hidden;max-height:100%' />
                     </div>
                     ";
-            /*
-            } else {
-            $photourl = "
-                    <span class='$nonmobile'>
-                    <div class='$circular' style='text-align:center;vertical-align:top;;overflow:hidden;top:0px;margin-right:10px'>
-                        <img src='$row[photourl]' style='height:100%;width:auto;max-width:100%' />
-                    </div>
-                    </span>
-                    ";
-                
-            }
-             * 
-             */
         global $icon_darkmode;
         $shadow = "shadow gridstdborder";
         if($icon_darkmode){
@@ -2423,53 +1971,12 @@ function CommunityRooms($providerid, $find )
                             $photourl
                             <div class='mainfont' style='color:$global_textcolor;max-width:90%;width:200px;word-break:break-word'>
                                 <b>$row[room]</b>
+                            <br>
+                                <span class='smalltext' style='color:$global_textcolor'>$row[roomdesc]</span>
+                                    
                             </div>
                       </div>
                      ";
-            //if($_SESSION['superadmin']=='Y'){
-                //test
-                /*
-                echo "
-                    <div class='stdlistbox feed tapped2 $shadow' data-roomid='$row[roomid]' 
-                      data-room='$row[room]' data-selectedroom='Y' 
-                      style='position:relative;display:inline-block;cursor:pointer;
-                      text-align:left;
-                      background-color:whitesmoke;
-                      min-width:15%;
-                      margin:5px;overflow:hidden'>
-                            $photourl
-                          <div class=mainfont 
-                          style='position:absolute;bottom:10px;;color:black;
-                          '>
-                              <div style='padding:10px'>
-                              $row[room] $owned
-                              </div>
-                          </div>
-                    </div>
-                     ";
-                 * */
-                 
-            //} else {
-                /*
-                echo "
-                    <div class='gridstdborder feed tapped2 shadow' data-roomid='$row[roomid]' 
-                      data-room='$row[room]' data-selectedroom='Y' 
-                      style='display:inline-block;cursor:pointer;
-                      text-align:left;
-                      background-color:$global_background;
-                      min-width:15%;
-                      padding:10px;margin:5px'>
-                          <div class=mainfont 
-                          style='float:left;display:inline-block;color:$global_activetextcolor;
-                          '>
-                            $photourl
-                              $row[room] $owned 
-                          </div>
-                    </div>
-                     ";
-                
-            }
-                 */
 
         }
         if($count == 0 && $find==''){
@@ -2545,15 +2052,6 @@ function JoinCommunity($providerid, $roomdiscovery, $preformat, $postformat)
             order by featured desc, roominfo.room asc 
             ",null);
 
-        /*
-            and
-            not exists
-            ( 
-                select joinedvia from provider where providerid=$providerid and joinedvia !=''
-            )
-*/
-
-    
     $lastroomid = '';
     $lastcategory = 'Unspecified';
     $count = 0;
@@ -2578,13 +2076,6 @@ function JoinCommunity($providerid, $roomdiscovery, $preformat, $postformat)
         }
         $activecolor = 'gray';
         $public = '';
-        /*
-        if( $row['publicadmin']=='Y') {
-            $public = "<span style='color:firebrick'> (Public Room)</span>";
-            $activecolor = 'transparent';
-        }
-         * 
-         */
         if( $row['lastaccess']!=''){
             $activecolor = 'steelblue';
         }
@@ -2618,8 +2109,8 @@ function JoinCommunity($providerid, $roomdiscovery, $preformat, $postformat)
             $row['photourl'] = HttpsWrapper($row['photourl']);
         }
         $photourl = "
-                <div style='display:inline-block;width:100%;text-align:center;padding-bottom:10px;overflow:hidden'>
-                    <img src='$row[photourl]' style='height:120px;width:auto;max-width:100%' />
+                <div style='display:inline-block;width:100%;text-align:center;height:50%;padding-bottom:10px;overflow:hidden'>
+                    <img src='$row[photourl]' style='width:auto;' />
                 </div>
                 ";
         $roomdesc = limit_words($row['roomdesc'],20);
@@ -2627,28 +2118,6 @@ function JoinCommunity($providerid, $roomdiscovery, $preformat, $postformat)
         if($roomdesc == ''){
             $roomdesc = "<br><br>";
         }
-        //$photourl="";
-        
-        /*
-        $list .= "
-              <div class='roomjoin tapped2 gridstdborder $shadow rounded mainfont' data-roomid='$row[roomid]' 
-                data-room='$row[room]' data-mode='JCOMMUNITY' data-handle='$row[handle]'
-                style='display:inline-block;cursor:pointer;
-                text-align:center;vertical-align:top;
-                background-color:white;
-                min-width:15%;max-width:300px;padding-left:10px;padding:10px;margin:5px'>
-                    <b>$row[room]</b>
-                    $photourl
-                    <div class=smalltext 
-                    style='display:inline-block;text-align:center;color:black;
-                    '>
-                        $active $dot 
-                    <div class='mainfont' style='max-width:90%;width:200px;word-break:break-word'>$roomdesc</div>
-                    </div>
-              </div>
-             ";
-         * 
-         */
         $list .= "
               <div class='roomjoin gridnoborder rounded mainfont' data-roomid='$row[roomid]' 
                 data-room='$row[room]' data-mode='JCOMMUNITY' data-handle='$row[handle]'
@@ -2703,6 +2172,10 @@ function JoinCommunity($providerid, $roomdiscovery, $preformat, $postformat)
                       '>
                           <div style='padding:10px'>
                           $row[room]
+                            <br>
+                                <span class='smalltext' style='color:$global_textcolor'>$row[roomdesc]</span>
+                                    
+                              
                           </div>
                       </div>
                 </div>
@@ -2732,6 +2205,8 @@ function JoinCommunity($providerid, $roomdiscovery, $preformat, $postformat)
                       '>
                           <div style='padding:10px'>
                           $row[room]
+                            <br>
+                                <span class='smalltext' style='color:$global_textcolor'>$row[roomdesc]</span>
                           </div>
                       </div>
                 </div>
@@ -2785,7 +2260,7 @@ function FAQRooms($providerid, $find )
             </div>
             ";
         
-        $result = pdo_query("1","select photourl,roomid,room from roominfo where roomid = (select roomid from roomhandle where handle = '#brax2faq') ",null);
+        $result = pdo_query("1","select photourl,roomdescshort,roomid,room from roominfo where roomid = (select roomid from roomhandle where handle = '#brax2faq') ",null);
         if($row=pdo_fetch($result)){
             
         $photourl = "
@@ -2809,13 +2284,15 @@ function FAQRooms($providerid, $find )
                       '>
                           <div style='padding:10px'>
                           $row[room]
+                            <br>
+                                <span class='smalltext' style='color:black'>$row[roomdescshort]</span>
                           </div>
                       </div>
                 </div>
                  ";
         }        
         
-        $result = pdo_query("1","select photourl,roomid,room from roominfo where roomid = (select roomid from roomhandle where handle = '#privacyfaq') ",null);
+        $result = pdo_query("1","select photourl,roomdescshort, roomid,room from roominfo where roomid = (select roomid from roomhandle where handle = '#privacyfaq') ",null);
         if($row=pdo_fetch($result)){
             
         $photourl = "
@@ -2839,13 +2316,15 @@ function FAQRooms($providerid, $find )
                       '>
                           <div style='padding:10px'>
                           $row[room]
+                            <br>
+                                <span class='smalltext' style='color:black'>$row[roomdescshort]</span>
                           </div>
                       </div>
                 </div>
                  ";
         }
         
-        $result = pdo_query("1","select photourl,roomid,room from roominfo where roomid = (select roomid from roomhandle where handle = '#bytzvpn') ",null);
+        $result = pdo_query("1","select photourl,roomdescshort, roomid,room from roominfo where roomid = (select roomid from roomhandle where handle = '#bytzvpn') ",null);
         if($row=pdo_fetch($result)){
             
         $photourl = "
@@ -2869,6 +2348,8 @@ function FAQRooms($providerid, $find )
                       '>
                           <div style='padding:10px'>
                           $row[room]
+                            <br>
+                                <span class='smalltext' style='color:black'>$row[roomdescshort]</span>
                           </div>
                       </div>
                 </div>
@@ -2876,7 +2357,7 @@ function FAQRooms($providerid, $find )
         }
         
         
-        $result = pdo_query("1","select photourl,roomid,room from roominfo where roomid = (select roomid from roomhandle where handle = '#techsupport') ",null);
+        $result = pdo_query("1","select photourl,roomdescshort,roomid,room from roominfo where roomid = (select roomid from roomhandle where handle = '#techsupport') ",null);
         if($row=pdo_fetch($result)){
             
         $photourl = "
@@ -2900,6 +2381,8 @@ function FAQRooms($providerid, $find )
                       '>
                           <div style='padding:10px'>
                           $row[room]
+                            <br>
+                                <span class='smalltext' style='color:black'>$row[roomdescshort]</span>
                           </div>
                       </div>
                 </div>

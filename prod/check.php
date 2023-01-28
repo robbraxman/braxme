@@ -1,18 +1,17 @@
 <?php
 session_start();
-require("validsession.inc.php");
+//require("validsession.inc.php");
 require("config-pdo.php");
 require("sidebar.inc.php");
 
     if(!isset($_SESSION['pid']) || $_SESSION['pid']=='') //Invalid Session
     {
-        if(!array_key_exists('reset', $_SESSION)){
+       if(!array_key_exists('reset', $_SESSION)){
             echo "timeout";
         }
         $_SESSION['reset']='Y';
         exit();
     }
-
 
     if(@intval($_POST['sizing'])>0 ){
         $_SESSION['sizing']=tvalidator("PURIFY",$_POST['sizing']);
@@ -93,7 +92,6 @@ require("sidebar.inc.php");
     }
     
     
-    //echo $_SESSION['sizing'];
 
     if( TimeOutCheck()){
         echo "timeout";

@@ -12,9 +12,9 @@ require_once("crypt-pdo.inc.php");
     
     $result = pdo_query("1",
         "
-            insert into chatmembers ( chatid, providerid, status, lastactive ) 
+            insert into chatmembers ( chatid, providerid, status, lastactive, pin ) 
             values
-            ( ?, ?, 'Y', 0 );
+            ( ?, ?, 'Y', 0,'' );
         ",array($chatid,$callingid));
     
     PassE2EKey($chatid, $passkey64, $providerid, $callingid);

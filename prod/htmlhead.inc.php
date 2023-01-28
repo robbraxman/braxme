@@ -27,7 +27,7 @@ echo "<link rel='apple-touch-icon-precomposed' href='$rootserver/img/logo-b1a.pn
 echo "<link rel='apple-touch-startup-image' href='$rootserver/img/logo-b1a.png' />";
 
 
-echo "<link href='$rootserver/fonts/font-raleway.css?$randomid' rel='stylesheet'>";
+echo "<link href='$rootserver/fonts/font-raleway.css' rel='stylesheet'>";
 
 echo "<link rel='stylesheet' href='$rootserver/libs/alertify.js-0.3.10/themes/alertify.core.css' />\r\n";
 echo "<link rel='stylesheet' href='$rootserver/libs/alertify.js-0.3.10/themes/alertify.default.css' />\r\n";

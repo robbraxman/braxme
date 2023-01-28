@@ -5,7 +5,6 @@ require_once("config-pdo.php");
 
 $providerid = tvalidator("ID",$_SESSION['pid']);
 
-//pdo_query("1","update notification set notifyread='Y' where recipientid=? and status='Y' and (notifyread is null or notifyread='') ",array($providerid))
 pdo_query("1","update provider set homenotified = now()  where providerid=?  ",array($providerid))
     
 ?>

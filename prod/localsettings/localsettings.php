@@ -130,7 +130,11 @@ if(isset($_SESSION['superadmin']) && $_SESSION['superadmin']=='Y'){
     $app_smtp_email = "noreply@brax.me";
     $app_smtp_mailname = "Brax.Me Message";
     
-        
+    function purifytext( $string )
+    {
+        //Null Func
+        return $string;
+    }
     
     function RetrieveDatabaseKeysAll()
     {

@@ -84,9 +84,9 @@ require_once("config-pdo.php");
         }
         $result = pdo_query("1",
             "
-                insert into chatmembers ( chatid, providerid, status, lastactive ) 
+                insert into chatmembers ( chatid, providerid, status, lastactive,pin ) 
                 values
-                ( ?, $row[providerid], 'Y', now() );
+                ( ?, $row[providerid], 'Y', now(),'' );
         ",array($chatid));
     }
     else
@@ -210,9 +210,9 @@ require_once("config-pdo.php");
         //Create New Chat Session Member (Owner)
         $result = pdo_query("1",
             "
-                insert into chatmembers ( chatid, providerid, status, lastactive ) 
+                insert into chatmembers ( chatid, providerid, status, lastactive,pin ) 
                 values
-                ( ?, ?, 'Y', now() );
+                ( ?, ?, 'Y', now(),'' );
         ",array($chatid,$providerid));
         return $chatid;
     }

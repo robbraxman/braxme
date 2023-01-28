@@ -510,6 +510,7 @@ require_once("internationalization.php");
         global $global_background;
         global $menu_chat;
         global $menu_room;
+        global $iconsource_braxclose_common;
         $beacon = "
             <div class='beaconcontainer' style='z-index:100;position:absolute;'>
                 <div class='beacon' style='color:$global_activetextcolor;border-color:activetextcolor'></div>
@@ -522,9 +523,10 @@ require_once("internationalization.php");
         $notifytext .=  GetBytzVPNNotifications($providerid);
         //return "";
         
-        $homenotified = '2022-04-03';
+        $homenotified = '';
+        $notification_disable = '';
         $result = pdo_query("1","
-            select DATE_FORMAT(homenotified,'%y-%m-%d %h:%i%p'), notification_disable as homenotified from provider where provider.providerid = ?
+            select DATE_FORMAT(homenotified,'%Y-%m-%d %H:%i') as homenotified, notification_disable from provider where provider.providerid = ?
             ", array($providerid));
         if($row = pdo_fetch($result))
         {
@@ -532,9 +534,9 @@ require_once("internationalization.php");
                 $homenotified = $row['homenotified'];
                 
             }
-            $notification_disabled = $row['notification_disabled'];
-            if($notification_disabled === 'Y'){
-                //return "";
+            $notification_disable = $row['notification_disable'];
+            if($notification_disable === 'Y'){
+                return "";
             }
         }
         
@@ -576,6 +578,14 @@ require_once("internationalization.php");
         $blink = '';
         while($row = pdo_fetch($result))
         {
+            if($i1 == 0){
+                $notifytext .=  "
+                    &nbsp;
+                    <img class='icon20 notifyclear' src='$iconsource_braxclose_common' style='cursor:pointer;padding-top:10px;' title='Clear Notifications' />
+                    <br><br>
+                 ";
+                
+            }
             
             $circular = 'circular';
             if($_SESSION['newbie']=='Y'){

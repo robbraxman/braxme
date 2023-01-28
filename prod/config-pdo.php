@@ -477,12 +477,14 @@ require('colorscheme.php');
     function GetTimeoutPin($providerid)
     {
         $_SESSION['pin']='';
+        $_SESSION['pinlock']='N';
         $result = pdo_query("1","select pin, encoding from timeout where providerid = ? ", array($providerid));
         if( $row = pdo_fetch($result)){
             $_SESSION['pin'] = $row['pin'];
         }
         if(intval($_SESSION['timeout_seconds'])==0){
             $_SESSION['pin'] = "";
+            $_SESSION['pinlock']='N';
         }
 
     }
@@ -514,6 +516,7 @@ require('colorscheme.php');
     }
     function ServerTimeOutCheck()
     {
+        return false;
         if(!isset($_SESSION['pid']) || $_SESSION['pid']=='') //Invalid Session
         {
             $_SESSION['reset']='Y';

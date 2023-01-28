@@ -4,7 +4,6 @@ require_once("room.inc.php");
 require_once("crypt-pdo.inc.php");
 require_once("notify.inc.php");
 require_once("roommanage.inc.php");
-require_once("advertising.inc.php");
 
     $_SESSION['validsession']=uniqid();
     
@@ -121,9 +120,9 @@ require_once("advertising.inc.php");
             //Automatically Connect to Chat Session from Invite
             pdo_query("1","
                 insert into chatmembers 
-                ( chatid, providerid, status, lastactive, techsupport ) 
+                ( chatid, providerid, status, lastactive, techsupport,pin ) 
                 values 
-                ( ?, ?, 'Y', now(), '' )
+                ( ?, ?, 'Y', now(), '',''    )
                 ",array($invitechatid,$providerid));
             
             $encodeshort = EncryptChat("Please read your chat message",$invitechatid, "");
@@ -322,50 +321,9 @@ require_once("advertising.inc.php");
         }
         $settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxsettings2 $menu_colortheme", "colorchoice mainbutton", "","data-mode='' ","text-align:left;" , "#3b3b3b", $buttoncolor2);
         
-                    $settingsmenu .= "<hr style='border:1px solid  $global_separator_color'>";
+        //            $settingsmenu .= "<hr style='border:1px solid  $global_separator_color'>";
         
-        //$settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxphoto2 My Photos", "photolibrary mainbutton", "","","text-align:left;" , "#3b3b3b", $buttoncolor2);
-        //$settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxdoc2 My Files", "doclib mainbutton", "","","text-align:left;" , "#3b3b3b", $buttoncolor2);
-        if($_SESSION['email_service']=='Y'){
-            $settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxidentity2 $menu_myemailinfo", "emailmanage mainbutton", "","data-providerid=$_SESSION[pid] data-mode='U' ","text-align:left;" , "#3b3b3b", $buttoncolor2);
-        }
-        //if($_SESSION['vpn_service']=='Y'){
-        if($_SESSION['vpnaccountid']!=''){
-            $settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxidentity2 My VPN Service", "vpnmanage mainbutton", "","data-accountid=$_SESSION[vpnaccountid] data-mode='U' ","text-align:left;" , "#3b3b3b", $buttoncolor2);
-        }
-        /*
-        $settingsmenu .= SettingsMenuButton("$icon_braxdoc2 My Files", "doclib mainbutton", "","","text-align:left;" , "#3b3b3b", $buttoncolor2);
-        $settingsmenu .= SettingsMenuButton("$icon_braxsettings2 My Rooms", "friends mainbutton", "","","text-align:left;" , "#3b3b3b", $buttoncolor2);
-        $settingsmenu .= SettingsMenuButton("$icon_braxsettings2 My Contacts", "mainbutton", "contactbookbutton","","text-align:left;" , "#3b3b3b", $buttoncolor2);
-         * */
-        if($_SESSION['roomcreator']=='Y' ){
-            //$settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxsettings2 $menu_managerooms", "friends mainbutton", "","data-mode='' ","text-align:left;" , "#3b3b3b", $buttoncolor2);
-            //$settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxsettings2 $menu_communitylist", "groupmanage mainbutton", "","data-mode='' ","text-align:left;" , "#3b3b3b", $buttoncolor2);
-            if($_SESSION['superadmin']=='Y'){
-                //$settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxsettings2 Brax.Live Restream", "restreambutton mainbutton", "","data-mode='' ","text-align:left;" , "#3b3b3b", $buttoncolor2);
-            }
-        }
 
-        if($_SESSION['superadmin']=='Y'){
-            $settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxsettings2 $menu_managesocialvision", "sponsormanage mainbutton", "","data-mode='' ","text-align:left;" , "#3b3b3b", $buttoncolor2);
-        } else
-        if( $_SESSION['web']=='Y'){
-            $settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxsettings2 My $enterpriseapp Domain", "sponsormanage mainbutton", "","data-mode='E' data-sponsor='$_SESSION[sponsor]' ","text-align:left;" , "#3b3b3b", $buttoncolor2);
-            
-        };
-        if($_SESSION['enterprise']=='C'){
-            if($_SESSION['sponsor']==''){
-                $settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxsettings2 Join $entepriseapp", "sponsormanage mainbutton", "","data-mode='JOIN' data-sponsor='' ","text-align:left;" , "#3b3b3b", $buttoncolor2);
-            }
-            
-        };
-        if($_SESSION['enterprise']=='Y' && $_SESSION['store']=='Y'){
-            $settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxsettings2 My Store Setup", "productlist mainbutton", "","data-providerid='$_SESSION[pid]'","text-align:left;" , "#3b3b3b", $buttoncolor2);
-        }
-        if($_SESSION['allowiot']=='Y'  ){
-            $settingsmenu .= SettingsMenuButton("&nbsp; $icon_braxsettings2 Secure Net", "homeiot mainbutton", "","","text-align:left;" , "#3b3b3b", $buttoncolor2);
-        }
-        
         
 
         $settingsmenu .= "<hr style='border:1px solid  $global_separator_color'>";
@@ -376,43 +334,14 @@ require_once("advertising.inc.php");
         
 
         $settingsmenu .= SettingsMenuButton("$menu_changepassword", "chgpasswordbutton settingsaction", "changepasswordbutton","","" , $buttonbackgroundcolor, $buttoncolor);
-        $settingsmenu .= SettingsMenuButton("Set Up TOTP 2FA", "chgtotp settingsaction", "changetotp","","" , $buttonbackgroundcolor, $buttoncolor);
+        //$settingsmenu .= SettingsMenuButton("Set Up TOTP 2FA", "chgtotp settingsaction", "changetotp","","" , $buttonbackgroundcolor, $buttoncolor);
         $settingsmenu .= SettingsMenuButton("$menu_techsupport", "selectchattech mainbutton", "","","" , $buttonbackgroundcolor, $buttoncolor);
-        $settingsmenu .= SettingsMenuButton("$menu_techsupportfaq", "roomselect mainbutton", "","data-mode='FAQ' data-handle='#techsupport' ","" , $buttonbackgroundcolor, $buttoncolor);
+        //$settingsmenu .= SettingsMenuButton("$menu_techsupportfaq", "roomselect mainbutton", "","data-mode='FAQ' data-handle='#techsupport' ","" , $buttonbackgroundcolor, $buttoncolor);
 
 
         $settingsmenu .= "<hr style='border:1px solid  $global_separator_color'>";
 
         
-        if( $_SESSION['handle']!='@appdemo'){
-
-            if($_SESSION['roomdiscovery']!='N' || $_SESSION['enterprise']=='Y'){
-
-                //$settingsmenu .= SettingsMenuButton("$menu_manageupgrade", "userstore mainbutton", "","data-roomid='' data-owner='0'  ","" , $buttonbackgroundcolor2, $buttoncolor2);
-                //$settingsmenu .= "<hr style='border:1px solid  $global_separator_color'>";
-
-            }
-        } else {
-            //ADVERTISING
-        }
-        
-        
-        
-        if($_SESSION['enterprise']=='C' || $_SESSION['enterprise']=='Y' )//|| $_SESSION['superadmin']=='Y' )
-        {
-            if($_SESSION['sponsor']!=='' && ($_SESSION['industry']!=='' || $customsite ) ){
-                $settingsmenu .= SettingsMenuButton("Manage eForms", "credentialformsetup mainbutton","", "data-mode='MANAGEFORMSMENU'","" , $buttonbackgroundcolor3, $buttoncolor3);
-                $settingsmenu .= SettingsMenuButton("Direct Enterprise Member Signup", "signup mainbutton", "","","" , $buttonbackgroundcolor3, $buttoncolor3);
-                $settingsmenu .= SettingsMenuButton("Staff Additional Logins", "stafflist mainbutton", "","","" , $buttonbackgroundcolor3, $buttoncolor3);
-                $settingsmenu .= "<hr style='border:1px solid  $global_separator_color'>";
-            }
-
-            //$settingsmenu .= "<hr style='border:1px solid  $global_separator_color'>";
-            
-            //$settingsmenu .= SettingsMenuButton("Export eForms Data", "credentialformsetup settingsbutton","", "data-mode='EXPORTFORM'","" , $buttonbackgroundcolor3, $buttoncolor3);
-            //$settingsmenu .= SettingsMenuButton("Clear eForms Data", "credentialformsetup mainbutton","", "data-mode='CLEARFORMDATA'","" , $buttonbackgroundcolor3, $buttoncolor3);
-        }
-
 
         
         
@@ -423,60 +352,8 @@ require_once("advertising.inc.php");
         
         //$settingsmenu .= SettingsMenuButton("App Privacy Tips", "privacytip mainbutton", "","","" , $buttonbackgroundcolor2, $buttoncolor2);
         $settingsmenu .= SettingsMenuButton("$menu_deviceinfo", "statsuser mainbutton", "","","" , $buttonbackgroundcolor2, $buttoncolor2);
-        if($_SESSION['superadmin']=='Y'){
-            $settingsmenu .= "<hr style='border:1px solid  $global_separator_color'>";
-        }
             
-        $settingsmenu .= BytzVPNAd();
-
-
-        if($appstorenew){
-            if(!$customsite){
-                //$settingsmenu .= SettingsMenuButton("Cert MITM Check", "certcheck mainbutton", "","","" , $buttonbackgroundcolor3, $buttoncolor3);
-            }
-        }
-        if($_SESSION['superadmin']=='Y'){
-            $settingsmenu .= SettingsMenuButton("Manage VPN", "vpnlist mainbutton", "","data-providerid='$_SESSION[pid]'","" , $buttonbackgroundcolor2, $buttoncolor3);
-            $settingsmenu .= SettingsMenuButton("Manage Email", "emaillist mainbutton", "","data-providerid='$_SESSION[pid]'","" , $buttonbackgroundcolor2, $buttoncolor3);
-            $settingsmenu .= SettingsMenuButton("&nbsp; Brax.Me Store Setup", "productlist mainbutton", "","data-providerid='0'","" , $buttonbackgroundcolor3, $buttoncolor2);
-        }
-        if($_SESSION['superadmin']=='Y' || $_SESSION['superadmin']=='A' || $_SESSION['superadmin']=='E' ){
-            $settingsmenu .= SettingsMenuButton("Access Report", "report1 mainbutton", "","","" , $buttonbackgroundcolor3, $buttoncolor3);
-        }
-        if($_SESSION['superadmin']=='Y'  )
-        {
-            $settingsmenu .= SettingsMenuButton("Admin - Upload Batch Signup File", "uploadsignupcsv mainbutton", "","","" , $buttonbackgroundcolor3, $buttoncolor3);
-            $settingsmenu .= SettingsMenuButton("Upload Text CSV", "uploadtextcsv mainbutton", "","","" , $buttonbackgroundcolor3, $buttoncolor3);
-        }
         
-        if($_SESSION['superadmin']=='Y' ){
-
-            $settingsmenu .= "<hr style='border:1px solid  $global_separator_color'>";
-            $settingsmenu .= SettingsMenuButton("Test Zone", "pinentry mainbutton", "","data-providerid='$_SESSION[pid]'","" , $buttonbackgroundcolor3, $buttoncolor3);
-            $settingsmenu .= SettingsMenuButton("Test Zone Restream", "restreambutton mainbutton", "","","" , $buttonbackgroundcolor3, $buttoncolor3);
-            $settingsmenu .= SettingsMenuButton("Test Link", "testlink mainbutton", "","","" , $buttonbackgroundcolor3, $buttoncolor3);
-            $settingsmenu .= "
-                            <a href='https://brax.me/rss/admin/index.php'>
-                            <div class='pagetitle3 divbuttontilebar2 stats mainbutton tapped2'  style='background-color:$buttonbackgroundcolor3;color:$buttoncolor3'>
-                            RSS    
-                            </div>
-                            </a>
-
-                    ";
-            $settingsmenu .= SettingsMenuButton("Super Stats", "statsplus mainbutton", "","","" , $buttonbackgroundcolor3, $buttoncolor3);
-        }
-        if($_SESSION['superadmin']=='Y' ){
-            $settingsmenu .= SettingsMenuButton("Executive Stats", "stats mainbutton", "","","" , $buttonbackgroundcolor3, $buttoncolor3);
-        }
-        $settingsmenu .= "<br></div>";
-
-        if($_SESSION['superadmin']=='Y' ){
-            $settingsmenu .=
-                    "<br><br><br><a href='https://brax.me/error.php'>Error Test</a><br><br>".
-                    "<br><div class='admintrace'>Admin Trace</div>".
-                    "<br><div class='admintrace2'>Admin Trace2</div>".
-                    "<br><div class='admintrace3'>Admin Trace3</div>";
-        }
 
         
         return $settingsmenu;

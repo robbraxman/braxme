@@ -1801,7 +1801,7 @@ function CreateFolderList( $providerid, $mode, $selectedfolder, $selectedfolderi
                     data-roomid='$roomid'
                     data-roomfolderid='$roomfolderid'
                     data-passkey64='$passkey64'
-                    style='border-width:1px;border-color:white;border-style:solid;
+                    style='border-width:1px;border-color:ltgray;border-style:solid;
                     display:inline-block;margin:0px;padding-top:5px;padding-bottom:5px ;
                     width:80px;
                     border-top-left-radius:10px; 
@@ -1885,13 +1885,13 @@ function CreateFolderList( $providerid, $mode, $selectedfolder, $selectedfolderi
                     data-roomid='$roomid'
                     data-roomfolderid='$roomfolderid'
                     data-passkey64='$passkey64'
-                    style='border-width:1px;border-color:whitesmoke;border-style:solid;
+                    style='border-width:1px;border-color:transparent;border-style:solid;
                     display:inline-block;margin:0px;padding-top:5px;padding-bottom:5px;
                     width:150px;
                     min-width:12%;
                     border-top-left-radius:10px; 
                     border-top-right-radius:10px; 
-                    border-color:gray;
+                    border-color:white;
                     text-decoration:none;
                     padding-left:3px;
                     cursor:pointer;

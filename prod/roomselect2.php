@@ -68,7 +68,7 @@ require_once("lib_autolink.php");
                 as handle,
             roominfo.anonymousflag, blocked1.blockee, blocked2.blocker,
             provider.profileroomid,
-            (select providerid from roommoderator where roommoderator.roomid = statuspost.roomid
+            (select 'Y' from roommoderator where roommoderator.roomid = statuspost.roomid
              and roommoderator.providerid = statusroom.providerid ) as moderator,
              statuspost.commentcount, statuspost.title
             from statuspost
@@ -84,20 +84,6 @@ require_once("lib_autolink.php");
                 roominfo.profileflag!='Y' 
                 and
                 statusroom.owner not in (select blockee from blocked where blocker = statusroom.providerid and blockee = statusroom.owner)
-                or
-                roominfo.profileflag='Y' and
-                statusroom.owner not in (select blockee from blocked where blocker = statusroom.providerid and blockee = statusroom.owner)
-                and
-                
-                (
-                    statusroom.owner  in 
-                    (select targetproviderid from contacts where contacts.providerid = statusroom.providerid )
-                    or
-                    statusroom.owner in 
-                    (select providerid from groupmembers where groupid in 
-                        (select groupid from groupmembers where providerid = statusroom.providerid)
-                    )
-                )
             )
             and
             (
@@ -114,6 +100,26 @@ require_once("lib_autolink.php");
 
 
     ",array($providerid));
+    
+    
+    /* For now we will not display My Blog posts
+     * 
+     *                 or
+                roominfo.profileflag='Y' and
+                statusroom.owner not in (select blockee from blocked where blocker = statusroom.providerid and blockee = statusroom.owner)
+                and
+                
+                (
+                    statusroom.owner  in 
+                    (select targetproviderid from contacts where contacts.providerid = statusroom.providerid )
+                    or
+                    statusroom.owner in 
+                    (select providerid from groupmembers where groupid in 
+                        (select groupid from groupmembers where providerid = statusroom.providerid)
+                    )
+                )
+
+     */
     $readonly = 'N';
     $page = 0;
     $sizing = RoomSizing();
@@ -164,6 +170,10 @@ require_once("lib_autolink.php");
                     ";
             
         }
+        $moderator = $row['moderator'];
+        if($_SESSION['superadmin']=='Y'){
+            $moderator = 'Y';
+        }
         
         $postcount++;
         $cleanPostid = str_replace(".","",$row['postid']);
@@ -171,7 +181,7 @@ require_once("lib_autolink.php");
             $row['encoding'], $row['comment'], $row['title'], $row['photo'], $row['album'],
             $row['video'], $row['link'],"width:$sizing->statuswidth2","Y", 
             $sizing->mainwidth, $sizing->statuswidth2, $row['videotitle'], 
-            $row['articleid'], $page, $readonly, $row['blockee'], $row['blocker'] );
+            $row['articleid'], $page, $readonly, $row['blockee'], $row['blocker'], $moderator );
         
         $reply = "";
         if($row['parent']!='Y'){
@@ -247,7 +257,6 @@ require_once("lib_autolink.php");
                 </div>";
         
         
-        //$avatarimg = "<img class='circular avatar1' src='$avatarurl' style='' />";
 
         
             
@@ -255,8 +264,6 @@ require_once("lib_autolink.php");
                 $row['postid'], $row['roomid'], $row['roomid'],"","Y",$cleanPostid );
           
          
-        //$deletebutton = DeleteButton("Y","$memberinfo->owner",  "$row[providerid]",$row['moderator'], $providerid, $row['shareid'], 
-        //        $row['postid'], $row['roomid'], $roomid,"top:0px",$cleanPostid );
 
         $style = "";
         if($row['parent'] =='Y'){

@@ -25,16 +25,16 @@ if(isset($_SESSION['wallpaper'])){
 if(isset($webcolorscheme)){
     $color_scheme = $webcolorscheme;
     if($color_scheme == 'std'){
-        $color_scheme='school night';
+        $color_scheme='riverblue';
     }
     $wallpaper_scheme = 'default';
 }
 
 if($color_scheme==''){
-    $color_scheme = 'school night';
+    $color_scheme = 'riverblue';
 }
 if($color_scheme=='std' || $color_scheme == ''){
-    $color_scheme = 'school night';
+    $color_scheme = 'riverblue';
     $wallpaper_scheme = 'default';
 }
 if(!isset($_SESSION['devicecode'])){
@@ -57,6 +57,10 @@ $global_activetextcolor_onwhite = 'purple';
 $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-yellow-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
 $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-red-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
 $global_icon_heart = "<img class='icon15' title='Liked' src='../img/heart-red-128.png' style='position:relative;top:8px;' />";
+$global_icon_pin = "<img class='icon15' title='Liked' src='../img/pin-red-512.png' style='position:relative;top:8px;' />";
+$global_icon_pin_gray = "<img class='icon15' title='Pin' src='../img/pin-gray-512.png' style='position:relative;top:8px;' />";
+$global_icon_lock = "<img class='icon15' title='Pin' src='../img/minus-gray-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
+
 $global_profile_color = '#3e4749';//
 $icon_darkmode = false;
 $global_chatself_color = "#34495E"; //darkblue
@@ -65,6 +69,7 @@ $global_backgroundreverse = 'white';
 $global_streamlive_color = 'firebrick';
 $global_store_color = 'firebrick';
 $iconsource_braxmedal_common = "../img/medal-orange-128.png";        
+$iconsource_braxnewbie_common = "../img/newbie2.png";        
 
 if( isset($_SESSION['superadmin']) && $_SESSION['superadmin']=='Y' ){
     if($color_scheme == "" || $color_scheme=='metalnight'){
@@ -109,6 +114,7 @@ if( $color_scheme=='dark alley'){
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-lightblue-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-lightblue-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_heart = "<img class='icon15' title='Liked' src='../img/heart-lightblue-128.png' style='position:relative;top:8px;' />";
+    $global_icon_pin = "<img class='icon15' title='Pin' src='../img/pin-lightblue-512.png' style='position:relative;top:8px;' />";
 
     $global_dominant_color = $global_titlebar_color;
     $icon_scheme = 'white';
@@ -124,7 +130,8 @@ if($color_scheme=='metal night'  ){
     $global_textcolor = 'white';
     $global_textcolor2 = 'whitesmoke';
     $global_background = '#2b2b2b';
-    $global_web_background = '#2b2b2b';
+    //$global_web_background = '#2b2b2b';
+    $global_web_background = '#1b1b1b';
     $global_background2 = '#3e4749';
     $global_backgroundreverse = 'whitesmoke';
     
@@ -146,6 +153,7 @@ if($color_scheme=='metal night'  ){
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-lightblue-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-lightblue-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_heart = "<img class='icon15' title='Liked' src='../img/heart-lightblue-128.png' style='position:relative;top:8px;' />";
+    $global_icon_pin = "<img class='icon15' title='Pin' src='../img/pin-lightblue-512.png' style='position:relative;top:8px;' />";
 
     $global_dominant_color = $global_titlebar_color;
     $icon_scheme = 'white';
@@ -162,7 +170,7 @@ if($color_scheme == 'moonlit night' ||
     $global_textcolor = 'white';
     $global_textcolor2 = 'whitesmoke';
     $global_background = '#2b2b2b';
-    $global_web_background = '#363452';
+    $global_web_background = '#1f1e2f';
     $global_background2 = '#3e4749';
     $global_backgroundreverse = 'whitesmoke';
     
@@ -184,6 +192,7 @@ if($color_scheme == 'moonlit night' ||
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-lightblue-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-lightblue-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_heart = "<img class='icon15' title='Liked' src='../img/heart-lightblue-128.png' style='position:relative;top:8px;' />";
+    $global_icon_pin = "<img class='icon15' title='Pin' src='../img/pin-lightblue-512.png' style='position:relative;top:8px;' />";
 
     $global_dominant_color = $global_titlebar_color;
     $icon_scheme = 'white';
@@ -222,6 +231,7 @@ if($color_scheme == 'crimson night'){
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-red-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-red-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_heart = "<img class='icon15' title='Liked' src='../img/heart-red-128.png' style='position:relative;top:8px;' />";
+    $global_icon_pin = "<img class='icon15' title='Pin' src='../img/pin-red-512.png' style='position:relative;top:8px;' />";
 
     $global_streamlive_color = 'steelblue';
 
@@ -261,6 +271,7 @@ if($color_scheme == 'grape night'){
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-purple-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-purple-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_heart = "<img class='icon15' title='Liked' src='../img/heart-purple-128.png' style='position:relative;top:8px;' />";
+    $global_icon_pin = "<img class='icon15' title='Pin' src='../img/pin-purple-512.png' style='position:relative;top:8px;' />";
 
     $global_dominant_color = $global_titlebar_color;
     $icon_scheme = 'white';
@@ -298,6 +309,7 @@ if($color_scheme == 'school night'){
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-red-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-red-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_heart = "<img class='icon15' title='Liked' src='../img/heart-red-128.png' style='position:relative;top:8px;' />";
+    $global_icon_pin = "<img class='icon15' title='Pin' src='../img/pin-red-512.png' style='position:relative;top:8px;' />";
 
     $global_dominant_color = $global_titlebar_color;
     $icon_scheme = 'white';
@@ -335,6 +347,7 @@ if($color_scheme == 'forest night'){
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-bluegreen-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-bluegreen-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_heart = "<img class='icon15' title='Liked' src='../img/heart-bluegreen-128.png' style='position:relative;top:8px;' />";
+    $global_icon_pin = "<img class='icon15' title='Pin' src='../img/pin-bluegreen-512.png' style='position:relative;top:8px;' />";
 
     $global_dominant_color = $global_titlebar_color;
     $icon_scheme = 'white';
@@ -367,6 +380,7 @@ if( $color_scheme == 'crimson'){
     $global_activetextcolor_onwhite = 'darkred'; 
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-red-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-red-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
+    $global_icon_pin = "<img class='icon15' title='Pin' src='../img/pin-red-512.png' style='position:relative;top:8px;' />";
     $global_background2 = 'whitesmoke';
     $global_store_color = '#ffcc00';
     
@@ -399,6 +413,7 @@ if($color_scheme == 'newyorkpink'){
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-pink-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-pink-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_heart = "<img class='icon15' title='Liked' src='../img/heart-pink-128.png' style='position:relative;top:8px;' />";
+    $global_icon_pin = "<img class='icon15' title='Pin' src='../img/pin-pink-512.png' style='position:relative;top:8px;' />";
     $global_background2 = 'whitesmoke';
     $global_chatself_color = "#5e3b48"; //darkred
 
@@ -412,12 +427,14 @@ if($color_scheme == 'newyorkpink'){
 }
 if($color_scheme == 'lavender'){
     $global_banner_color = 'black';//gray
-    $global_menu_color = '#3e4749';//gray
+    //$global_menu_color = '#3e4749';//gray
+    $global_menu_color = '#84817a';//gray
+    
     $global_menu2_color = '#674172';//gray
     $global_profile_color = '#1b1b1b';//
     $global_profiletext_color = 'white';//
     $global_background = 'white';
-    $global_web_background = 'whitesmoke';
+    $global_web_background = '#faf9ee';
     $global_titlebar_alt_color = '#3e4749';//
     $global_titlebar_color = '#674172';//lavender
     $global_bottombar_color = '#2b2b2b';//dark gray
@@ -430,6 +447,7 @@ if($color_scheme == 'lavender'){
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-purple-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-purple-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_heart = "<img class='icon15' title='Liked' src='../img/heart-purple-128.png' style='position:relative;top:8px;' />";
+    $global_icon_pin = "<img class='icon15' title='Pin' src='../img/pin-purple-512.png' style='position:relative;top:8px;' />";
     $global_background2 = 'whitesmoke';
 
     $global_dominant_color = $global_titlebar_color;
@@ -447,7 +465,7 @@ if($color_scheme == 'downygreen'){
     $global_profile_color = '#1b1b1b';//
     $global_profiletext_color = 'white';//
     $global_background = 'white';
-    $global_web_background = 'whitesmoke';
+    $global_web_background = '#faf9ee';
     $global_titlebar_alt_color = '#3e4749';//
     $global_titlebar_color = '#65C6BB';//downygreen
     $global_bottombar_color = '#3e4749';//gray
@@ -460,6 +478,7 @@ if($color_scheme == 'downygreen'){
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-bluegreen-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-bluegreen-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_heart = "<img class='icon15' title='Liked' src='../img/heart-bluegreen-128.png' style='position:relative;top:8px;' />";
+    $global_icon_pin = "<img class='icon15' title='Pin' src='../img/pin-bluegreen-512.png' style='position:relative;top:8px;' />";
     $global_background2 = 'whitesmoke';
 
     $global_dominant_color = $global_titlebar_color;
@@ -490,6 +509,7 @@ if($color_scheme == 'tuscany'){
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-yellow-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-yellow-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_heart = "<img class='icon15' title='Liked' src='../img/heart-yellow-128.png' style='position:relative;top:8px;' />";
+    $global_icon_pin = "<img class='icon15' title='Pin' src='../img/pin-yellow-512.png' style='position:relative;top:8px;' />";
     $global_background2 = 'whitesmoke';
 
     $global_dominant_color = $global_titlebar_color;
@@ -520,6 +540,7 @@ if($color_scheme == 'rustyred'){
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-yellow-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-yellow-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_heart = "<img class='icon15' title='Liked' src='../img/heart-yellow-128.png' style='position:relative;top:8px;' />";
+    $global_icon_pin = "<img class='icon15' title='Pin' src='../img/pin-yellow-512.png' style='position:relative;top:8px;' />";
     $global_background2 = 'whitesmoke';
     $global_store_color = '#ffcc00';
 
@@ -551,6 +572,7 @@ if($color_scheme == 'beach'){
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-lightblue-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-lightblue-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_heart = "<img class='icon15' title='Liked' src='../img/heart-lightblue-128.png' style='position:relative;top:8px;' />";
+    $global_icon_pin = "<img class='icon15' title='Pin' src='../img/pin-lightblue-512.png' style='position:relative;top:8px;' />";
     $global_background2 = 'whitesmoke';
 
     $global_dominant_color = $global_titlebar_color;
@@ -568,18 +590,18 @@ if($color_scheme == 'bluegray'){
     $global_profile_color = '#1b1b1b';//
     $global_profiletext_color = 'white';//
     $global_background = 'white';
-    $global_web_background = 'whitesmoke';
+    $global_web_background = '#faf9ee';
     $global_titlebar_alt_color = '#3e4749';//
     $global_titlebar_color = '#67809F';//lavender
     $global_bottombar_color = '#2b2b2b';//dark gray
-    $global_separator_color = "#67809F"; //
-    $global_activetextcolor = '#67809F'; 
-    $global_activetextcolor = 'darkblue'; 
+    $global_separator_color = "steelblue"; //
+    $global_activetextcolor = 'steelblue'; 
     $global_activetextcolor_reverse = 'gold'; 
-    $global_activetextcolor_onwhite = 'darkblue'; 
+    $global_activetextcolor_onwhite = 'steelblue'; 
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-lightblue-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-lightblue-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_heart = "<img class='icon15' title='Liked' src='../img/heart-lightblue-128.png' style='position:relative;top:8px;' />";
+    $global_icon_pin = "<img class='icon15' title='Pin' src='../img/pin-lightblue-512.png' style='position:relative;top:8px;' />";
     $global_background2 = 'whitesmoke';
 
     $global_dominant_color = $global_titlebar_color;
@@ -609,6 +631,7 @@ if($color_scheme == 'bluesmoke' ){
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-lightblue-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-lightblue-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_heart = "<img class='icon15' title='Liked' src='../img/heart-lightblue-128.png' style='position:relative;top:8px;' />";
+    $global_icon_pin = "<img class='icon15' title='Pin' src='../img/pin-lightblue-512.png' style='position:relative;top:8px;' />";
     $global_background2 = 'whitesmoke';
 
     $global_dominant_color = $global_titlebar_color;
@@ -622,8 +645,8 @@ if($color_scheme == 'bluesmoke' ){
 
 if($color_scheme == 'lawn'){
     $global_banner_color = '#3e4749';//slate
-    $global_menu_color = '#49a942';//lawn
-    $global_menu2_color = '#49a942';//lawn
+    $global_menu_color = '#1a9955';//lawn
+    $global_menu2_color = '#1a9955';//lawn
     $global_profile_color = '#1b1b1b';//
     $global_profiletext_color = 'white';//
     $global_background = 'white';
@@ -638,6 +661,7 @@ if($color_scheme == 'lawn'){
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-bluegreen-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-bluegreen-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_heart = "<img class='icon15' title='Liked' src='../img/heart-green-128.png' style='position:relative;top:8px;' />";
+    $global_icon_pin = "<img class='icon15' title='Pin' src='../img/pin-bluegreen-512.png' style='position:relative;top:8px;' />";
     $global_activetextcolor = 'seagreen'; 
 
     $global_dominant_color = $global_menu_color;
@@ -650,12 +674,12 @@ if($color_scheme == 'lawn'){
 }
 if($color_scheme == 'skyblue'){
     $global_banner_color = 'black';//blue dark
-    $global_menu_color = '#04acec';//skyblue
-    $global_menu2_color = '#04acec';//skyblue
+    $global_menu_color = '#227093';//skyblue
+    $global_menu2_color = '#227093';//skyblue
     $global_profile_color = '#1b1b1b';//
     $global_profiletext_color = 'white';//
     $global_background = '#ebebeb';
-    $global_web_background = 'whitesmoke';
+    $global_web_background = '#faf9ee';
     //$global_titlebar_alt_color = '#49a942';//lawn
     //$global_titlebar_color = '#2574a8';//michigan
     //$global_titlebar_color = 'green';//michigan
@@ -672,6 +696,7 @@ if($color_scheme == 'skyblue'){
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-lightblue-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-lightblue-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_heart = "<img class='icon15' title='Liked' src='../img/heart-lightblue-128.png' style='position:relative;top:8px;' />";
+    $global_icon_pin = "<img class='icon15' title='Pin' src='../img/pin-lightblue-512.png' style='position:relative;top:8px;' />";
 
     $global_dominant_color = $global_menu_color;
     $icon_scheme = 'white';
@@ -682,8 +707,8 @@ if($color_scheme == 'skyblue'){
 }
 if($color_scheme == 'riverblue'){
     $global_banner_color = 'black';//blue dark
-    $global_menu_color = '#5DADE2';//skyblue
-    $global_menu2_color = '#5DADE2';//skyblue
+    $global_menu_color = '#3c6382';//skyblue
+    $global_menu2_color = '#3c6382';//skyblue
     $global_profile_color = '#1b1b1b';//
     $global_profiletext_color = 'white';//
     $global_background = 'white';
@@ -692,7 +717,7 @@ if($color_scheme == 'riverblue'){
     //$global_titlebar_color = '#2574a8';//michigan
     //$global_titlebar_color = 'green';//michigan
     $global_titlebar_color = '#1B4F72';//
-    $global_titlebar_alt_color = '#224170';//darkblue
+    $global_titlebar_alt_color = '#3c6382';//darkblue
     $global_bottombar_color = '#3e4749';//gray
     //$global_activetextcolor = '#22a7f0'; 
     $global_activetextcolor = 'steelblue'; 
@@ -704,6 +729,7 @@ if($color_scheme == 'riverblue'){
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-lightblue-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-lightblue-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_heart = "<img class='icon15' title='Liked' src='../img/heart-lightblue-128.png' style='position:relative;top:8px;' />";
+    $global_icon_pin = "<img class='icon15' title='Pin' src='../img/pin-lightblue-512.png' style='position:relative;top:8px;' />";
 
     $global_dominant_color = $global_menu_color;
     $icon_scheme = 'white';
@@ -736,6 +762,7 @@ if($color_scheme == 'midnightblue'){
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-lightblue-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-lightblue-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_heart = "<img class='icon15' title='Liked' src='../img/heart-lightblue-128.png' style='position:relative;top:8px;' />";
+    $global_icon_pin = "<img class='icon15' title='Pin' src='../img/pin-lightblue-512.png' style='position:relative;top:8px;' />";
 
     $global_dominant_color = $global_menu_color;
     $icon_scheme = 'white';
@@ -764,6 +791,7 @@ if($color_scheme == 'dte'){
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-lightblue-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-lightblue-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_heart = "<img class='icon15' title='Liked' src='../img/heart-lightblue-128.png' style='position:relative;top:8px;' />";
+    $global_icon_pin = "<img class='icon15' title='Pin' src='../img/pin-lightblue-512.png' style='position:relative;top:8px;' />";
 
     $global_dominant_color = $global_menu_color;
     $icon_scheme = 'white';
@@ -791,6 +819,7 @@ if($color_scheme == 'michigan'){
     $global_separator_color = "steelblue"; //
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-red-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-red-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
+    $global_icon_pin = "<img class='icon15' title='Pin' src='../img/pin-red-512.png' style='position:relative;top:8px;' />";
 
     $global_dominant_color = $global_menu_color;
     $icon_scheme = 'white';
@@ -815,6 +844,7 @@ if($color_scheme == 'facebook'){
     $global_separator_color = "#45619d"; //
     $global_icon_check = "<img class='icon15' title='Checked' src='../img/check-red-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
     $global_icon_check_blink = "<img class='icon15 blink' title='Checked' src='../img/check-red-128.png' style='padding-top:2px;padding-right:2px;padding-bottom:0px;' />";
+    $global_icon_pin = "<img class='icon15' title='Pin' src='../img/pin-red-512.png' style='position:relative;top:8px;' />";
 
     $global_dominant_color = $global_menu_color;
     $icon_scheme = 'white';
@@ -955,6 +985,7 @@ if($icon_darkmode == false){
     $iconsource_braxpin_common = "../img/pin-black-512.png";
     $iconsource_braxmoderator_common = "../img/moderator-black-512.png";
     $iconsource_braxwinner_common = "../img/winner-black-512.png";
+    $iconsource_braxtasks_common = "../img/tasks-circle-128.png";
     
 
     //desk
@@ -984,19 +1015,23 @@ if($icon_darkmode == false){
     $fixed_background_image_mobile = '../img/background-pine-texture.jpg';
     $fixed_background_image_mobile_style = 'height:100%;width:100%;opacity:0.4';
 
+    if($color_scheme=='riverblue'){
+        $fixed_background_image = '../img/background-blue-pattern.jpg';
+        $fixed_background_image_style = 'height:100%;width:100%;opacity:0.2';
+        $fixed_background_image_mobile = '../img/background-blue-pattern.jpg';
+        $fixed_background_image_mobile_style = 'width:100%;height:100%;opacity:0.2';
+    }
+    
     if($color_scheme=='bluegray'){
-        $fixed_background_image = '../img/background-silky-white.jpg';
-        $fixed_background_image_style = 'width:100%;opacity:0.5';
-        $fixed_background_image_mobile = '../img/background-silky-white-inverted.png';
-        $fixed_background_image_mobile_style = 'width:100%;height:100%;opacity:0.5';
-        //pine
-        /*
-        $fixed_background_image = '../img/background-sand-blurry.jpg';
-        $fixed_background_image_style = 'width:100%;opacity:0.4';
-        $fixed_background_image_mobile = '../img/background-sand-blurry.jpg';
-        $fixed_background_image_mobile_style = 'height:100%;width:100%;opacity:0.4';
-         * 
-         */
+        $fixed_background_image = '../img/background-blue-pattern.jpg';
+        $fixed_background_image_style = 'height:100%;width:100%;opacity:0.2';
+        $fixed_background_image_mobile = '../img/background-blue-pattern.jpg';
+        $fixed_background_image_mobile_style = 'width:100%;height:100%;opacity:0.2';
+        
+        //$fixed_background_image = '../img/background-wavy-beige.jpg';
+        //$fixed_background_image_style = 'height:100%;width:100%;opacity:0.2';
+        //$fixed_background_image_mobile = '../img/background-wavy-beige.jpg';
+        //$fixed_background_image_mobile_style = 'width:100%;height:100%;opacity:0.2';
     }
     if($color_scheme=='beach'){
         //beach
@@ -1088,6 +1123,7 @@ if($icon_darkmode == false){
     $iconsource_braxpin_common = "../img/pin-white-512.png";
     $iconsource_braxmoderator_common = "../img/moderator-white-512.png";
     $iconsource_braxwinner_common = "../img/winner-white-512.png";
+    $iconsource_braxtasks_common = "../img/tasks-circle-white-128.png";
 
 
     

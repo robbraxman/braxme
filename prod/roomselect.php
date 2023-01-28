@@ -65,7 +65,7 @@ require("validsession.inc.php");
             <div style='padding:10px'>
             ";
         if($roomdiscovery !== 'Y'){
-        echo "
+            echo "
                 <div class='pagetitle3' style='display:inline;white-space:nowrap;margin-top:20px;margin-left:0px;;color:$global_textcolor'>
                     <img class='icon25 showhidden' src='$iconsource_braxfind_common' title='Find Blog' />
                     <span class='showhiddenarea' style='display:none'>
@@ -96,7 +96,7 @@ require("validsession.inc.php");
                 ";
         }
         if($roomdiscovery == 'Y'){
-        echo "
+            echo "
                 <div class='pagetitle3' style='float:right;display:inline;white-space:nowrap;margin-top:0px;margin-left:0px;color:$global_textcolor'>
                     <span class='friends' data-caller='roomselect' style='cursor:pointer' title='Create and Manage Blog Rooms'>
                         <img class='icon25' src='$iconsource_braxsettings_common' title='Create and Manage Blogs' />
@@ -170,11 +170,11 @@ require("validsession.inc.php");
        $find=='' && 
        ( ($mode=='FEED' && $roomfeed=='Y') || ($mode=='FEEDFORCE')) ){
 
-        $activeroomcontent = false;    
-        require("roomselect2.php");
-        if($activeroomcontent == true){
-            RoomListFooter();
-            exit();
+            $activeroomcontent = false;    
+            require("roomselect2.php");
+            if($activeroomcontent == true){
+                RoomListFooter();
+                exit();
         }
 
     }
@@ -203,6 +203,7 @@ require("validsession.inc.php");
         echo "
                 <div style='padding-bottom:20px;display:inline-block;width:90%'>
                     <div class='mainfont roomselect' data-mode='TRENDING' style='float:right;cursor:pointer;margin-right:20px;color:$global_activetextcolor;'>$menu_trending</div>
+                    <div class='mainfont roomdiscover'  style='float:right;cursor:pointer;margin-right:20px;color:$global_activetextcolor;'>$menu_discoverrooms</div>
                     <div class='mainfont roomselect' data-mode='FEEDFORCE' style='float:right;cursor:pointer;margin-right:20px;color:$global_activetextcolor;'>$menu_whatsnew</div>
                     <!--
                     <div class='mainfont roomselect' data-mode='COMMUNITY' style='float:right;cursor:pointer;margin-right:20px;color:$global_activetextcolor;'>$menu_community</div>
@@ -218,7 +219,7 @@ require("validsession.inc.php");
             WebsiteRooms($providerid, $find );
             //FeedRooms($providerid );
             if($_SESSION['enterprise']=='Y'){
-                OwnedRooms2($providerid, $find,"Y" );
+                //OwnedRooms2($providerid, $find,"Y" );
             }
         }
         $count = OwnedRooms2($providerid, $find,"" );

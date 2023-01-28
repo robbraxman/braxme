@@ -243,7 +243,7 @@ class SignUp
         $this->replyemail = $replyemail;
         $this->replysms = $this->CleanPhone($replysms);
         $this->handle = $handle;
-        $this->password = strtolower($password);
+        $this->password = purifytext($password);
         $this->roomid = $roomid;
         $this->sponsor = $sponsor;
         $this->companyname = $companyname;
@@ -392,7 +392,7 @@ class SignUp
         $this->name2 = htmlentities(ltrim(purify_string($providername)),ENT_QUOTES);
         $this->replysms = purify_string($this->CleanPhone($replysms));
         $this->handle = purify_string($handle);
-        $this->password = strtolower($password);
+        $this->password = purifytext($password);
         $this->enterprise = purify_string($enterprise);
         $this->industry = purify_string($industry);
         $this->companyname = purify_string($companyname);

@@ -40,7 +40,7 @@ if($_SESSION['language']==''){
     $menu_community = 'Contacts';
     $menu_top = 'Top';
     $menu_roomselect = 'Select Blog';
-    $menu_discoverrooms = 'Discover Blogs';
+    $menu_discoverrooms = 'Discover';
     $menu_trending = 'Trending';
     $menu_communitylist = 'Group Lists';
     
@@ -93,7 +93,7 @@ if($_SESSION['language']==''){
     $menu_biographyprompt = "Brief Biography";
     $menu_refresh = "Refresh";
     $menu_title = 'Title';
-    $menu_newtopic = "New Topic, comment, link, photos, video";
+    $menu_newtopic = "New Post";
     $menu_reply = "Topic Reply";
     $menu_replies = "Comments";
     $menu_roomfiles = "Blog Files";

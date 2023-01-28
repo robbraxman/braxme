@@ -414,6 +414,9 @@ $(document).ready( function()
         $bytzvpnusername= $row3['username'];
         $bytzvpnpassword = $row3['password'];
         $bytzvpnexpiredays = $row3['expiredays'];
+        if($bytzvpnexpiredays<0){
+            $bytzvpnexpiredays = 0;
+        }
         $tmp = explode('/',$row3['ip']);
         $bytzvpnip = $tmp[0];   
         if($bytzvpnip!==''){
@@ -699,7 +702,7 @@ $(document).ready( function()
         <input id=providername class='providername dataentry inputfocus' name=providername type=text value='<?php echo "$row[providername]"; ?>' size=30 maxlength='30' />
         
         <br><br>
-        <div class=label>@<?=$menu_handle?><?=$help5?></div>
+        <div class=label><?=$menu_handle?><?=$help5?></div>
         <input id=handle class='handle dataentry inputfocus' <?=$eowner_readonly?> name=handle type=text placeholder='@username' value='<?php echo "$row[handle]"; ?>' size=30 maxlength='30' />
         
         <br><br>

@@ -220,9 +220,9 @@ require_once("notify.inc.php");
             pdo_query("1",
                 "
                     insert ignore into chatmembers 
-                    ( chatid, providerid, status, lastactive, lastmessage, lastread ) 
+                    ( chatid, providerid, status, lastactive, lastmessage, lastread,pin ) 
                     values
-                    ( ?, ?, 'Y', now(), now(), now() );
+                    ( ?, ?, 'Y', now(), now(), now(),'' );
                 ",array($chatid,$providerid)
             );
             
@@ -272,9 +272,9 @@ require_once("notify.inc.php");
          */
         
         $result = pdo_query("1","
-                insert ignore into chatmembers ( chatid, providerid, status, lastactive, techsupport ) 
+                insert ignore into chatmembers ( chatid, providerid, status, lastactive, techsupport,pin ) 
                 values
-                ( ?, ?, 'Y', now(),? );
+                ( ?, ?, 'Y', now(),?,'' );
         ",array($chatid,$recipientid,$techsupport));
         
         if($techsupport == 'Y'){

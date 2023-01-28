@@ -1203,6 +1203,7 @@ $(document).ready( function() {
                 type: 'POST',
                 data: 
                  { 'providerid': $('#pid').val(), 
+                   'caller' : 'none',
                    'mode' : "RESTART"
                  }
              }).done(function( data, status ) {
@@ -2107,23 +2108,6 @@ $(document).ready( function() {
             });
        }
        
-        $('body').on('click','.testlink', function()
-        {
-       
-            $.ajax({
-                url: rootserver+'cryptget.php',
-                context: document.body,
-                type: 'POST',
-                data: 
-                 {
-                     encoding: 'SPA10'
-                 }
-            }).success(function(data){
-                alertify.alert(data);
-            });
-            
-            return;
-        });
 
        
         
@@ -3397,12 +3381,12 @@ $(document).ready( function() {
             var roomid = $(this).data('roomid');
             var postid = $(this).data('postid');
             var page = $(this).data('page');
+            var owner = $(this).data('owner');
             var cleanpostid = $(this).data('postidclean');
             //alertify.alert(postid);
             var comment = $('#roomedit-'+cleanpostid).val();
             $('#roomedit-'+cleanpostid).first().remove();
             
-            //alertify.alert(roomid+" "+postid+" "+cleanpostid+" "+page);
             
                 var title = "";
                 var link = "";
@@ -3423,6 +3407,7 @@ $(document).ready( function() {
                     'room': room,
                     'roomid': roomid,
                     'postid': postid,
+                    'owner': owner,
                     'page': page,
                     'mode': 'EDIT'
                      }
@@ -4537,6 +4522,11 @@ $(document).ready( function() {
                 if($('#private1').is(":checked")) {
                     privateflag = 'Y';
                 }
+                var showinprofile = 'Y';
+                if($('#showinprofile2').is(":checked")) {
+                    showinprofile = 'N';
+                }
+                
                 var contactexchange = 'N';
                 if($('#contactexchange1').is(":checked")) {
                     contactexchange = 'Y';
@@ -4666,6 +4656,7 @@ $(document).ready( function() {
                     'communitylink': communitylink,
                     'store': store,
                     'roomstyle': roomstyle,
+                    'showinprofile': showinprofile,
                 }, function(html, status){
                         $('#roominnerwindow').html(html);
                         $(".mainview").scrollTop(0);
@@ -4716,10 +4707,10 @@ $(document).ready( function() {
                      }
                 }).done(function(){
                     if(mode === 'A'){
-                        alertify.alert('Room added to favorites');  
+                        alertify.alert('Blog added to favorites');  
                     }
                     if(mode === 'D'){
-                        alertify.alert('Room removed from favorites');  
+                        alertify.alert('Blog removed from favorites');  
                     }
                     
                 });
@@ -7747,6 +7738,7 @@ $(document).ready( function() {
         {
             //PanelShow(14);
             var chatid = $(this).data('chatid');
+            var mode = $(this).data('mode');
 
             $.ajax({
                 url: rootserver+'chatpin.php?'+timeStamp(),
@@ -7755,11 +7747,13 @@ $(document).ready( function() {
                 data: 
                 { 'providerid': $('#pid').val(),
                    'chatid' : chatid,
+                   'mode' : mode,
                    'timestamp' : timeStamp()
                 }
 
             }).done(function( data, status ) {
                 if(data!==''){
+                    //            $owner = true;
                     alertify.alert(data);
                 }
             });
@@ -9528,7 +9522,7 @@ $(document).ready( function() {
                  }
                 
                 //alert('no pin');
-                window.location = rootserver1+startupphp+"?s="+source+"&e="+enterprise+"&apn="+apn+"&gcm="+gcm+"&v="+mobileversion;
+                window.location = rootserver1+timeout.php+"?s="+source+"&e="+enterprise+"&apn="+apn+"&gcm="+gcm+"&v="+mobileversion;
                 return;
             }
             if(pinlock === 'Y'){
@@ -9552,20 +9546,6 @@ $(document).ready( function() {
             }, function(html, status){
                 pinlock = 'Y';
                 //new FastClick(',keypadcontainer');
-            });
-        });
-        $('body').on('click','.testlink', function()
-        {
-            TryPin = "";
-            pintries = 0;
-            $('.sidebararea').html("");
-            $('#banner').html("")
-            $('#socialwindow').html(LoadingGIF);
-            PanelShow(15);
-            $('#socialwindow').load( rootserver+"keypad.php",  {
-                'providerid': $('#pid').val(),
-                'version': mobileversion
-            }, function(html, status){
             });
         });
 
@@ -10012,7 +9992,7 @@ $(document).ready( function() {
         $('body').on('click','.chatlink', function()
         {
             href = $(this).attr('href');
-            linktext = "<a href="+href+" target=_blank />Proceed to Link</a><br><br><br>"+href+"<br>b";
+            linktext = "<a href="+href+" target=_blank />Proceed to Link</a><br><br><br>"+href+" <br>";
 
                     alertify.alert(linktext,function(ok){
                         if( ok ){
@@ -10022,6 +10002,48 @@ $(document).ready( function() {
                     return false;
             
         });        
+        $('body').on('click','.setchatdisplaylimit', function()
+        {
+                var chatdisplaylimit = $('#chatdisplaylimit').val();
+                
+                $.ajax({
+                    url: rootserver+'displaylimit.php?'+timeStamp(),
+                    context: document.body,
+                    type: 'POST',
+                    data: 
+                     { 
+                    'providerid': $('#pid').val(),
+                    'mode': 'CHAT',
+                    'limit': chatdisplaylimit
+                     }
+
+                }).done(function( data, status ) {
+                    if(data!==''){
+                        alertify.alert(data);
+                    }
+                });
+        });
+        $('body').on('click','.setpeopledisplaylimit', function()
+        {
+                var peopledisplaylimit = $('#peopledisplaylimit').val();
+                
+                $.ajax({
+                    url: rootserver+'displaylimit.php?'+timeStamp(),
+                    context: document.body,
+                    type: 'POST',
+                    data: 
+                     { 
+                    'providerid': $('#pid').val(),
+                    'mode': 'PEOPLE',
+                    'limit': peopledisplaylimit
+                     }
+
+                }).done(function( data, status ) {
+                    if(data!==''){
+                        alertify.alert(data);
+                    }
+                });
+        });
     
        
 });
