@@ -53,7 +53,7 @@ require_once("lib_autolink.php");
             (select actiontime from statusreads st2 
                 where st2.shareid = statuspost.shareid and
                 st2.roomid = statuspost.roomid and
-                st2.xaccode  not in ('R','D') 
+                st2.xaccode  not in ('R','D','P') 
              order by actiontime desc limit 1 ) as lastpostdate,
             statuspost.shareid, statuspost.roomid, statuspost.likes, 
             statuspost.owner,
@@ -94,6 +94,7 @@ require_once("lib_autolink.php");
             and (roominfo.adminroom !='Y' or roominfo.adminroom is null)
             and roominfo.external!='Y'
             and roominfo.roomstyle!='faq'
+            and handle != '#userbasics2'
 
             order by lastpostdate desc, shareid asc, postid asc limit $limitstart, $limitend
             
@@ -206,7 +207,7 @@ require_once("lib_autolink.php");
                         data-reference='$lastpostid'
                         style='text-align:center;cursor:pointer;padding:5px;opacity:1;
                         background-color:$global_menu_color;color:white;overflow:none;word-wrap:break-word'>          
-                        $menu_gotoroom $arrow
+                        $menu_gotoroom $arrow 
                      </td>
                 </tr>    
                 <tr class='gridnoborder'>
@@ -275,7 +276,7 @@ require_once("lib_autolink.php");
                         $avatarimg
                 </div>
                 <div id='$cleanPostid' class='roomothertext smalltext' data-reply='$postername' style='color:gray;display:inline-block;vertical-align:top;'>
-                        <span class='pagetitle3' style='color:black;'><b>$postername</b></span><br>
+                        <span class='pagetitle3' style='color:black;'><b>$postername</b></span>&nbsp;&nbsp;$row[handle]<br>
                         $postdate
                 </div>
                 <br>

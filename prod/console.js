@@ -4425,7 +4425,7 @@ $(document).ready( function() {
                         } else
                         if(mode === 'JCOMMUNITY'){
                             $('#trigger_selectchat').trigger('click');
-                            alertify.alert("You've joined a Community Chat. It will be on your Chat list.<br><br>Tap on Community at the top to join more.");
+                            //alertify.alert("You've joined a Community Chat. It will be on your Chat list.<br><br>Tap on Community at the top to join more.");
                         } else
                         if(handle!==''){
                             $('#trigger_room').data("roomid",msg.roomid);

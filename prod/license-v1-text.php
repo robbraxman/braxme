@@ -48,30 +48,28 @@ You own all of the content and information you post on <?=$appname?>, and you ca
 shared through your privacy and application settings. We do not share your information unless required
 to do so by US law.
 <br><br>
-<b><?=$appname?> Photos</b> - Photos uploaded to the <?=$appname?> My Photos are stored in an encrypted form. We do not expose an open
-link to the Internet to those photos unless you choose to do it yourself. You can share your photos as "Open" or "Hidden". At any time,
+<b><?=$appname?> Photos</b> - Photos uploaded are not exposed with an open
+link to the Internet unless you choose to share it yourself. At any time,
 you can delete a photo and it will be unavailable to all where it was shared. 
 <br><br>
-<b><?=$appname?> Files</b> - Files uploaded to the <?=$appname?> My Files are also stored in an encrypted form. You can provide 
+<b><?=$appname?> Files</b> - Files uploaded to the <?=$appname?> My Files are stored in an encrypted form. You can provide 
 links to your stored file for external use if you wish. Note that downloads of your content is subject to the bandwidth and 
 storage limit of your subscription.
 <br><br>
-<b><?=$appname?> Blog Rooms</b> - discussions and photos are private and encrypted and not exposed to non-members of the room. The
-blog creator decides which blog rooms will have open or restricted membership. Subscribers cannot see who is participating in any other 
-<?=$appname?> Blog Room unless they are a member of that blog room. Blog Rooms are not visible to search engines and robot crawlers.
+<b><?=$appname?> Blogs</b> - discussions and photos are private and encrypted and not exposed to non-members of the room. The
+blog creator decides which blogs will have open or restricted membership. Subscribers cannot see who is participating in any other 
+<?=$appname?> Blog unless they are a member of that blog. Blogs are not visible to search engines and robot crawlers.
 <br><br>
 <b><?=$appname?> Chat</b> - If you 'Chat' with any party be assured that your messages are encrypted. You control the lifespan of the 
-conversation. Once you delete the conversation, there will be nothing kept on our end. This is HIPAA compliant.
+conversation. Once you delete the conversation, there will be nothing kept on our end. This is HIPAA compliant messaging system.
 <br><br>
-If you are on the free subscription, you are only eligible to see chat messages within the last 60 days. However, once you change 
-to a paid subscription, viewing of all messages will be restored.
 
 <br><br>
 Social media posts, likes, or any other content created through <?=$appname?> are not used to track your behavior in any
 way for advertising purposes. We strive to limit exposure of your identity on the Internet.
 <br><br>
-Passwords to all aspects of <?=$appname?> are stored with encryption or stored as hashes. Only you can know your password. We
-cannot view it or modify it for you. You may reset the password yourself as long as you control your email address. In
+Passwords to all aspects of <?=$appname?> are stored as hashes only. Only you can know your password. We
+cannot view it or modify it for you. You may reset the password yourself as you have a password recovery method enabled. In
 the event that you lose control of your email address, we advise you to set up a new account. We will be happy to 
 transfer any account credits if any apply (for paid services).
 <br><br>
@@ -101,7 +99,7 @@ Users may block individuals from contacting them by adding them to their block l
 <br><br>
 You will not represent yourself as employees or officials of <?=$appname?> without prior authorization. You will 
 not use the name <?=$appname?> and logos of <?=$appname?> on merchandise without the prior approval of the company.
-You will not use the name 'Rob Braxman','Brax' or use usernames that imply authority within the platform.
+You will not use the name 'Rob Braxman','Brax' or use similar usernames or usernames that imply authority within the platform.
 <br><br>
 
 
@@ -150,7 +148,7 @@ if($i != 'Y'){
 ?>
 <br><br>
 <br><br>
-(C) Copyright 2020 <?=$appname?>
+(C) Copyright 2023 <?=$appname?>
 
 
  

@@ -1023,6 +1023,7 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
     global $global_separator_color;
     global $global_activetextcolor;
     global $global_activetextcolor_reverse;
+    global $global_textcolor_reverse;
     global $global_textcolor2;
     global $global_background;
     global $global_background2;
@@ -1346,7 +1347,7 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
         $count++;
     }
     if($roomdesc!=''){
-        $chat .= "<div class='smalltext2' id=chatbottom style='padding-top:10px;padding-left:20px;padding-right;20px;background-color:$global_bottombar_color;color:$global_activetextcolor_reverse'><b>Chat Topic: $roomdesc</b> </div>";
+        $chat .= "<div class='smalltext2' id=chatbottom style='padding-top:10px;padding-left:20px;padding-right;20px;background-color:$global_bottombar_color;color:$global_textcolor_reverse'><b>Chat Topic: $roomdesc</b> </div>";
     }
     $chat .= "</div>";
     //$chat .= "<div class='smalltext2' id=chatbottom style='float:left;background-color:$global_background;display:inline;color:transparent'>.</div>";

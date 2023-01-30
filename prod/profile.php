@@ -537,18 +537,17 @@ $(document).ready( function()
         $verifiedtext = "
             <div class='pagetitle3' style='color:black;max-width:500px'>
             <hr style='border-color:$global_separator_color'>
-            <span class='pagetitle3'><img class='icon15' src='../img/info-128.png' > <b>Warning: You do not have a valid email.</b></span>
-            This is permissible. However, you need some form of authentication to be able to reset your password if you
+            <span class='pagetitle3'><img class='icon15' src='../img/info-128.png' > 
+            <b>Warning: You have no method for password recovery. You will not be able to reset your password if you
             forget it.
             <br><br>
-            Instead of an email, you may also enter a mobile number to use for password resets via text. Your mobile
+            You can use an email address, and you must verify the email using the message we will send you.
+            <br><br>
+            You may also enter a mobile number to use for password resets via text. Your mobile
             number is encrypted for your safety and is never revealed.
             <br><br>
-            Additionally, you can use an authenticator app such as Google Authenticator, or Authy to give you a
+            You can use a TOTP authenticator app such as Google Authenticator, or Authy to give you a
             One Time Password (OTP). Go to SETTINGS - Set up TOTP 2FA to utilize this feature.
-            <br><br>
-            If you do not have a valid email address, some features such as sending email notifications and invites 
-            will be disabled.
             </div>
             <br><br>
             <hr style='border-color:$global_separator_color'>

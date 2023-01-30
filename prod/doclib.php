@@ -2314,50 +2314,26 @@ function duplicateNameCorrection($providerid, $AWSfilename, $origfilename ) {
 }
 function RoomTips()
 {
-    if( $_SESSION['roomcreator']!='Y'){
-        return
-        "
-            <div class='tipbubble pagetitle2a gridstdborder' style='background-color:white;margin:auto;padding:20px;width:500px;max-width:80%'>
-            <span style='color:black'>
-                <div style='padding-left:10px;padding-right:10px'>
-                My Files is your encrypted storage area. Files are kept in original form.
-                <br><br>
-                Free Tier users 4GB of free storage + bandwidth  for personal use. 
+    global $global_textcolor;
+    global $global_bottombar_color;
+    global $global_textcolor_reverse;
+    
+            
+        return "
+                <div class='pagetitle3' 
+                    style='padding:20px;text-align:center;margin:auto;max-width:260px;width:80%;color:$global_textcolor;background-color:transparent'>
+                    <div class='circular3' style=';overflow:hidden;margin:auto'>
+                        <img class='' src='../img/agent.jpg' style='width:100%;height:auto' />
+                    </div>
+                    <div class='tipbubble pagetitle3' style='padding:30px;color:$global_textcolor_reverse;background-color:$global_bottombar_color'>
+                        My Files is your encrypted storage area.  Free Tier limit is 4GB.<br><br>
+                        This allows you to share files with others.
+                    </div>
+                    <br>
                 </div>
-            </span>
-            </div>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            ";
-    }
-        return
-        "
-            <br>
-            <div class='tipbubble pagetitle2a gridstdborder' style='background-color:white;margin:auto;padding:20px;width:500px;max-width:80%'>
-            <span style='color:black'>
-                <div style='padding-left:10px;padding-right:10px'>
-                My Files is your encrypted storage area. Files are kept in original form.
-                </div>
-            </span>
-            </div>
-            <br>
-            ";
+        </div>
+        ";
+    
     
 }
 function DeleteFolder($sort, $caller, $roomid, $page, $target, $selectedfolder, $selectedfolderid)

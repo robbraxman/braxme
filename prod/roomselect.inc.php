@@ -38,13 +38,12 @@ function NoRooms()
     
         echo "
                 <div class='pagetitle3' 
-                    style='padding:20px;text-align:center;margin:auto;max-width:260px;width:80%;color:$global_textcolor;background-color:transparent'>
+                    style='padding:20px;text-align:center;margin:auto;max-width:300px;width:80%;color:$global_textcolor;background-color:transparent'>
                     <div class='circular3' style=';overflow:hidden;margin:auto'>
                         <img class='' src='../img/agent.jpg' style='width:100%;height:auto' />
                     </div>
-                    <div class='tipbubble pagetitle2a' style='padding:30px;color:$global_textcolor_reverse;background-color:$global_bottombar_color'>
-                        You are not subscribed to any blogs. Content published by $appname
-                        users can be found in $menu_rooms.<br><br>
+                    <div class='tipbubble pagetitle3' style='padding:30px;color:$global_textcolor_reverse;background-color:$global_bottombar_color'>
+                        You are not subscribed to any blogs. <br><br>
                         Tap on 
                         <div class='roomselect' data-mode='TRENDING' style='cursor:pointer;color:$global_activetextcolor'>Trending</div> 
                             to see what $menu_rooms are popular.<br><br>
@@ -962,6 +961,15 @@ function OwnedRooms2($providerid, $find, $owned )
             if("$row[owner]"=="$providerid"){
                 //$owned = "<img src='$rootserver/img/dot.png' style='height:6px;width:auto;position:relative;top:0px' />";
                 $owned = $global_icon_check;
+            } else {
+                //unsubscribe
+                $owned = "
+                    <span class='friends' style='cursor:pointer'
+                        id='deletefriends' 
+                        data-providerid='$providerid' data-roomid='$row[roomid]' data-mode='D' data-caller='room' >
+                    <img class='icon15 friends tapped' src='../img/delete-circle-white-128.png' />
+                    </span>
+                    ";
             }
             if($row['private']=='Y'){
                 $private = "$global_icon_lock";
@@ -1008,18 +1016,20 @@ function OwnedRooms2($providerid, $find, $owned )
         }
 
             echo "
-                <div class='feed pagetitle3' data-roomid='$row[roomid]' 
-                  data-room='$row[room]' data-selectedroom='Y' 
+                <div class='pagetitle3' 
                   style='padding-left:30px;height:60px;max-width:500px;margin:auto;position:relative;display:block;cursor:pointer;
                   text-align:left;
                   background-color:$global_background;color:$global_activetextcolor;
                   min-width:15%;
                   overflow:hidden'>
-                          <div style='padding:10px'>
-                          $row[room] $owned $private<br>
-                          <span class='smalltext'>($row[ownername])</span>
-                              <br>
-                          </div>
+                    <div style='padding:10px'>
+                        <span class=feed data-roomid='$row[roomid]'  data-room='$row[room]' data-selectedroom='Y'>
+                        $row[room]&nbsp;&nbsp;
+                        </span>
+                        $private $owned<br>
+                        <span class='smalltext'>($row[ownername])</span>
+                        <br>
+                    </div>
                 </div>
                  ";
 
@@ -1651,7 +1661,7 @@ function TrendingRooms($providerid, $roomdiscovery)
                 statusroom.roomid = roominfo.roomid and 
                 statusroom.providerid = $providerid 
             )
-            and (roominfo.private = 'N' or featured > 0 )
+            and ((roominfo.private = 'N' and featured >=0) or featured > 0 )
             and roominfo.radiostation !='Y'
             and roomhandle.community!='Y'
             and (roominfo.rsscategory is null or roominfo.rsscategory = '')

@@ -63,8 +63,8 @@ require_once("config-pdo.php");
                     <img class='icon20 setchatsession' data-chatid='$chatid' Title='Back to Home' src='../img/Arrow-Left-in-Circle-White_120px.png' 
                         style='' />
                     &nbsp;
+                    &nbsp;
                     <span style='opacity:.5'>
-                    $icon_braxchat2
                     </span>
                     <span class='pagetitle2a' style='color:white'>Members</span> 
                 </div>
@@ -80,6 +80,7 @@ require_once("config-pdo.php");
         global $rootserver;
         global $global_separator_color;
         global $icon_darkmode;
+        global $admintestaccount;
         
         $timezoneoffset = $_SESSION['timezoneoffset'];
         
@@ -218,7 +219,7 @@ require_once("config-pdo.php");
                         "
                         <div class='smalltext addchatsession'
                             data-chatid='$chatid' data-providerid='$row[otherid]' data-mode='S'
-                            title='Resend E2E Key'
+                            title='Resend Private Key'
                             style='float:right;cursor:pointer;color:$global_separator_color;padding-top:0px;margin-left:20px;vertical-align:center;margin-right:20px'>
                             <img class='icon15' src='../img/Key-Lock_120px.png' />
                         </div> 

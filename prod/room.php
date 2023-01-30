@@ -846,14 +846,6 @@ function CommentButtons($providerid, $likebutton, $deletebutton, $memberinfo, $r
                         />
                     &nbsp;
                     <img class='icon15 feed tooltip roomcontrols tapped2' 
-                        data-mode='B' data-postid='$postid'
-                        data-roomid='$roomid'  data-shareid='$shareid'
-                        title='Bump to Top' 
-                        src='$rootserver/img/Up-4_120px.png' style='top:0' 
-                        />
-                    $deletebutton 
-                    &nbsp;
-                    <img class='icon15 feed tooltip roomcontrols tapped2' 
                         data-mode='FLAG' data-postid='$postid'
                         data-roomid='$roomid'  data-shareid='$shareid'
                         title='Report Objectionable Content' src='$rootserver/img/Flag_120px.png' 
@@ -863,12 +855,20 @@ function CommentButtons($providerid, $likebutton, $deletebutton, $memberinfo, $r
         if($memberinfo->owner == $providerid || $memberinfo->moderator == $providerid ){
                 $commentbuttons .= "                
                         &nbsp;
+                        <img class='icon15 feed tooltip roomcontrols tapped2' 
+                            data-mode='B' data-postid='$postid'
+                            data-roomid='$roomid'  data-shareid='$shareid'
+                            title='Bump to Top' 
+                            src='$rootserver/img/Up-4_120px.png' style='top:0' 
+                            />
+                        &nbsp;
                         <img class='feed icon15 tooltip roomcontrols tapped2' 
                             data-mode='PIN' data-postid='$postid'
                             data-roomid='$roomid'  data-shareid='$shareid'
                             title='Pin Post' src='$rootserver/img/pin-line-128.png' 
                             style='top:0' 
                             />
+                        $deletebutton 
                         &nbsp;
                         <img class='feed icon15 tooltip roomcontrols tapped2' 
                             data-mode='LOCK' data-postid='$postid'

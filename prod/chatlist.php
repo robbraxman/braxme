@@ -238,6 +238,13 @@ function DisplayChatList($providerid, $mode, $find, $sort)
                  ";
                 
         
+    } else {
+        //$modefilter = 
+        // " and exists (select * from chatmembers 
+        //    where providerid = $providerid and
+        //         chatmembers.chatid = chatmaster.chatid and pin!='S') 
+        //         ";
+        
     }
     
     
@@ -257,26 +264,28 @@ function DisplayChatList($providerid, $mode, $find, $sort)
         $findfilter = " 
         and
         (
-            chatmaster.chatid in 
-            (  select chatid from chatmembers 
-               where
-               chatmaster.chatid = chatmembers.chatid and
-               status='Y' 
-               and chatmembers.providerid in 
-               (  select providerid from provider 
-                  where  
-                  ( providername like '%$find%' or handle like '@%$find%' )
-                  and active='Y'
-               )
-            )
-            and ( chatmaster.roomid = 0 or chatmaster.roomid is null)
-         ) 
-         or 
-         (
-            chatmaster.roomid in 
-            (  select roomid from roominfo where chatmaster.roomid = roominfo.roomid and
-               roominfo.room like '%$find%'
-            )
+            (
+                chatmaster.chatid in 
+                (  select chatid from chatmembers 
+                   where
+                   chatmaster.chatid = chatmembers.chatid and
+                   status='Y' 
+                   and chatmembers.providerid in 
+                   (  select providerid from provider 
+                      where  
+                      ( providername like '%$find%' or handle like '@%$find%' )
+                      and active='Y'
+                   )
+                )
+                and ( chatmaster.roomid = 0 or chatmaster.roomid is null)
+             ) 
+             or 
+             (
+                chatmaster.roomid in 
+                (  select roomid from roominfo where chatmaster.roomid = roominfo.roomid and
+                   roominfo.room like '%$find%'
+                )
+             )
          )
         ";
     }
@@ -326,9 +335,9 @@ function DisplayChatList($providerid, $mode, $find, $sort)
             where providerid = ? and
                  chatmembers.chatid = chatmaster.chatid) as lastread,
                  
-        (select pin from chatmembers 
+        (select 'Y' from chatmembers 
             where providerid = ? and
-                 chatmembers.chatid = chatmaster.chatid and chatmembers.providerid = ?) as pin,
+                 chatmembers.chatid = chatmaster.chatid and chatmembers.providerid = ? and pin='Y' ) as pin,
 
 
                 
@@ -472,8 +481,8 @@ function DisplayChatList($providerid, $mode, $find, $sort)
                         <img class='' src='../img/agent.jpg' style='width:100%;height:auto' />
                     </div>
                     <div class='smalltext tipbubble' 
-                        style='background-color:$global_bottombar_color;margin:auto;color:$global_textcolor_reverse;text-align:center;max-width:250px'>
-                        <div class='pagetitle2a' style='margin:auto;text-align:center;max-width:500px;padding:20px;color:$global_textcolor_reverse'>
+                        style='background-color:$global_bottombar_color;margin:auto;color:$global_textcolor_reverse;text-align:center;max-width:300px'>
+                        <div class='pagetitle3' style='margin:auto;text-align:center;max-width:500px;padding:20px;color:$global_textcolor_reverse'>
                             $community_text
                             To start a new chat with a specific person, find the person under PEOPLE
                             from the menu and select Start Chat from that person's Profile.

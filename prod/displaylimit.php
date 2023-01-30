@@ -13,16 +13,20 @@ require ("SmsInterface.inc");
             update provider set chatlimit=? where providerid=?",array($limit,$providerid)
         );
     }
-    if($limit < 100 || $limit > 2000){
-        echo "Invalid option. Use a value between 100 and 2000";
-        exit();
-    }
     if($mode == 'CHAT'){
+        if($limit < 100 || $limit > 2000){
+            echo "Invalid option. Use a value between 100 and 2000";
+            exit();
+        }
         $result = pdo_query("1", "
             update provider set chatlimit=? where providerid=?",array($limit,$providerid)
         );
     }
     if($mode == 'PEOPLE'){
+        if($limit < 100 || $limit > 5000){
+            echo "Invalid option. Use a value between 100 and 5000";
+            exit();
+        }
         $result = pdo_query("1", "
             update provider set peoplelimit=? where providerid=?",array($limit,$providerid)
         );

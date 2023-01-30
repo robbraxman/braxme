@@ -233,7 +233,7 @@ require("validsession.inc.php");
         
         echo "
                 <div style='padding-bottom:20px;display:inline-block;width:90%'>
-                    <div class='mainfont roomselect' data-mode='FEED' style='float:right;cursor:pointer;margin-right:20px;color:$global_activetextcolor;'>WHAT'S NEW</div>
+                    <div class='mainfont roomselect' data-mode='FEED' style='float:right;cursor:pointer;margin-right:20px;color:$global_activetextcolor;'>$menu_whatsnew</div>
                 </div>
                     ";
         //AlphaRooms($providerid, $find );
@@ -309,7 +309,7 @@ require("validsession.inc.php");
                         <img class='' src='../img/agent.jpg' style='width:100%;height:auto' />
                     </div>
                     <div class='tipbubble pagetitle2a' style='padding:30px;color:$global_textcolor;background-color:$global_bottombar_color'>
-                        You create Blog content in Blog Rooms.<br><br>
+                        You create content in Blogs.<br><br>
                         Use the $enterpriseapp Wizard to automatically create them for you.
                     </div>
                     <br>

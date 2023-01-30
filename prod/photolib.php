@@ -943,9 +943,6 @@ require_once("internationalization.php");
             <div style='padding-left:20px;padding-right:10px;padding-bottom:10px'>
          ";
     
-    if($totalAll == 0 && $page == 1 && $selectedalbum ==''){
-        PhotoTip();
-    }
     
     $album = CreateAlbumList($providerid, $selectedalbum, $selectedalbumHtml, $page, $total);
     echo $album->container;
@@ -1111,6 +1108,9 @@ require_once("internationalization.php");
             </div>
              <table  class='gridstdborder' style='background-color:$global_background;border-collapse:collapse;border:0'>
          ";
+    if($totalAll == 0 && $page == 1 && $selectedalbum ==''){
+        PhotoTip();
+    }
     
     $result = pdo_query("1",
         "
@@ -1932,20 +1932,20 @@ function PhotoTip()
 {
         global $global_textcolor;
         global $global_bottombar_color;
-        global $global_activetextcolor_reverse;
+        global $global_textcolor_reverse;
         
-        return;
             
         echo "
                 <div class='pagetitle3' 
-                    style='padding:20px;text-align:center;margin:auto;max-width:260px;width:80%;color:$global_textcolor;background-color:transparent'>
+                    style='padding:20px;text-align:center;margin:auto;max-width:300px;width:80%;color:$global_textcolor;background-color:transparent'>
                     <div class='circular3' style=';overflow:hidden;margin:auto'>
                         <img class='' src='../img/agent.jpg' style='width:100%;height:auto' />
                     </div>
-                    <div class='tipbubble pagetitle2a' style='padding:30px;color:$global_activetextcolor_reverse;background-color:$global_bottombar_color'>
-                        Upload your photos here for FREE. You can then share albums if you wish to all or selected friends.
+                    <div class='tipbubble pagetitle3' style='padding:30px;color:$global_textcolor_reverse;background-color:$global_bottombar_color'>
+                        Public photos are shared photos that can be used by all.<br><br>
+                        You may upload your own photos here and they will remain private unless you share them.
                         <br><br>
-                        Photos are metadata free.
+                        Meta data is removed and photo is resized for social media sharing.
                     </div>
                     <br>
                 </div>

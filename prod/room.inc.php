@@ -2662,7 +2662,7 @@ function FormatComment( $callerstyle, $postid, $providerid, $roomid, $encoding, 
                     } 
                 } else {
                     $more = "";
-                    if($callerstyle =='2'){
+                    if($callerstyle =='2' || $callerstyle=='3' ){
                         $dontshortenflag = true;
                         $more = "...";
                     }

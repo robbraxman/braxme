@@ -36,21 +36,14 @@ if(isset($i) && $i == 'Y'){
                     <strong>What information do we collect?</strong> <br /><br />
                     During signup, we collect your name. It is not required that you
                     give your real name, however it may be difficult for you to be identified by your friends if you
-                    don't provide it. You can always change this at any time. 
+                    don't provide some name they will recognize. You can always change this at any time. 
                         <br /><br />                    
-                    We ask you to enter an email address. You must have access to this email address. 
-                    We will verify it for your protection. You may choose to not supply an email address. This will prevent you from 
-                    doing a password reset if you forget your password, however.
+                    We optionally ask you to enter an email address. You must have access to this email address. 
+                    We will verify it for your protection. The email address is primarily used for password recovery.
                         <br /><br />                    
                     You use a @username for people to use to contact you on the app without using any other identifier.
                         <br /><br />                    
-                    We ask for an optional mobile phone to send you SMS (text) messages. The primary purpose of this is to allow you to conveniently receive temporary passwords so you can 
-                    easily get back to your account if you forget your password. 
-                    It is also used to send you notifications
-                    if you do not use the mobile app version (you will not get SMS messages if your mobile 
-                    notifications are enabled).
-                    We consider this mobile phone to be very private. It is never displayed 
-                    on the app for others to see and is stored in an encrypted form.
+                    We ask for an optional mobile phone to send you SMS (text) messages. This is solely used for password recovery.
                         <br /><br />                    
                     We do not store your password directly (we use something called an irreversible hash). This means that we 
                     cannot see your password or log in to your account without your knowledge. 
@@ -91,14 +84,6 @@ if(isset($i) && $i == 'Y'){
                     storage or in transit. Note that there are public areas in <?=$appname?> and those are readable 
                     and open, although the identity of the posters can be aliased or anonymous. Open Membership areas are clearly 
                     labeled.
-                        <br /><br />                    
-                    
-                        <strong>Amazon AWS</strong> 
-                        <br /><br />                    
-                        <?=$appname?> is built on the Amazon Web Services (AWS) platform. This is the Independent Accountant's 
-                        <a href='https://cert.webtrust.org/pdfs/soc3_amazon_web_services.pdf' > security review</a>
-                        of AWS. Note that we add another layer of encryption to what is provided by AWS.
-                        
                     <br /><br />    
                     
                         
