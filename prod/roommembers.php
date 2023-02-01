@@ -42,13 +42,10 @@ require_once("internationalization.php");
                 <span class='roomcontent'>
                     <div class='gridstdborder' 
                         data-room='All' data-roomid='All'                
-                        style='background-color:$global_titlebar_color;color:white;padding-left:20px;padding-right:20px;padding-bottom:3px;margin:0;' >
+                        style='background-color:transparent;color:$global_textcolor;padding-left:20px;padding-right:20px;padding-bottom:3px;margin:0;' >
                         <img class='icon20 feed' Title='Back to Room' data-roomid='$roomid' src='../img/Arrow-Left-in-Circle-White_120px.png' 
                             style='' />
                         &nbsp;
-                        <span style='opacity:.5'>
-                        $icon_braxroom2
-                        </span>    
                         <span class='pagetitle2a' style='color:white'>$menu_roommembers</span> 
                     </div>
                 </span>

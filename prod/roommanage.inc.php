@@ -620,6 +620,7 @@ require_once("chat.inc.php");
         global $providerid;
         global $global_textcolor;
         global $global_background;
+        global $global_activetextcolor;
         global $global_titlebar_color;
         global $enterpriseapp;
         global $menu_room;
@@ -983,16 +984,19 @@ require_once("chat.inc.php");
         $rsslinktext = "";
         $sponsortext = "";
         $broadcasttext = "";
-        $parenttext = "
+        $parenttext = "";
+        if($_SESSION['superadmin']=='Y'){
+            $parenttext = "
                     Parent #Hashtag<br>
                     <input id='roomparent' name='roomparent' placeholder='#ParentRoom' type='text' size=20 maxlength=250 value='$parent' style='max-width:400px;width:70%'>
                         <br>
-                        <span class='smalltext'>Take members from this blog hashtag</span>
+                        <span class='smalltext'>Members dependent on parent blog</span>
                     <br><br>
                     Sort Order - If Child Blog<br>
                     <input id='roomchildsort' name='roomchildsort' placeholder='Child Sort #' type='number' size=20 maxlength=250 value='$childsort' style='max-width:400px;width:70%'>
                     <br><br>
                         ";
+        }
         /*
         if($_SESSION['superadmin'] == 'Y' || $_SESSION['enterprise']=='Y'){
             $rsscategorytext = "
@@ -1033,7 +1037,7 @@ require_once("chat.inc.php");
         
         if($_SESSION['superadmin'] == 'Y'){
             $broadcasttext = "
-                        Community Holder (Y/N)<br>
+                        Community Holder (Y/F)<br>
                         <input id='community' name='community' placeholder='' type='text' size=20 maxlength=1 value='$community' style='max-width:400px;width:70%'>
                         <br><br>
                             ";
@@ -1050,9 +1054,7 @@ require_once("chat.inc.php");
                         <input id='community' name='community' placeholder='' type='hidden' size=20 maxlength=1 value='$community' style='max-width:400px;width:70%'>
                             ";
             $copymemberstext = "
-                        Copy Members From<br>
-                        <input id='copymembers' name='copymembers' placeholder='Handle' type='text' size=20 maxlength=250 value='' style='max-width:400px;width:70%'>
-                        <br><br>
+                        <input id='copymembers' name='copymembers' placeholder='Handle' type='hidden' size=20 maxlength=250 value='' style='max-width:400px;width:70%'>
                             ";
         }    
         $broadcasttext .= "
@@ -1083,6 +1085,10 @@ require_once("chat.inc.php");
                             Save Settings
                         </div>
                         &nbsp;&nbsp;
+                        ";
+        if($mode!=='N'){
+            $roomedit .= "
+
                         <span class='nonmobile'>
                         <div class='divbuttontext divbuttontext_unsel roomedit tapped' 
                             id='roomchange' data-room='$roomHtml' data-roomid='$roomid' data-mode='DR' data-caller='$caller'
@@ -1091,7 +1097,9 @@ require_once("chat.inc.php");
                             Delete $menu_room
                         </div>
                         </span>
-                        
+                   ";
+        }
+        $roomedit .= "
                         <br><br>
                         <hr>
                         <div class='pagetitle2a' style='color:$global_textcolor;'>
@@ -1118,11 +1126,10 @@ require_once("chat.inc.php");
                         
                         Photo<br>
                         <input id='photourl' class='smalltext' name='photourl' placeholder='Select a Photo' type='text' size=20 value='$photourl' readonly=readonly style='background-color:whitesmoke;max-width:400px;width:70%'>
-                        <br>
+                        <br><br>
                         <span class='photoselect'
-                             id='photoselect' style='cursor:pointer'
+                             id='photoselect' style='cursor:pointer;color:$global_activetextcolor'
                              data-target='#photourl' data-src='' data-filename='' data-mode='X' data-caller='roomsetup' title='My Photo Library' >
-                            <img class='icon20' src='../img/brax-photo-round-black-128.png' style='cursor:pointer;top:5px;' />
                              &nbsp;Select from My Photos
                         </span>
                         
@@ -1332,7 +1339,7 @@ require_once("chat.inc.php");
                                 <option value='Other'>Other</option>
                                 <option value='Other Blogs'>Other Blogs</option>
                             </select>
-                            <br><br><br><br><br><br>
+                            <br><br><br>
 
                             <hr>
                             <div class='pagetitle2a' style='color:$global_textcolor;'>
@@ -1340,7 +1347,6 @@ require_once("chat.inc.php");
                                 <br><br>
                             </div>
 
-                            <br><br>
                             $parenttext
 
 
@@ -1385,7 +1391,7 @@ require_once("chat.inc.php");
                                 found objectionable or
                                 inappropriate, for example, materials that may be considered 
                                 obscene, pornographic, hate oriented, or defamatory will be
-                                removed from open access (removed from Discover Rooms).
+                                removed from open access (removed from Discover Blogs).
                                 <br><br>
                                 You can promote non-discoverable areas outside of the app using Group Invite Links as
                                 well as through private invites.

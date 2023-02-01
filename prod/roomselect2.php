@@ -64,8 +64,7 @@ require_once("lib_autolink.php");
                 where providerid = statusroom.owner
             ) as roomownername,
             (select 'Y' from publicrooms where statuspost.roomid = publicrooms.roomid) as public,
-            (select handle from roomhandle where roomhandle.roomid = statuspost.roomid )
-                as handle,
+            roomhandle.handle,
             roominfo.anonymousflag, blocked1.blockee, blocked2.blocker,
             provider.profileroomid,
             (select 'Y' from roommoderator where roommoderator.roomid = statuspost.roomid
@@ -75,6 +74,7 @@ require_once("lib_autolink.php");
             left join statusroom on statuspost.roomid = statusroom.roomid
             left join provider on statuspost.providerid = provider.providerid
             left join roominfo on statuspost.roomid = roominfo.roomid
+            left join roomhandle on statuspost.roomid = roomhandle.roomid
             left join blocked blocked1 on blocked1.blockee = statuspost.providerid and blocked1.blocker = statusroom.providerid
             left join blocked blocked2 on blocked2.blocker = statuspost.providerid and blocked2.blockee = statusroom.providerid
             where 
@@ -94,7 +94,7 @@ require_once("lib_autolink.php");
             and (roominfo.adminroom !='Y' or roominfo.adminroom is null)
             and roominfo.external!='Y'
             and roominfo.roomstyle!='faq'
-            and handle != '#userbasics2'
+            and roomhandle.handle not in( '#userbasics2', '#userbasics')
 
             order by lastpostdate desc, shareid asc, postid asc limit $limitstart, $limitend
             

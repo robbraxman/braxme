@@ -11,6 +11,7 @@ if($userid == ''){
 }
 if($mode=='W'){
     ModerationOneDayDelete($userid);
+    echo "$result";
 }
 if($mode=='H'){
     $result = ModerationHardRestrict($userid);
@@ -44,6 +45,11 @@ if($mode=='A'){
 }
 if($mode=='IP'){
     $result = ModerationIpRestrict($userid);
+    echo "$result";
+    exit();
+}
+if($mode=='ND'){
+    $result = ModerationFixNotifyBug($userid);
     echo "$result";
     exit();
 }

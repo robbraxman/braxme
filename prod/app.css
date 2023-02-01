@@ -1,6 +1,7 @@
 /* 
     Document   : local
     Created on : Feb 25, 2013, 8:44:32 PM
+    Author     : roberto
     Description:
         Purpose of the stylesheet follows.
 */
@@ -3113,7 +3114,7 @@ FONT SPECIFIC MEDIA QUERIES
        (min-resolution: 192dpi)
 {
     .mainfont {
-        font-family:  Helvetica, Arial, sans-serif;        
+        font-family:  "Helvetica Neue","Raleway", Helvetica, Arial, sans-serif;        
         font-size: 16px;
         /*letter-spacing: 0.3px;*/
         font-weight: normal;
@@ -3156,7 +3157,7 @@ FONT SPECIFIC MEDIA QUERIES
     .pagetitle3 {
         font-size:13px;
         font-weight: 400;
-        font-family:  "Helvetica", Helvetica, Arial, sans-serif;        
+        font-family:  "Helvetica Neue","Raleway", Helvetica, Arial, sans-serif;        
         color: #58585B;
         /*letter-spacing: 0.5px;*/
         -webkit-font-smoothing: antialiased;
@@ -3188,7 +3189,7 @@ FONT SPECIFIC MEDIA QUERIES
     (min-width: 360px) and (max-width: 450px) and (min-resolution: 432dpi)
 {
     .mainfont {
-        font-family:  Helvetica, Arial, sans-serif;        
+        font-family:  "Helvetica Neue","Raleway", Helvetica, Arial, sans-serif;        
         font-size: 16px;
         letter-spacing: 0.3px;
         font-weight: 500;
@@ -3239,7 +3240,7 @@ FONT SPECIFIC MEDIA QUERIES
     .pagetitle3 {
         font-size:15px;
         font-weight: 500;
-        font-family:  Helvetica, Arial, sans-serif;        
+        font-family:  "Helvetica Neue","Raleway", Helvetica, Arial, sans-serif;        
         color: #58585B;
         letter-spacing: 0.0px;
         -webkit-font-smoothing: antialiased;
@@ -3266,7 +3267,7 @@ FONT SPECIFIC MEDIA QUERIES
 @media all and (min-width: 769px)  and (max-resolution: 288dpi)
 {
     .mainfont {
-        font-family: "Helvetica", Helvetica, Arial, sans-serif;     
+        font-family:  "Helvetica Neue","Raleway", Helvetica, Arial, sans-serif;        
         font-size: 13px;
         letter-spacing: 0.2px; 
         font-weight: 400;
@@ -3316,7 +3317,7 @@ FONT SPECIFIC MEDIA QUERIES
     .pagetitle3 {
         font-size:13px;
         font-weight: 500;
-        font-family:  Helvetica, Arial, sans-serif;        
+        font-family:  "Helvetica Neue","Raleway", Helvetica, Arial, sans-serif;        
         color: #58585B;
         letter-spacing: 0.5px;
         -webkit-font-smoothing: antialiased;
@@ -3342,7 +3343,7 @@ FONT SPECIFIC MEDIA QUERIES
 @media all and (min-width: 1400px) and (max-resolution: 288dpi)
 {
     .mainfont {
-        font-family:  Helvetica, Arial, sans-serif;        
+        font-family:  "Helvetica Neue","Raleway", Helvetica, Arial, sans-serif;        
         font-size: 14px;
         letter-spacing: 0.0px;
         font-weight: 200;
@@ -3392,7 +3393,7 @@ FONT SPECIFIC MEDIA QUERIES
     .pagetitle3 {
         font-size:14px;
         font-weight: 200;
-        font-family:  "Helvetica", Helvetica, Arial, sans-serif;        
+        font-family:  "Helvetica Neue","Raleway", Helvetica, Arial, sans-serif;        
         color: #58585B;
         letter-spacing: 0.5px;
         -webkit-font-smoothing: antialiased;
@@ -3415,7 +3416,7 @@ FONT SPECIFIC MEDIA QUERIES
 @media all and (min-width: 1600px) and (max-resolution: 288dpi)
 {
     .mainfont {
-        font-family:  Helvetica, Arial, sans-serif;        
+        font-family:  "Helvetica Neue","Raleway", Helvetica, Arial, sans-serif;        
         font-size: 16px;
         letter-spacing: 0.0px;
         font-weight: 500;
@@ -3465,7 +3466,7 @@ FONT SPECIFIC MEDIA QUERIES
     .pagetitle3 {
         font-size:16px;
         font-weight: 300;
-        font-family:  Helvetica, Arial, sans-serif;        
+        font-family:  "Helvetica Neue","Raleway", Helvetica, Arial, sans-serif;        
         color: #58585B;
         letter-spacing: 0.5px;
         -webkit-font-smoothing: antialiased;
@@ -3487,7 +3488,7 @@ FONT SPECIFIC MEDIA QUERIES
 @media all and (min-width: 1900px) and (max-resolution: 288dpi)
 {
     .mainfont {
-        font-family:  "helvetica", Helvetica, Arial, sans-serif;        
+        font-family:  "Helvetica Neue","Raleway", Helvetica, Arial, sans-serif;        
         font-size: 20px;
         letter-spacing: 0.0px;
         font-weight: 500;
@@ -3537,7 +3538,7 @@ FONT SPECIFIC MEDIA QUERIES
     .pagetitle3 {
         font-size:20px;
         font-weight: 200;
-        font-family:  "Raleway", Helvetica, Arial, sans-serif;        
+        font-family:  "Helvetica Neue","Raleway", Helvetica, Arial, sans-serif;        
         color: #58585B;
         letter-spacing: 0.5px;
         -webkit-font-smoothing: antialiased;
@@ -3561,7 +3562,7 @@ FONT SPECIFIC MEDIA QUERIES
 @media all and (min-width: 2500px) and (max-resolution: 288dpi)
 {
     .mainfont {
-        font-family:  "helvetica", Helvetica, Arial, sans-serif;        
+        font-family:  "Helvetica Neue","Raleway", Helvetica, Arial, sans-serif;        
         font-size: 20px;
         letter-spacing: 0.0px;
         font-weight: 200;
@@ -3611,7 +3612,7 @@ FONT SPECIFIC MEDIA QUERIES
     .pagetitle3 {
         font-size:24px;
         font-weight: 200;
-        font-family:  "Raleway", Helvetica, Arial, sans-serif;        
+        font-family:  "Helvetica Neue","Raleway", Helvetica, Arial, sans-serif;        
         color: #58585B;
         letter-spacing: 0.5px;
         -webkit-font-smoothing: antialiased;

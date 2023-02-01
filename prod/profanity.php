@@ -334,3 +334,27 @@ function ModerationIpRestrict($userid)
 
     
 }
+function ModerationFixNotifyBug($userid)
+{
+    global $admintestaccount;
+    
+    if($userid==$admintestaccount){
+        return;
+    }
+    $notifydisable = '';
+    $result = pdo_query("1","select notification_disable from provider where providerid = ?  ",array($userid));
+    if($row = pdo_fetch($result)){
+        
+        $notifydisable = $row['notification_disable'];
+        if($notifydisable == 'Y'){
+            $result = pdo_query("1","update provider set notification_disable='' where providerid = ?",array($userid));
+            return "Notify Enabled";
+            
+        } else {
+            $result = pdo_query("1","update provider set notification_disable='Y' where providerid = ?",array($userid));
+            return "Notify Disabled";
+            
+        }
+    }
+    return "Notifydisable Error";
+}

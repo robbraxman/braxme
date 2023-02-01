@@ -1801,7 +1801,7 @@ function CreateFolderList( $providerid, $mode, $selectedfolder, $selectedfolderi
                     data-roomid='$roomid'
                     data-roomfolderid='$roomfolderid'
                     data-passkey64='$passkey64'
-                    style='border-width:1px;border-color:ltgray;border-style:solid;
+                    style='border-width:1px;border-color:transparent;border-style:solid;
                     display:inline-block;margin:0px;padding-top:5px;padding-bottom:5px ;
                     width:80px;
                     border-top-left-radius:10px; 
@@ -1885,15 +1885,14 @@ function CreateFolderList( $providerid, $mode, $selectedfolder, $selectedfolderi
                     data-roomid='$roomid'
                     data-roomfolderid='$roomfolderid'
                     data-passkey64='$passkey64'
-                    style='border-width:1px;border-color:transparent;border-style:solid;
-                    display:inline-block;margin:0px;padding-top:5px;padding-bottom:5px;
+                    style='border-width:2px;border-color:transparent;border-style:solid;
+                    display:inline-block;padding-top:5px;padding-bottom:5px;
                     width:150px;
                     min-width:12%;
                     border-top-left-radius:10px; 
                     border-top-right-radius:10px; 
-                    border-color:white;
                     text-decoration:none;
-                    padding-left:3px;
+                    margin-bottom:5px;
                     cursor:pointer;
                     background-color:$global_menu_color;vertical-align:middle;
                     color:white;
@@ -1925,7 +1924,7 @@ function CreateFolderList( $providerid, $mode, $selectedfolder, $selectedfolderi
 
             $folder['container'] .=
             " 
-            <div class='gridnoborder tabcontainer' style='background-color:$global_background;max-width:100%;overflow:hidden;text-align:left;margin:0;vertical-align:top;'>
+            <div class='gridnoborder tabcontainer' style='background-color:$global_background;max-width:100%;overflow:hidden;text-align:left;margin-left:5px;margin-right:5px;vertical-align:top;'>
                 <div class='gridnoborder tabwrapper' style='width:$tablelength px;overflow-x:hidden;overflow-y:visible;text-align:left;padding-left:10px;padding-right:10px'>
                     <div class='tablist' id='myTab' style='height:80px;margin:0;text-align:left;padding:0'>
                         $folderdiv2
@@ -1944,10 +1943,12 @@ function CreateFolderList( $providerid, $mode, $selectedfolder, $selectedfolderi
                         $folderdivback&nbsp;&nbsp;&nbsp;&nbsp;
                         <div class='smalltext'
                             style='border-width:1px;border-style:solid;
-                            display:inline-block;margin:0px;padding-top:10px;padding-bottom:10px ;width:220px;min-width:150px;
+                            display:inline-block;margin:0px;
+                            padding-top:10px;padding-bottom:10px ;
+                            width:220px;min-width:150px;
                             border-top-left-radius:10px; 
                             border-top-right-radius:10px; 
-                            border-color:gray;
+                            border-color:transparent;
                             text-decoration:none;
                             padding-left:10px;
                             cursor:pointer;

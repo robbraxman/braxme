@@ -1304,16 +1304,16 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
 
                             
                             <div class='bubblesize' style='background-color:transparent'>
-                                <div class='circular gridnoborder' style='float:left;height:30px;width:30px;overflow:hidden;background-color:white;margin-right:10px;padding-bottom:0px'>
+                                <div class='circular gridnoborder' style='display:inline-block;height:30px;width:30px;overflow:hidden;background-color:white;margin-right:5px;padding-bottom:0px'>
                                     <img class='$action' src='$avatarurl'  title='Your Profile Photo' alt='Your Profile Photo' style='cursor:pointer;min-height:100%;max-width:100%'
                                         data-providerid='$row[providerid]' data-name='$dataname'    
                                         data-roomid='$row[profileroomid] data-caller='leave'
                                         data-mode ='S' data-passkey64=''
                                      />
                                  </div>
-                                <span class=chatselftext style='float:left;color:$textcolor'>$row[name]&nbsp;$usermedal&nbsp;</span> 
-                               <div class='smalltext2' style='display:inline-block;height:20px;color:$global_textcolor2;font-family:helvetica;position:relative;top:5px;vertical-align:top'>$msgdate</div>
-                              <div class='chatcontent' id='chatcontent-$row[msgid]'>$decode $edititem</div>$edititem2
+                                <div class=chatselftext style='display:inline-block;color:$textcolor'>$row[name]&nbsp;$usermedal&nbsp;</div> 
+                               <div class='smalltext2' style='display:inline-block;height:20px;color:$global_textcolor2;font-family:helvetica;'>$msgdate</div><br>
+                              <div class='chatcontent' id='chatcontent-$row[msgid]' style='position:relative;margin-top:5px;display:inline-block'>$decode $edititem</div>$edititem2
                             </div>
                         </div>";
                     
@@ -1324,8 +1324,8 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
                 $chat .= "<div class='chatitem $oldchat chatother mainfont' style='background-color:transparent;color:$textcolor;padding-left:10px;;padding-right:10px;margin-top:0px;padding-bottom:0px'>
                     
 
-                            <div class='bubblesize' style='background-color:transparent'>
-                                <div class='circular gridnoborder' style='float:left;height:30px;width:30px;overflow:hidden;background-color:$backgroundcolor;margin-right:10px'>
+                            <div class='bubblesize' style='vertical-align:top;background-color:transparent'>
+                                <div class='circular gridnoborder' style='display:inline-block;height:30px;width:30px;overflow:hidden;background-color:$backgroundcolor;margin-right:5px;padding-bottom:0px'>
                                     <img class='$action' src='$avatarurl' title='Profile Photo' alt='Profile Photo' style='cursor:pointer;min-height:100%;max-width:100%'
                                         data-providerid='$row[providerid]' data-name='$dataname'    
                                         data-roomid='$row[profileroomid]' data-caller='leave'
@@ -1333,11 +1333,11 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
                                      />
                                  </div>
                                 <div class='chatothertext' data-reply='$dataname' 
-                                        style='color:$textcolor;float-left;padding-bottom:0px;padding-top:0px;font-weight:normal;cursor:pointer'>
+                                        style='color:$textcolor;display:inline-block;padding-bottom:0px;padding-top:0px;font-weight:normal;cursor:pointer'>
                                          <b style='cursor:pointer'>$row[name]</b>&nbsp;$usermedal&nbsp;
-                                    <span class='smalltext2' style='color:$global_textcolor2;font-family:helvetica;'>$msgdate</span>
                                 </div>
-                                <div class='chatcontent' id='chatcontent-$row[msgid]'>$decode $edititem</div>$edititem2
+                                <div class='smalltext2' style='display:inline-block;height:20px;color:$global_textcolor2;;font-family:helvetica;'>$msgdate</div><br>
+                                <div class='chatcontent' id='chatcontent style='position:relative;margin-top:5px;display:inline-block'-$row[msgid]'>$decode $edititem</div>$edititem2
                             </div>
                         </div>";
             }

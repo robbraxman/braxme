@@ -2533,9 +2533,9 @@ $(document).ready( function() {
             //original
             if(MobileCapable && $('#roomstatuscomment').is(":visible")){
             
-               $('#roomstatuscomment').focus();
+               $('#roomstatustitle').focus();
                 setTimeout(function(){
-                    $('#roomstatuscomment').focus();
+                    $('#roomstatustitle').focus();
                 },
                 500);
             }
@@ -2544,7 +2544,7 @@ $(document).ready( function() {
                 this1.parents('table.makecommentowner').find('.noaction').hide();
                 this1.parents('table.makecommentowner').find('.makeaction').show();
                 this1.parents('table.makecommentowner').find('.noaction').hide();
-                $('#statuscomment').focus();
+                $('#statustitle').focus();
             }
             return;
             
@@ -4470,12 +4470,14 @@ $(document).ready( function() {
                     alertify.confirm('Delete Room, members, and content?',function(ok){
                         if( ok )
                         {
-                            $('#roominnerwindow').load( rootserver+"friends.php?"+timeStamp(),  {
+                            PanelShow(9);
+                            $('#popupwindow').load( rootserver+"roommanage.php?"+timeStamp(),  {
                                 'providerid': $('#pid').val(),
                                 'room': room,
                                 'mode': mode,
                                 'roomid': roomid
                             }, function(html, status){
+                                $('#popupwindow').html(html);
                                     $(".mainview").scrollTop(0);
                             });
                             
@@ -4488,13 +4490,15 @@ $(document).ready( function() {
                     alertify.confirm('Remove yourself from this Room?<br><br>Caution: This will also remove all your prior posts and activity from this room.',function(ok){
                         if( ok )
                         {
-                            $('#roominnerwindow').load( rootserver+"friends.php?"+timeStamp(),  {
+                            PanelShow(9);
+                            $('#popupwindow').load( rootserver+"roommanage.php?"+timeStamp(),  {
                                 'providerid': $('#pid').val(),
                                 'room': room,
                                 'mode': mode,
                                 'roomid': roomid,
                                 'friendproviderid': friendproviderid,
                             }, function(html, status){
+                                $('#popupwindow').html(html);
                                     defaultRoomid = 0;
                                     $(".mainview").scrollTop(0);
                             });

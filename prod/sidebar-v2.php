@@ -427,11 +427,19 @@ require("nohost.php");
                         <b>Swipe Right to see the Menu from anywhere. Try it now!</b>
                     </div>";
 
+
+        $notifytext = "";
+        if( $_SESSION['enterprise']!='Y' ){
+            //New User
+            $notifytext .= SetProfileReminder($providerid,"<br>","",$joinedvia);
+        }
         
-        $notifytext = GetNotifications($providerid);
-        if($notifytext!==''){
+        
+        $notifytext1 = GetNotifications($providerid);
+        if($notifytext1!==''){
             $swipemsg = "";
         }
+        $notifytext .= $notifytext1;
         /*
         if($sponsorroomhashtag == '' ){
             $tileview2 = '';
@@ -453,10 +461,6 @@ require("nohost.php");
         }
          * 
          */
-        if( $_SESSION['enterprise']!='Y' ){
-            //New User
-            $notifytext .= SetProfileReminder($providerid,"<br>","");
-        }
         $notifytext .= $footer;
         
         
@@ -782,7 +786,7 @@ require("nohost.php");
             
             return $sidemenu;
         }
-function SetProfileReminder($providerid, $preformat, $postformat)
+function SetProfileReminder($providerid, $preformat, $postformat,$joinedvia)
 {
     global $lock;
     global $rootserver;
@@ -796,7 +800,7 @@ function SetProfileReminder($providerid, $preformat, $postformat)
     global $customsite;
     global $global_icon_check;
     
-    $list = "<br><br><br><br>";
+    $list = "";//<br><br><br><br>";
  
    $list .=
     "<div class='pagetitle2' style='display:inline-block;margin-auto;width:90%;padding-left:20px;padding-right:20px;text-align:left;color:$global_textcolor;'>
@@ -827,31 +831,48 @@ function SetProfileReminder($providerid, $preformat, $postformat)
         </div>";
     
     if($_SESSION['avatarurl']!=="$prodserver/img/faceless.png" && $_SESSION['avatarurl']!==""  ){
-        $list = "<br><br><br><br>";
+        //$list = "<br><br><br><br>";
+        
     }
     
     if($_SESSION['roomdiscovery']=='N'){
         return "";
     }
-    
-    
-    $list .="
-        <div class='selectchatlist mainbutton gridnoborder rounded mainfont mainbutton' 
-          style='display:inline-block;cursor:pointer;
-          text-align:left;vertical-align:top;
-          background-color:$global_background;
-          min-width:80%;max-width:300px;padding-left:10px;padding:10px;margin:5px'>
-            $global_icon_check Join a Community Chat<br>
-        </div>
+    if($joinedvia!=='' && $joinedvia !=='#000'){
+        $list .="
+            <div class='roomselect mainbutton gridnoborder rounded mainfont mainbutton' 
+              style='display:inline-block;cursor:pointer;
+              text-align:left;vertical-align:top;
+              background-color:$global_background;
+              min-width:80%;max-width:300px;padding-left:10px;padding:10px;margin:5px'>
+                $global_icon_check You joined blog $joinedvia<br>
+            </div>
 
-        <br>
+            <br>
+
+           $postformat
+         </div>
+         ";
         
-       $postformat
-     </div>
-     ";
+    } else {
     
+        $list .="
+            <div class='selectchatlist mainbutton gridnoborder rounded mainfont mainbutton' 
+              style='display:inline-block;cursor:pointer;
+              text-align:left;vertical-align:top;
+              background-color:$global_background;
+              min-width:80%;max-width:300px;padding-left:10px;padding:10px;margin:5px'>
+                $global_icon_check Join a Community Chat<br>
+            </div>
 
-    $list .= "<br><br><br>";    
+            <br>
+
+           $postformat
+         </div>
+         ";
+    }
+
+    $list .= "<br><br>";    
 
     return $list;
 

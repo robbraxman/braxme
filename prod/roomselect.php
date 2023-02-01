@@ -215,14 +215,12 @@ require("validsession.inc.php");
         //UnreadRooms($providerid );
         if($find == ''){
             FavoriteRooms($providerid, $find,"" );
-            //ActiveRooms($providerid );
-            WebsiteRooms($providerid, $find );
-            //FeedRooms($providerid );
-            if($_SESSION['enterprise']=='Y'){
-                //OwnedRooms2($providerid, $find,"Y" );
-            }
         }
         $count = OwnedRooms2($providerid, $find,"" );
+        
+        if($find == ''){
+            WebsiteRooms($providerid, $find );
+        }
         //CommunityRooms($providerid, $find );
         DiscoverRooms($providerid, $find, $roomdiscovery);
         //echo "test $roomdiscovery";

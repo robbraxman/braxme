@@ -1143,20 +1143,47 @@ function FlagReadPost( $shareid )
 
 function PinPost( $providerid, $shareid, $postid, $roomid )
 {
-    pdo_query("1","
-        update statuspost set pin = 10 where postid = ? and 
-            (
-                exists 
-                 (   select providerid from roommoderator 
-                     where roomid=? and providerid=? 
-                 ) 
-                or exists 
-                 (   select providerid from statusroom 
-                     where roomid=? and owner=? 
-                 ) 
-            )
+    $result = pdo_query("1","
+        select pin from statuspost where shareid = ? and parent='Y'
+            ",array($shareid));
+    if($row = pdo_fetch($result)){
+        $pin = $row['pin'];
+    }
+    if($pin == 0){
     
-        ",array($postid, $roomid,$providerid,$roomid,$providerid ));
+        pdo_query("1","
+            update statuspost set pin = 10 where shareid = ? and 
+                parent='Y' and
+                (
+                    exists 
+                     (   select providerid from roommoderator 
+                         where roomid=? and providerid=? 
+                     ) 
+                    or exists 
+                     (   select providerid from statusroom 
+                         where roomid=? and owner=? 
+                     ) 
+                )
+
+            ",array($shareid, $roomid,$providerid,$roomid,$providerid ));
+    } else {
+        pdo_query("1","
+            update statuspost set pin = 0 where shareid = ? and 
+                parent='Y' and
+                (
+                    exists 
+                     (   select providerid from roommoderator 
+                         where roomid=? and providerid=? 
+                     ) 
+                    or exists 
+                     (   select providerid from statusroom 
+                         where roomid=? and owner=? 
+                     ) 
+                )
+
+            ",array($shareid, $roomid,$providerid,$roomid,$providerid ));
+        
+    }
         
 }
 function LockPost( $providerid, $shareid, $postid, $roomid )
@@ -2183,20 +2210,20 @@ function RoomManageMenu()
                 &nbsp;&nbsp;
                 <div class='divbuttontextonly feed showtop tapped' id='feed'>
                     <img src='../img/arrow-stem-circle-left-white-128.png' style='position:relative;top:5px;height:20px;width:auto;padding-top:0;padding-right:2px;padding-bottom:0px;' />
-                    All Rooms
+                    All Blogs
                 </div>
                 <br><br><br>
                 <table class='gridnoborder smalltext' style='margin:auto;text-align:center;color:white'>
                 <tr>
                     <td>
                     <img src='../img/tools-128.png' style='height:120px;cursor:pointer' class='friends tapped'>
-                    <br>Setup Rooms
+                    <br>Setup Blogs
                     <br>
                     </td>
 
                     <td>
                     <img src='../img/announce-128.png' style='height:120px;cursor:pointer' class='roomdiscover tapped'>
-                    <br>Discover Rooms
+                    <br>Discover Blogs
                     <br>
                     </td>
 
@@ -2308,7 +2335,7 @@ function ShareRoom ( $readonly, $caller, $providerid, $roomid, $style, $showroom
                                      <span class=smalltext>
                                      External
                                      <br>
-                                     Room
+                                     Blog
                                      <br>
                                      Invite
                                      <br>
@@ -2336,7 +2363,7 @@ function ShareRoom ( $readonly, $caller, $providerid, $roomid, $style, $showroom
                      style='display:inline;cursor:pointer;position:relative;top:0px;margin:0;padding:0;text-align:center' />
                                      <br>
                                      <span class=smalltext>
-                                     Room
+                                     Blog
                                      <br>
                                      Invite
                                      <br>Link<br>

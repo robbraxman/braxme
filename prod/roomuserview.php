@@ -13,6 +13,7 @@ function MyProfileOutput(
         $providername,
         $handle,
         $buttons,
+        $buttonsmobile,
         $publishprofile,
         $privacymessage,
         $caller,
@@ -48,10 +49,11 @@ function MyProfileOutput(
     if( $roomowner!=$providerid ){
     
         $donate .= "<br>
-                <img class='icon30 showhidden' src='../img/gift-white-128.png' placeholder='Give a gift in tokens' title='Give a gift in tokens'  />
+                <img class='icon20 showhidden' src='../img/gift-white-128.png' placeholder='Give a gift in tokens' title='Give a gift in tokens'  />
                 <span class='showhiddenarea' style='display:none'>
                 ";
         if($gift == 'Y'){
+            
             $donate .= "
                     <form id='donateform' method='POST' action='$rootserver/$installfolder/tokendonate.php?mode=select&account=$roomowner' 
                     style='text-decoration:none;color:white;'>
@@ -62,10 +64,11 @@ function MyProfileOutput(
                     </form>
                     <div class='formobile'><br></div>
                 ";
-    }
     
-    $donate .= "
-                    
+        }
+        
+        $donate .= "
+
                     <form id='donateform0' method='POST' action='$rootserver/$installfolder/gift.php?&account=$roomowner' target='functioniframe'
                     style='background-color:#1b1b1b;text-decoration:none;color:white;'>
                     <img class='icon25 showhidden' src='../img/fistbump-white-128.png' title='Kudos' style='position:relative;top:7px'  />
@@ -89,24 +92,22 @@ function MyProfileOutput(
                     </form>
                 </span><br><br>";
     }
- 
     $medalstatus = "";
     if($medal == 1){
        $medalstatus = "<span class='mainfont' style='color:$global_profiletext_color;;margin:auto;vertical-align:top;;padding-right:30px;padding-top:10px;;margin:0'>
-                            <img class='icon15' src='$iconsource_braxcheck_common' /> Trusted $appname Resource<br><br></span>";
+                            <img class='icon15' src='$iconsource_braxcheck_common' /> Trusted $appname Resource<br><br>
+                       </span>";
        
         
     }
-    
     $avatar = ShowMyAvatar($avatarurl, $providerid, $roomowner, $caller);
     $score = ShowMyScore( $roomowner);
     $followers = ShowMyFollowers( $roomowner);
     $following = ShowFollowing( $roomowner, $providerid);
     $mystore = ShowMyStore($roomowner);
     $output =  "
-    <div class='gridnoborder hearts' style='background-color:$global_profile_color;width:100%;float:left'>
+    <div class='gridnoborder hearts' style='position:relative;top:20px;margin-bottom:20px;background-color:$global_profile_color;width:100%;display:inline-block'>
         <div class='mainfont' style='color:$global_profiletext_color;float:left;margin:auto;vertical-align:top;width:80%;padding-left:20px;padding-right:30px;padding-top:10px;margin:0'>
-            $mytools
 
             <span class='nonmobile'>
                 <span class='pagetitle' style='color:$global_profiletext_color'>
@@ -114,7 +115,7 @@ function MyProfileOutput(
                 </span>
                 $avatar
                 <div class='' style='display:inline-block;margin-left:20px;margin-right:20px;color:$global_profiletext_color;vertical-align:top'>
-                    <div ><b>$handle</b> $followers $score $following </div>    
+                    <div ><b>$handle</b> $followers $following </div>    
                     <br>
                     $buttons
                 </div>
@@ -128,7 +129,7 @@ function MyProfileOutput(
                 <div class='formobile' ><b>$handle</b></div>
                 <div class='formobile' >$followers $score $following</div>
                 <span class='formobile'>
-                    $buttons
+                    $buttonsmobile
                 </span>
                 $donate
                 $medalstatus
@@ -141,7 +142,7 @@ function MyProfileOutput(
                 $myprivaterooms
         </div>
     </div>
-    <div style='float:left;width:100%;overflow:hidden'>
+    <div class='' style=';float:left;width:100%;overflow:hidden'>
         $technotes
     </div>
     ";
@@ -212,7 +213,8 @@ function ShowMyProfile($providerid, $roomowner, $caller, $profileflag)
         $myphotos = ShowMyPhotos($roomowner, $providerid, $caller );
         $myrooms = ShowMyRooms($roomowner, $providerid, $caller );
         //$myprivaterooms = ShowMyPrivateRooms($roomowner, $providerid, $caller );
-        $buttons = UserButtons( $providerid, $roomowner, $row['handle'], $row['providername'], $row['replyemail'], $row['blockee'], $caller );
+        $buttons = UserButtons( $providerid, $roomowner, $row['handle'], $row['providername'], $row['replyemail'], $row['blockee'], $caller,"" );
+        $buttonsmobile = UserButtons( $providerid, $roomowner, $row['handle'], $row['providername'], $row['replyemail'], $row['blockee'], $caller,"Y" );
     }
     $privacymessage = "";
     
@@ -227,6 +229,7 @@ function ShowMyProfile($providerid, $roomowner, $caller, $profileflag)
         $providername,
         $handle,
         $buttons,
+        $buttonsmobile,
         $publishprofile,
         $privacymessage,
         $caller,
@@ -325,7 +328,8 @@ function ShowMyRooms($providerid, $watcherid, $caller)
     
     if($roomlinks!=''){
         $roomlinksfinal = "<div class='smalltext' style='float:left;width:100%'>";
-        $roomlinksfinal .= "<span class='pagetitle2a' style='color:$global_profiletext_color'><b>$menu_myrooms</b></span><br><br>".$roomlinks."</div>";
+        $roomlinksfinal .= "<span class='pagetitle2a' style='color:$global_profiletext_color'><b>$menu_myrooms</b></span><br><br>".$roomlinks.
+                          "</div>";
         $roomlinks =$roomlinksfinal;
     }
     return $roomlinks;    
@@ -392,7 +396,7 @@ function ShowMyPrivateRooms($providerid, $watcherid, $caller)
     return $roomlinks;    
     
 }
-function UserButtons($providerid, $userid, $handle, $providername, $replyemail, $blockee, $caller )
+function UserButtons($providerid, $userid, $handle, $providername, $replyemail, $blockee, $caller, $mobile )
 {
     global $menu_startchat;
     global $menu_resumechat;
@@ -476,7 +480,7 @@ function UserButtons($providerid, $userid, $handle, $providername, $replyemail, 
             </div>
             ";
         
-            $buttons .= "
+        $buttons .= "
             <div class='managefriends'
                     data-friendid='$userid' 
                      data-handle='$handle'
@@ -487,7 +491,7 @@ function UserButtons($providerid, $userid, $handle, $providername, $replyemail, 
                      /> $menu_follow
             </div>
             ";
-            $buttonsmobile .= "
+        $buttonsmobile .= "
             <div class='managefriends'
                     data-friendid='$userid' 
                      data-handle='$handle'
@@ -528,35 +532,147 @@ function UserButtons($providerid, $userid, $handle, $providername, $replyemail, 
             <div class='unblockbutton'
                  data-name='$providername' data-email='$replyemail' data-handle='$handle'
                  style='cursor:pointer;margin-bottom:10px'>
-            <img class='icon15' src='../img/check-round-white-128.png'
-                 style='cursor:pointer;;top:8px;position:relative'
-                 data-name='$providername' data-email='$replyemail' data-handle='$handle'             
-                 
-                 /> $menu_unblock
+                <img class='icon15' src='../img/check-round-white-128.png'
+                    style='cursor:pointer;;top:8px;position:relative'
+                    /> $menu_unblock
             </div>
             ";
             $buttonsmobile .= "
             <div class='unblockbutton'
                  data-name='$providername' data-email='$replyemail' data-handle='$handle'
                  style='cursor:pointer;margin-bottom:0px'>
-            <img class='icon25' src='../img/check-round-white-128.png'
-                 style='cursor:pointer;;top:10px;position:relative'
-                 data-name='$providername' data-email='$replyemail' data-handle='$handle'             
-                 
-                 /> $menu_unblock
+                <img class='icon25' src='../img/check-round-white-128.png'
+                     style='cursor:pointer;;top:10px;position:relative'
+                    /> $menu_unblock
             </div>
             ";
         } 
+        if($_SESSION['superadmin']=='Y' ){
+            $buttons .= "<br>
+                <div class='showhidden2'
+                        style='cursor:pointer;'>
+                    <img class='icon15' src='../img/credentials-white-128.png'
+                         style='top:8px;position:relative'
+                         /> Admin Functions
+                </div>
+                ";
+        }
         
+        if($_SESSION['superadmin']=='Y' ){
+            
+            $buttons .= 
+                "<div class='showhiddenarea2' style='display:none'>";
+            $buttons .= "
+                <div class='hidehidden2'
+                        style='cursor:pointer;'>
+                    <img class='icon15' src='../img/credentials-white-128.png'
+                         style='top:8px;position:relative'
+                         /> Hide Admin Functions
+                </div>
+                <br>
+                ";
+            $buttons .= "
+                <div class='shadowban'
+                        data-userid='$userid' 
+                        style='cursor:pointer'>
+                    <img class='icon15' src='../img/credentials-white-128.png'
+                         style='top:8px;position:relative'
+                         /> Shadow Ban
+                </div>
+                ";
+            $buttons .= "
+                <div class='postwipe'
+                        data-userid='$userid' 
+                        style='cursor:pointer'>
+                    <img class='icon15' src='../img/credentials-white-128.png'
+                         style='top:8px;position:relative'
+                         /> Wipe Post
+                </div>
+                ";
+            $buttons .= "
+                <div class='profilerestrict'
+                        data-userid='$userid' 
+                        style='cursor:pointer'>
+                    <img class='icon15' src='../img/credentials-white-128.png'
+                         style='top:8px;position:relative'
+                         /> Profile Restrict
+                </div>
+                ";
+            $buttons .= "
+                <div class='postrestrict'
+                        data-userid='$userid' 
+                        style='cursor:pointer'>
+                    <img class='icon15' src='../img/credentials-white-128.png'
+                         style='top:8px;position:relative'
+                         /> Post Restrict
+                </div>
+                ";
+            $buttons .= "
+                <div class='hardrestrict'
+                        data-userid='$userid' 
+                        style='cursor:pointer'>
+                    <img class='icon15' src='../img/credentials-white-128.png'
+                         style='top:8px;position:relative'
+                         /> Hard Restrict
+                </div>
+                ";
+            $buttons .= "
+                <div class='iprestrict'
+                        data-userid='$userid' 
+                        style='cursor:pointer'>
+                    <img class='icon15' src='../img/credentials-white-128.png'
+                         style='top:8px;position:relative'
+                         /> IP Restrict
+                </div>
+                ";
+            
+            $buttons .= "
+                <div class='inactivate'
+                        data-userid='$userid' 
+                        style='cursor:pointer'>
+                    <img class='icon15' src='../img/credentials-white-128.png'
+                         style='top:8px;position:relative'
+                         /> Inactivate
+                </div>
+                ";
+            $buttons .= "
+                <div class='activate'
+                        data-userid='$userid' 
+                        style='cursor:pointer'>
+                    <img class='icon15' src='../img/credentials-white-128.png'
+                         style='top:8px;position:relative'
+                         /> Activate
+                </div>
+                ";
+            $buttons .= "
+                <div class='notifydisablebug'
+                        data-userid='$userid' 
+                        style='cursor:pointer'>
+                    <img class='icon15' src='../img/credentials-white-128.png'
+                         style='top:8px;position:relative'
+                         /> Disable Notifications
+                </div>
+                ";
+            
+            $buttons .= 
+                "</div'>";
+
+            
+        }
         
         
         
     } else {
     }
-    $buttontext = "
-        <span class='nonmobile'>$buttons</span>
-        <span class='formobile'><hr>$buttonsmobile<br><hr></span>
+    if($mobile == 'Y'){
+        $buttontext = "
+        <span class='formobile'>$buttonsmobile</span>
         ";
+    } else {
+        $buttontext = "
+        <span class='nonmobile'>$buttons</span>
+        ";
+    }
     if($providerid == $userid){
         $buttontext = '';
     }
@@ -606,7 +722,8 @@ function ShowMyAvatar($avatarurl, $providerid, $roomowner, $caller)
     if($providerid == $roomowner && $caller == 'none' ){
         
         
-        $avatar .= "<div class='circular2 gridnoborder' style='display:inline-block;width:150px;height:150px;;margin-right:20px;margin-bottom:10px;cursor:pointer;' title='Edit profile photo and bio'>";
+        $avatar .= 
+           "<div class='circular2 gridnoborder' style='display:inline-block;width:150px;height:150px;;margin-right:20px;margin-bottom:10px;cursor:pointer;' title='Edit profile photo and bio'>";
 
         $avatar .= "
             <img class='gridnoborder uploadavatar' src='$avatarurl' style='width:100%;'
@@ -661,6 +778,7 @@ function ShowMyScore( $providerid)
     $score1 = 0;
     $score2 = 0;
     
+    /*
     $result = pdo_query("1","
         SELECT score from provider
         where providerid = ? 
@@ -668,6 +786,8 @@ function ShowMyScore( $providerid)
     if($row = pdo_fetch($result)){
         $score1 += intval($row['score']);
     }
+     * 
+     */
     $result = pdo_query("1","
         SELECT count(*) as score from gifts
         where owner = ? 
@@ -752,6 +872,262 @@ function GetTechNotes( $otherid  )
     global $installfolder;
     global $admintestaccount;
     
+    if($otherid == $admintestaccount){
+        return "Admin Account<br>";
+    }
+    //return "";
+    $technotes = "<div class='showhiddenarea2 smalltext' style='display:none;padding:10px'>";
+    $result = pdo_query("1","   
+        select useragent, deviceheight, devicewidth, pixelratio, industry, enterprise, notifications, notificationflags,
+            providername, name2, alias, replyemail, handle, createdate, devicecode, sponsor, roomdiscovery, colorscheme, language,
+            accountstatus, iphash, iphash2, iphash3, ipsource, joinedvia, timezone, store, web, roomcreator, broadcaster, publish,
+            allowiot, active, verified, restricted, lastaccess, notification_disable,
+            (select count(*) from provider p2 where p2.iphash2 = provider.iphash2 and active='Y') as multi,
+            (select count(*) from photolib where photolib.providerid = provider.providerid) as photocount,
+            (select count(*) from chatmessage where chatmessage.providerid = provider.providerid) as chatcount,
+            (select count(*) from filelib where filelib.providerid = provider.providerid and filelib.status='Y') as filecount
+            
+            from provider where providerid = ? 
+            ",array($otherid));
+            //and superadmin is null and techsupport = ''
+            //(select count(*) from chatmessage where chatmessage.providerid = provider.providerid) as chatcount,
+            //(select count(*) from statuspost where statuspost.providerid = provider.providerid) as roomcount
+    
+    
+    if($row = pdo_fetch($result)){
+        $handle = substr($row['handle'],1);
+        $technotes .= "Name $row[providername] - $otherid  Active: $row[active] Restricted: $row[restricted]<br>";
+        $technotes .= "Handle $row[handle]<br>";
+        $technotes .= "Name2 $row[name2]<br>";
+        $technotes .= "Publish Profile $row[publish]<br>";
+        $technotes .= "Room=$row[roomcreator] Web=$row[web] Store=$row[store]<br>";
+        $technotes .= "Alias $row[alias]<br>";
+        $technotes .= "Email $row[replyemail] ";
+        if($row['verified']=='Y'){
+            $technotes .= "(Verified)";
+        } else {
+            $technotes .= "(Not Verified)";
+            
+        }
+        $technotes .= "<br>";
+        
+        
+        $result2 = pdo_query("1","   
+            select accountid, username, password, startdate, ip from bytzvpn where providerid = ? and status='Y'
+            ",array($otherid));
+        if($row2 = pdo_fetch($result2)){
+            $technotes .= "BytzVPN Credentials:<br>Username: $row2[username]<br>Password: $row2[password]<br> ($row2[startdate]) $row2[ip]<br>";
+            $technotes .= "<br><div class='vpnmanage divbutton4' data-accountid='$row2[accountid]' data-mode='E' >Edit VPN Account</div><br><br>";
+        } else {
+            $technotes .= "<br><div class='vpnmanage divbutton4' data-accountid='' data-name='$row[providername]' data-username='$handle' data-providerid=$otherid data-mode='A' >Create VPN Account</div><br><br>";
+            
+        }
+        
+        $result2 = pdo_query("1","   
+            select email_service, handle from provider where providerid = ? 
+            ",array($otherid));
+        if($row2 = pdo_fetch($result2)){
+            if($row2['email_service']!=='Y'){
+                $technotes .= "Email Service <br>";
+                $technotes .= "<br><div class='emailmanage divbutton4' data-handle='$handle' data-providerid=$otherid data-mode='A' >New Email</div><br><br>";
+            } else {
+                $technotes .= "Email Service (Edit) <br>";
+                $technotes .= "<br><div class='emailmanage divbutton4' data-handle='$handle' data-providerid=$otherid  data-mode='' >Edit Email</div><br><br>";
+                
+            }
+            
+        }
+        
+        
+        
+        
+        
+        $i = 0;
+        $result2 = pdo_query("1","   
+            select xacdate, item_name, payment_status, payment_amount,payer_email,paypalname, addressname, tracking,shipstatus, address1,address2,
+            city, state, postalcode, country,altaddress from paypalipn where buyer = ? order by xacdate desc
+            ",array($otherid));
+        while($row2 = pdo_fetch($result2)){
+            if($i==0){
+                $technotes .= "STORE TRANSACTIONS<br>-----------------------<br>";
+            }
+            $i++;
+            $name = $row2['addressname'];
+            if($row2['addressname']==''){
+                $name = $row2['paypalname'];;
+            } else {
+                $name = $row2['paypalname']." [".$row2['addressname']."]";
+            }
+            
+            $technotes .= "$row2[xacdate] / $row2[item_name] ($row2[payment_status]) $row2[payment_amount] Status: $row2[shipstatus]<br> ................................ $row2[payer_email]<br>$row2[tracking]<br>$name<br>$row2[address1]<br>$row2[city], $row2[state] $row2[postalcode]<br>$row2[country]<br><br>";
+            if($row2['altaddress']!=''){
+                $technotes .= "$row2[altaddress]<br>";
+            }
+        } 
+        
+        
+        if($i>0){
+        $technotes .= "-----------------------<br><br>";
+        }
+
+        $result2 = pdo_query("1","   
+            select count(*) as counter from provider where iphash = ? and datediff(curdate(),lastaccess)<90 and active='Y' 
+            ",array($row['iphash']));
+        if($row2 = pdo_fetch($result2)){
+            $iphashcount = $row2['counter'];
+        } 
+        $result2 = pdo_query("1","   
+            select count(*) as counter from provider where iphash2 = ? and datediff(curdate(),lastaccess)<90 and active='Y' 
+            ",array($row['iphash2']));
+        if($row2 = pdo_fetch($result2)){
+            $iphash2count = $row2['counter'];
+        } 
+        $result2 = pdo_query("1","   
+            select count(*) as counter from provider where iphash3 = ? and datediff(curdate(),lastaccess)<90 and active='Y' 
+            ",array($row['iphash3']));
+        if($row2 = pdo_fetch($result2)){
+            $iphash3count = $row2['counter'];
+        } 
+
+        
+        
+        $technotes .= "Color $row[colorscheme]<br>";
+        $technotes .= "Language $row[language]<br>";
+        $technotes .= "Created $row[createdate]<br>";
+        $technotes .= "Last Accessed $row[lastaccess]<br>";
+        $technotes .= "UserAgent $row[useragent]<br>";
+        $technotes .= "JoinedVia $row[joinedvia]<br>";
+        $technotes .= "Ip Hash $row[iphash] ($iphashcount)<br>";
+        $technotes .= "Ip Hash2 $row[iphash2] ($iphash2count) ip.useragent.timezone<br>";
+        $technotes .= "Ip Hash3 $row[iphash3] ($iphash3count) browserfingeprint<br>";
+        $technotes .= "Ip Source $row[ipsource]<br>";
+        $technotes .= "Timezone $row[timezone]<br>";
+        $technotes .= "Multi-Accounts $row[multi]<br>";
+        $technotes .= "Device Specs  $row[devicewidth]/$row[deviceheight]/$row[pixelratio]<br>";
+        $technotes .= "Device Code  $row[devicecode]<br>";
+        $technotes .= "Enterprise $row[enterprise] - Industry $row[industry] Sponsorlist $row[sponsor]<br>";
+        $technotes .= "Enterprise Account Status $row[accountstatus]<br>";
+        $technotes .= "Notifications $row[notifications] Exclusions $row[notificationflags]<br>";
+        $technotes .= "Photos/Files $row[photocount]/$row[filecount]<br>";
+        $technotes .= "ChatCount/RoomCount $row[chatcount]/<br>";
+        //$technotes .= "ChatCount/RoomCount $row[chatcount]/$row[roomcount]<br>";
+        $technotes .= "Sponsor $row[sponsor]/ SocialMedia $row[roomdiscovery]<br>";
+        $technotes .= "Notifydisable $row[notification_disable]<br>";
+        $technotes .= "AllowIOT $row[allowiot]<br>";
+        
+        $result2 = pdo_query("1","   
+            select distinct module from iotdata where handle = ?
+            ",array($row['handle']));
+        while($row2 = pdo_fetch($result2)){
+            $technotes .= "-- IOT $row2[module] - ";
+            
+            $result3 = pdo_query("1","   
+                select checkin from iotdevices where handle = '$row[handle]' and module='$row2[module]'
+                order by checkin desc limit 1
+                ",null);
+            if($row3 = pdo_fetch($result3)){
+                $technotes .= $row3['checkin']."<br>";
+            }
+            
+        }
+        $technotes .= "<br><br>";
+        
+        $result2 = pdo_query("1","   
+            select providername, handle, createdate, lastaccess from provider where iphash2 = '$row[iphash2]' and '$row[iphash2]'!='' and active='Y'
+            ",null);
+        while($row2 = pdo_fetch($result2)){
+            $technotes .= "$row2[providername] $row2[handle] $row2[createdate] $row2[lastaccess]<br>";
+        }
+        $technotes .= "<br><br>";
+
+        
+        
+        $result = pdo_query("1","   
+            select platform, arn, token, registered, status, error from notifytokens where providerid = ? 
+                and status!='E' order by registered desc limit 5
+            ",array($otherid));
+        while($row = pdo_fetch($result)){
+            $gcm = '';
+            $apn = '';
+            $shorttoken = substr($row['token'],0,10);
+            $token = "NotifyToken $row[platform] - $shorttoken...<br>$row[arn]<br>$row[registered] S=$row[status] $row[error]<br>";
+            if($row['platform']=='ios'){
+                $apn = $row['token'];
+            } else {
+                $gcm = $row['token'];
+            }
+            $technotes .= $token;
+            $test = "<a href='$rootserver/$installfolder/notifytokentest.php?mode=&apn=$apn&gcm=$gcm&pid=$otherid'>Register ARN Endpoint</a>&nbsp;&nbsp;&nbsp;";
+            $test .= "<a href='$rootserver/$installfolder/notifytokentest.php?mode=D&apn=$apn&gcm=$gcm&pid=$otherid'>Delete Token</a><br>";
+            $technotes .= $test;
+        }
+        $technotes .= "<br><br>";
+        $result = pdo_query("1","   
+            select roomhandle.handle, roominfo.room, roominfo.external, roomhandle.public, roominfo.roominvitehandle,
+            roominfo.autochatuser, roominfo.parentroom,
+            (select count(*) from statusroom where roominfo.roomid = statusroom.roomid ) as membercount
+            from roominfo
+            left join roomhandle on roominfo.roomid = roomhandle.roomid
+             where roominfo.roomid in (
+                select roomid from statusroom where 
+                owner=? and statusroom.roomid = roominfo.roomid and statusroom.owner = statusroom.providerid
+             ) 
+             and profileflag!='Y'
+             order by external desc
+            ",array($otherid));
+        $technotes .= "<div class='smalltext'>Rooms<br></div>";
+        while($row = pdo_fetch($result)){
+            $public = '';
+            if($row['public']=='Y'){
+                $public = 'discoverable';
+            }
+            $website = '';
+            if($row['external']=='Y'){
+                $website = "- website  #$row[roominvitehandle]";
+                $public = '';
+            }
+            $log = "<br>[$row[handle]] $row[room] $website $row[autochatuser] $public ($row[membercount]) $row[parentroom]";
+            $technotes .= $log;
+        }
+
+        /*
+        $result = pdo_query("1","   
+            select periscopestreamkey, youtubestreamkey, twitchstreamkey from restream where providerid =  ?         
+            ",array($otherid));
+        if($row = pdo_fetch($result)){
+            $technotes .= "<b>Restream</b><br>";
+            $technotes .= "Periscope=".$row['periscopestreamkey']." Youtube=".$row['youtubestreamkey']." Twitch=".$row['twitchstreamkey'].
+            "<br><br>";
+        }
+         * 
+         */
+        
+        $result = pdo_query("1","   
+            select notification.notifydate, notification.notifytype, notification.status, notification.providerid,
+            chatmaster.title, chatmaster.encoding, chatmaster.chatid, provider.providername as sender
+            from notification 
+            left join chatmaster on notification.chatid = chatmaster.chatid
+            left join provider on notification.providerid = provider.providerid
+            where recipientid =  ? order by notifydate desc limit 20       
+            ",array($otherid));
+        $technotes .= "<div class='smalltext2'>Notifications<br>";
+        while($row = pdo_fetch($result)){
+            $title = htmlentities( DecryptText( $row['title'], $row['encoding'],$row['chatid'] ),ENT_QUOTES);            
+            //$title = base64_decode($row['title']);
+            $notificationlog = "<br>$row[notifydate] $row[status] - $row[notifytype] - Sender $row[providerid] [$title] $row[sender]";
+            $technotes .= $notificationlog;
+        }
+        $technotes .= "</div>";
+        
+        $technotes .= "<br><br><br>";
+        
+        $technotes .= "</div>";
+        //$technotes .= "</div></div>";
+        
+        
+        return $technotes;
+        
+    }
     return "";
 }
 
@@ -766,7 +1142,55 @@ function ShowMyStore($owner)
     global $customsite;
     global $installfolder;
     
-    return "";
+    if($customsite){
+        return "";
+    }
+
+    
+    if($_SESSION['superadmin']!='Y'){
+        //return "";
+    }
+    $store = '';
+    $result = pdo_query("1","select store from provider where providerid = ? ",array($owner));
+    if($row = pdo_fetch($result)){
+        $store = $row['store'];
+    }
+    if($store != 'Y'){
+        return "";
+    }
+    
+    $roomid = '';
+    $result = pdo_query("1","select handle from roomhandle where roomid in 
+                ( SELECT roomid FROM braxproduction.roominfo where store='Y' and external = 'Y' and roomid in 
+                  ( select roomid from statusroom where owner = ? and owner = providerid ) 
+                )
+            ",array($owner));
+    
+    $handle = '';
+    if($row = pdo_fetch($result)){
+        $handle = substr($row['handle'],1);
+    }
+    
+    //if($owner == $_SESSION['pid'] || $_SESSION['superadmin']=='Y'){
+        return "
+                    <div class='userstore rounded' data-roomid='$roomid' data-owner='$owner' style='width:250px;cursor:pointer;padding-left:10px;background-color:$global_store_color;color:white'>
+                        <img class='icon30' src='../img/store-128.png'>
+                        Visit My Online Store 
+                    </div>  
+                    <br><br>
+            ";
+        
+    //}
+    
+    return "
+            <a href='$rootserver/$installfolder/host.php?f=_store&h=$handle&p=$owner&version=$_SESSION[version]' target=_blank >
+                <div class='rounded' data-roomid='$roomid' data-owner='$owner' style='width:250px;cursor:pointer;padding-left:10px;background-color:$global_store_color;color:white'>
+                    <img class='icon30' src='../img/store-128.png'>
+                    Visit My Online Store 
+                </div>  
+            </a>
+                        <br><br>
+        ";
     
     
 }

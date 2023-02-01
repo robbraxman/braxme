@@ -24,7 +24,7 @@ function DesktopInput( $readonly, $roomid, $anonymous_settings, $anonymous_opaci
         <!--
         <textarea class='commentwidth mainfont feedenter' id='statuscomment' placeholder='$menu_newtopic' name='comment'  autocomplete='off' style='padding:5px' rows='5'></textarea>
         -->
-        <textarea class='commentwidth feedenter' id='statuscomment' placeholder='$menu_newtopic' name='comment'  style='padding:5px' rows='5'></textarea>
+        <textarea class='commentwidth feedenter' id='statuscomment' placeholder='$menu_newtopic' name='comment'  style='padding:5px' rows='10'></textarea>
         <span class='statusphoto' style='color:$textcolor;display:none'>
             <br>
             <b>$menu_sharephoto</b><br>
@@ -126,7 +126,7 @@ function DesktopInputReply( $readonly, $selectedroomid, $roomid, $shareid, $post
             <br>
             <textarea class='commentwidth replycomment mainfont feedreplyenter' 
                 id='replycomment'  
-                placeholder='$menu_reply' name='replycomment' style='border-size:1px;padding:5px;' rows=3
+                placeholder='$menu_reply' name='replycomment' style='border-size:1px;padding:5px;' rows=5
                 data-shareid='$shareid'
                 data-reference='$postid'
             ></textarea>
@@ -220,7 +220,7 @@ function MobileInput( $readonly, $roomid, $page, $room, $mainwidth, $anonymous_s
                         <br>
                         <div id='roomstatusheading' class='pagetitle3;font-weight:bold;color:$textcolor'><b>New Topic</b></div>
                         <input class='commentwidth mainfont' id='roomstatustitle' placeholder='Thread Title' name='title'   x-webkit-speech autocomplete='off' style='background-color:white;margin-bottom:5px' />
-                        <textarea class='commentwidth mainfont' id='roomstatuscomment' placeholder='Comment, links, photo, video.' name='comment...'  x-webkit-speech rows=4 style='padding:5px;margin:0'></textarea>
+                        <textarea class='commentwidth mainfont' id='roomstatuscomment' placeholder='New Post' name='comment...'  x-webkit-speech rows=10 style='padding:5px;margin:0'></textarea>
                         <span class='statusphoto' style='cursor:pointer;color:$textcolor;display:none'>
                             <br><b>$menu_sharephoto</b><br>
                             <input class='commentwidth mainfont' id='roomstatusphoto' type='url' title='Photo Link' value='' >
@@ -282,12 +282,12 @@ function MobileInput( $readonly, $roomid, $page, $room, $mainwidth, $anonymous_s
                                 <div class='smalltext' style='cursor:pointer;display:inline-block;height:80px;width:50px;padding-left:10px;text-align:left;'>
                                     <img src='$iconsource_braxarrowright_common' 
                                         title='Post Message'
-                                        class='icon35 feed'
+                                        class='icon25 feed'
                                         id='roompostcomment' data-mode=''
                                         data-mobile='Y' data-shareid='' data-roomid='$roomid'  data-selectedroomid='$roomid'
                                         style='' 
                                         />
-                                    <img class='icon35 feedreply' src='$iconsource_braxarrowright_common' 
+                                    <img class='icon25 feedreply' src='$iconsource_braxarrowright_common' 
                                         title='Post Message'
                                         id='roompostreply' data-mode=''
                                         data-mobile='Y' data-shareid='' data-roomid='$roomid'  data-selectedroomid='$roomid'
@@ -786,7 +786,7 @@ function TopBar( $readonly, $caller, $owner, $roominfo, $gotohome, $shareid )
         <span class='roomcontent'>
             <div class='gridnoborder $backto' 
                 data-providerid='$owner' data-caller='$caller' data-roomid='$roomid' data-mode='$mode' data-roomstyle='$roomstyle'
-                style='background-color:transparent;color:white;padding-left:20px;padding-right:20px;padding-bottom:3px;margin:0;cursor:pointer' >
+                style='position:relative;top:20px;float:left;background-color:transparent;color:white;padding-left:20px;padding-right:20px;padding-bottom:3px;margin:0;cursor:pointer' >
                 <img class='icon20' Title='Back to Home' src='$iconsource_braxarrowleft_common' 
                     style='' 
                     />
@@ -877,7 +877,7 @@ function OwnerButtons( $readonly, $providerid, $roomid, $roominfo, $memberinfo, 
         $ownerbuttons =
         "  
         <tr class='gridnoborder pagetitle3' style='margin:0;border:0;padding:0'>
-            <td class='gridnoborder' style='cursor:pointer;background-color:transparent;color:black;padding:0 0 0 0;text-align:left'>
+            <td class='gridnoborder' style='cursor:pointer;background-color:transparent;color:black;padding:0 0 0 0;text-align:center'>
                     <div class='feed tapped' style='$memberinfoonly3'  data-roomid='' title='Refresh Data'>
                         <img class='icon25' src='$icon_refresh' style='top:10px;padding-left:10px' />
                     </div>

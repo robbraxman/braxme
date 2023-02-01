@@ -432,7 +432,7 @@ require_once("roomfunc.inc.php");
                 <img class='' src='../img/agent.jpg' style='width:100%;height:auto' />
             </div>
             <div class='smalltext tipbubble' 
-                style='background-color:$global_bottombar_color;margin:auto;color:$global_textcolor_reverse;text-align:center;max-width:250px'>
+                style='background-color:$global_bottombar_color;margin:auto;color:$global_textcolor_reverse;text-align:center;max-width:300px'>
                 <div class='mainfont' style='margin:auto;text-align:center;max-width:500px;padding:30px;color:$global_textcolor_reverse'>
                 This is your own blog space. To find this again, just click on your profile pic. Use it anytime and whatever you post 
                 here will be visible to all on $appname as your public profile.<br><br>Tap on the +
@@ -463,6 +463,7 @@ require_once("roomfunc.inc.php");
         
         echo "<div style='background-color:$global_bottombar_color;width:100%;color:$global_activetextcolor_reverse;text-align:center'>";
         
+            if($memberinfo->owner!==$providerid){
             echo "
             
                 <br>&nbsp;&nbsp;
@@ -475,6 +476,7 @@ require_once("roomfunc.inc.php");
                 </span>
                 </span><br><br>
                 ";
+            }
             
             if($memberinfo->mute=='Y'){
                 
@@ -868,7 +870,6 @@ function CommentButtons($providerid, $likebutton, $deletebutton, $memberinfo, $r
                             title='Pin Post' src='$rootserver/img/pin-line-128.png' 
                             style='top:0' 
                             />
-                        $deletebutton 
                         &nbsp;
                         <img class='feed icon15 tooltip roomcontrols tapped2' 
                             data-mode='LOCK' data-postid='$postid'
@@ -878,6 +879,7 @@ function CommentButtons($providerid, $likebutton, $deletebutton, $memberinfo, $r
                             />
                 ";
         }
+        $commentbuttons .= $deletebutton; 
 
             
     return $commentbuttons;

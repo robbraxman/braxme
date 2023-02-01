@@ -458,8 +458,8 @@ require("validsession.inc.php");
             if($peoplelimit < 100){
                 $peoplelimit = 100;
             }
-            if($peoplelimit > 2000){
-                $peoplelimit = 2000;
+            if($peoplelimit > 5000){
+                $peoplelimit = 5000;
             }
         }
         

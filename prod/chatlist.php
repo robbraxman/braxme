@@ -337,7 +337,11 @@ function DisplayChatList($providerid, $mode, $find, $sort)
                  
         (select 'Y' from chatmembers 
             where providerid = ? and
-                 chatmembers.chatid = chatmaster.chatid and chatmembers.providerid = ? and pin='Y' ) as pin,
+                 chatmembers.chatid = chatmaster.chatid and pin='Y' ) as pin,
+
+        (select 'S' from chatmembers 
+            where providerid = ? and
+                 chatmembers.chatid = chatmaster.chatid and pin='S' ) as saved,
 
 
                 
@@ -371,7 +375,10 @@ function DisplayChatList($providerid, $mode, $find, $sort)
         $sortorder
         $limit
         ",
-           array($timezone,$timezone,$providerid,$providerid,$providerid, $providerid,$providerid,$providerid,$providerid)
+           array($timezone,$timezone,
+               $providerid,$providerid,
+               $providerid, $providerid, 
+               $providerid,$providerid,$providerid)
            
     );    
 
@@ -413,11 +420,15 @@ function DisplayChatList($providerid, $mode, $find, $sort)
         if($row['roomid']!==''){
             $communitycount++;
         }
+        $saved = "$row[saved]";
+        if($row['saved']=='S'){
+            $saved = '(Saved)';
+        }
 
         $memberlist = DisplayChatMembersMobile(
             $providerid, $row['chatid'], $title, $row['keyhash'], $row['diff'], $row['lastread'], 
             $row['chatcount'], $row['chatcountc'], $row['membercount'],
-            $row['techsupport'], $headingcolor, $backgroundcolor, $techavatar, $row['roomid'], $count, $row['chatmembername'], $row['pin'] );
+            $row['techsupport'], $headingcolor, $backgroundcolor, $techavatar, $row['roomid'], $count, $row['chatmembername'], $row['pin'],$saved );
         
         if($count > 0 && $pinlast == 'Y' && $row['pin']!=='Y' ){
             $list .= "<hr style='opacity:50%;border:1px solid  $global_separator_color'>";       
@@ -569,7 +580,7 @@ function SortButtons($sort)
 function DisplayChatMembersMobile(
         $providerid, $chatid, $title, $keyhash, $diff, $lastread, 
         $chatcount, $chatcountc, $membercount,
-        $techsupport, $headingcolor, $backgroundcolor,  $techavatar, $roomid, $count, $chatmemberraw, $pin)
+        $techsupport, $headingcolor, $backgroundcolor,  $techavatar, $roomid, $count, $chatmemberraw, $pin,$saved)
 {
     global $prodserver;
     global $rootserver;
@@ -685,8 +696,10 @@ function DisplayChatMembersMobile(
                     word-wrap:break-word' title='$title'>
                     <table style='padding-left:0px;gridnoborder;width:100%'>
                     <tr>
-                        <td style='width:50px;background-color:black'>
-                            <div class='circular gridnoborder' style='overflow:hidden'><img class='' src='$avatar' style='margin:0;height:100%;max-width:100%' /></div>
+                        <td style='width:50px;background-color:$backgroundcolor'>
+                            <div class='circular gridnoborder' style='background-color:black;overflow:hidden'>
+                                  <img class='' src='$avatar' style='margin:0;height:100%;max-width:100%' />
+                            </div>
                         </td>
                         <td style='width:200px'>
                             <div class='smalltext' style='
@@ -697,7 +710,7 @@ function DisplayChatMembersMobile(
                                 <span class='smalltext' style='color:$global_textcolor;'><b>$title</b></span><br>
                                 $chatmembername
                                 <br>
-                                <span class='smalltext2' style='color:$global_textcolor;opacity:.5'>$chatcounttext</span>
+                                <span class='smalltext2' style='color:$global_textcolor;opacity:.5'>$chatcounttext $saved</span>
                                 <br>
 
                             </div>
@@ -779,7 +792,7 @@ function DisplayChatMembersMobile(
                         <div class='roundedtop smalltext' 
                             style='float:left;padding-top:7px;padding-bottom:10px;;width:100%;;
                             background-color:$backgroundcolor;color:$global_textcolor'>
-                            &nbsp;&nbsp;$title<br>&nbsp;&nbsp;$lock $alert $techsupport $chatcounttext <br>
+                            &nbsp;&nbsp;$title<br>&nbsp;&nbsp;$lock $alert $techsupport $chatcounttext $saved<br>
                         </div>
                         <div style='float:left;
                             text-align:center;overflow:hidden;width:100%;
@@ -802,8 +815,10 @@ function DisplayChatMembersMobile(
         $list .= "
                     <table style='padding-left:0px;gridnoborder;width:100%'>
                     <tr>
-                        <td style='width:50px;background-color:black'>
-                            <div class='circular gridnoborder' style='background-color:black;overflow:hidden'><img class='' src='$avatarurl' style='height:100%;background-color:black;margin:0;max-width:100%' /></div>
+                        <td style='width:50px;background-color:$backgroundcolor'>
+                            <div class='circular gridnoborder' style='background-color:black;overflow:hidden'>
+                                <img class='' src='$avatarurl' style='height:100%;background-color:black;margin:0;max-width:100%' />
+                            </div>
                         </td>
                         <td style='width:200px'>
                             <div class='smalltext' style='
@@ -814,7 +829,7 @@ function DisplayChatMembersMobile(
                                 <span class='smalltext' style='color:$global_textcolor;'>$chatmembertext</span><br>
                                 <b>$title</b>
                                 <br>
-                                <span class='smalltext2' style='color:$global_textcolor;opacity:.5'>$chatcounttext</span>
+                                <span class='smalltext2' style='color:$global_textcolor;opacity:.5'>$chatcounttext $saved</span>
                                 <br>
 
                             </div>

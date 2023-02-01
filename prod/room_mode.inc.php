@@ -93,7 +93,8 @@
     if( $mode == 'D'){
     
         RoomPostDelete( $providerid, $shareid, $postid, $roomid );
-        
+        $shareid = '';
+        $postid = '';
         if($parent == 'N')
             exit();
         $roomid = $selectedroomid;

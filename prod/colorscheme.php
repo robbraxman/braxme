@@ -25,16 +25,16 @@ if(isset($_SESSION['wallpaper'])){
 if(isset($webcolorscheme)){
     $color_scheme = $webcolorscheme;
     if($color_scheme == 'std'){
-        $color_scheme='riverblue';
+        $color_scheme='metal night';
     }
     $wallpaper_scheme = 'default';
 }
 
 if($color_scheme==''){
-    $color_scheme = 'riverblue';
+    $color_scheme = 'metal night';
 }
 if($color_scheme=='std' || $color_scheme == ''){
-    $color_scheme = 'riverblue';
+    $color_scheme = 'metal night';
     $wallpaper_scheme = 'default';
 }
 if(!isset($_SESSION['devicecode'])){

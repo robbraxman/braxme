@@ -588,9 +588,10 @@ require_once("internationalization.php");
             }
             
             $circular = 'circular';
-            if($_SESSION['newbie']=='Y'){
-                $circular = 'circular2';
-            }
+            //circular2 = large icons
+            //if($_SESSION['newbie']=='Y'){
+            //    $circular = 'circular2';
+            //}
             
             $notifydate = InternationalizeDate($row['notifydate2']);
             $avatar = RootServerReplace($row['avatarurl']);
@@ -664,8 +665,8 @@ require_once("internationalization.php");
                                         data-roomid='$row[roomid]' data-caller='home'
                                         data-reference='$cleanReference' data-shareid='$shareid'
                                         style='word-break:break-all;word-wrap:break-word;'>
-                                        <span class='mainfont' style='color:$global_textcolor'>
-                                            <b style='color:$global_textcolor2'>$menu_room:</b><b> $row[room]</b>  
+                                        <span class='pagetitle3' style='color:$global_textcolor'>
+                                            <span style='color:$global_textcolor2'>$menu_room:</span><span> $row[room]</span>  
                                             <span class='smalltext2'>$notifydate</span> <br>
                                             $row[providername]
                                             <span class='smalltext2' style='color:$global_textcolor2'></span>
@@ -737,16 +738,16 @@ require_once("internationalization.php");
                                         style='vertical-align:top;text-align:left'>
                                         <td>
                                             $blink
-                                            <div class='$circular gridnoborder' style='background-color:$global_bottombar_color;margin-right:10px;overflow:hidden;vertical-align:top;position:relative;top:0px;'>
+                                            <div class='$circular gridnoborder icon30' style='background-color:$global_bottombar_color;margin-right:10px;overflow:hidden;vertical-align:top;position:relative;top:0px;'>
                                                 <img class='' src='$avatar' 
                                                     style='max-width:100%;overflow:hidden;margin:0' />
                                             </div>
                                         </td>
                                         <td class='' 
                                            style='word-break:break-all;word-wrap:break-word;'>
-                                            <span class='mainfont' style='color:$global_textcolor'>
-                                                <b style='color:$global_textcolor2'>$notifytype: </b>
-                                                <b>$title</b>
+                                            <span class='pagetitle3' style='color:$global_textcolor'>
+                                                <span style='color:$global_textcolor2'>$notifytype: </span>
+                                                <span>$title</span>
                                                 <span class='smalltext2'> $notifydate</span><br>
                                                 <span class='mainfont' style='color:$global_textcolor'>$decrypted</span>
                                             </span>

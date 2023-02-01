@@ -101,7 +101,7 @@ require_once("internationalization.php");
      ************************************************/
     if( $mode == 'DR'){
         DeleteRoom($roomid);
-        echo "<div class='tipbubble friends mainbutton pagetitle3' style='margin:20px;cursor:pointer;background-color:$global_menu_color;color:white'>Room and all members and posts have been deleted. Click to continue.</div>";
+        echo "<div class='tipbubble roomselect mainbutton pagetitle3' style='margin:20px;cursor:pointer;background-color:$global_menu_color;color:white'>Room and all members and posts have been deleted. Click to continue.</div>";
         exit();
     }
     

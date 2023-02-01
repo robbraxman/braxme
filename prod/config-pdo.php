@@ -57,7 +57,7 @@ require('colorscheme.php');
         try {
              $pdo = new PDO($dsn, $usr, $pwd, $options);
         } catch (\PDOException $e) {
-             echo "Exception Connection: $connectnum";
+             echo "Maintenance Underway: Code $connectnum";
              throw new \PDOException($e->getMessage(), (int)$e->getCode());
         }        
         return $pdo;
@@ -542,3 +542,8 @@ require('colorscheme.php');
         return preg_replace('/\<br(\s*)?\/?\>/i', "\n", $string);
     }
     
+    //function purifytext($string)
+    //{   
+          //Null function 
+    //    return ($string);
+    //}

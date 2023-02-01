@@ -124,7 +124,7 @@ if($_SESSION['language']==''){
     $menu_login = 'Login';
     $menu_forgotpassword = 'Forgot Password';
     $menu_join = 'Join';
-    $menu_existingaccount = 'Already have an account?';
+    $menu_existingaccount = "Already have an account on $appname?";
     $menu_or = 'or';
     $menu_e2ekey = 'Chat Secret Passkey - Optional';
     $menu_friends = "Friends";
