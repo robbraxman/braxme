@@ -4606,6 +4606,7 @@ $(document).ready( function() {
                 var community = $('#community').val();
                 var communitylink = $('#communitylink').val();
                 var roomstyle = $('#roomstyle').val();
+                var roomaction = $('#roomaction').val();
                 
                 
                 
@@ -4660,6 +4661,7 @@ $(document).ready( function() {
                     'communitylink': communitylink,
                     'store': store,
                     'roomstyle': roomstyle,
+                    'roomaction': roomaction,
                     'showinprofile': showinprofile,
                 }, function(html, status){
                         $('#roominnerwindow').html(html);

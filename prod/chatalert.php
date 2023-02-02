@@ -1337,7 +1337,7 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
                                          <b style='cursor:pointer'>$row[name]</b>&nbsp;$usermedal&nbsp;
                                 </div>
                                 <div class='smalltext2' style='display:inline-block;height:20px;color:$global_textcolor2;;font-family:helvetica;'>$msgdate</div><br>
-                                <div class='chatcontent' id='chatcontent style='position:relative;margin-top:5px;display:inline-block'-$row[msgid]'>$decode $edititem</div>$edititem2
+                                <div class='chatcontent' id='chatcontent-$row[msgid]' style='position:relative;margin-top:5px;display:inline-block'>$decode $edititem</div>$edititem2
                             </div>
                         </div>";
             }
@@ -2199,7 +2199,7 @@ function MobileMenu(
                     ";
         $buttonpin = "
                 <table class='gridnoborder smalltext chatpin selectchatlist tapped' 
-                    title='Pin' data-chatid='$chatid' data-mode='CHAT'
+                    title='Pin' data-chatid='$chatid' data-mode='PIN'
                     style='vertical-align:top;color:black;padding-top:10px;height:40px'>
                 <tr>
                     <td>
@@ -2217,7 +2217,7 @@ function MobileMenu(
                     ";
         $buttonsave = "
                 <table class='gridnoborder smalltext chatpin selectchatlist tapped' 
-                    title='Pin' data-chatid='$chatid' data-mode='SAVED'
+                    title='Save' data-chatid='$chatid' data-mode='SAVED'
                     style='vertical-align:top;color:black;padding-top:10px;height:40px'>
                 <tr>
                     <td>

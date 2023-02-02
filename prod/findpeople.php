@@ -450,7 +450,7 @@ require("validsession.inc.php");
         
         $providerid = $_SESSION['pid'];
         
-        $chatlimit = 200;
+        $peoplelimit = 200;
         $result = pdo_query("1",
                 "select peoplelimit from provider where providerid = ?",array($_SESSION['pid']));
         if($row = pdo_fetch($result)){
@@ -664,6 +664,20 @@ require("validsession.inc.php");
         global $menu_community;
         global $menu_handle;
         
+        $peoplelimit = 200;
+        $result = pdo_query("1",
+                "select peoplelimit from provider where providerid = ?",array($_SESSION['pid']));
+        if($row = pdo_fetch($result)){
+            $peoplelimit = $row['peoplelimit'];
+            if($peoplelimit < 100){
+                $peoplelimit = 100;
+            }
+            if($peoplelimit > 5000){
+                $peoplelimit = 5000;
+            }
+        }
+        
+        
         $list = "
             <span class='meetupcontactlistarea' style='display:none;color:black'>
                 <div class='pagetitle2' style='padding-left:10px;padding-right:10px;padding-top:0px;padding-bottom:5px;color:$global_textcolor'>
@@ -687,7 +701,7 @@ require("validsession.inc.php");
         
         $listheader = "";
         if($find == ''){
-            $order = " order by provider.createdate desc limit 50 ";
+            $order = " order by provider.createdate desc limit $peoplelimit  ";
             $listheader = "
                 <div class='pagetitle3' style='padding-left:10px;padding-right:10px;padding-top:0px;padding-bottom:5px;color:$global_textcolor'>
                 <br>
@@ -1137,6 +1151,20 @@ require("validsession.inc.php");
         global $global_activetextcolor;
         global $iconsource_braxclose_common;    
         
+        $peoplelimit = 200;
+        $result = pdo_query("1",
+                "select peoplelimit from provider where providerid = ?",array($_SESSION['pid']));
+        if($row = pdo_fetch($result)){
+            $peoplelimit = $row['peoplelimit'];
+            if($peoplelimit < 100){
+                $peoplelimit = 100;
+            }
+            if($peoplelimit > 5000){
+                $peoplelimit = 5000;
+            }
+        }
+        
+        
         $list = "
             <span class='meetuprecentshow' style='display:none;color:black'>
                 <div class='pagetitle2' style='padding-left:10px;padding-right:10px;padding-top:0px;padding-bottom:5px;color:$global_textcolor'>
@@ -1163,7 +1191,7 @@ require("validsession.inc.php");
             left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = $providerid
             where  provider.active='Y' 
             and friends.providerid = ?
-            order by provider.providername asc limit 1000
+            order by provider.providername asc limit $peoplelimit
                 ",array($providerid));
         $count = 0;
         while($row = pdo_fetch($result)){
@@ -1279,6 +1307,20 @@ require("validsession.inc.php");
         global $global_activetextcolor_reverse;
         global $iconsource_braxclose_common;    
         
+        $peoplelimit = 200;
+        $result = pdo_query("1",
+                "select peoplelimit from provider where providerid = ?",array($_SESSION['pid']));
+        if($row = pdo_fetch($result)){
+            $peoplelimit = $row['peoplelimit'];
+            if($peoplelimit < 100){
+                $peoplelimit = 100;
+            }
+            if($peoplelimit > 5000){
+                $peoplelimit = 5000;
+            }
+        }
+        
+        
         $list = "
             <span class='meetuprecentshow' style='display:none;color:black'>
                 <div class='pagetitle2' style='padding-left:10px;padding-right:10px;padding-top:0px;padding-bottom:5px;color:$global_textcolor'>
@@ -1305,7 +1347,7 @@ require("validsession.inc.php");
             left join blocked blocked1 on blocked1.blockee = provider.providerid and blocked1.blocker = ?
             where  provider.active='Y' 
             and followers.followerid = ?
-            order by provider.providername asc limit 1000
+            order by provider.providername asc limit $peoplelimit
                 ",array($providerid,$providerid));
         $count = 0;
         while($row = pdo_fetch($result)){

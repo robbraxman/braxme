@@ -28,6 +28,18 @@ require_once("chat.inc.php");
 
         return;
     }
+    function DeleteLastPost( $roomid )
+    {
+        $result = pdo_query("1",
+                 "select postid from statuspost where roomid = ? order by postdate desc limit 1
+                 ",array($roomid));
+        if($row = pdo_fetch($result)){
+            $postid = $row['postid'];
+            pdo_query("1","delete from statuspost where roomid = ? and postid = ?",array($roomid, $postid));
+        }
+
+        return;
+    }
     
 
     
@@ -979,6 +991,20 @@ require_once("chat.inc.php");
             $selectroomstyle = "<option value='forum' selected=selected>Forum</option>";
         }
         
+        $actionoptions = "<option value='None' selected=selected>None</option>
+                          <option value='Delete Last Post' >Delete Last Post</option>                
+                          ";
+        //Limited to SuperAdmin for now but could be available as needed
+        if($_SESSION['superadmin']=='Y'){
+            $roomactions = "
+                            Advanced Admin Actions<br>
+                            <select id='roomaction' name='roomaction'  style='width:250px'>
+                                $actionoptions
+                            </select>
+                            <br><br>
+                            ";
+        }
+        
             
         $rsscategorytext = "";
         $rsslinktext = "";
@@ -1374,6 +1400,9 @@ require_once("chat.inc.php");
                                 $roomstyleoptions
                             </select>
                             <br><br>
+                            
+                            $roomactions
+
 
 
                             </span>

@@ -67,6 +67,7 @@ require_once("internationalization.php");
     $communitylink = @tvalidator("PURIFY",$_POST['communitylink']);
     $store = @tvalidator("PURIFY",stripslashes($_POST['store']));
     $roomstyle = @tvalidator("PURIFY",stripslashes($_POST['roomstyle']));
+    $roomaction = @tvalidator("PURIFY",stripslashes($_POST['roomaction']));
     $showinprofile = @tvalidator("PURIFY",stripslashes($_POST['showinprofile']));
         
 
@@ -99,6 +100,11 @@ require_once("internationalization.php");
      * 
      * 
      ************************************************/
+    if( $roomaction == 'Delete Last Post'){
+        DeleteLastPost($roomid);
+        echo "<div class='tipbubble roomselect mainbutton pagetitle3' style='margin:20px;cursor:pointer;background-color:$global_menu_color;color:white'>Last post deleted.</div>";
+        exit();
+    }
     if( $mode == 'DR'){
         DeleteRoom($roomid);
         echo "<div class='tipbubble roomselect mainbutton pagetitle3' style='margin:20px;cursor:pointer;background-color:$global_menu_color;color:white'>Room and all members and posts have been deleted. Click to continue.</div>";

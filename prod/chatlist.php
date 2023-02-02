@@ -504,6 +504,13 @@ function DisplayChatList($providerid, $mode, $find, $sort)
         if($mode!=='SAVED' && $count > 0){
             $list .= "
                 <br><br>
+                <br><br>
+                <br><br>
+                <br><br>
+                <br><br>
+                <br><br>
+                <br><br>
+                <br><br>
                 <div class=smalltext style='padding-left:20px;color:$global_textcolor'>
                 Items Display LImit: <input id=chatdisplaylimit class='chatdisplaylimit dataentry' type=numeric value=$chatlimit style='width:50px' />&nbsp;&nbsp;  
                 <img class='icon20 setchatdisplaylimit'  src='$iconsource_braxarrowright_common' />
@@ -766,6 +773,14 @@ function DisplayChatMembersMobile(
      * 
      *  Search for Invited Members in Chat
      */
+    if( ($diff > 0 || $lastread==0) ){
+        if( $pin == 'Y'){
+            $alert = " ".$global_icon_pin;
+        } else {
+            $alert = " ".$global_icon_check;
+        }
+    } 
+    
     if($membercount == 1){
 
         $result2 = pdo_query("1",
