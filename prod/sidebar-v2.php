@@ -440,6 +440,8 @@ require("nohost.php");
             $swipemsg = "";
         }
         $notifytext .= $notifytext1;
+        $notifytext .= GetFollowerNotifications($providerid);
+        
         /*
         if($sponsorroomhashtag == '' ){
             $tileview2 = '';
@@ -484,7 +486,10 @@ require("nohost.php");
                 </div>
             ";
         
-        
+        $avatarurl = $_SESSION['t_avatarurl'];
+        if($avatarurl == ''){
+            $avatarurl = $_SESSION['avatarurl'];
+        }
         
         
         
@@ -544,7 +549,7 @@ require("nohost.php");
                                        data-providerid=$providerid data-caller='none'
                                        data-profile='Y'
                                            
-                                       style='cursor:pointer;margin-left:10px;margin-top:0px;display:block' src='$_SESSION[avatarurl]' />
+                                       style='cursor:pointer;margin-left:10px;margin-top:0px;display:block' src='$avatarurl' />
 
                                     <div class='smalltext2' style='color:$global_menu_text_color;padding-left:10px;padding-top:3px'>$loginuser</div>
                                 </center>
@@ -801,39 +806,67 @@ function SetProfileReminder($providerid, $preformat, $postformat,$joinedvia)
     global $global_icon_check;
     
     $list = "";//<br><br><br><br>";
+    
+
+    $result = pdo_query("1","
+            select * from provider where providerid = ?  and avatarurl like '%faceless.png' "
+            ,array($providerid));
+    $profile = true;
+    if( $row = pdo_fetch($result)){
+        $profile = false;
+    }
+
+    
+    $result = pdo_query("1","
+            select 'Y' as toured from roomhandle where roomid in (select roomid from statusroom
+            where providerid = ? and roomhandle.roomid = statusroom.roomid)
+            and handle = '#userbasics'",array($providerid));
+    $toured = false;
+    if( $row = pdo_fetch($result)){
+        $toured = true;
+    }
+    
+    $result = pdo_query("1","
+            select 'Y' as community from roomhandle where roomid in (select roomid from statusroom
+            where providerid = ? and roomhandle.roomid = statusroom.roomid)
+            and community='Y' ",array($providerid));
+    $community = false;
+    if( $row = pdo_fetch($result)){
+        $community = true;
+    }
+    
  
    $list .=
     "<div class='pagetitle2' style='display:inline-block;margin-auto;width:90%;padding-left:20px;padding-right:20px;text-align:left;color:$global_textcolor;'>
       $preformat";
+   if( $toured == false){
    
-    $list .="
-        <div class='roomjoin mainbutton gridnoborder rounded mainfont mainbutton' 
-          data-mode='J' data-handle='#userbasics' data-roomid='12802' data-caller='home'
-          style='display:inline-block;cursor:pointer;
-          text-align:left;vertical-align:top;
-          background-color:$global_background;
-          min-width:80%;max-width:300px;padding-left:10px;padding:10px;margin:5px'>
-            $global_icon_check Have you done a Platform Tour?<br>
-        </div>
+        $list .="
+            <div class='roomjoin mainbutton gridnoborder rounded mainfont mainbutton' 
+              data-mode='J' data-handle='#userbasics' data-roomid='12802' data-caller='home'
+              style='display:inline-block;cursor:pointer;
+              text-align:left;vertical-align:top;
+              background-color:$global_background;
+              min-width:80%;max-width:300px;padding-left:10px;padding:10px;margin:5px'>
+                $global_icon_check Have you done a Platform Tour?<br>
+            </div>
 
-        <br>
-        ";
+            <br>
+            ";
     
-    
-    $list .=
-        "<div class='$_SESSION[profileaction] gridnoborder rounded mainfont mainbutton' 
-          data-roomid='$_SESSION[profileroomid]' data-provider='$providerid' data-caller='none'
-          style='display:inline-block;cursor:pointer;
-          text-align:left;vertical-align:top;
-          background-color:$global_background;
-          min-width:80%;max-width:300px;padding-left:10px;padding:10px;margin:5px'>
-            $global_icon_check Create Your Personal Profile!<br>
-        </div>";
-    
-    if($_SESSION['avatarurl']!=="$prodserver/img/faceless.png" && $_SESSION['avatarurl']!==""  ){
-        //$list = "<br><br><br><br>";
-        
     }
+   if( $profile == false){
+        $list .=
+            "<div class='$_SESSION[profileaction] gridnoborder rounded mainfont mainbutton' 
+              data-roomid='$_SESSION[profileroomid]' data-provider='$providerid' data-caller='none'
+              style='display:inline-block;cursor:pointer;
+              text-align:left;vertical-align:top;
+              background-color:$global_background;
+              min-width:80%;max-width:300px;padding-left:10px;padding:10px;margin:5px'>
+                $global_icon_check Create Your Personal Profile!<br>
+            </div>";
+   }
+    
     
     if($_SESSION['roomdiscovery']=='N'){
         return "";
@@ -856,20 +889,22 @@ function SetProfileReminder($providerid, $preformat, $postformat,$joinedvia)
         
     } else {
     
-        $list .="
-            <div class='selectchatlist mainbutton gridnoborder rounded mainfont mainbutton' 
-              style='display:inline-block;cursor:pointer;
-              text-align:left;vertical-align:top;
-              background-color:$global_background;
-              min-width:80%;max-width:300px;padding-left:10px;padding:10px;margin:5px'>
-                $global_icon_check Join a Community Chat<br>
-            </div>
+        if($community == false){
+            $list .="
+                <div class='selectchatlist mainbutton gridnoborder rounded mainfont mainbutton' 
+                  style='display:inline-block;cursor:pointer;
+                  text-align:left;vertical-align:top;
+                  background-color:$global_background;
+                  min-width:80%;max-width:300px;padding-left:10px;padding:10px;margin:5px'>
+                    $global_icon_check Join a Community Chat<br>
+                </div>
 
-            <br>
+                <br>
 
-           $postformat
-         </div>
-         ";
+               $postformat
+             </div>
+            ";
+        }
     }
 
     $list .= "<br><br>";    

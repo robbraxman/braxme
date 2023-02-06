@@ -44,7 +44,6 @@ function MyProfileOutput(
         $technotes = GetTechNotes($roomowner);
     }
     
-    
     $donate = "&nbsp";
     
     if( $roomowner!=$providerid ){
@@ -52,8 +51,9 @@ function MyProfileOutput(
         $donate .= "<br>
                 <img class='icon20 showhidden' src='../img/gift-white-128.png' placeholder='Give a gift in tokens' title='Give a gift in tokens'  />
                 <span class='showhiddenarea' style='display:none'>
+                  &nbsp;&nbsp;
                 ";
-        if($gift == 'Y'){
+        if($gift == 'X'){
             
             $donate .= "
                     <form id='donateform' method='POST' action='$rootserver/$installfolder/tokendonate.php?mode=select&account=$roomowner' 
@@ -63,7 +63,6 @@ function MyProfileOutput(
                     <input id='donateprofileroomid' name='roomid' value='$profileroomid' type='hidden' />
                     <input type='image' class='icon15' src='../img/arrow-circle-right-white-128.png' style='background-color:transparent;padding:0;margin:0;position:relative;top:5px'  />
                     </form>
-                    <div class='formobile'><br></div>
                 ";
     
         }
@@ -72,8 +71,7 @@ function MyProfileOutput(
 
                     <form id='donateform0' method='POST' action='$rootserver/$installfolder/gift.php?&account=$roomowner' target='functioniframe'
                     style='background-color:#1b1b1b;text-decoration:none;color:white;'>
-                    <img class='icon25 showhidden' src='../img/fistbump-white-128.png' title='Kudos' style='position:relative;top:7px'  />
-                    <span class='nonmobile'>$menu_gift</span>
+                    <img class='icon25 showhidden' src='../img/fistbump-white-128.png' title='Kudos' style='position:relative;top:12px'  />
                     <input id='donatetokens' name='tokens' type=hidden value='0' style='width:100px;height:30px;' />&nbsp;
                     <input id='donateaccount' name='account' value='$roomowner' type='hidden' />
                     <input id='donatemode' name='mode' value='K' type='hidden' />
@@ -83,8 +81,7 @@ function MyProfileOutput(
                     &nbsp;&nbsp;&nbsp;
                     <form id='donateform1' method='POST' action='$rootserver/$installfolder/gift.php?&account=$roomowner' target='functioniframe'
                     style='background-color:#1b1b1b;text-decoration:none;color:white;'>
-                    <img class='icon25 showhidden' src='../img/heart-white-128.png' title='Thanks' style='position:relative;top:7px'  />
-                    <span class='nonmobile'>$menu_thanks</span>
+                    <img class='icon20 showhidden' src='../img/heart-white-128.png' title='Thanks' style='position:relative;top:7px'  />
                     <input id='donatetokens' name='tokens' type=hidden value='0' style='width:100px;height:30px;' />&nbsp;
                     <input id='donateaccount' name='account' value='$roomowner' type='hidden' />
                     <input id='donatemode' name='mode' value='T' type='hidden' />
@@ -102,45 +99,53 @@ function MyProfileOutput(
         
     }
     $avatar = ShowMyAvatar($avatarurl, $providerid, $roomowner, $caller);
-    $score = ShowMyScore( $roomowner);
     $followers = ShowMyFollowers( $roomowner);
     $following = ShowFollowing( $roomowner, $providerid);
     $mystore = ShowMyStore($roomowner);
+    $giftscore = ShowMyScore($roomowner);
+    
+    
     $output =  "
-    <div class='gridnoborder hearts' style='position:relative;top:20px;margin-bottom:20px;background-color:$global_profile_color;width:100%;display:inline-block'>
-        <div class='mainfont' style='color:$global_profiletext_color;float:left;margin:auto;vertical-align:top;width:80%;padding-left:20px;padding-right:30px;padding-top:10px;margin:0'>
-
-            <span class='nonmobile'>
-                <span class='pagetitle' style='color:$global_profiletext_color'>
-                    $providername<br>
-                </span>
+    <div class='gridnoborder hearts' style='position:relative;top:20px;margin-bottom:20px;background-color:$global_profile_color;color:$global_profiletext_color;width:100%;display:inline-block'>
+        <div class='formobile' style='padding-left:20px'>
                 $avatar
-                <div class='' style='display:inline-block;margin-left:20px;margin-right:20px;color:$global_profiletext_color;vertical-align:top'>
-                    <div ><b>$handle</b> $followers $following </div>    
-                    <br>
-                    $buttons
-                </div>
-            </span>
-        </div>
-        <div class='mainfont' style='color:$global_profiletext_color;margin-left:0;margin-top:20px;vertical-align:top;width:80%;padding-left:30px;padding-right:30px;'>
-                <span class='formobile'>
-                    $avatar
-                </span>
-                <div class='formobile pagetitle' style='color:$global_profiletext_color'><b>$providername</b></div>
-                <div class='formobile' ><b>$handle</b></div>
-                <div class='formobile' >$followers $score $following</div>
-                <span class='formobile'>
-                    $buttonsmobile
-                </span>
-                $donate
+                <div pagetitle' style='color:$global_profiletext_color'><b>$providername</b> $followers $giftscore</div>
+                <div><b>$handle</b></div>
+                <br>
                 $medalstatus
+                <div style=';padding-top:0px'>
+                    $buttonsmobile
+                    <div style='max-width:100px'>$following</div>
+                </div>
+                <br>
+                $donate
                 $publishprofile
                 $privacymessage
                 <br>
                 $mystore
                 $myphotos
                 $myrooms
-                $myprivaterooms
+                
+        </div>
+        <div class='nonmobile mainfont' style='color:$global_profiletext_color;float:left;margin:auto;vertical-align:top;width:80%;padding-left:20px;padding-right:30px;padding-top:10px;margin:0'>
+
+            <span class='pagetitle' style='color:$global_profiletext_color'>
+                $providername<br>
+            </span>
+            $avatar
+            <div class='' style='display:inline-block;margin-left:20px;margin-right:20px;color:$global_profiletext_color;vertical-align:top'>
+                <div ><b>$handle</b> $followers $following $giftscore</div>    
+                <br>
+                $buttons
+            </div>
+            $donate
+            $medalstatus
+            $publishprofile
+            $privacymessage
+            <br>
+            $mystore
+            $myphotos
+            $myrooms
         </div>
     </div>
     <div class='' style=';float:left;width:100%;overflow:hidden'>
@@ -255,8 +260,10 @@ function ShowMyPhotos($providerid, $watcherid, $caller)
     $result = pdo_query("1","select * from photolibshare where providerid = ?  limit 1",array($providerid));
     if($row = pdo_fetch($result)){
         return "
-                            <div class='photolibshare rounded' data-userid='$providerid' style='width:250px;cursor:pointer;padding-left:10px;background-color:$global_titlebar_color;color:white'>
-                                <img class='icon30' src='../img/braxphoto-white.png'>
+                            <div class='photolibshare rounded' data-userid='$providerid' "
+                . "             style='width:250px;cursor:pointer;padding-left:10px;"
+                . "             background-color:$global_titlebar_color;color:white'>
+                                <img class='icon30' src='../img/braxphoto-white.png' />
                                 $menu_mysharedphotos
                             </div>  
                             <br><br>
@@ -656,7 +663,7 @@ function UserButtons($providerid, $userid, $handle, $providername, $replyemail, 
                 ";
             
             $buttons .= 
-                "</div'>";
+                "</div>";
 
             
         }
@@ -666,13 +673,9 @@ function UserButtons($providerid, $userid, $handle, $providername, $replyemail, 
     } else {
     }
     if($mobile == 'Y'){
-        $buttontext = "
-        <span class='formobile'>$buttonsmobile</span>
-        ";
+        $buttontext = $buttonsmobile;
     } else {
-        $buttontext = "
-        <span class='nonmobile'>$buttons</span>
-        ";
+        $buttontext = $buttons;
     }
     if($providerid == $userid){
         $buttontext = '';
@@ -696,15 +699,6 @@ function ShowMyTools($providerid, $watcherid, $caller)
     //if($_SESSION['superadmin']=='Y' ){
         return "";
     //}
-    $mytools = "
-        <div style='text-align:text;white-space:nowrap;min-width:300px'>
-            
-            <div class='divbuttontext2 divbuttontext_unsel photolibrary mainbutton smalltext' style='border:0;background-color:$global_menu_color;color:white;'><img class='icon25' src='../img/brax-photo-round-white-128.png' style=';position:relative;top:8px;' /> $menu_myphotos</div>
-            <div class='divbuttontext2 divbuttontext_unsel doclib mainbutton smalltext' style='border:0;background-color:$global_menu_color;color:white;'><img class='icon25' src='../img/brax-doc-round-white-128.png'  style='position:relative;top:8px'/> $menu_myfiles</div>
-            <div class='divbuttontext2 divbuttontext_unsel friends mainbutton smalltext' style='border:0;background-color:$global_menu_color;color:white;'><img class='icon25' src='../img/brax-room-round-white-128.png'  style='position:relative;top:8px'/> $menu_myrooms</div>
-            <br><br><br>
-        </div>
-            ";
     
     return $mytools;
 

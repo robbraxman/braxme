@@ -1128,7 +1128,7 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
             '%m/%d/%y %h:%i:%s%p') as msgdate, 
             chatmembers.techsupport, chatmessage.flag,
             chatmessage.providerid, chatmessage.chatid,
-            provider.providername, provider.avatarurl, chatmaster.owner,
+            provider.providername, provider.avatarurl, provider.t_avatarurl, chatmaster.owner,
             provider.medal, provider.handle, provider.active,
             datediff(curdate(), provider.createdate) as accountage,
 
@@ -1175,7 +1175,10 @@ function ShowChatMessages($chatid, $providerid, $limit, $passkey, $passkey64, $c
         if($row['providername']!=$row['name']){
             $row['name'] = "$row[providername]";
         }
-        $avatarurl = RootServerReplace($row['avatarurl']);
+        $avatarurl = RootServerReplace($row['t_avatarurl']);
+        if($avatarurl == ''){
+            $avatarurl = RootServerReplace($row['avatarurl']);
+        }
         if( $row['techsupport']=='Y'){
             $row['name']='Tech';
             $avatarurl = "../img/techsupport-128.png";
@@ -1427,7 +1430,11 @@ function MemberList($chatid, $providerid, $title, $keyhash, $streaming )
         if( $row['otherid']!=$providerid && $i<3){
             $technotes = GetTechNotes($row['otherid'], $chatid);
         }
-        $avatarurl = RootServerReplace("$row[avatarurl]");
+        $avatarurl = "$row[t_avatarurl]";
+        if($avatarurl==''){
+            $avatarurl = "$row[avatarurl]";
+        }
+        
         if($row['avatarurl']==''){
             $avatarurl = "$rootserver/img/newbie2.jpg";
         }

@@ -549,7 +549,7 @@ require_once("internationalization.php");
                 notification.roomid, 
                 notification.providerid, provider.providername, roominfo.room, notification.chatid,
                 notification.payload, notification.encoding, notification.reference, 
-                provider.avatarurl, roominfo.photourl, provider.profileroomid, provider.stealth,
+                provider.avatarurl, provider.t_avatarurl, roominfo.photourl, provider.profileroomid, provider.stealth,
                 (select 'Y' from notification n2 where notification.notifyid = n2.notifyid and notification.notifysubtype='LV') as livechannel
                 from notification
                 left join provider on provider.providerid = notification.providerid
@@ -595,6 +595,10 @@ require_once("internationalization.php");
             
             $notifydate = InternationalizeDate($row['notifydate2']);
             $avatar = RootServerReplace($row['avatarurl']);
+            $t_avatar = RootServerReplace($row['t_avatarurl']);
+            if($t_avatar!==''){
+                $avatar = $t_avatar;
+            }
             if($avatar == "$prodserver/img/faceless.png" || $row['avatarurl'] == ''){
                 $avatar = "$rootserver/img/newbie2.jpg";
             }
@@ -774,6 +778,104 @@ require_once("internationalization.php");
         }
         return "";
     }
+    
+    function GetFollowerNotifications($providerid)
+    {
+        global $global_icon_check;
+        global $global_titlebar_color;
+        global $global_textcolor;
+        global $global_textcolor2;
+        global $global_activetextcolor;
+        global $global_bottombar_color;
+        global $iconsource_braxgift_common;
+        global $menu_gift;
+        global $menu_thanks;
+        
+        $notifytext = "";
+        $circular = 'circular';
+        
+        
+        $timezone = $_SESSION['timezoneoffset'];
+        $homenotified = '';
+        $result = pdo_query("1","
+            select DATE_FORMAT(homenotified,'%Y-%m-%d %H:%i') as homenotified from provider where provider.providerid = ?
+            ", array($providerid));
+        if($row = pdo_fetch($result))
+        {
+            if($row['homenotified']!==''){
+                $homenotified = $row['homenotified'];
+                
+            }
+        }
+        
+        
+        $flag = "<img class='icon15 chatalert' title='Checked' src='../img/check-yellow-128.png' style='position:relative;top:3px' />";
+        $flag = $global_icon_check;
+        
+        $result = pdo_query("1",
+         
+             "
+             select followers.followdate, followers.followerid, provider.providerid,provider.providername, provider.avatarurl, provider.t_avatarurl,
+             provider.profileroomid, provider.handle
+             from followers
+             left join provider on followers.followerid = provider.providerid
+             where followers.providerid = ?
+             and followdate > ?
+             order by followdate desc ",array($providerid, $homenotified)
+
+         );
+        $count = 0;
+        while($row = pdo_fetch($result)){
+            
+            $providername = $row['providername'];
+            $handle = $row['handle'];
+            $followdate = $row['followdate'];
+            $avatar = $row['t_avatarurl'];
+            if($avatar == ''){
+                $avatar = $row['avatarurl'];
+            }
+            $profileroomid = $row['profileroomid'];
+            $followerid = $row['followerid'];
+                        
+                        $notifytext .=
+                        "
+                        <div class='mainbutton mainfont' 
+                                style='float:left;display:block;cursor:pointer; 
+                                background-color:transparent;color:black;
+                                padding-top:0px;
+                                padding-bottom:0px;
+                                padding-left:0px;
+                                padding-right:0px;
+                                width:100%;
+                                margin:0px; 
+                                text-align:left;'
+                            >
+                                <table class='gridnorder' style='position:relative'>
+                                    <tr class='mainbutton' 
+                                        data-caller='home'
+                                        style='vertical-align:top;text-align:left'>
+                                        <td>
+                                            <div class='$circular feed gridnoborder icon30' style='background-color:$global_bottombar_color;margin-right:10px;overflow:hidden;vertical-align:top;position:relative;top:0px;'
+                                                data-roomid = $profileroomid data-profile='Y' data-providerid = $followerid data-mode='S' data-name='$providername' data-caller='leave'>
+                                                <img class='' src='$avatar' 
+                                                    style='max-width:100%;overflow:hidden;margin:0' />
+                                            </div>
+                                        </td>
+                                        <td class='' 
+                                           style='word-break:break-all;word-wrap:break-word;'>
+                                            <span class='pagetitle3' style='color:$global_textcolor'>
+                                                <span style='color:$global_textcolor2'>Followed on </span>
+                                                <span class='smalltext2'> $followdate</span><br>
+                                                <span class='mainfont' style='color:$global_textcolor'>$providername $handle</span>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+                        </div>
+                        ";
+                    }        
+        return $notifytext;
+    }        
     
     function GetEformNotifications($providerid)
     {

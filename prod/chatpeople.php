@@ -103,7 +103,7 @@ require_once("config-pdo.php");
         
         $result = pdo_query("1","
         select provider.providername, provider.providerid as otherid,  
-        provider.replyemail as otheremail, provider.avatarurl, 
+        provider.replyemail as otheremail, provider.avatarurl, provider.t_avatarurl,
         provider.handle, chatmembers.techsupport, chatmembers.broadcaster,
         provider.profileroomid, chatmaster.keyhash, 
         (select 'Y' from ban where ban.banid = provider.banid and ban.chatid = chatmaster.chatid ) as banned,
@@ -149,7 +149,10 @@ require_once("config-pdo.php");
                 $joined = "<br>".$row['joined'];
             }
 
-             $avatar = $row['avatarurl'];
+             $avatar = $row['t_avatarurl'];
+             if($avatar == ''){
+                $avatar = $row['avatarurl'];
+             }
              if($avatar == "$rootserver/img/faceless.png" || $avatar == ''){
                  $avatar = "$rootserver/img/newbie2.jpg";
              }

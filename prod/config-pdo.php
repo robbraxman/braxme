@@ -516,7 +516,7 @@ require('colorscheme.php');
     }
     function ServerTimeOutCheck()
     {
-        return false;
+        //return false;
         if(!isset($_SESSION['pid']) || $_SESSION['pid']=='') //Invalid Session
         {
             $_SESSION['reset']='Y';

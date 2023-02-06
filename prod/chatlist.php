@@ -296,7 +296,7 @@ function DisplayChatList($providerid, $mode, $find, $sort)
     
     $mobilequery = "
          (
-         select concat(p2.providername,' ',p2.handle,'~',p2.avatarurl)
+         select concat(p2.providername,' ',p2.handle,'~',p2.avatarurl,'~',p2.t_avatarurl)
          from chatmembers
          left join provider p2 on chatmembers.providerid = p2.providerid
          where chatmembers.providerid !=$providerid and 
@@ -613,6 +613,9 @@ function DisplayChatMembersMobile(
     if(isset($tmp[1])){
         $avatarurl = $tmp[1];
     }
+    if(isset($tmp[2]) && $tmp[2]!==''){
+        $avatarurl = $tmp[2];
+    }
     
     //$backgroundcolor = "$global_bottombar_color";
     $backgroundcolor = $global_background;
@@ -714,8 +717,9 @@ function DisplayChatMembersMobile(
                                 text-align:left;overflow:hidden;width:100%;padding-left:5px;padding-top:5px;
                                 padding-bottom:5px;
                                 background-color:$backgroundcolor;color:$global_textcolor'>
-                                <span class='smalltext' style='color:$global_textcolor;'><b>$title</b></span><br>
-                                $chatmembername
+                                <span class='smalltext' style='color:$global_textcolor;;opacity:1'><b>$title</b></span><br>
+                                <span class='smalltext' style='color:$global_textcolor;opacity:.5'>$chatmembername</span>
+                                
                                 <br>
                                 <span class='smalltext2' style='color:$global_textcolor;opacity:.5'>$chatcounttext $saved</span>
                                 <br>
@@ -761,11 +765,11 @@ function DisplayChatMembersMobile(
     //$chatmembername=substr($chatmembername,0,20);
 
     if(intval($membercount) <= 2 ){
-        $chatmembertext = $chatmembername;
+        $chatmembertext = "<b>$chatmembername</b>";
 
     } else {
         $memberothers = $membercount - 1;
-        $chatmembertext =  "$chatmembername +$memberothers others";
+        $chatmembertext =  "<b>$chatmembername</b> +$memberothers others";
     } 
     
 
@@ -813,7 +817,7 @@ function DisplayChatMembersMobile(
                             text-align:center;overflow:hidden;width:100%;
                             background-color:$backgroundcolor;color:$global_textcolor'>
 
-                                <div class='pagetitle3'>
+                                <div class='pagetitle3' style:opacity:1'>
                                     &nbsp;&nbsp;$row2[name]<br>$row2[email]<br>(Pending)
                                 </div>
 
@@ -827,7 +831,8 @@ function DisplayChatMembersMobile(
             $title = 'Private Chat';
 
         }
-        $list .= "
+        if($membercount == 2 || $title =='Private Chat'){
+            $list .= "
                     <table style='padding-left:0px;gridnoborder;width:100%'>
                     <tr>
                         <td style='width:50px;background-color:$backgroundcolor'>
@@ -841,8 +846,8 @@ function DisplayChatMembersMobile(
                                 text-align:left;overflow:hidden;width:100%;padding-left:5px;padding-top:5px;
                                 padding-bottom:5px;
                                 background-color:$backgroundcolor;color:$global_textcolor'>
-                                <span class='smalltext' style='color:$global_textcolor;'>$chatmembertext</span><br>
-                                <b>$title</b>
+                                <span class='smalltext' style='color:$global_textcolor;opacity:1'>$chatmembertext</span><br>
+                                <span class='smalltext' style='color:$global_textcolor;opacity:.7'>$title</span><br>
                                 <br>
                                 <span class='smalltext2' style='color:$global_textcolor;opacity:.5'>$chatcounttext $saved</span>
                                 <br>
@@ -855,6 +860,37 @@ function DisplayChatMembersMobile(
                     </tr>
                     </table>
                 ";
+        }
+        if($membercount > 2 && $title!=='Private Chat'){
+            $list .= "
+                    <table style='padding-left:0px;gridnoborder;width:100%'>
+                    <tr>
+                        <td style='width:50px;background-color:$backgroundcolor'>
+                            <div class='circular gridnoborder' style='background-color:black;overflow:hidden'>
+                                <img class='' src='$avatarurl' style='height:100%;background-color:black;margin:0;max-width:100%' />
+                            </div>
+                        </td>
+                        <td style='width:200px'>
+                            <div class='smalltext' style='
+                                width:200px;
+                                text-align:left;overflow:hidden;width:100%;padding-left:5px;padding-top:5px;
+                                padding-bottom:5px;
+                                background-color:$backgroundcolor;color:$global_textcolor'>
+                                <span class='smalltext' style='color:$global_textcolor;opacity:1'><b>$title</b></span><br>
+                                <span class='smalltext' style='color:$global_textcolor;opacity:.5'>$chatmembertext</span><br>
+                                <br>
+                                <span class='smalltext2' style='color:$global_textcolor;opacity:.5'>$chatcounttext $saved</span>
+                                <br>
+
+                            </div>
+                        </td>
+                        <td style='text-align:right;width:50px;padding-right:10px'>
+                            $alert $lock   
+                        </td>
+                    </tr>
+                    </table>
+                ";
+        }
 
         $list .= 
         "   

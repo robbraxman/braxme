@@ -8,7 +8,7 @@ echo "<html>\r\n";
 echo "<head>\r\n";
 echo "<meta charset='utf-8'>";
 
-echo "<META HTTP-EQUIV='CACHE-CONTROL' CONTENT='private'>";
+echo "<META HTTP-EQUIV='CACHE-CONTROL' CONTENT='public'>";
 echo "<meta name='description' content='$enterpriseapp - Building Private Communities'>";
 echo "<meta property='og:title' content='$appname - $enterpriseapp' />";
 echo "<meta property='og:url' content='$rootserver/index.php' />";

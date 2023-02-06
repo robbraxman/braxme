@@ -3255,11 +3255,17 @@ $(document).ready( function() {
 
                     }).done(function( data, status ) {
                         
+                        if( data ==='T'){
+                            PanelShow(39);
+                            return;
+                        }
 
                         $('#roominnerwindow').hide().html(data).fadeIn(800);
                         $("#mainview").scrollTop(0);
                         SideBarList(true);
 
+                    }).fail(function(data, status) {
+                        
                     });
                     return;
                 }
@@ -3647,8 +3653,7 @@ $(document).ready( function() {
                 }).done(function( data, status ) {
                     
                     if( data ==='T'){
-                        
-                        $('#roominnerwindow').html(TimeoutError);
+                        PanelShow(39);
                         return;
                     }
 
@@ -3734,10 +3739,6 @@ $(document).ready( function() {
                     $('#roominnerwindow').hide().html(data).fadeIn(800);
                     $("#mainview").scrollTop(0);
                     
-
-                }).fail(function( data, status ) {
-
-                    $('#roominnerwindow').html(ConnectError);
 
                 });
             
@@ -3827,7 +3828,7 @@ $(document).ready( function() {
 
                 }).fail(function( data, status ) {
 
-                    $('#roominnerwindow').html(ConnectError);
+                    PanelShow(39);
 
                 });
             
@@ -4419,7 +4420,7 @@ $(document).ready( function() {
                             alertify.alert( msg.msg);
                             return;
                         }
-                        PanelShow(4);
+                        //PanelShow(4);
                         if(inforequest==='Y'){
                             $('#trigger_credentialget').trigger('click');
                         } else
@@ -8235,8 +8236,7 @@ $(document).ready( function() {
                     var msg = jQuery.parseJSON(data);
                     //$('#chatwindow').scrollTop(0);
                     if(msg.noitems === 'T'){
-                        
-                        $('#socialwindow').html(TimeoutError);
+                        PanelShow(39);
                         return;
                         
                     }
@@ -8258,14 +8258,6 @@ $(document).ready( function() {
                     
                     $('#socialwindow').show();
                     
-                }).fail(function( data, status ) {
-                    
-                    if(tester==='Y'){
-                        lastCheckIn3 = new Date();
-                        $('.admintrace3').html(lastCheckIn3+' '+status);
-                    }
-                    
-                    $('#socialwindow').html(ConnectError);
                 });
                 
             
@@ -9387,8 +9379,8 @@ $(document).ready( function() {
                         $('.meetuppublicshow').show();
                         //$('body .meetupenterpriselist').trigger('click');
                     }
-                }).fail(function(){
-                    $('#socialwindow').html(ConnectError);
+                }).fail(function(data, status){
+                    PanelShow(39);
                     
                 });
                 

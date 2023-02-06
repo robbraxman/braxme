@@ -508,7 +508,7 @@ require("validsession.inc.php");
         
         $result = pdo_query("1","
             select 
-            provider.providername, provider.alias, provider.avatarurl, provider.companyname,
+            provider.providername, provider.alias, provider.avatarurl, provider.t_avatarurl, provider.companyname,
             provider.providerid, provider.handle, publishprofile, replyemail, provider.profileroomid,
             DATE_FORMAT(provider.createdate, '%b %d/%y') as joined, provider.score,
             (select 'Y' from followers where followers.providerid = provider.providerid and followers.followerid = $providerid ) as followed
@@ -572,6 +572,10 @@ require("validsession.inc.php");
             }
 
              $avatar = RootServerReplace($row['avatarurl']);
+             $t_avatar = RootServerReplace($row['t_avatarurl']);
+             if($t_avatar!==''){
+                 $avatar = $t_avatar;
+             }
              if($avatar == "$rootserver/img/faceless.png" || $avatar == ''){
                  $avatar = "$rootserver/img/newbie2.jpg";
              }
@@ -715,7 +719,7 @@ require("validsession.inc.php");
         
         $result = pdo_query("1","
             select 
-            provider.providername, provider.alias, provider.avatarurl, provider.companyname,
+            provider.providername, provider.alias, provider.avatarurl, provider.t_avatarurl, provider.companyname,
             provider.providerid, provider.handle, provider.publishprofile, provider.replyemail,
             DATE_FORMAT(provider.createdate, '%m/%d/%y') as joined, blocked1.blockee, provider.profileroomid, provider.score,
             (select 'Y' from followers where followers.providerid = provider.providerid and followers.followerid = $_SESSION[pid] ) as followed
@@ -779,6 +783,10 @@ require("validsession.inc.php");
             }
 
              $avatar = RootServerReplace($row['avatarurl']);
+             $t_avatar = RootServerReplace($row['t_avatarurl']);
+             if($t_avatar!==''){
+                 $avatar = $t_avatar;
+             }
              if($avatar == "$rootserver/img/faceless.png" || $avatar == ''){
                  $avatar = "$rootserver/img/newbie2.jpg";
              }
@@ -891,7 +899,7 @@ require("validsession.inc.php");
         
         $result = pdo_query("1","
             select 
-            provider.providername, provider.alias, provider.avatarurl, provider.companyname,
+            provider.providername, provider.alias, provider.avatarurl, provider.t_avatarurl, provider.companyname,
             provider.providerid, provider.handle, provider.publishprofile, provider.replyemail,
             provider.positiontitle,
             DATE_FORMAT(provider.createdate, '%b %d/%y') as joined, blocked1.blockee, profileroomid, provider.score
@@ -938,6 +946,10 @@ require("validsession.inc.php");
             }
 
              $avatar = RootServerReplace($row['avatarurl']);
+             $t_avatar = RootServerReplace($row['t_avatarurl']);
+             if($t_avatar!==''){
+                 $avatar = $t_avatar;
+             }
              if($avatar == "$rootserver/img/faceless.png" || $avatar == ''){
                  $avatar = "$rootserver/img/newbie2.jpg";
              }
@@ -1025,7 +1037,7 @@ require("validsession.inc.php");
         
         $result = pdo_query("1","
             select 
-            provider.providername, provider.alias, provider.avatarurl, provider.companyname,
+            provider.providername, provider.alias, provider.avatarurl, provider.t_avatarurl, provider.companyname,
             provider.providerid, provider.handle, provider.publishprofile, provider.replyemail,
             DATE_FORMAT(provider.createdate, '%b %d/%y') as joined, blocked1.blockee, 
             DATE_FORMAT(provider.lastactive, '%b %d/%y') as lastactive, blocked1.blockee,
@@ -1068,6 +1080,10 @@ require("validsession.inc.php");
             }
 
              $avatar = RootServerReplace($row['avatarurl']);
+             $t_avatar = RootServerReplace($row['t_avatarurl']);
+             if($t_avatar!==''){
+                 $avatar = $t_avatar;
+             }
              if($avatar == "$rootserver/img/faceless.png" || $avatar == ''){
                  $avatar = "$rootserver/img/newbie2.jpg";
              }
@@ -1180,7 +1196,7 @@ require("validsession.inc.php");
         
         $result = pdo_query("1","
             select 
-            provider.providername, provider.alias, provider.avatarurl, provider.companyname,
+            provider.providername, provider.alias, provider.avatarurl, provider.t_avatarurl, provider.companyname,
             provider.providerid, provider.handle, provider.publishprofile, provider.replyemail,
             DATE_FORMAT(provider.createdate, '%b %d/%y') as joined, blocked1.blockee, 
             DATE_FORMAT(provider.lastactive, '%b %d/%y') as lastactive, blocked1.blockee,
@@ -1213,6 +1229,10 @@ require("validsession.inc.php");
             }
 
              $avatar = RootServerReplace($row['avatarurl']);
+             $t_avatar = RootServerReplace($row['t_avatarurl']);
+             if($t_avatar!==''){
+                 $avatar = $t_avatar;
+             }
              if($avatar == "$rootserver/img/faceless.png" || $avatar == ''){
                  $avatar = "$rootserver/img/newbie2.jpg";
              }
@@ -1336,7 +1356,7 @@ require("validsession.inc.php");
         
         $result = pdo_query("1","
             select 
-            provider.providername, provider.alias, provider.avatarurl, provider.companyname,
+            provider.providername, provider.alias, provider.avatarurl, provider.t_avatarurl, provider.companyname,
             provider.providerid, provider.handle, provider.publishprofile, provider.replyemail,
             DATE_FORMAT(provider.createdate, '%b %d/%y') as joined, blocked1.blockee, 
             DATE_FORMAT(provider.lastactive, '%b %d/%y') as lastactive, blocked1.blockee,
@@ -1369,6 +1389,10 @@ require("validsession.inc.php");
             }
 
              $avatar = RootServerReplace($row['avatarurl']);
+             $t_avatar = RootServerReplace($row['t_avatarurl']);
+             if($t_avatar!==''){
+                 $avatar = $t_avatar;
+             }
              if($avatar == "$rootserver/img/faceless.png" || $avatar == ''){
                  $avatar = "$rootserver/img/newbie2.jpg";
              }
@@ -1470,7 +1494,7 @@ require("validsession.inc.php");
         
         $result = pdo_query("1","
             select 
-            provider.providername, provider.alias, provider.avatarurl, provider.companyname,
+            provider.providername, provider.alias, provider.avatarurl, provider.t_avatarurl, provider.companyname,
             provider.providerid, provider.handle, provider.publishprofile, provider.replyemail,
             DATE_FORMAT(provider.createdate, '%b %d/%y') as joined, 
             DATE_FORMAT(provider.lastactive, '%b %d/%y') as lastactive,
@@ -1498,6 +1522,10 @@ require("validsession.inc.php");
             $blocked = "";
 
              $avatar = RootServerReplace($row['avatarurl']);
+             $t_avatar = RootServerReplace($row['t_avatarurl']);
+             if($t_avatar!==''){
+                 $avatar = $t_avatar;
+             }
              if($avatar == "$rootserver/img/faceless.png" || $avatar == ''){
                  $avatar = "$rootserver/img/newbie2.jpg";
              }
@@ -1589,7 +1617,7 @@ require("validsession.inc.php");
         
         $result = pdo_query("1","
             select 
-            provider.providername, provider.alias, provider.avatarurl, provider.companyname,
+            provider.providername, provider.alias, provider.avatarurl, provider.t_avatarurl, provider.companyname,
             provider.providerid, provider.handle, provider.publishprofile, provider.replyemail,
             DATE_FORMAT(provider.createdate, '%b %d/%y') as joined, 
             DATE_FORMAT(provider.lastactive, '%b %d/%y') as lastactive,
@@ -1618,6 +1646,10 @@ require("validsession.inc.php");
             //}
 
              $avatar = RootServerReplace($row['avatarurl']);
+             $t_avatar = RootServerReplace($row['t_avatarurl']);
+             if($t_avatar!==''){
+                 $avatar = $t_avatar;
+             }
              if($avatar == "$rootserver/img/faceless.png" || $avatar == ''){
                  $avatar = "$rootserver/img/newbie2.jpg";
              }

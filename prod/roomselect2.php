@@ -41,7 +41,7 @@ require_once("lib_autolink.php");
     $result = pdo_query("1",
         "
             select roominfo.room, statuspost.parent, roominfo.subscription,
-            provider.avatarurl, roominfo.profileflag,
+            provider.avatarurl, provider.t_avatarurl, roominfo.profileflag,
             statuspost.anonymous, statuspost.encoding, statuspost.postid,
             statuspost.pin, statuspost.locked,
             providername, provider.name2, statuspost.comment, statuspost.link, 
@@ -223,7 +223,10 @@ require_once("lib_autolink.php");
 
         //What about Blocked? Check Later
         
-        $avatarurl = HttpsWrapper($row['avatarurl']);
+        $avatarurl = $row['t_avatarurl'];
+        if($avatarurl==''){
+            $avatarurl = $row['avatarurl'];
+        }
         $postername = $row['providername'];
         if($row['avatarurl'] == '' || $row['anonymous']=='Y'){
             $avatarurl = "$rootserver/img/egg-blue.png";

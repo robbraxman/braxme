@@ -613,7 +613,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
         global $loginid;
         global $applogo;
         
-            if( $fails > 10 ){
+            if( $fails > 100 ){
             
                 echo "<html><title>Login Message</title>";
                 echo "<meta name='viewport' content='width=device-width, initial-scale=1'>";
@@ -713,7 +713,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
             "
                select provider.restricted, provider.verified, provider.superadmin, 
                provider.techsupport, provider.cookies_sender, provider.inactivitytimeout, 
-               provider.replyemail, provider.avatarurl, provider.accountstatus, provider.providername, 
+               provider.replyemail, provider.avatarurl, provider.t_avatarurl, provider.accountstatus, provider.providername, 
                provider.menustyle, provider.handle, provider.featureemail, 
                provider.enterprise, provider.enterprisehost, provider.industry,
                provider.companyname, provider.active, provider.age, 
@@ -828,6 +828,7 @@ require_once 'authenticator/GoogleAuthenticator.php';
             if($row['avatarurl']==""){
                $_SESSION['avatarurl'] = "$rootserver/img/newbie.jpg"; 
             }
+            $_SESSION['t_avatarurl'] = $row['t_avatarurl'];
             $_SESSION['verified']=$row['verified'];
             if( !isset($_SESSION['onetimeflag']) ||  $_SESSION['onetimeflag']!='Y'){
                 $_SESSION['chgpassword']=$row['chgpassword'];

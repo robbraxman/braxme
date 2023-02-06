@@ -2068,7 +2068,7 @@ require_once("chat.inc.php");
         $result = pdo_query("1",
             "
                 select provider.replyemail, providername as name, provider.providerid,
-                avatarurl, roominfo.room, statusroom.roomid, provider.handle, 
+                avatarurl, t_avatarurl, roominfo.room, statusroom.roomid, provider.handle, 
                 roommoderator.providerid as moderator, statusroom.owner
                 from statusroom
                 left join roominfo on statusroom.roomid = roominfo.roomid
@@ -2084,7 +2084,10 @@ require_once("chat.inc.php");
 
         while($row = pdo_fetch($result)){
         
-            $avatar = $row['avatarurl'];
+            $avatar = $row['t_avatarurl'];
+            if($avatar==''){
+                $avatar = $row['avatarurl'];
+            }
             if($avatar == "$rootserver/img/faceless.png"){
                 $avatar = "$rootserver/img/newbie2.jpg";
             }

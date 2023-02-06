@@ -458,7 +458,7 @@ require_once("internationalization.php");
                             <tr>
                                 <td>
 
-                                    <span class='pagetitle2a' style='color:white'>
+                                    <span class='pagetitle3' style='color:white'>
                                         <!--$menu_signupsuccess2-->
                                     </span>
                                     <div class='pagetitle3' style='margin:auto;color:$global_textcolor;max-width:300px'>

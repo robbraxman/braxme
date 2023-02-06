@@ -1883,6 +1883,7 @@ function CommunityRooms($providerid, $find )
             roomhandle.public,
             roominfo.roomdesc,
             roominfo.private,
+            roominfo.featured,
             (select case  
                 when roomhandle.category is null then 'Private' 
                 else roomhandle.category end)
@@ -1900,6 +1901,7 @@ function CommunityRooms($providerid, $find )
             as org,
             datediff( now(), roominfo.lastactive) as active,
             roominfo.photourl,
+            (select 'Y' from statusroom where providerid = $providerid and roominfo.roomid = statusroom.roomid) as member,
             (select count(*) from statuspost where statuspost.roomid = roominfo.roomid ) as postcount
             from roominfo
             left join statusroom on statusroom.roomid = roominfo.roomid
@@ -1908,7 +1910,7 @@ function CommunityRooms($providerid, $find )
             where 
             roomhandle.community='Y'
             and (roominfo.rsscategory is null or roominfo.rsscategory = '')
-            order by featured desc, roominfo.room asc 
+            order by member asc, roominfo.featured desc, lastactive desc, roominfo.room asc 
             ",null);
 
 
@@ -1926,8 +1928,11 @@ function CommunityRooms($providerid, $find )
             }
             
             $count++;
-
-
+            $memberopacity = "1";
+            if($row['member']=='Y'){
+                $memberopacity = ".3";
+            }
+            
             if($row['handle']!='') {
                 $row['ownername']=$row['handle'];
             }
@@ -1990,10 +1995,10 @@ function CommunityRooms($providerid, $find )
 
                 echo "
                       <div class='stdlistbox $shadow roomjoin gridnoborder rounded mainfont' data-roomid='$row[roomid]' 
-                        data-room='$row[room]' data-mode='JCOMMUNITY' data-handle='$row[handle]'
+                        data-room='$row[room]' data-mode='JCOMMUNITY' data-handle='$row[handle]' data-caller='FAQ'
                         style='display:inline-block;cursor:pointer;
                         text-align:center;vertical-align:top;
-                        background-color:$global_background;
+                        background-color:$global_background;opacity:$memberopacity;
                         min-width:15%;max-width:300px;padding-left:10px;padding:10px;margin:5px'>
                             $photourl
                             <div class='mainfont' style='color:$global_textcolor;max-width:90%;width:200px;word-break:break-word'>
@@ -2147,7 +2152,7 @@ function JoinCommunity($providerid, $roomdiscovery, $preformat, $postformat)
         }
         $list .= "
               <div class='roomjoin gridnoborder rounded mainfont' data-roomid='$row[roomid]' 
-                data-room='$row[room]' data-mode='JCOMMUNITY' data-handle='$row[handle]'
+                data-room='$row[room]' data-mode='JCOMMUNITY' data-handle='$row[handle]'  data-caller='FAQ'
                 style='display:inline-block;cursor:pointer;
                 text-align:center;vertical-align:top;
                 background-color:$global_background;
@@ -2220,7 +2225,7 @@ function JoinCommunity($providerid, $roomdiscovery, $preformat, $postformat)
             
         $list .= "
                 <div class='stdlistbox roomjoin mainbutton tapped2 $shadow' data-handle='#techsupport' 
-                  data-room=''  data-roomid=$row[roomid] data-mode='J'
+                  data-room=''  data-roomid=$row[roomid] data-mode='J'  data-caller='FAQ'
                   style='position:relative;display:inline-block;cursor:pointer;
                   text-align:left;
                   background-color:whitesmoke;

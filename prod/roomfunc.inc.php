@@ -757,29 +757,21 @@ function TopBar( $readonly, $caller, $owner, $roominfo, $gotohome, $shareid )
     if($backto == 'roomselect'){
         $mode = '';
     }
-    if($caller == 'FAQ'){
-        $mode = 'FAQ';
-    }
     if($backto == 'feed'){
         $mode = '';
-    }
-    if($roomstyle == 'faq'){
-        $backto = "feed";
-        if($shareid == ""){
-            $backto = "roomselect";
-            $caller = "FAQ";
-            $mode = "FAQ";
-            $roomid = "";
-        }
     }
     if($roomstyle == 'forum'){
         $backto = "feed";
         if($shareid == ""){
             $backto = "roomselect";
-            $caller = "";
             $mode = "";
             $roomid = "";
         }
+    }
+    if($roominfo->community=='F'){
+        $backto = "roomselect";
+        $mode = 'FAQ';
+        $caller = 'FAQ';
     }
     
     $topbar = "

@@ -1385,6 +1385,7 @@ function RoomInfo($providerid, $roomid, $mainwidth, $page, $memberinfo)
     global $global_titlebar_color;
     global $global_textcolor;
     global $menu_aboutme;
+    global $global_profiletext_color;
     
     $room = '';
     $handle = '';
@@ -1416,6 +1417,7 @@ function RoomInfo($providerid, $roomid, $mainwidth, $page, $memberinfo)
     $radiostation = '';
     $store = '';
     $roomstyle = '';
+    $community = '';
     
     
     if($roomid == 'All'){
@@ -1464,6 +1466,8 @@ function RoomInfo($providerid, $roomid, $mainwidth, $page, $memberinfo)
                 (select chatid from chatmaster where chatmaster.roomid = roominfo.roomid and status='Y' order by chatid desc limit 1) as chatidquiz,
                 (select handle from roomhandle where roomhandle.roomid = roominfo.roomid )
                 as handle,
+                (select community from roomhandle where roomhandle.roomid = roominfo.roomid )
+                as community,
                 (select count(*) from statuspost where statuspost.roomid = roominfo.roomid) as postcount
             
             from roominfo
@@ -1491,7 +1495,7 @@ function RoomInfo($providerid, $roomid, $mainwidth, $page, $memberinfo)
             select
             provider.profileroomid,
             provider.providername as ownername, 
-            provider.avatarurl, provider.publishprofile,
+            provider.avatarurl, provider.t_avatarurl, provider.publishprofile,
             provider.handle as ownerhandle, provider.store
             from provider where providerid = ?
                 ",array($ownerid)
@@ -1510,7 +1514,10 @@ function RoomInfo($providerid, $roomid, $mainwidth, $page, $memberinfo)
             
             $ownerhandle = $row2['ownerhandle'];
             $publishprofile = $row2['publishprofile'];
-            $avatarurl = $row2['avatarurl'];
+            $avatarurl = $row2['t_avatarurl'];
+            if($avatarurl == ''){
+                $avatarurl = $row2['avatarurl'];
+            }
 
             //Feed Room
             if($row['rsscategory']!='' || $row['anonymousflag']=='Y'){
@@ -1550,6 +1557,7 @@ function RoomInfo($providerid, $roomid, $mainwidth, $page, $memberinfo)
         $store = $row['store'];
         $logo = $row['logo'];
         $radiostation = $row['radiostation'];
+        $community = $row['community'];
         $subscription = (float) $row['subscription'];
         $subscriptionusd = (float) $row['subscriptionusd'];
         $subscriptiondays = (float) $row['subscriptiondays'];
@@ -1709,7 +1717,7 @@ function RoomInfo($providerid, $roomid, $mainwidth, $page, $memberinfo)
         if(intval($page)>0){
             $photo = "";
         }
-        $ownerinfo['roomOwner'] = "
+        $roominfo['roomOwner'] = "
                     <div style='inline-block;margin:auto;text-align:center'>
                         <div class='pagetitle3' style='font-weight:bold;color:white;padding-top:5px'>
                             $room
@@ -1737,55 +1745,56 @@ function RoomInfo($providerid, $roomid, $mainwidth, $page, $memberinfo)
             
         }
         
-        $ownerinfo['profileflag'] = $profileflag;
-        $ownerinfo['room'] = $room;
+        $roominfo['profileflag'] = $profileflag;
+        $roominfo['room'] = $room;
         if($profileflag == 'Y'){
-            $ownerinfo['room'] = "$menu_aboutme";
+            $roominfo['room'] = "$menu_aboutme";
         }
         
-        $ownerinfo['ownername'] = $ownername;
-        $ownerinfo['ownername2'] = $ownername2;
-        $ownerinfo['photo'] = $photo;
-        $ownerinfo['roomdesc'] = $roomdesc;
-        $ownerinfo['photourl'] = $photourl;
-        $ownerinfo['photourl2'] = $photourl2;
-        $ownerinfo['handle'] = $handle;
-        $ownerinfo['chatid'] = $chatid;
-        $ownerinfo['chatidquiz'] = $chatidquiz;
-        $ownerinfo['sponsor'] = $sponsor;
-        $ownerinfo['parentroomid'] = $parentroomid;
-        $ownerinfo['parentroomhandle'] = $parentroomhandle;
-        $ownerinfo['profileroomid'] = $profileroomid;
-        $ownerinfo['adminroom']= $adminroom;
-        $ownerinfo['avatarurl'] = $avatarurl;
-        $ownerinfo['ownerid'] = $ownerid;
-        $ownerinfo['postcount'] = $postcount;
-        $ownerinfo['roominvitehandle'] = $roominvitehandle;
-        $ownerinfo['publishprofile'] = $publishprofile;
-        $ownerinfo['webpublishprofile'] = $webpublishprofile;
-        $ownerinfo['webtextcolor'] = $webtextcolor;
-        $ownerinfo['webflags'] = $webflags;
-        $ownerinfo['wallpaper'] = $wallpaper;
-        $ownerinfo['ownerhandle'] = $ownerhandle;
-        $ownerinfo['storeurl'] = $storeurl;
-        $ownerinfo['store'] = $store;
-        $ownerinfo['logo'] = $logo;
-        $ownerinfo['external'] = $external;
-        $ownerinfo['analytics'] = html_entity_decode($analytics);
+        $roominfo['ownername'] = $ownername;
+        $roominfo['ownername2'] = $ownername2;
+        $roominfo['photo'] = $photo;
+        $roominfo['roomdesc'] = $roomdesc;
+        $roominfo['photourl'] = $photourl;
+        $roominfo['photourl2'] = $photourl2;
+        $roominfo['handle'] = $handle;
+        $roominfo['chatid'] = $chatid;
+        $roominfo['chatidquiz'] = $chatidquiz;
+        $roominfo['sponsor'] = $sponsor;
+        $roominfo['parentroomid'] = $parentroomid;
+        $roominfo['parentroomhandle'] = $parentroomhandle;
+        $roominfo['profileroomid'] = $profileroomid;
+        $roominfo['adminroom']= $adminroom;
+        $roominfo['avatarurl'] = $avatarurl;
+        $roominfo['ownerid'] = $ownerid;
+        $roominfo['postcount'] = $postcount;
+        $roominfo['roominvitehandle'] = $roominvitehandle;
+        $roominfo['publishprofile'] = $publishprofile;
+        $roominfo['webpublishprofile'] = $webpublishprofile;
+        $roominfo['webtextcolor'] = $webtextcolor;
+        $roominfo['webflags'] = $webflags;
+        $roominfo['wallpaper'] = $wallpaper;
+        $roominfo['ownerhandle'] = $ownerhandle;
+        $roominfo['storeurl'] = $storeurl;
+        $roominfo['store'] = $store;
+        $roominfo['logo'] = $logo;
+        $roominfo['external'] = $external;
+        $roominfo['community'] = $community;
+        $roominfo['analytics'] = html_entity_decode($analytics);
         if($searchengine != 'Y'){
-            $ownerinfo['analytics']='';
+            $roominfo['analytics']='';
         }
-        $ownerinfo['tokenpay'] = $tokenpay;
-        $ownerinfo['subscriptionpending'] = $subscriptionpending;
+        $roominfo['tokenpay'] = $tokenpay;
+        $roominfo['subscriptionpending'] = $subscriptionpending;
             
         if($memberinfo->subscribedate!='' && $memberinfo->today <= $memberinfo->expiredate && $memberinfo->expiredate!='' ){
-            $ownerinfo['subscriptionpending']='';
-            $ownerinfo['tokenpay']='';
+            $roominfo['subscriptionpending']='';
+            $roominfo['tokenpay']='';
         }
-        $ownerinfo['radiostation'] = $radiostation;
-        $ownerinfo['roomstyle'] = $roomstyle;
+        $roominfo['radiostation'] = $radiostation;
+        $roominfo['roomstyle'] = $roomstyle;
         
-        return( (object) $ownerinfo );
+        return( (object) $roominfo );
     }
     return "";
 

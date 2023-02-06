@@ -88,7 +88,7 @@ require_once("internationalization.php");
         "
             select distinct provider.replyemail, provider.providername as name, provider.alias,
             provider.providerid, provider.name2, provider.handle, provider.superadmin,
-            provider.avatarurl, roominfo.room, statusroom.roomid, roominfo.private,
+            provider.avatarurl, provider.t_avatarurl, roominfo.room, statusroom.roomid, roominfo.private,
             (select handle from roomhandle where roomhandle.roomid = statusroom.roomid ) as roomhandle,
             (select roomdesc from roomhandle where roomhandle.roomid = statusroom.roomid ) as roomdesc,
             roommoderator.providerid as moderator, statusroom.owner,
@@ -122,6 +122,9 @@ require_once("internationalization.php");
     echo "<br>";
     while($row = pdo_fetch($result)){
     
+        if($row['t_avatarurl']!==''){
+            $row['avatarurl']=$row['t_avatarurl'];
+        }
         if($row['avatarurl'] == "$rootserver/img/faceless.png"){
             $row['avatarurl'] = "$rootserver/img/newbie2.jpg";
         }

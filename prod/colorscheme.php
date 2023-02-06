@@ -1178,7 +1178,7 @@ if($icon_darkmode == false){
     }
     if($color_scheme == 'metal night'){
         $fixed_background_image = '../img/background-waves.jpg';
-        $fixed_background_image_style = 'width:100%;filter:brightness(50%);';
+        $fixed_background_image_style = 'width:100%;filter:brightness(20%);';
         $fixed_background_image_mobile = '../img/background-waves.jpg';
         $fixed_background_image_mobile_style = 'height:100%;filter:brightness(50%);';
         

@@ -854,20 +854,10 @@ if($_SESSION['enterprise']=='Y' || $_SESSION['superadmin']=='Y' ){
         
 ?>        
         
-        <br>
-        <hr style='border-color:<?=$global_separator_color?>'>
-        <div class='pagetitle2' style='font-weight:bold'>Timeout Lock</div>
-        <br>
-        <div class=label>Inactivity Timeout (Minutes - 0 = disabled)</div>
-        <input id=inactivitytimeout class='handle dataentry inputfocus' name=inactivitytimeout type=number placeholder='' value='<?php echo "$row[inactivitytimeout]"; ?>' size=2 maxlength="2" />
+
+        <input id=inactivitytimeout class='handle dataentry inputfocus' name=inactivitytimeout type=hidden placeholder='' value='<?php echo "$row[inactivitytimeout]"; ?>' size=2 maxlength="2" />
+        <input id=pin class='handle dataentry inputfocus' name=pin type=hidden placeholder='' value='<?php echo "$pin"; ?>' size=4 maxlength="4" />
         
-        <div class=label>Timeout Unlock PIN (4 digits)</div>
-        <input id=pin class='handle dataentry inputfocus' name=pin type=password placeholder='' value='<?php echo "$pin"; ?>' size=4 maxlength="4" />
-        
-        
-        <br>
-        <br>
-        <br>
         <!--HIDDEN VALUES-->
         <input id=publish name=publish  type=hidden value='<?=$row['publish']?>' title='Show Bio in Public List' style='display:none;position:relative;top:5px' /> 
         <textarea title='Biography' cols="50" rows="4" id=publishprofile class='publishprofile dataentry' name=publishprofile  placeholder='Public Profile Description' style='display:none'><?php echo "$row[publishprofile]"; ?></textarea>

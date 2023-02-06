@@ -265,6 +265,7 @@
             $(".mainview").height(maxheight);
             $(".tileview").height(maxheight);
             $(".settingsview").height(maxheight);
+            $(".resetview").height(maxheight);
             $(".roomsview").height(maxheight);
             $(".notificationsview").height(maxheight);
             $('#socialwindow').height(maxheight);
@@ -511,10 +512,10 @@
                     */
                     SideBarList(true);
                 }
-            }).fail(function(data){
-                xhrload = null;
-                internetLost++;
-                $('.admintrace2').html(lastCheckIn2+' Fail');
+            }).fail(function(data,status){
+                
+                //PanelShow(39);
+                        
             });
             
         }
@@ -665,6 +666,7 @@
             $('#firsttime').hide();
             $('#shareitwindow').hide();
             $('.settingsview').hide();
+            $('.resetview').hide();
             $('.roomsview').hide();
             $('.notificationsview').hide();
             $('.notificationspopup').hide();
@@ -1023,6 +1025,11 @@
                 $('.actionarea').show();
                 $('#functioniframe').show();
             }
+            if(panel===39 ){ //iframe
+                $('.resetview').fadeIn("800");
+            
+            }
+            
             
             LastPanel = CurrentPanel;
             CurrentPanel = panel;
@@ -1958,45 +1965,10 @@
     }
     function TimedOutHandler()
     {
-
-        $('sidemenuarea').hide();
-        if(TimeoutSeconds === 0 || pin ==='' ){
-            
-            PanelShow(15);
-            $('#socialwindow').load( rootserver1+startupphp,  {
-                'providerid': $('#pid').val()
-            }, function(html, status){
-            });
-            return;
-            
-        }
+        PanelShow(39);
+        //show reset view
+        return;
         
-        if(
-                typeof $('#chatmessage').val()!=='undefined' &&
-                  (
-                  $('#chatmessage').val()!=='' ||
-                  $('#chatmessage3').val()!=='' 
-                  )
-          
-                  ||
-                  
-                typeof $('#statuscomment').val()!=='undefined' &&
-                  (
-                  $('#statuscomment').val()!=='' 
-                  )
-                  
-                  ||
-                  
-                  $('.chateditingactive').is(":visible")
-                  
-               ){
-           return;
-        }
-        
-        
-        $('#trigger_pin').click();
-        //alertify.alert('Timed out');
-        //window.location.replace( rootserver1+"l.php");
         TimedOut = true;
 
     }

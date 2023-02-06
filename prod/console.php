@@ -26,6 +26,11 @@ if(
     $tester ='Y';
 }
 
+$avatarurl = $_SESSION['t_avatarurl'];
+if($avatarurl == ''){
+    $avatarurl = $_SESSION['avatarurl'];
+}
+
 
 //Auto Launch Chat
 $initmodule = "";
@@ -129,7 +134,7 @@ if($_SESSION['enterprise']=='Y'){
                            data-roomid='<?=$_SESSION['profileroomid']?>' data-providerid='<?=$providerid?>' data-caller='none'
                            title='Change your profile photo and data <?=$_SESSION['superadmin']?>/<?=$global_banner_color?>' 
                            data-mode='test'
-                           style='float:right;cursor:pointer;width:auto;padding:0;margin:0;max-width:15%' src='<?=$_SESSION['avatarurl']?>' />
+                           style='float:right;cursor:pointer;width:auto;padding:0;margin:0;max-width:15%' src='<?=$avatarurl?>' />
                     </span>
                     <span class='nonmobile'>
                          <div class="smalltext bannerheight" 
@@ -212,22 +217,17 @@ if($_SESSION['enterprise']=='Y'){
                                     <div class='settingsview' data-colorscheme='<?=$_SESSION['colorscheme']?>' data-sponsorcolorscheme='<?=$_SESSION['sponsorcolorscheme']?>'
 
                                          style="display:none;overflow:visible;background-color:transparent;text-align:left;color:<?=$global_textcolor?>;max-width:100%;">
-                                        <!--
-                                        <div class='pagetitle2a' style='background-color:<?=$global_titlebar_color?>;color:white;padding-left:20px;padding-right:20px;padding-top:0px;padding-bottom:3px'>
-                                            !--
-                                            <img class='icon20 tilebutton' Title='Back to Home' src='../img/Arrow-Left-in-Circle-White_120px.png' 
-                                                style='' />
-                                            &nbsp;
-                                            --
-                                            <span style='opacity:.5'>
-                                            <?=$icon_braxsettings2?>
-                                            </span>
-                                            <?=ucfirst(strtolower($menu_settings));?>
-                                        </div>
-                                        -->
                                         <div 
                                          style="background-color:transparent;margin:auto;text-align:center;width:90%;min-width:70%;vertical-align:top">
                                                     <?=$settingsmenu?>
+                                        </div>
+                                    </div>                    
+                                    <div class='resetview' data-colorscheme='<?=$_SESSION['colorscheme']?>' data-sponsorcolorscheme='<?=$_SESSION['sponsorcolorscheme']?>'
+
+                                         style="display:none;overflow:visible;background-color:transparent;text-align:left;color:<?=$global_textcolor?>;max-width:100%;">
+                                        <div 
+                                         style="background-color:transparent;color:<?=$global_textcolor?>;margin:auto;text-align:center;width:90%;min-width:70%;vertical-align:top">
+                                            <?=$resetview?>
                                         </div>
                                     </div>                    
                                     <div id="popupwindow" name="popupwindow" class="popupwindow" 

@@ -98,6 +98,9 @@ require_once("roomfunc.inc.php");
         echo "Room Error";
         exit();
     }
+    if($roominfo->community=='F'){
+        $caller = 'FAQ';
+    }
     //echo $memberinfo->subscribedate;
 
     if($roominfo->profileflag!='Y' && $roominfo->roomstyle!=='faq'){
