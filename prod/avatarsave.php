@@ -52,6 +52,36 @@ function SaveThumbnail($filename, $providerid)
     $image = "";
     if( strstr(strtolower($filename),"sharedirect.php")!==false &&
         (
+        strstr(strtolower($filename),"a=")!==false                
+        )
+      ){
+        $braxfilename = explode("a=",$filename);
+        //Alias
+        if($braxfilename[1]!==''){
+            $result2 = pdo_query("1",
+            "
+                select filename,filetype from photolib where alias='$braxfilename[1]'
+            ",null);
+
+            if($row2 = pdo_fetch($result2)){
+                $a_filename = $row2['filename'];             
+                $a_ext = $row2['filetype']; 
+                $url = getAWSObjectUrl($a_filename);
+                if($a_ext == 'jpg'){
+                    $image = imagecreatefromjpeg($url);
+                } else
+                if($a_ext == 'png'){
+                    $image = imagecreatefrompng($url);
+                } else
+                if($a_ext == 'gif'){
+                    $image = imagecreatefromgif($url);
+                }
+                $ext = $a_ext;
+            }
+        }
+    } else        
+    if( strstr(strtolower($filename),"sharedirect.php")!==false &&
+        (
         strstr(strtolower($filename),".jpg")!==false ||               
         strstr(strtolower($filename),".jpeg")!==false                
         )
@@ -85,6 +115,13 @@ function SaveThumbnail($filename, $providerid)
     }
     $tempfilename= $providerid."_avatar_".$uniqid.".$ext";
 
+    if($image==''){
+        pdo_query("1","
+            update provider set t_avatarurl = '$rootserver/img/newbie2.png'
+                where providerid=? 
+                ",array($providerid));
+
+    }
     if($image!==''){
         $image = imagescale($image,250,250);
         imagejpeg($image, $targetfolder.$tempfilename);
@@ -97,6 +134,7 @@ function SaveThumbnail($filename, $providerid)
                 ",array($awsurl, $providerid));
         
         $album = "Profile Photo";
+        $alias = uniqid("T4AZ", true);
         $result = pdo_query("1", 
                 "
                     insert into photolib
@@ -104,12 +142,11 @@ function SaveThumbnail($filename, $providerid)
                     values
                     ( ?, ?, ?, ?,?, ?,?, now(),?, ? ) 
                  ",array(
-                     $providerid, $album, $tempfilename, $targetfolder,$filesize, $ext,"", "", $providerid  
-                     
-                 )
-         );
-        
+                     $providerid, $album, $tempfilename, $targetfolder,$filesize, $ext,"", $alias, $providerid  
+
+                 ));
     }
+        
 
 }
 ?>
